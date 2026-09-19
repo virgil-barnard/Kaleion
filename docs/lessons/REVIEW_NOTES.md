@@ -6,8 +6,11 @@ shows where a clearer notation, reusable recipe, or faster evaluator might help.
 
 The subsequent [core refinement plan](../CORE_REFINEMENT_PLAN.md) checks these
 observations against the implementation and Parnas's decomposition criteria. It
-includes a parameter-case composition defect, measured copying and playback costs,
-and an ordered migration plan. No refactor is claimed by that document.
+records a parameter-case composition defect, measured copying and playback costs,
+and an ordered migration plan. The first implementation fixes that defect, isolates
+field evaluation, and removes repeated contributor grouping and motion preparation.
+The plan's delivery status distinguishes these changes from the remaining recipes
+and explanation tools below.
 
 ## What the examples establish
 

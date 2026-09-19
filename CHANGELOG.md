@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Fix Boolean composition and selection after incidence parameter binding, including nested scopes. Add `Incidence.universe` to expose the inspected collection or arrangement.
+- Separate field interpretation into `expressions.py`, shared by construction evaluation and captured motion.
+- Build reduction contributors in one pass; prepare motion correspondence and incidence membership once per captured root, shared by playback and undo.
+- Preserve schema-1 and legacy imports. New scoped Boolean compositions use `incidence_boolean` version 1; executing that operation requires this evaluator.
 - Extend the floor-sum construction to a 3D box with three incidences, voxel plots, exact cross-sections, packing/undo, and pairwise-coprimality and intersection proofs.
 - Add a reciprocal floor-sum construction notebook with two incidences, grouped counts, interactive partition/overlap views, packing and undo, and a general proof including the noncoprime correction.
 - Add an optional `notebooks` dependency group with JupyterLab, Plotly, and portable MP4 rendering.

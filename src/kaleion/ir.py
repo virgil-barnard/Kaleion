@@ -269,6 +269,27 @@ class Node:
                 yield n
 
 
+def incidence_universe(node: Node) -> Node:
+    """The declared source with its parameter cases, without moving predicates.
+
+    Scope order is part of definition identity. This does not infer whether two
+    different parameter expressions happen to produce equal finite domains.
+    """
+    if node.kind != "incidence":
+        raise TypeError("Expected an incidence definition")
+    if node.op == "incidence":
+        source = node.inputs[0]
+        if source.kind not in ("collection", "arrangement"):
+            raise TypeError("An incidence needs a collection or arrangement universe")
+        return source
+    if node.op == "case":
+        source = incidence_universe(node.inputs[0])
+        return Node("case", source.kind, (source,), node.attributes)
+    if node.op == "incidence_boolean":
+        return incidence_universe(node.inputs[0])
+    raise ValueError(f"Unknown incidence operation {node.op}")
+
+
 def graph(roots: Mapping[str, Node]):
     records = {}
     visiting = set()

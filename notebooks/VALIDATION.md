@@ -1,5 +1,25 @@
 # Notebook viewer validation
 
+## First core refinement regression check
+
+- All eight source notebooks run in fresh in-process IPython sessions: 77 code
+  cells complete with their mathematical, provenance, motion, and persistence
+  assertions. MP4 exports are regenerated. The source notebooks remain unchanged
+  with cleared outputs; executed copies stay under `build/notebooks/`.
+- The 65-test suite and reference example pass. New tests exercise parameter-bound
+  incidence composition and reuse of prepared tracks during playback and undo.
+- Offline browser checks reload all 14 standalone figures and the three converted
+  notebooks from lessons 06–08. Their 84-, 84-, and 102-frame motion sequences
+  reach the expected endpoints, restore coordinates and identity colors, and
+  respond to Play/Pause/Restart. The 3D Young view retains its adjusted camera.
+  Every equal-sum and dilation frame has the expected selected coordinates.
+- The existing Plotly 6.9.0 `undefined` cancellation event still occurs when pausing
+  active playback; pause and restart work, with no other page errors in this check.
+
+The local-kernel socket restriction still applies: these are fresh sequential
+IPython executions and exported-browser checks, not a live JupyterLab session.
+Earlier checks below describe the original lesson additions.
+
 Checked with Python 3.12.14, NumPy 2.3.5, Plotly 6.9.0, JupyterLab 4.6.3,
 IPython 9.17.1, Pillow 12.3.0, and imageio-ffmpeg 0.6.0.
 

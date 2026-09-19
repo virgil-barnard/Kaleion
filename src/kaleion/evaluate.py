@@ -6,78 +6,16 @@ from dataclasses import replace
 from hashlib import sha256
 import json
 from math import prod
-from types import MappingProxyType
 import numpy as np
 
-from .ir import Expr, Node, graph
+from .ir import Node, incidence_universe
+from .expressions import evaluate_expression
 from .model import Snapshot, IncidenceSnapshot, Ref
 from . import tensor as T
 
 
 class EvaluationError(ValueError):
     pass
-
-
-def _literal(value):
-    out = np.asarray(value)
-    # All integer arithmetic starts with Python integers, before a ufunc runs.
-    return np.asarray(value, dtype=object) if out.dtype.kind in "iu" else out
-
-
-def _rows(value, length):
-    a = np.asarray(value)
-    if a.ndim <= 1:
-        return T.key_rows([a], length)
-    if a.ndim != 2 or a.shape[0] != length:
-        raise ValueError("A composite key needs one tuple per occurrence")
-    return T.key_rows([a[:, i] for i in range(a.shape[1])], length)
-
-
-def evaluate_expression(rule, context, params, resolve, *, length=0, depth=0):
-    if depth > 100:
-        raise ValueError("Expression depth exceeds budget")
-    if not isinstance(rule, Expr):
-        return _literal(rule)
-    op, args = rule.op, rule.args
-    if op == "literal":
-        return _literal(args[0])
-    if op == "field":
-        if args[0] not in context:
-            raise KeyError(f"Unbound field {args[0]}")
-        return np.asarray(context[args[0]])
-    if op == "param":
-        if args[0] not in params:
-            raise KeyError(f"Unbound parameter {args[0]}")
-        return _literal(params[args[0]])
-    ev = lambda e, ctx=context, n=length: evaluate_expression(
-        e, ctx, params, resolve, length=n, depth=depth + 1
-    )
-    if op in ("scalar", "lookup", "aligned"):
-        source = resolve(args[0])
-        if not isinstance(source, Snapshot):
-            raise ValueError("A driver must supply a collection or arrangement")
-        if op == "scalar":
-            if len(source) != 1:
-                raise ValueError("scalar() requires exactly one item")
-            return _literal(source.values[0])
-        if op == "lookup":
-            address = T.broadcast(ev(args[1]), length)
-            addr = T.exact(address)
-            if any(v < 0 or v >= len(source) for v in addr):
-                raise IndexError("Substitution address outside table")
-            return T.take(source.values, np.asarray(addr, dtype=np.int64))
-        on, key, read = args[1:]
-        source_ctx = source.context()
-        source_keys = _rows(ev(key, source_ctx, len(source)), len(source))
-        target_keys = _rows(ev(on), length)
-        addresses = T.align(source_keys, target_keys)
-        values = ev(read, source_ctx, len(source))
-        if values.ndim == 0:
-            values = T.broadcast(values, len(source))
-        if len(values) != len(source):
-            raise ValueError("Driver read shape mismatch")
-        return T.take(values, addresses)
-    return T.operation(op, [ev(a) for a in args])
 
 
 _PRIMITIVES = {
@@ -93,6 +31,7 @@ _PRIMITIVES = {
     "annotate": ("elementwise",),
     "items": ("view",),
     "incidence": ("elementwise_predicate",),
+    "incidence_boolean": ("scoped_predicates", "elementwise_boolean"),
     "select": ("nonzero", "gather"),
     "reduce": ("factorize_keys", "segment_sum", "nonzero"),
     "gather": ("address_map", "gather"),
@@ -358,6 +297,34 @@ class Evaluator:
         if op not in _PRIMITIVES:
             raise ValueError(f"Unregistered operation {op}")
         source = self.get(node.inputs[0])
+        if op == "incidence_boolean":
+            operator = a["operator"]
+            if operator not in ("and", "or", "not") or len(node.inputs) != (
+                1 if operator == "not" else 2
+            ):
+                raise ValueError("Invalid incidence Boolean operation")
+            if not isinstance(source, IncidenceSnapshot):
+                raise TypeError("Boolean composition needs incidences")
+            if operator == "not":
+                mask, rule = ~source.mask, f"not({source.rule})"
+            else:
+                left = incidence_universe(node.inputs[0])
+                right = incidence_universe(node.inputs[1])
+                if left.id != right.id:
+                    raise ValueError(
+                        "Incidences need the same declared universe, including parameter scope"
+                    )
+                other = self.get(node.inputs[1])
+                if source.source.ids != other.source.ids:
+                    raise ValueError("Incidence universe occurrences do not agree")
+                mask = (
+                    source.mask & other.mask
+                    if operator == "and"
+                    else source.mask | other.mask
+                )
+                sign = "&" if operator == "and" else "|"
+                rule = f"({source.rule} {sign} {other.rule})"
+            return IncidenceSnapshot(node.id, source.source, mask, rule)
         if op == "incidence":
             return IncidenceSnapshot(
                 node.id,
@@ -580,10 +547,11 @@ class Evaluator:
             if len(groups) == 1
             else np.arange(len(keys), dtype=object)
         )
-        parents = tuple(
-            tuple(Ref(source.node, source.ids[i]) for i in selected if inverse[i] == k)
-            for k in range(len(keys))
-        )
+        # One pass preserves source order within each group, including zero groups.
+        contributors = [[] for _ in keys]
+        for i in selected:
+            contributors[inverse[i]].append(Ref(source.node, source.ids[i]))
+        parents = tuple(tuple(group) for group in contributors)
         formula = f"{a['reducer']} over {{p in A : {incidence.rule}}}, grouped by " + (
             ", ".join(str(e) for _, e in groups) or "the whole finite domain"
         )

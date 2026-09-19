@@ -3,12 +3,14 @@
 Run from the repository root after installation:
     python3 examples/core_design_probe.py > build/core-design-probes.json
 
-This reports observed behavior, including known baseline defects. It is not a CI
-acceptance test or a stable public-API example; internal probes should be updated
-with the proposed refactor. Timings describe one host, not promised performance.
+This reports observed behavior against the review's recorded baseline. It is not a
+CI acceptance test or a stable public-API example. Internal probes track the current
+implementation. Timings describe one host, not promised performance.
 """
 from dataclasses import replace
+from hashlib import sha256
 import json
+from pathlib import Path
 import platform
 from statistics import median
 import subprocess
@@ -24,6 +26,12 @@ from kaleion import model
 def collect():
     report = {"revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
               "python": platform.python_version(), "numpy": np.__version__}
+    report["core_modified_from_revision"] = bool(subprocess.check_output(
+        ["git", "status", "--porcelain", "--", "src/kaleion"], text=True))
+    core = sha256()
+    for path in sorted(Path("src/kaleion").rglob("*.py")):
+        core.update(str(path).encode() + b"\0" + path.read_bytes() + b"\0")
+    report["core_sha256"] = core.hexdigest()
     source = Collection.sequence(4).arrange(F.value, 0)
     incidence = source.where(F.value > param("n")).with_params(n=2)
     report["case_composition"] = {}
@@ -76,15 +84,21 @@ def collect():
 
     data = Collection.sequence(200, start=0).arrange(F.value, 0)
     workspace = Workspace({"points": data})
-    outward = workspace.set("points", data.gather(list(range(200))).with_values(F.value).arrange(F.s, 1), motion=Motion())
     calls = []
-    original = Transition._tracks
+    original = Transition._prepare_tracks
     def tracked(self, name):
         calls.append(name)
         return original(self, name)
-    with patch.object(Transition, "_tracks", tracked):
+    with patch.object(Transition, "_prepare_tracks", tracked):
+        outward = workspace.set("points", data.gather(list(range(200))).with_values(F.value).arrange(F.s, 1), motion=Motion())
+        during_capture = len(calls)
         frames = [outward.frame("points", t / 20) for t in range(21)]
-    report["motion_preparation"] = {"occurrences": 200, "frames": len(frames), "track_constructions": len(calls)}
+        backward = workspace.undo()
+        reverse_frames = [backward.frame("points", t / 20) for t in range(21)]
+    report["motion_preparation"] = {
+        "occurrences": 200, "frames": len(frames), "reverse_frames": len(reverse_frames),
+        "track_constructions": len(calls), "during_capture": during_capture,
+        "during_frames_and_reverse": len(calls) - during_capture}
 
     return report
 

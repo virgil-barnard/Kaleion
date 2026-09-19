@@ -1,0 +1,107 @@
+{
+  "revision": "6d3c7c55eb7b5b68c2b10a10e2bf16e406a48b6b",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "core_modified_from_revision": true,
+  "core_sha256": "29d16755e70739fc2fdbdae1d1cfda9a161f6a4d3c6e0abe2c7a38b7e32e90e1",
+  "case_composition": {
+    "evaluate": {
+      "type": "IncidenceSnapshot",
+      "cardinality": 2
+    },
+    "complement": {
+      "type": "IncidenceSnapshot",
+      "cardinality": 2
+    },
+    "intersection": {
+      "type": "IncidenceSnapshot",
+      "cardinality": 2
+    },
+    "select_then_arrange": {
+      "type": "Snapshot",
+      "cardinality": null
+    }
+  },
+  "snapshot_node_only_replace": {
+    "occurrences": 200,
+    "exact_calls": 1,
+    "readonly_calls": 5,
+    "shares_values": false,
+    "shares_positions": false,
+    "shared_fields": 0,
+    "fields": 3
+  },
+  "binding_evidence": {
+    "driver_is_definition_dependency": true,
+    "direct_driver_parent_refs": 0,
+    "direct_target_parent_refs": 2,
+    "positions": [
+      [
+        20.0,
+        0.0
+      ],
+      [
+        11.0,
+        0.0
+      ]
+    ]
+  },
+  "reduction_seconds": [
+    {
+      "items": 250,
+      "groups": 1,
+      "selected": 250,
+      "median_of_3": 0.0007709419987804722
+    },
+    {
+      "items": 250,
+      "groups": 250,
+      "selected": 250,
+      "median_of_3": 0.002940413000033004
+    },
+    {
+      "items": 500,
+      "groups": 1,
+      "selected": 500,
+      "median_of_3": 0.001340229999186704
+    },
+    {
+      "items": 500,
+      "groups": 500,
+      "selected": 500,
+      "median_of_3": 0.005887614999664947
+    },
+    {
+      "items": 1000,
+      "groups": 1,
+      "selected": 1000,
+      "median_of_3": 0.0029638470005011186
+    },
+    {
+      "items": 1000,
+      "groups": 1000,
+      "selected": 1000,
+      "median_of_3": 0.010465806997672189
+    },
+    {
+      "items": 2000,
+      "groups": 1,
+      "selected": 2000,
+      "median_of_3": 0.004927328001940623
+    },
+    {
+      "items": 2000,
+      "groups": 2000,
+      "selected": 2000,
+      "median_of_3": 0.02749477599718375
+    }
+  ],
+  "motion_preparation": {
+    "occurrences": 200,
+    "frames": 21,
+    "reverse_frames": 21,
+    "track_constructions": 1,
+    "during_capture": 1,
+    "during_frames_and_reverse": 0
+  }
+}
