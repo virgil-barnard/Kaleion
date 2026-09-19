@@ -57,3 +57,56 @@ and does not claim an automated proof certificate.
 - Browser checks with HTTP(S) requests blocked loaded the four standalone exports and the converted notebook. All/X/Y/Z/Shared controls show the expected cell counts. All ten x-slices match the captured X areas; separate data checks verify all y- and z-slices too.
 - The 62-frame voxel motion retains 240 cells and 2880 mesh triangles, fills 240 distinct integer centers at its packed endpoint, restores its initial coordinates exactly, and retains a changed camera orientation across frames. No page errors occurred during these checks.
 - Solid, isolated-piece, overlap, and motion screenshots were visually inspected, including the solid view at 680 pixels wide. Notebook source validates with cleared outputs. The written largest-coordinate argument establishes the general identity for pairwise coprime integers; these numerical and rendering checks concern finite cases.
+
+## Measured motion and finite Radon lessons
+
+- `04_measured_motion.ipynb`: all 11 code cells run in order in a fresh IPython
+  process, with captured rich outputs. The `(11,7,5)` count fields sum to height 4
+  at every `(x,y)` key. The `(6,4,5)` case has exactly one discrepancy, +2 at `(3,2)`;
+  its three driver counts are `(2,2,2)` and their original contributors are inspectable.
+- Its 78-frame animation uses three captured moves followed by three undos. Target
+  occurrence identities remain unchanged, reverse samples agree with the forward
+  path, and workspace reopening preserves contributor IDs and pending redo.
+- `05_finite_radon.ipynb`: all 10 code cells run in order in a fresh IPython process.
+  The default binary 5×5 image has weight 10. All six direction families recover
+  that total from their five measurements; the 30 line counts reconstruct every
+  pixel exactly. The construction explicitly checks zero division remainders and
+  equality over the complete pixel key domain.
+- The Radon notebook's 144-frame animation accumulates six measured direction fields,
+  subtracts the measured total, divides by 5, and undoes all eight moves. Its target
+  uses independent occurrences. Editing the source column updates the counts and
+  recovered values. Increasing the `(m,t)=(1,0)` measurement by one produces division
+  remainder 1 at exactly the five pixels `(x,x)`; the notebook presents these as
+  witnesses rather than silently rounding a reconstruction.
+- `python3 -m unittest discover -s tests -v`: **48 tests passed**. Six new construction
+  tests independently check column contributors with rational maxima, zero groups,
+  reordered drivers, overlap and saved reverse motion, prime-grid binary image
+  reconstruction (zero, impulse, and full images at p=2,3,5), signed weights beyond
+  64-bit range, an altered measurement, and failure of the prime-field inverse at
+  composite modulus 4.
+- `python3 examples/discovery.py --out build/example-output`: reference outputs
+  unchanged. No runtime operation, dependency, or saved-format change was needed.
+- Both executed notebooks convert to HTML. All five source notebooks validate as
+  nbformat 4 with cleared outputs and syntactically valid code. Local links in the
+  new lesson guides, updated README files, and new notebooks resolve.
+- Browser checks with external HTTP(S) requests blocked load all nine standalone
+  figures and both converted notebooks. All 30 finite-line selections highlight
+  exactly five incident pixels and agree with the displayed measurement. Both
+  motion sequences reach their checked endpoints, undo exactly, retain a changed
+  camera, and respond to Play/Pause/Restart. The discrepancy and corruption views
+  contain exactly their expected witnesses.
+- Screenshots of the measured surfaces, overlap witness, contributor view, finite
+  lines, reconstruction endpoint, and recovered image were inspected, including
+  700-pixel-wide views. Reconstruction colors read captured endpoint labels so the
+  zero pattern remains visible with fixed motion bounds. Crowded line-view titles
+  and playback controls were adjusted during inspection.
+- The browser recorded the previously documented Plotly `undefined` cancellation
+  event once when pausing each active 3D animation. Pause did stop playback; no
+  other page errors occurred in these checks. These events are documented, not
+  suppressed in the notebook or viewer.
+
+The same host restriction on local kernel sockets described above applies: execution
+uses a fresh in-process IPython shell, not a live JupyterLab kernel. The notebooks
+retain normal Jupyter/nbconvert instructions for local use. Their mathematical proofs
+are written separately from finite tests. Both new 3D animations export to interactive
+HTML; no new 3D MP4 capability is claimed.

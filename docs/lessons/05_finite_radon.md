@@ -1,0 +1,65 @@
+# 05 · Can line counts recover an image?
+
+**Status:** available. [Open the notebook](../../notebooks/05_finite_radon.ipynb).
+
+**Question:** Which measurements determine every value of a picture?
+
+**Background:** modular arithmetic, a prime modulus, integer grids, and summation.
+The notebook introduces the finite affine lines it needs.
+
+## Construction
+
+Use a binary image on the `p × p` grid over integers modulo prime p. Lines satisfy
+`y - m*x = t (mod p)`, with a further vertical family `x=t`. The p+1 families
+contain p lines each. Construct the finite point/line pair domain and measure the
+incidence of illuminated points by retained `(m,t)` keys.
+
+Treat these line counts as an arrangement. Bind each measured value onto its incident
+pixels and reduce again to obtain `B(P)`. The total `T` comes from the line measurements
+in a single parallel family. Then
+
+\[
+B(P)=p f(P)+T,\qquad f(P)=\frac{B(P)-T}{p}.
+\]
+
+Every other pixel shares exactly one line with P, while P itself lies on p+1 lines.
+This proves the formula. Multiplicative inverses of nonzero coordinate differences
+are where primality enters the argument.
+
+## Narrative
+
+1. Compare diagonal and opposite-diagonal 2×2 patterns: identical row/column counts
+   fail to identify the selected subset.
+2. Add modular directions. Scrub all lines and view each measured count alongside
+   the highlighted source points. Wrapped lines are incidences, not Euclidean segments.
+3. Build backprojection and derive the exact inverse by counting multiplicities.
+4. Use each direction's derived contribution field to lift a second arrangement.
+   Subtract T and divide by p to expose the image as heights. Undo the captured steps.
+5. Compare original and recovered values at every key; show the residual arrangement.
+6. Inspect one reconstructed pixel's measured lines and their exact contributors.
+7. Edit the source and verify propagation. Then corrupt one line count: its p incident
+   pixels become witnesses where the reconstruction numerator is not divisible by p.
+
+## Experiments and limits
+
+- Try prime sizes 2, 3, 5, and 7 and a different binary image expression.
+- Use `sum(value=F.weight)` for weighted integer images. The same proof applies to
+   signed values as well; a cardinality count alone would discard those weights.
+- Remove a direction and ask which information remains. The displayed exact inverse
+   requires all direction families and consistent measurements.
+- A nonzero division remainder is evidence of failure. Zero remainders alone do not
+   establish consistency for arbitrary corrupted data; remeasurement is another check.
+- Modulo a composite integer is not the required prime field. Prime-power fields
+   need their own field operations, not merely a different integer modulus.
+
+The dense pair domain has `p^3(p+1)` occurrences. Large scenes need a more economical
+execution strategy. Reconstruction recovers **values on a declared domain**, not the
+source's occurrence identities. The second arrangement has its own persistent points.
+
+The standard construction is a finite Radon transform; its prime-grid inverse is
+described in the [scikit-image documentation](https://scikit-image.org/docs/stable/api/skimage.transform.html#skimage.transform.frt2),
+which also cites Kingston and Svalbe's work on periodic image arrays. Kaleion uses
+its own explicit direction convention and no external inversion dependency.
+
+Exports go to `build/notebooks/finite-radon/`: five offline HTML figures, construction,
+motion, and corrupted-measurement workspaces, finite checks, and `pixel-explanation.json`.

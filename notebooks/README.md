@@ -6,6 +6,12 @@ Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is a
 
 [03_three_incidence_box.ipynb](03_three_incidence_box.ipynb) constructs the three-dimensional analogue. The incidence with the greatest normalized coordinate owns each point of a shared integer box. For pairwise coprime parameters, rectangular cross-sections produce products of two floor quotients and the three volumes add to the box volume. Interactive voxel views, exact slice controls, and recorded packing/undo make the three pieces inspectable. Counterexamples distinguish pairwise coprimality from merely having a joint gcd of 1 and demonstrate triple-intersection accounting.
 
+[04_measured_motion.ipynb](04_measured_motion.ipynb) derives three column-count arrangements and uses them as keyed motion drivers for an independent plane. Heatmaps, a 78-frame lift/undo animation, a discrepancy view, and contributor inspection connect a flat endpoint to a pointwise equality. The `(6,4,5)` counterexample exposes double-counting as a bump. All definitions are included, so the notebook can run independently of lesson 03.
+
+[05_finite_radon.ipynb](05_finite_radon.ipynb) asks whether measurements determine an image. It starts with ambiguous row/column projections, builds modular lines over a prime field, and reconstructs every pixel from line counts. A line-selection scrubber and staged 3D reconstruction/undo demonstrate measured fields driving other arrangements. A source edit propagates through the computation; an altered line count produces exact-division witnesses. The default 5×5 case has 30 line measurements and a 144-frame reconstruction/undo animation.
+
+The [lesson guide](../docs/lessons/README.md) contains educational notes for every existing notebook and [detailed plans](../docs/lessons/FUTURE_LESSONS.md) for the next investigations. The notes separate a lesson's construction, visual question, general explanation, finite evidence, and remaining design questions.
+
 ## Install and launch
 
 From the repository root on WSL/Linux/macOS:
@@ -18,7 +24,7 @@ python3 -m ipykernel install --sys-prefix --name kaleion --display-name "Kaleion
 python3 -m jupyterlab notebooks/01_discovery_workbench.ipynb
 ```
 
-Reuse an existing environment if already installed. Choose the **Kaleion** kernel, then **Restart Kernel and Run All Cells**. The first notebook prints the kernel executable so you can confirm it belongs to `.venv`. In VS Code, open the repository in WSL, open the notebook, and choose that environment or the Kaleion kernel. If WSL does not open a browser automatically, copy JupyterLab's local URL from the terminal into your Windows browser. Open the second notebook in the same session, or substitute its filename in the launch command above.
+Reuse an existing environment if already installed. Choose the **Kaleion** kernel, then **Restart Kernel and Run All Cells**. The first notebook prints the kernel executable so you can confirm it belongs to `.venv`. In VS Code, open the repository in WSL, open the notebook, and choose that environment or the Kaleion kernel. If WSL does not open a browser automatically, copy JupyterLab's local URL from the terminal into your Windows browser. Open any of the other notebooks in the same session, or substitute its filename in the launch command above.
 
 Notebook dependencies are optional: `python3 -m pip install -e .` still installs only the core. Installing `.[notebooks]` adds JupyterLab, the kernel/conversion tools, Plotly, Pillow, and imageio-ffmpeg. Plotly is imported only when its adapter is used. The FFmpeg wheels include an encoder on common platforms; if yours does not, install FFmpeg and point `IMAGEIO_FFMPEG_EXE` to its executable.
 
@@ -57,6 +63,12 @@ The second notebook writes to `build/notebooks/floor-sum/`: `partition.html`, `p
 
 The third notebook writes to `build/notebooks/three-incidences/`: `solids.html`, `sections.html`, `packing.html`, and `overlap.html` are standalone Plotly views; workspace JSON files retain the constructions, captures, and packing history; `cases.json` records the checks and `preview.json` contains evaluated centers and membership codes. Section and packing views are produced for disjoint cases. The voxel helper is local to the notebook and consumes evaluated snapshots/frames. It displays every cell and limits the chosen box to 1500 occurrences; use small parameters for smooth 3D playback. `SLICE_AXIS` chooses `x`, `y`, or `z` for the section view. Mesh gaps are styling, while volume counts unit cells.
 
+The fourth writes to `build/notebooks/measured-motion/`: `height-maps.html`, `lift-and-undo.html`, `discrepancy.html`, and `column-explanation.html`; measurement and motion workspaces; `cases.json`; and `column-explanation.json`. Edit `COLUMN` to inspect another key in the counterexample. The saved explanation links the target occurrence, measured driver occurrences, and original contributors. Grid edges between target points are presentation guides. The box is limited to 1500 occurrences for these fully displayed views.
+
+The fifth writes to `build/notebooks/finite-radon/`: `ambiguous-projections.html`, `line-measurements.html`, `reconstruction-and-undo.html`, `recovered-image.html`, and `corrupted-measurement.html`; reconstruction, motion, and corrupted-measurement workspaces; `cases.json`; and `pixel-explanation.json`. Edit `PIXEL` to inspect a reconstruction and `image_x` to move the source's selected column. Use prime `p` in `{2,3,5,7}` and keep `0 <= image_x < p`. The displayed pair domain has `p^3(p+1)` occurrences and is not an optimized imaging backend. All arithmetic reconstruction uses exact integer values; the general prime-field argument is written separately from the finite checks.
+
+Both new notebooks use the existing optional dependencies. Their 3D playback exports are interactive HTML, not MP4 files. Construction code remains visible; longer presentation helpers can be expanded in Jupyter when their source is initially folded. A normal notebook execution needs no browser, but displaying interactive figures does.
+
 ## Execute without the UI
 
 With the environment activated and the kernel installed as above, run from the repository root:
@@ -68,6 +80,10 @@ python3 -m jupyter nbconvert --to notebook --execute notebooks/02_floor_sum_proo
 python3 -m jupyter nbconvert --to html build/notebooks/02_floor_sum_proof.executed.ipynb --output-dir build/notebooks
 python3 -m jupyter nbconvert --to notebook --execute notebooks/03_three_incidence_box.ipynb --output-dir build/notebooks --output 03_three_incidence_box.executed.ipynb --ExecutePreprocessor.timeout=180
 python3 -m jupyter nbconvert --to html build/notebooks/03_three_incidence_box.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/04_measured_motion.ipynb --output-dir build/notebooks --output 04_measured_motion.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/04_measured_motion.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/05_finite_radon.ipynb --output-dir build/notebooks --output 05_finite_radon.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/05_finite_radon.executed.ipynb --output-dir build/notebooks
 ```
 
 The committed source notebooks have no outputs. Execution creates populated copies with plots and, in the first notebook, embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.

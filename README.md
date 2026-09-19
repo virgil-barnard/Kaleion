@@ -54,6 +54,12 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 [Three incidences fill a box](notebooks/03_three_incidence_box.ipynb) extends the construction to three pairwise coprime integers. Rotate and isolate the stepped solids, scrub their rectangular cross-sections, and watch packing and undo. For `(11, 7, 5)`, their volumes are `86 + 80 + 74 = 240`. Explicit pair and triple intersections explain what changes when coprimality is relaxed.
 
+[Three measurements lift a plane](notebooks/04_measured_motion.ipynb) counts the three solids along one common axis, then uses those derived arrangements as motion drivers for a separate plane. The coprime case ends flat; relaxing coprimality produces a bump whose contributing voxels can be inspected. The counts, exact discrepancy, source edit, and reversible motion retain their derivations.
+
+[Can line counts recover an image?](notebooks/05_finite_radon.ipynb) constructs a finite Radon transform from modular incidences. Thirty line counts recover a 5×5 image through binding and summation. Animate the measured fields lifting another arrangement, inspect a pixel's contributors, and see why an altered measurement invalidates exact division.
+
+The [lesson guide](docs/lessons/README.md) provides narrative and educational notes for all five notebooks. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for Young diagrams and conjugate partitions, convolution and additive energy, and Ehrhart lattice-point counting, together with the capabilities each investigation should exercise.
+
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 
 See [notebooks/README.md](notebooks/README.md) for VS Code/WSL usage, offline exports, and headless execution. Generated videos, HTML, and executed notebooks go under the ignored `build/notebooks/` directory; the committed notebooks have cleared outputs for readable reviews.
