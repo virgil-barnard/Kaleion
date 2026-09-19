@@ -12,6 +12,7 @@ from .expressions import evaluate_expression
 from .model import Snapshot, IncidenceSnapshot, Ref
 from . import tensor as T
 from . import indexing
+from . import measurements
 
 
 class EvaluationError(ValueError):
@@ -41,6 +42,8 @@ _PRIMITIVES = {
     "concat": ("concatenate", "address_map"),
     "pad": ("constant", "concatenate"),
     "case": ("bind_parameters", "evaluate_construction"),
+    "rank": ("factorize_keys", "lexicographic_sort", "prefix_ranges"),
+    "require": ("all_checks", "view"),
 }
 
 
@@ -194,10 +197,7 @@ class Evaluator:
                 pos = T.take(source.positions, addresses)
             elif placement == "fixed":
                 pos = source.positions
-        metadata = {**source.metadata, "operation": node.op}
-        if "contributor_ids" in metadata:
-            for key in ("keys", "population", "contributor_ids"):
-                metadata[key] = tuple(source.metadata[key][j] for j in addresses)
+        metadata = {**measurements.reindex(source.metadata, addresses), "operation": node.op}
         return source._with_changes(
             node=node.id,
             values=values,
@@ -287,6 +287,20 @@ class Evaluator:
             return self._derive(node, result)
         if op not in _PRIMITIVES:
             raise ValueError(f"Unregistered operation {op}")
+        if op == "require":
+            checks = self.get(node.inputs[1])
+            if not isinstance(checks, IncidenceSnapshot):
+                raise TypeError("A requirement needs an incidence of checks")
+            failed = np.flatnonzero(~checks.mask)
+            if len(failed):
+                keys = checks.source.metadata.get("keys")
+                examples = ([keys[i] for i in failed[:3]] if keys is not None
+                            else [checks.source.fields["key"][i] for i in failed[:3]])
+                raise ValueError(f"{a['message']}: {len(failed)} failing keys; examples {examples}")
+            source = self.get(node.inputs[0])
+            if not isinstance(source, Snapshot):
+                raise TypeError("A requirement passes through integer items")
+            return self._derive(node, source)
         source = self.get(node.inputs[0])
         if op == "incidence_boolean":
             operator = a["operator"]
@@ -337,21 +351,10 @@ class Evaluator:
             raise ValueError("This operation needs integer items")
         if op == "items":
             return self._derive(node, source, positions=None)
+        if op == "rank":
+            return self._rank(node, source)
         if op == "values":
-            metadata = dict(source.metadata)
-            if "contributor_ids" in metadata:
-                for k in (
-                    "reducer",
-                    "formula",
-                    "contributor_ids",
-                    "keys",
-                    "population",
-                    "incidence",
-                    "universe",
-                    "counted",
-                ):
-                    metadata.pop(k, None)
-                metadata["prior_measurement"] = source.node
+            metadata = measurements.changed_values(source.metadata, source.node)
             return self._derive(
                 node,
                 source,
@@ -463,6 +466,39 @@ class Evaluator:
             return self._pad(node, source)
         raise ValueError(f"Unsupported operation {op}")
 
+    def _rank(self, node, source):
+        a = node.attributes
+        if not a["order"] or not a["keys"]:
+            raise ValueError("Rank needs member order and unique item keys")
+        groups = (indexing.key_rows([self.expr(e, source) for _, e in a["groups"]], len(source))
+                  if a["groups"] else ((),) * len(source))
+        order = indexing.key_rows([self.expr(e, source) for e in a["order"]], len(source))
+        keys = indexing.key_rows([self.expr(e, source) for _, e in a["keys"]], len(source))
+        if len(set(keys)) != len(keys):
+            raise ValueError("Rank item keys must be unique; choose an explicit identifying key")
+        inverse, members, ranks = indexing.ordered_groups(groups, order)
+        ids = tuple(f"{node.id}:key:{json.dumps(key, separators=(',', ':'))}" for key in keys)
+        fields = {name: np.asarray([key[i] for key in keys], dtype=object)
+                  for i, (name, _) in enumerate(a["keys"])}
+        fields.setdefault("key", np.asarray([key[0] for key in keys], dtype=object)
+                          if len(a["keys"]) == 1 else np.arange(len(keys), dtype=object))
+        # Anchor lineage identifies the item being ranked. The counted predecessors
+        # are a separate compact record, expanded only by contributor_ids(key).
+        parents = tuple((Ref(source.node, oid),) for oid in source.ids)
+        return Snapshot(node.id, ranks, ids, ids, fields, parents=parents, metadata={
+            "reducer": "rank", "counted": "strict predecessors", "keys": keys,
+            "population": tuple(len(members[g]) for g in inverse),
+            "contributor_prefixes": {
+                "version": 1,
+                "groups": tuple(tuple(source.ids[i] for i in group) for group in members),
+                "ranges": tuple((int(g), int(rank)) for g, rank in zip(inverse, ranks)),
+            },
+            "universe": source.node,
+            "formula": "Count strict predecessors within declared groups, ordered by "
+                       + ", ".join(str(e) for e in a["order"]),
+            "complete": True, "finite": True,
+        })
+
     def _reduce(self, node, incidence):
         a = node.attributes
         source = incidence.source
@@ -498,11 +534,11 @@ class Evaluator:
             name: np.asarray([key[i] for key in keys], dtype=object)
             for i, (name, _) in enumerate(groups)
         }
-        fields["key"] = (
+        fields.setdefault("key", (
             np.asarray([key[0] for key in keys], dtype=object)
             if len(groups) == 1
             else np.arange(len(keys), dtype=object)
-        )
+        ))
         # One pass preserves source order within each group, including zero groups.
         contributors = [[] for _ in keys]
         for i in selected:

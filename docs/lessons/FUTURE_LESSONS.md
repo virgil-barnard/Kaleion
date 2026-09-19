@@ -12,6 +12,13 @@ motion, projective quotienting, polars, and measured partitions into Kaleion. Th
 [UI discovery notes](UI_DISCOVERY_NOTES.md) connect them to earlier lessons. The
 following candidates are planned, not implemented.
 
+The [authoring refinement](../AUTHORING.md) is delivered in lessons 07 and 10:
+grouping, strict member order and ranks, scoped coverage with guarded assignments,
+and named measurement-driven coordinates. Future lessons should reuse those
+choices. Weighted prefix sums, case families, arbitrary key-domain comparisons,
+and explanations across driver bindings remain open; add them only when a concrete
+construction establishes their contracts.
+
 ## Next · Symmetry, orbits, and Burnside counting
 
 **Question:** Why can we not count necklaces by dividing the number of strings by
@@ -120,7 +127,9 @@ between sufficient measurements and lost information.
 **Capability questions:** A static Young constructor already exists. A keyed threshold
 on a finite grid can express derived diagrams. Does ordered packing justify a readable
 grouped prefix-sum/rank recipe? Counts provide sizes but do not supply a within-group
-ordering. Pair domains and reductions can express prefix counts now, although inefficiently.
+ordering. Strict ranks now have a compact implementation shared by lessons 07 and
+10. Weighted prefix sums can still be expressed through pair domains and reductions,
+although inefficiently; shortening that recipe remains future work.
 
 **Prerequisites:** counts, retained keys, and simple bijections. Introduce the term
 conjugate partition after the reader sees the transpose. A Young diagram is not

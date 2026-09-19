@@ -24,6 +24,12 @@ Moving `(a,b)` to `(a+b,0)` produces coincidences without removing occurrences. 
 earlier pairs with the same sum to derive a rank for each pair. These measured ranks
 then separate the coincident pairs into consecutive vertical slots.
 
+The construction now declares that directly:
+`pairs.group_by(F.total).order_by(F.pair_key).ranks(key=F.pair_key)`.
+Binding those ranks by pair key supplies `y` in `arrange(x=F.total, y=height)`.
+Member order, grouping, correspondence, and coordinate choice remain visible.
+Ranks use compact ordered-prefix evidence rather than a dense predecessor matrix.
+
 Each sum has `r(s)` representations, so it gives `r(s)^2` ordered pairs of
 representations. Grouping quadruples by their common sum proves
 
@@ -64,7 +70,9 @@ are the measured counts.
 Many-to-one placement is different from deleting duplicates. An ordering and a count
 of predecessors supply the slots needed for packing; counts alone do not. Explicit
 measurement domains supply missing zero bins. The dense pair-of-pairs construction
-is intentionally small and is not an efficient general convolution implementation.
+remains only for the independent additive-energy count; it is intentionally small
+and is not an efficient general convolution implementation. See the
+[authoring guide](../AUTHORING.md) for the rank and placement contracts.
 
 Exports in `build/notebooks/additive-structure/` include five offline HTML figures,
 three workspaces, `checks.json`, `sum-explanation.json`, and `sum-stacks.mp4`.

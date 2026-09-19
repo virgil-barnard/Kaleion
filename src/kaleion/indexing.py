@@ -72,6 +72,28 @@ def group_keys(columns, length, *, retained_shape=None):
     return keys, align(keys, rows)
 
 
+def ordered_groups(groups, order):
+    """Strict lexicographic member order and zero-based ranks, in O(N log N).
+
+    Sorting never introduces a storage-order tiebreaker. Group order is first
+    appearance; callers choose separately how to display the groups themselves.
+    """
+    if len(groups) != len(order):
+        raise ValueError("Grouping and ordering need the same occurrence domain")
+    keys, inverse = factorize(groups)
+    buckets = [[] for _ in keys]
+    for i, group in enumerate(inverse):
+        buckets[group].append(i)
+    ranks = np.empty(len(groups), dtype=object)
+    for members in buckets:
+        members.sort(key=lambda i: order[i])
+        if any(order[a] == order[b] for a, b in zip(members, members[1:])):
+            raise ValueError("Member order has ties within a group; declare another order field")
+        for rank, i in enumerate(members):
+            ranks[i] = rank
+    return inverse, tuple(tuple(group) for group in buckets), ranks
+
+
 def axis_dimension(axes, shape, axis):
     if shape is None or axis not in axes:
         raise ValueError(f"{axis!r} is not a declared rectangular index axis")

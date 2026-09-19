@@ -2,9 +2,13 @@
 
 ## Unreleased
 
+- Make grouping, strict member order, scoped coverage, and named measurement-driven coordinates explicit authoring choices. Add `Grouping` and `Coverage`, plus an executable guide and core-only example.
+- Add version-1 `rank` and `require` operations. Ranks sort within groups and retain linear-size ordered-prefix evidence; requirements guard reuse while leaving independent witnesses inspectable. Updated code reads old captures; new operations and contributor-prefix version 1 need the updated implementation.
+- Refactor lessons 07 and 10 to use these choices, preserving their motion endpoints. Complete the Hermitian pencil with its tangent singleton so all 28 keys have exactly one owner. Keep captured evidence queryable after save/reopen and reverse motion.
+- Preserve a retained field named `key` in composite reductions and ranks instead of replacing it with an ordinal. Cover declared order, composite keys, zero groups, ambiguity, failed coverage, history, and evidence with public-contract regressions.
 - Add norm-fiber and Hermitian-geometry lessons using existing primitives: finite-field cyclic motion, projective classes, polar lenses, measured partitions, counterexamples, captured undo, and two MP4 exports.
 - Add educational notes, concrete UI discovery choices, and future briefs for Burnside counting, syndrome fibers, and Hermitian block exchanges. Extend the README gallery to ten lessons.
-- Check finite arithmetic, projective incidence, keyed coverage/rank drivers, contributors, and restored motion with eight independent-oracle lesson tests. No core operation, dependency, or saved schema changes.
+- Check finite arithmetic, projective incidence, keyed coverage/rank drivers, contributors, and restored motion with eight independent-oracle lesson tests. The initial lesson addition required no core operation, dependency, or saved schema changes.
 - Added a README gallery from all eight lessons, with notebook links and a figure exporter for regenerating the static previews.
 
 - Share unchanged validated snapshot buffers and frozen metadata during internal derivation; public constructors still copy caller data. Seal identity/lineage containers and reject mutable field elements.

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "base_revision": "fb462549039e7c7bfc386a90b6a472a2199671f8",
+  "core_source_sha256": "1823199d9fa49612ec5494c8523ac3f8afffb268f56405e70345d771c96209bf",
+  "items": 96,
+  "groups": 6,
+  "dense_recipe": {
+    "median_evaluation_ms": 47.295,
+    "peak_traced_bytes": 3700180,
+    "compact_workspace_bytes": 6357997,
+    "largest_evaluated_extent": 9216,
+    "evaluated_nodes": 6
+  },
+  "ordered_rank": {
+    "median_evaluation_ms": 1.305,
+    "peak_traced_bytes": 77227,
+    "compact_workspace_bytes": 80962,
+    "largest_evaluated_extent": 96,
+    "evaluated_nodes": 3
+  },
+  "enumerated_predecessors": 720,
+  "stored_ordered_occurrences": 96,
+  "stored_prefix_ranges": 96,
+  "limitations": "One finite fixture on one host; inputs prebuilt; three timing runs. Both recipes run in the same current evaluator. No timing gate."
+}

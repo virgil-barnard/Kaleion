@@ -1,5 +1,43 @@
 # Notebook viewer validation
 
+## Explicit choice refinement
+
+- Changed lessons 07 and 10 execute their 7 and 12 code cells in fresh in-process
+  IPython sessions, including all mathematical, contributor, saved-state, motion,
+  and video assertions. Source notebooks validate with cleared outputs. The same
+  host restriction on live Jupyter kernel sockets applies; this is not a live
+  JupyterLab session. The core suite passes **94 tests**.
+- Sum-stack ranks now use explicit grouping and strict member order. The dense
+  pair-of-pairs domain remains only for the independent energy count. Both ways
+  of measuring the default energy still give 44; sum-stack endpoints are unchanged.
+- The Hermitian pencil now includes the tangent's singleton block. Its coverage
+  and the spread's coverage are both one at all 28 retained point keys. Guarded
+  owner assignments and compact predecessor ranks drive the same nine-triple-plus-
+  singleton and seven-quadruple placements. The missing-polar witnesses remain
+  `[85,86,88,89]`. Point explanations now include rank predecessor keys.
+- All nine workspace exports reopen, and every saved rank prefix in their current
+  evaluated states can be queried with the evaluator disabled. The full Hermitian
+  motion capture is 11,942,367 bytes (11.39 MiB), down from about 18.3 MiB before
+  replacing dense rank domains. It retains the captured states, evaluated
+  dependencies, contributor evidence, observations, and pending redo.
+- Chromium loads all 12 standalone HTML figures and both converted notebooks
+  with HTTP(S) blocked. The converted notebooks contain five/seven figures and
+  one embedded video each. The 84-frame sum-stack, 50-frame projective quotient,
+  and 100-frame partition motions reach their checked endpoints, retain identity
+  colors, and restore their coordinates exactly. Play, Pause, and Restart work;
+  the 3D quotient retains its changed camera.
+- The known Plotly 6.9.0 `undefined` cancellation event occurs once for each active
+  Pause; no other page errors occur. Motion screenshots at 1100 and 700 pixels
+  were generated and the changed stack/partition views inspected. Both MP4s decode
+  every frame (84 and 100) at 960×640 and 24 fps; sampled decoded frames were checked.
+
+Viewer implementation, dependencies, and gallery PNGs are unchanged. Existing
+gallery selections still show the same mathematical endpoints. Other lessons and
+the full polar-case sweep were not rechecked in the browser for this refinement;
+their earlier evidence below remains separately identified. New rank/require
+definitions and contributor-prefix queries require the updated Kaleion code;
+old schema-1 captures remain supported.
+
 ## Norm fibers and Hermitian partitions
 
 - Lessons 09 and 10 execute all 23 code cells in fresh in-process IPython sessions,

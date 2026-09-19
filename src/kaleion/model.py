@@ -9,6 +9,7 @@ import numpy as np
 
 from .ir import freeze
 from .tensor import readonly, exact
+from .measurements import contributors
 
 
 def _updated(source, changes):
@@ -178,19 +179,7 @@ class Snapshot:
         return ctx
 
     def contributor_ids(self, key):
-        if "contributor_ids" not in self.metadata:
-            raise ValueError(
-                "Inspect a reduction or its unchanged placement; value transformations have their own input provenance"
-            )
-        keys = self.metadata.get("keys", ())
-        key = key if isinstance(key, tuple) else (key,)
-        if key not in keys:
-            raise KeyError(key)
-        if keys.count(key) != 1:
-            raise ValueError(
-                "This key has repeated occurrences; inspect the source reduction"
-            )
-        return self.metadata["contributor_ids"][keys.index(key)]
+        return contributors(self.metadata, key)
 
 
 @dataclass(frozen=True, eq=False, slots=True)
