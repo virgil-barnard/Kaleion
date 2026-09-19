@@ -1,0 +1,102 @@
+{
+  "revision": "e7a88c100b7d26e84aac8e99741cb8e6dad6dbf0",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "case_composition": {
+    "evaluate": {
+      "type": "IncidenceSnapshot",
+      "cardinality": 2
+    },
+    "complement": {
+      "error": "KeyError",
+      "message": "'rule'"
+    },
+    "intersection": {
+      "error": "KeyError",
+      "message": "'rule'"
+    },
+    "select_then_arrange": {
+      "error": "AttributeError",
+      "message": "'Incidence' object has no attribute 'arrange'"
+    }
+  },
+  "snapshot_node_only_replace": {
+    "occurrences": 200,
+    "exact_calls": 1,
+    "readonly_calls": 5,
+    "shares_values": false,
+    "shares_positions": false,
+    "shared_fields": 0,
+    "fields": 3
+  },
+  "binding_evidence": {
+    "driver_is_definition_dependency": true,
+    "direct_driver_parent_refs": 0,
+    "direct_target_parent_refs": 2,
+    "positions": [
+      [
+        20.0,
+        0.0
+      ],
+      [
+        11.0,
+        0.0
+      ]
+    ]
+  },
+  "reduction_seconds": [
+    {
+      "items": 250,
+      "groups": 1,
+      "selected": 250,
+      "median_of_3": 0.0012018800007354002
+    },
+    {
+      "items": 250,
+      "groups": 250,
+      "selected": 250,
+      "median_of_3": 0.012082735000149114
+    },
+    {
+      "items": 500,
+      "groups": 1,
+      "selected": 500,
+      "median_of_3": 0.001342281000688672
+    },
+    {
+      "items": 500,
+      "groups": 500,
+      "selected": 500,
+      "median_of_3": 0.034542855002655415
+    },
+    {
+      "items": 1000,
+      "groups": 1,
+      "selected": 1000,
+      "median_of_3": 0.0024308710017066915
+    },
+    {
+      "items": 1000,
+      "groups": 1000,
+      "selected": 1000,
+      "median_of_3": 0.13767783100047382
+    },
+    {
+      "items": 2000,
+      "groups": 1,
+      "selected": 2000,
+      "median_of_3": 0.005378988000302343
+    },
+    {
+      "items": 2000,
+      "groups": 2000,
+      "selected": 2000,
+      "median_of_3": 0.49589741800082265
+    }
+  ],
+  "motion_preparation": {
+    "occurrences": 200,
+    "frames": 21,
+    "track_constructions": 21
+  }
+}
