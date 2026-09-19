@@ -1,11 +1,17 @@
 # Future Kaleion lessons
 
-These investigations are planned; their notebooks are not yet implemented. Lessons
-[04](04_measured_motion.md) and [05](05_finite_radon.md) implement the first two
-investigations from the preceding plan. This document preserves the remaining ideas
-and the specific design questions they should answer.
+The five investigations in the preceding plan now have notebooks: lessons
+[04](04_measured_motion.md), [05](05_finite_radon.md), [06](06_young_layers.md),
+[07](07_additive_structure.md), and [08](08_ehrhart_counts.md). This document preserves
+their original briefs and explicitly identifies remaining extensions. The
+[review notes](REVIEW_NOTES.md) record what the delivered constructions reveal.
 
 ## 06 · Young diagrams, conjugate partitions, and counting by layers
+
+**Delivered:** [lesson 06](06_young_layers.md) includes derived conjugation, measured
+prefix offsets, a 3D transpose, packing/undo, contributor inspection, and the ordering
+counterexample. An animated horizontal-threshold sweep remains an optional extension
+of the original brief below.
 
 **Question:** How can horizontal and vertical counts describe the same cells?
 
@@ -17,7 +23,7 @@ The general finite counting identity is
 \sum_i h_i=\sum_{t=1}^{\max_i h_i}\#\{i:h_i\ge t\}.
 \]
 
-**Proposed construction and motion:** Build cells under the height profile, sweep a
+**Original construction brief:** Build cells under the height profile, sweep a
 horizontal threshold, and count the selected columns. Use those counts to construct
 the conjugate diagram. Rotate or transpose the original cells so the two descriptions
 can be compared by an explicit bijection. Next, unroll rows into a strip using
@@ -46,6 +52,11 @@ offsets actually driving motion, empty/zero cases, and an ordering counterexampl
 
 ## 07 · Convolution, sumsets, and additive energy
 
+**Delivered:** [lesson 07](07_additive_structure.md) implements the ordinary integer
+version, including a sum-lens sweep, measured ranks, reversible stacks, energy squares,
+and an independently checked quadruple count. Modular/cyclic convolution remains a
+follow-up; it is not claimed by the integer example.
+
 **Question:** How many ways can the same integer be formed as a sum?
 
 **Start with:** two finite integer sets A and B and the arrangement `A × B`. A moving
@@ -58,7 +69,7 @@ r_{A,B}(s)=\#\{(a,b)\in A\times B:a+b=s\}.
 This is convolution of the two indicator functions. Work with ordinary integer sums
 first; modulo p gives a later cyclic-convolution variant with a different declared domain.
 
-**Proposed motion:** Sweep diagonals in the pair arrangement. Align equal-sum pairs
+**Original motion brief:** Sweep diagonals in the pair arrangement. Align equal-sum pairs
 into stacks with explicit within-stack ranks. Their heights are the measured values.
 Use these counts in another construction selecting equal-sum pairs of pairs.
 
@@ -92,13 +103,17 @@ boundary cases. The broader connection is developed in
 
 ## 08 · Ehrhart theory: counting lattice points as shapes grow
 
+**Delivered:** [lesson 08](08_ehrhart_counts.md) constructs measured parameter families,
+differences driving independent probes, interior/boundary comparisons, a written
+reciprocity argument for the triangle, and a rational period-two counterexample.
+
 **Question:** What kind of number sequence does an expanding integer-coordinate shape produce?
 
 **Start with:** `i,j >= 0` and `i+j <= n`, for integer scale `n >= 0`. Scrubbing n yields
 `1,3,6,10,...` lattice-point counts. Collect each count, its parameter case, and its
 derivation into a new arrangement; construct successive difference sequences.
 
-**Proposed motion:** Show exact integer dilation cases with a discrete case scrubber.
+**Original motion brief:** Show exact integer dilation cases with a discrete case scrubber.
 Animate the comparison of successive counting profiles separately from case evaluation.
 Use measured differences as the heights or offsets of a second arrangement, making
 the constant second difference visible.
@@ -143,11 +158,34 @@ counterexample to a naive universal polynomial claim for rational vertices.
   identical selected projections. Lesson 05 contains the initial 2×2 ambiguity; a fuller
   lesson could study which local switches preserve prescribed measurements.
 - **A generic explanation view:** expose target → matched driver occurrence → measured
-  contributors from captured data. The notebook-specific explanations in 04/05 establish
+  contributors from captured data. The notebook-specific explanations in 04–08 establish
   concrete examples; do not duplicate large contributor lists into every animation frame.
 - **Explicit finite comparisons:** return keyed residuals and witnesses, with both key
   domains checked. Equality of totals, keyed values, subsets, or occurrences must be
   stated separately. These are groundwork for later analytical statements and proof aid.
+
+## Further lesson candidates
+
+- **Cyclic convolution and modular folding:** start with lesson 07's integer sum bins,
+  fold them by `s mod p`, and measure the resulting residue multiplicities. Show why
+  several integer bins can contribute to one residue and preserve those contributors.
+  Compare ordinary convolution with circular convolution using the same input pairs;
+  declare whether repeated residue labels describe sets or weighted occurrences.
+  Completion evidence: exact folded counts, a wraparound example, and a reversible
+  motion that keeps every contributing pair distinct. No Fourier transform is required.
+- **Measurement-preserving switches:** start with the 2×2 ambiguity in lesson 05,
+  add opposite signed changes at opposite corners, and prove all row/column sums
+  stay fixed. Apply further line lenses to expose the hidden difference. Keep signed
+  weights separate from binary incidence cardinality, and check when a switch stays
+  inside the allowed image domain. Completion evidence: two distinct constructions,
+  equal chosen measurements, and an additional measurement with an explicit witness.
+- **Growing boxes and plane partitions:** extend lesson 06 to integer heights over
+  a two-dimensional footprint. Count horizontal layers and compare the total with
+  the sum of heights. A plane partition additionally requires monotonicity in both
+  footprint directions; arbitrary height fields still satisfy layer counting.
+  Derive layer areas and packing offsets, and inspect whether the 3D motion clarifies
+  the grouping. Completion evidence: volume equality, contributor inspection, and a
+  nonmonotone example that separates double counting from the partition constraint.
 
 ## How these lessons should influence architecture
 
