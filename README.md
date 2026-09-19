@@ -50,9 +50,11 @@ python3 -m jupyterlab notebooks/01_discovery_workbench.ipynb
 
 Select the **Kaleion** kernel, then **Restart Kernel and Run All Cells**. The notebook starts with integer arrangements and lenses, derives counts with contributor provenance, drives cyclic shifts and 3D motion from those counts, explores structural spiral hits, and saves/reopens an investigation. Every construction is visible Python code that you can edit.
 
+Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb). It connects the quotient-region counts to exact floor quotients, constructs the two reciprocal incidences, and animates their disjoint cover of a rectangle. Readable notation accompanies the plots, followed by a general proof and the overlap correction when the parameters are not coprime.
+
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 
-See [notebooks/README.md](notebooks/README.md) for VS Code/WSL usage, offline exports, and headless execution. Generated videos, HTML, and executed notebooks go under the ignored `build/notebooks/` directory; the committed notebook has cleared outputs for readable reviews.
+See [notebooks/README.md](notebooks/README.md) for VS Code/WSL usage, offline exports, and headless execution. Generated videos, HTML, and executed notebooks go under the ignored `build/notebooks/` directory; the committed notebooks have cleared outputs for readable reviews.
 
 ## Package and reference exports
 

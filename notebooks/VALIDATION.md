@@ -25,5 +25,23 @@ returned to the first frame. These cancellation events were recorded rather than
 silenced; loading and inspecting the figures succeeded. The initial viewer does not
 guarantee a particular 3D playback frame rate or export 3D MP4 video.
 
-These are finite executable examples and rendering checks, not proofs of the
-mathematical patterns they display.
+Execution and rendering checks concern finite examples. Any general mathematical
+claim needs a separate argument, such as the partition proof in the second notebook.
+
+## Reciprocal floor-sum construction
+
+Checked with the same environment listed above:
+
+- All nine code cells in `02_floor_sum_proof.ipynb` ran in order in a fresh IPython process, with captured rich outputs. The same local-kernel socket limitation applies.
+- For `(a, b) = (11, 7)`, the original counts are exactly `[0, 1, 3, 4, 6, 7, 9]`. The new incidences have cardinalities 30 and 30, cover all 60 occurrences of the shared domain, and have empty intersection.
+- For `(a, b) = (12, 8)`, cardinalities are 40 and 40, the union has 77 occurrences, and the intersection contains precisely `(2, 3)`, `(4, 6)`, and `(6, 9)`.
+- `python3 -m unittest discover -s tests -v`: 40 tests passed. Two new tests cover exact floor-sum incidence counts/coverage/overlap, including the smallest allowed parameters and retained zero groups, and reorientation of the earlier quotient region without changing occurrence identity or membership.
+- `python3 examples/discovery.py --out build/example-output`: reference results unchanged.
+- Browser checks with HTTP(S) requests blocked loaded all three standalone exports and the converted notebook. The P/Q/Both/Overlap buttons produced the expected cell counts in both parameter cases. The 82-frame packing/undo sequence retained colors by identity, filled 60 distinct integer positions at its packed endpoint, and restored its starting positions exactly. No page errors occurred during these checks.
+- Screenshots were inspected at widths 1100 and 700 pixels. Both source notebooks validate as nbformat 4 and have cleared outputs; the user's existing kernel and cell metadata in the first notebook are preserved.
+
+The general proof is written in the notebook: coverage follows from ordering, and
+coprimality excludes shared interior lattice points. For arbitrary positive integer
+parameters greater than one, inclusion–exclusion gives the correction
+`gcd(a, b) - 1`. The notebook distinguishes this deduction from finite assertions
+and does not claim an automated proof certificate.
