@@ -14,14 +14,19 @@ support an educational page or a touch interface.
 | [03 · Three incidences fill a box](03_three_incidence_box.md) | What does the floor-sum argument become in three dimensions? | Largest normalized coordinate, cross-sections, products of quotients |
 | [04 · Three measurements lift a plane](04_measured_motion.md) | Can measured column heights make another plane flat? | Incidence → count → keyed displacement → discrepancy |
 | [05 · Can line counts recover an image?](05_finite_radon.md) | Which measurements determine a picture? | Finite affine incidence → line counts → backprojection → exact recovery |
+| [06 · Turn a diagram; count its layers](06_young_layers.md) | What do layer counts preserve and forget? | Conjugation → measured prefix offsets → packing and lost order |
+| [07 · How many ways can a sum occur?](07_additive_structure.md) | What does the distribution of equal sums reveal? | Convolution → measured ranks → stacks and additive energy |
+| [08 · Count lattice points as a triangle grows](08_ehrhart_counts.md) | When are dilation counts polynomial? | Parameter families → finite differences → driven probes and reciprocity |
 
 Read 01 as a reference tour. The mathematical sequence is 02 → 03 → 04.
-Lesson 05 is self-contained and opens a second path through finite geometry and
-imaging. Every notebook includes its own definitions and can run in a fresh kernel.
+Lesson 05 opens a second path through finite geometry and imaging. Lessons 06 → 07
+connect counting, order, and multiplicity; 08 introduces parameter families and
+quasipolynomials. Every notebook includes its own definitions and can run in a fresh kernel.
 
-The [future lessons](FUTURE_LESSONS.md) preserve the next investigations, including
-their mathematical statements, proposed motion, prerequisites, and concrete design
-questions. They are plans, not implemented notebooks.
+The [future lessons](FUTURE_LESSONS.md) preserve the original briefs and remaining
+investigations, with delivery status made explicit. [Review notes](REVIEW_NOTES.md)
+collect concrete findings from the eight notebooks for our next architecture and
+notation discussion.
 
 ## A common narrative
 

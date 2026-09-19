@@ -10,7 +10,13 @@ Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is a
 
 [05_finite_radon.ipynb](05_finite_radon.ipynb) asks whether measurements determine an image. It starts with ambiguous row/column projections, builds modular lines over a prime field, and reconstructs every pixel from line counts. A line-selection scrubber and staged 3D reconstruction/undo demonstrate measured fields driving other arrangements. A source edit propagates through the computation; an altered line count produces exact-division witnesses. The default 5×5 case has 30 line measurements and a 144-frame reconstruction/undo animation.
 
-The [lesson guide](../docs/lessons/README.md) contains educational notes for every existing notebook and [detailed plans](../docs/lessons/FUTURE_LESSONS.md) for the next investigations. The notes separate a lesson's construction, visual question, general explanation, finite evidence, and remaining design questions.
+[06_young_layers.ipynb](06_young_layers.ipynb) counts a Young diagram by columns and layers, constructs its conjugate, and turns the original cells through 3D. Measured prefix offsets pack the cells into a strip; an ordering counterexample shows what the counts forget. The default ten-cell example has 84 turn/pack/undo frames.
+
+[07_additive_structure.ipynb](07_additive_structure.ipynb) measures how many ordered pairs give each integer sum. It introduces convolution, uses measured predecessor counts to stack equal-sum pairs, and derives additive energy in three ways. The default progression has energy 44; a scattered four-element set has energy 28. Its 84-frame stack/undo sequence also exports as an embedded 2D MP4.
+
+[08_ehrhart_counts.ipynb](08_ehrhart_counts.ipynb) counts integer dilations of a triangle, keeps those cases as symbolic inputs to a measured family, and derives finite differences. The measurements drive independent probes in a 102-frame sequence. Interior/boundary comparisons explain reciprocity; a rational triangle demonstrates a period-two quasipolynomial. A separate embedded MP4 holds the exact dilation cases.
+
+The [lesson guide](../docs/lessons/README.md) contains educational notes for every existing notebook and [detailed plans](../docs/lessons/FUTURE_LESSONS.md) for the next investigations. The notes separate a lesson's construction, visual question, general explanation, finite evidence, and remaining design questions. [Review notes](../docs/lessons/REVIEW_NOTES.md) collect evidence from all eight lessons for the upcoming design discussion.
 
 ## Install and launch
 
@@ -67,7 +73,13 @@ The fourth writes to `build/notebooks/measured-motion/`: `height-maps.html`, `li
 
 The fifth writes to `build/notebooks/finite-radon/`: `ambiguous-projections.html`, `line-measurements.html`, `reconstruction-and-undo.html`, `recovered-image.html`, and `corrupted-measurement.html`; reconstruction, motion, and corrupted-measurement workspaces; `cases.json`; and `pixel-explanation.json`. Edit `PIXEL` to inspect a reconstruction and `image_x` to move the source's selected column. Use prime `p` in `{2,3,5,7}` and keep `0 <= image_x < p`. The displayed pair domain has `p^3(p+1)` occurrences and is not an optimized imaging backend. All arithmetic reconstruction uses exact integer values; the general prime-field argument is written separately from the finite checks.
 
-Both new notebooks use the existing optional dependencies. Their 3D playback exports are interactive HTML, not MP4 files. Construction code remains visible; longer presentation helpers can be expanded in Jupyter when their source is initially folded. A normal notebook execution needs no browser, but displaying interactive figures does.
+The sixth writes to `build/notebooks/young-layers/`: four HTML figures (`diagrams`, `measurements`, `turn-pack-undo`, `lost-order`), three workspaces, `checks.json`, and `layer-explanation.json`. Edit `HEIGHTS` and `LAYER`. Heights must be nonnegative and nonincreasing for the main packing construction; trailing zeros and the empty list are supported. The fixed unordered example is separate. The 3D motion uses interactive HTML.
+
+The seventh writes to `build/notebooks/additive-structure/`: five HTML figures (`representation-counts`, `sum-lens`, `sum-stacks`, `energy-squares`, `structure-comparison`), three workspaces, `checks.json`, `sum-explanation.json`, and `sum-stacks.mp4`. Edit `A_VALUES`, `B_VALUES`, and `SUM`. Input labels are distinct integers, at most six per set, with a displayed sum interval of at most 31 bins. The views deliberately use small dense pair domains; this is not an optimized convolution backend.
+
+The eighth writes to `build/notebooks/ehrhart-counts/`: five HTML figures (`integer-dilations`, `count-differences`, `measured-difference-motion`, `interior-boundary`, `rational-periodicity`), two workspaces, `checks.json`, `case-explanation.json`, and `integer-dilations.mp4`. Use `4 <= MAX_N <= 12`. `INSPECT_N` selects a case whose original point contributors are shown. The default video has nine held integer cases, not interpolated counts.
+
+All notebooks use the existing optional dependencies. Lessons 06–08 share [lesson_views.py](lesson_views.py), a presentation-only helper beside the notebooks; their mathematical constructions remain visible. Longer presentation cells can be expanded in Jupyter when initially folded. A normal notebook execution needs no browser, but displaying interactive figures does.
 
 ## Execute without the UI
 
@@ -84,9 +96,15 @@ python3 -m jupyter nbconvert --to notebook --execute notebooks/04_measured_motio
 python3 -m jupyter nbconvert --to html build/notebooks/04_measured_motion.executed.ipynb --output-dir build/notebooks
 python3 -m jupyter nbconvert --to notebook --execute notebooks/05_finite_radon.ipynb --output-dir build/notebooks --output 05_finite_radon.executed.ipynb --ExecutePreprocessor.timeout=180
 python3 -m jupyter nbconvert --to html build/notebooks/05_finite_radon.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/06_young_layers.ipynb --output-dir build/notebooks --output 06_young_layers.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/06_young_layers.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/07_additive_structure.ipynb --output-dir build/notebooks --output 07_additive_structure.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/07_additive_structure.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/08_ehrhart_counts.ipynb --output-dir build/notebooks --output 08_ehrhart_counts.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/08_ehrhart_counts.executed.ipynb --output-dir build/notebooks
 ```
 
-The committed source notebooks have no outputs. Execution creates populated copies with plots and, in the first notebook, embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.
+The committed source notebooks have no outputs. Execution creates populated copies with plots and, in lessons 01, 07, and 08, embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.
 
 For a quick separate encoder check:
 

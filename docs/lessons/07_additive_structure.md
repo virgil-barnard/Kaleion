@@ -1,0 +1,74 @@
+# 07 · How many ways can a sum occur?
+
+**Status:** available. [Open the notebook](../../notebooks/07_additive_structure.ipynb).
+
+**Question:** What does the distribution of equal sums reveal about two integer sets?
+
+**Background:** ordered pairs and counting. Lesson 06's distinction between counts
+and order is helpful, but all definitions are included here.
+
+## Construction and explanation
+
+For finite integer sets A and B, construct their ordered pairs and measure
+
+\[
+r_{A,B}(s)=\#\{(a,b)\in A\times B:a+b=s\}
+=(\mathbf1_A*\mathbf1_B)(s).
+\]
+
+This is discrete convolution of indicator functions. A pair × bin measurement domain
+retains every declared sum bin, including zeros. The default sets are both `{0,1,2,3}`;
+their counts are `[1,2,3,4,3,2,1]`.
+
+Moving `(a,b)` to `(a+b,0)` produces coincidences without removing occurrences. Count
+earlier pairs with the same sum to derive a rank for each pair. These measured ranks
+then separate the coincident pairs into consecutive vertical slots.
+
+Each sum has `r(s)` representations, so it gives `r(s)^2` ordered pairs of
+representations. Grouping quadruples by their common sum proves
+
+\[
+\sum_s r_{A,B}(s)^2
+=\#\{(a,b,c,d)\in A\times B\times A\times B:a+b=c+d\}.
+\]
+
+For A=B this is the additive energy E(A). The notebook derives the same number
+from squared counts, a quadruple incidence, and unit cells in squares whose sides
+are the measured counts.
+
+## Narrative
+
+1. Build the pair arrangement and sweep its equal-sum diagonal lens.
+2. Read the representation-count profile as a convolution.
+3. Collapse equal sums, then stack their occurrences using measured predecessor ranks.
+   Undo both moves; the 84 frames retain the original pair identities.
+4. Build the measured squares and explain why their total is 44.
+5. Compare `{0,1,2,3}` with `{0,1,3,7}`. Both have 16 ordered pairs, but their
+   energies are 44 and 28, respectively.
+6. Choose `SUM` and follow a count contributor through its measurement-domain
+   occurrence to the original ordered pair.
+
+## Experiments and boundaries
+
+- Try gaps, negative integers, unequal set sizes, or an empty input set. Empty inputs
+  use the explicitly declared zero bin with count zero.
+- Unique input labels are required: repeated labels would define multiplicities,
+  not the set indicators used in the written formula.
+- Translate either set. Predict which features shift and which counts remain the same.
+- Ordinary integer sums have no wraparound. Modular folding and cyclic convolution
+  remain a follow-up with a different declared bin domain.
+- An energy value measures collisions; it does not uniquely identify a set.
+
+## What this teaches us about Kaleion
+
+Many-to-one placement is different from deleting duplicates. An ordering and a count
+of predecessors supply the slots needed for packing; counts alone do not. Explicit
+measurement domains supply missing zero bins. The dense pair-of-pairs construction
+is intentionally small and is not an efficient general convolution implementation.
+
+Exports in `build/notebooks/additive-structure/` include five offline HTML figures,
+three workspaces, `checks.json`, `sum-explanation.json`, and `sum-stacks.mp4`.
+The video uses the existing 2D raster adapter and the same captured frames as Plotly;
+it is not a screen recording of the interactive figure.
+
+For the broader mathematical setting, see [Yufei Zhao, Structure of Set Addition](https://yufeizhao.com/gtacbook/7.pdf).

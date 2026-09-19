@@ -58,7 +58,13 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 [Can line counts recover an image?](notebooks/05_finite_radon.ipynb) constructs a finite Radon transform from modular incidences. Thirty line counts recover a 5×5 image through binding and summation. Animate the measured fields lifting another arrangement, inspect a pixel's contributors, and see why an altered measurement invalidates exact division.
 
-The [lesson guide](docs/lessons/README.md) provides narrative and educational notes for all five notebooks. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for Young diagrams and conjugate partitions, convolution and additive energy, and Ehrhart lattice-point counting, together with the capabilities each investigation should exercise.
+[Turn a diagram; count its layers](notebooks/06_young_layers.ipynb) derives conjugate Young diagrams, turns the original cells through 3D, and packs them using measured prefix offsets. An ordering counterexample shows what layer counts forget.
+
+[How many ways can a sum occur?](notebooks/07_additive_structure.ipynb) introduces convolution through a moving equal-sum lens. Measured ranks separate coincident pairs into stacks, and measured squares reveal additive energy. It includes an actual 2D MP4 alongside interactive Plotly views.
+
+[Count lattice points as a triangle grows](notebooks/08_ehrhart_counts.ipynb) preserves parameter cases in a measured family, derives finite differences, and uses them to move independent probes. Interior counts explain reciprocity; a rational triangle introduces periodic polynomial formulas. Its video shows exact integer dilation cases.
+
+The [lesson guide](docs/lessons/README.md) provides educational notes for all eight notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve the original plans and remaining investigations.
 
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 

@@ -110,3 +110,64 @@ uses a fresh in-process IPython shell, not a live JupyterLab kernel. The noteboo
 retain normal Jupyter/nbconvert instructions for local use. Their mathematical proofs
 are written separately from finite tests. Both new 3D animations export to interactive
 HTML; no new 3D MP4 capability is claimed.
+
+## Young layers, additive structure, and Ehrhart counts
+
+- All seven code cells in each of `06_young_layers.ipynb`,
+  `07_additive_structure.ipynb`, and `08_ehrhart_counts.ipynb` run in order in
+  separate fresh IPython processes with captured rich outputs. The same local-kernel
+  socket limitation described above applies. All three executed notebooks convert to HTML.
+- Lesson 06 derives layers `[3,3,2,1,1]` from heights `[5,3,2,0]`, recovers those
+  heights by double conjugation, and derives offsets `[0,3,6,8,9]`. Its 84-frame
+  transpose/pack/undo animation packs ten distinct occurrences and restores them.
+  Transposed originals and a newly built conjugate agree in occupied coordinates,
+  while their occurrence identities remain distinct. The unordered counterexample
+  loses column order as stated. A separate full execution with `HEIGHTS=[]` also passes.
+- Lesson 07 derives representation counts `[1,2,3,4,3,2,1]`. Squared counts, a direct
+  equal-sum quadruple incidence, and measured square cells all give 44. The scattered
+  comparison gives 28 from the same 16 ordered pairs. Measured predecessor counts
+  drive the 84-frame collapse/stack/undo sequence without dropping coincident
+  occurrences. A separate full execution with an empty left set also passes,
+  including zero-count provenance and video export.
+- Lesson 08 gives closed counts `[1,3,6,10,15,21,28,36,45]`, first differences
+  `[2,3,4,5,6,7,8,9]`, and seven second differences equal to one. These derived
+  arrangements drive seven independent probes through 102 frames and back.
+  Reciprocity residuals vanish for n=1,...,8. Rational-triangle counts are
+  `[1,1,3,3,6,6,10,10,15]`; second differences with stride two are all one.
+  The scale-four explanation links a family occurrence to its measured case and
+  exactly 15 original point contributors, preserved on reopening.
+- `python3 -m unittest discover -s tests -v`: **55 tests passed**. Seven new tests
+  use independent counting oracles and invariants for empty/zero Young diagrams,
+  measured packing, lost order, captured spatial transposition, sum multiplicities
+  with negative values and reordered keys, equal-sum quadruples, reordered parameter
+  families, case provenance, boundary counts, and rational periodicity. The only
+  floating tolerance is `1e-12` for trigonometric endpoint roundoff; reverse samples
+  of the same captured path are compared exactly.
+- `python3 examples/discovery.py --out build/example-output`: reference outputs
+  unchanged. No runtime operation, dependency, or saved-format change was needed.
+- All eight source notebooks validate as nbformat 4, have cleared outputs, and have
+  syntactically valid Python cells. Local links in the notebooks, lesson guides, and
+  updated README files resolve. The shared `lesson_views.py` consumes captured
+  snapshots/frames and does not evaluate mathematical definitions.
+- Browser checks with external HTTP(S) requests blocked load all 14 new standalone
+  figures and all three converted notebooks. The converted documents have 4, 5, and
+  5 interactive figures, respectively; the last two each contain an embedded video.
+  Every equal-sum and integer-dilation frame has exactly the expected selected
+  coordinates and colors. All three motion sequences reach the checked endpoints,
+  restore starting positions and identity colors, and respond to Play/Pause/Restart.
+  The Young-diagram view retains a changed 3D camera across animation frames.
+- Screenshots at 1100 and 700 pixels were checked for representative diagrams,
+  counts, energy squares, comparison profiles, periodic differences, and motion.
+  Crowded subplot titles were shortened and the energy comparison uses a shared
+  vertical scale. Both MP4 files decode at 960×640: `sum-stacks.mp4` has 84 frames
+  at 24 fps (3.5 seconds); `integer-dilations.mp4` has 72 frames at 12 fps (6 seconds).
+  Representative decoded frames were inspected. The latter holds nine exact cases.
+- Pausing each active animation produced the previously documented Plotly 6.9.0
+  `undefined` cancellation event. Playback stopped, Restart worked, and no other
+  page errors occurred. The events are recorded rather than suppressed.
+
+These checks concern finite examples and presentation. The notebooks provide separate
+elementary arguments for their general identities and distinguish the broader Ehrhart
+theorems from the triangle case proved here. Parameter-family contributor inspection
+currently retains named measured-case roots because concatenation does not provide
+a merged reduction-metadata query; the review notes document that limitation.
