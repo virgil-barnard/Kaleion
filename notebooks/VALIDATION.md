@@ -45,3 +45,15 @@ coprimality excludes shared interior lattice points. For arbitrary positive inte
 parameters greater than one, inclusion–exclusion gives the correction
 `gcd(a, b) - 1`. The notebook distinguishes this deduction from finite assertions
 and does not claim an automated proof certificate.
+
+## Three incidences in a box
+
+- All 11 code cells in `03_three_incidence_box.ipynb` execute in order in a fresh IPython process, under the same local-kernel socket limitation described above. The converted notebook has four interactive figures.
+- The `(11, 7, 5)` case gives volumes `[86, 80, 74]`, covering 240 distinct occurrences with no pairwise overlap. Captured cross-section areas agree with products of floor quotients, including zero sections.
+- The `(6, 4, 5)` case has joint gcd 1 but a pairwise gcd of 2: the first two incidences share `(3, 2, 1)` and `(3, 2, 2)`, and `23 + 19 + 20 - 2 = 60`.
+- The `(4, 6, 8)` case exercises a triple intersection: `118 - 4 - 8 - 2 + 1 = 105`.
+- `python3 -m unittest discover -s tests -v`: 42 tests pass. The new construction tests compare integer cross-product predicates with independent exact rational maxima, check cross-section products and contributors, and exercise pair/triple inclusion–exclusion, including the smallest box.
+- `python3 examples/discovery.py --out build/example-output`: reference results unchanged.
+- Browser checks with HTTP(S) requests blocked loaded the four standalone exports and the converted notebook. All/X/Y/Z/Shared controls show the expected cell counts. All ten x-slices match the captured X areas; separate data checks verify all y- and z-slices too.
+- The 62-frame voxel motion retains 240 cells and 2880 mesh triangles, fills 240 distinct integer centers at its packed endpoint, restores its initial coordinates exactly, and retains a changed camera orientation across frames. No page errors occurred during these checks.
+- Solid, isolated-piece, overlap, and motion screenshots were visually inspected, including the solid view at 680 pixels wide. Notebook source validates with cleared outputs. The written largest-coordinate argument establishes the general identity for pairwise coprime integers; these numerical and rendering checks concern finite cases.

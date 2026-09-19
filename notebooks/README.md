@@ -4,6 +4,8 @@ Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is a
 
 [02_floor_sum_proof.ipynb](02_floor_sum_proof.ipynb) is a self-contained construction page for reciprocal floor sums. It places readable notation beside two incidences on a shared integer rectangle, checks their grouped counts and union/intersection, and animates packing and undo. The written argument proves the identity for all positive coprime parameters greater than one; exact finite examples also expose the `gcd(a, b) - 1` overlap correction. "Area" here counts unit cells, with explicit integer summation bounds. This notebook uses the existing symbolic Python API and does not introduce a text-language parser or proof assistant.
 
+[03_three_incidence_box.ipynb](03_three_incidence_box.ipynb) constructs the three-dimensional analogue. The incidence with the greatest normalized coordinate owns each point of a shared integer box. For pairwise coprime parameters, rectangular cross-sections produce products of two floor quotients and the three volumes add to the box volume. Interactive voxel views, exact slice controls, and recorded packing/undo make the three pieces inspectable. Counterexamples distinguish pairwise coprimality from merely having a joint gcd of 1 and demonstrate triple-intersection accounting.
+
 ## Install and launch
 
 From the repository root on WSL/Linux/macOS:
@@ -53,6 +55,8 @@ GitHub's notebook preview does not run interactive JavaScript. Run the notebook 
 
 The second notebook writes to `build/notebooks/floor-sum/`: `partition.html`, `packing.html` (for coprime parameters), and `noncoprime.html` are standalone interactive views; `floor-sum-workspace.json` preserves the definitions, results, and capture; `floor-sum-cases.json` records the finite checks. Its packing animation uses the same captured transition for forward playback and undo.
 
+The third notebook writes to `build/notebooks/three-incidences/`: `solids.html`, `sections.html`, `packing.html`, and `overlap.html` are standalone Plotly views; workspace JSON files retain the constructions, captures, and packing history; `cases.json` records the checks and `preview.json` contains evaluated centers and membership codes. Section and packing views are produced for disjoint cases. The voxel helper is local to the notebook and consumes evaluated snapshots/frames. It displays every cell and limits the chosen box to 1500 occurrences; use small parameters for smooth 3D playback. `SLICE_AXIS` chooses `x`, `y`, or `z` for the section view. Mesh gaps are styling, while volume counts unit cells.
+
 ## Execute without the UI
 
 With the environment activated and the kernel installed as above, run from the repository root:
@@ -62,6 +66,8 @@ python3 -m jupyter nbconvert --to notebook --execute notebooks/01_discovery_work
 python3 -m jupyter nbconvert --to html build/notebooks/01_discovery_workbench.executed.ipynb --output-dir build/notebooks
 python3 -m jupyter nbconvert --to notebook --execute notebooks/02_floor_sum_proof.ipynb --output-dir build/notebooks --output 02_floor_sum_proof.executed.ipynb --ExecutePreprocessor.timeout=180
 python3 -m jupyter nbconvert --to html build/notebooks/02_floor_sum_proof.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/03_three_incidence_box.ipynb --output-dir build/notebooks --output 03_three_incidence_box.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/03_three_incidence_box.executed.ipynb --output-dir build/notebooks
 ```
 
 The committed source notebooks have no outputs. Execution creates populated copies with plots and, in the first notebook, embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.

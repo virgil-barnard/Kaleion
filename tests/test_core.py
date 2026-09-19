@@ -1,4 +1,6 @@
 import json
+from fractions import Fraction
+from itertools import product
 from math import gcd
 import unittest
 import numpy as np
@@ -44,6 +46,23 @@ def quotient_fixture():
     gathered = remainder.items.gather(addresses, axis="i").arrange(F.j, -F.i)
     rolled = gathered.roll(axis="j", shift=-counts.bind(on=F.i))
     return remainder, region, lens, counts, rolled
+
+
+def box_incidence_fixture():
+    a, b, c = param("a"), param("b"), param("c")
+    box = (Collection.grid(a - 1, b - 1, c - 1, values=1)
+           .annotate(u=F.i + 1, v=F.j + 1, w=F.k + 1)
+           .arrange(F.u, F.v, F.w))
+    x = box.where((a * F.v <= b * F.u) & (a * F.w <= c * F.u))
+    y = box.where((b * F.u <= a * F.v) & (b * F.w <= c * F.v))
+    z = box.where((c * F.u <= a * F.w) & (c * F.v <= b * F.w))
+    return {
+        "D": box, "X": x, "Y": y, "Z": z,
+        "x_sections": x.count(by=F.u), "y_sections": y.count(by=F.v),
+        "z_sections": z.count(by=F.w),
+        "union": x | y | z, "XY": x & y, "XZ": x & z,
+        "YZ": y & z, "XYZ": x & y & z,
+    }
 
 
 class SymbolicTests(unittest.TestCase):
@@ -139,6 +158,55 @@ class SymbolicTests(unittest.TestCase):
 
 
 class DiscoveryTests(unittest.TestCase):
+    def test_three_incidence_box_has_floor_product_sections(self):
+        roots = box_incidence_fixture()
+        for extents in [(11, 7, 5), (2, 3, 5), (3, 5, 7)]:
+            with self.subTest(extents=extents):
+                state = Workspace(roots, dict(zip("abc", extents))).state
+                self.assertFalse(state.errors)
+                r = state.results
+                points = list(product(*(range(1, v) for v in extents)))
+                for axis, name in enumerate("XYZ"):
+                    expected_mask = []
+                    for p in points:
+                        ratios = [Fraction(p[j], extents[j]) for j in range(3)]
+                        expected_mask.append(ratios[axis] == max(ratios))
+                    np.testing.assert_array_equal(r[name].mask, expected_mask)
+                    self.assertEqual(r[name].source.ids, r["D"].ids)
+                    others = [extents[j] for j in range(3) if j != axis]
+                    areas = [(others[0] * t // extents[axis]) * (others[1] * t // extents[axis])
+                             for t in range(1, extents[axis])]
+                    sections = r[name.lower() + "_sections"]
+                    self.assertEqual(sections.values.tolist(), areas)
+                    self.assertEqual(sum(areas), r[name].cardinality)
+                    for key, area in enumerate(areas, start=1):
+                        self.assertEqual(len(sections.contributor_ids(key)), area)
+                membership_count = sum(r[name].mask.astype(int) for name in "XYZ")
+                np.testing.assert_array_equal(membership_count, np.ones(len(points), dtype=int))
+                self.assertEqual(r["union"].cardinality, len(points))
+
+    def test_three_incidence_pair_and_triple_overlap_accounting(self):
+        roots = box_incidence_fixture()
+        cases = [((6, 4, 5), [23, 19, 20], [2, 0, 0], 0),
+                 ((4, 6, 8), [38, 38, 42], [4, 8, 2], 1),
+                 ((2, 2, 2), [1, 1, 1], [1, 1, 1], 1)]
+        for extents, volumes, pairs, triple in cases:
+            with self.subTest(extents=extents):
+                state = Workspace(roots, dict(zip("abc", extents))).state
+                self.assertFalse(state.errors)
+                r = state.results
+                self.assertEqual([r[n].cardinality for n in "XYZ"], volumes)
+                self.assertEqual([r[n].cardinality for n in ("XY", "XZ", "YZ")], pairs)
+                self.assertEqual(r["XYZ"].cardinality, triple)
+                self.assertTrue(r["union"].mask.all())
+                self.assertEqual(sum(volumes) - sum(pairs) + triple, len(r["D"]))
+                if extents == (6, 4, 5):
+                    self.assertEqual(gcd(*extents), 1)
+                    overlap = r["XY"]
+                    shared = list(zip(*(overlap.source.fields[k][overlap.mask].tolist()
+                                        for k in ("u", "v", "w"))))
+                    self.assertEqual(shared, [(3, 2, 1), (3, 2, 2)])
+
     def test_floor_sum_incidences_cover_with_exact_diagonal_overlap(self):
         a, b = param("a"), param("b")
         rectangle = (
