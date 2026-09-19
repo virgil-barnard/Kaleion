@@ -33,6 +33,7 @@ Kaleion is an experimental mathematics workspace. Read `README.md` and the relev
 - When relevant, exercise empty domains and fibers, zero counts, repeated gathers, ambiguous/missing keys, integers beyond 64-bit range, parameter-case isolation, provenance, and undo/redo or JSON round trips. Choose cases affected by the change rather than duplicating the whole suite.
 - Do not assert freshly generated UUIDs or capture timestamps as fixed constants. Test identity preservation within an investigation or across save/load instead.
 - Unit tests must run offline without a browser, GPU, or external service. Keep future backend/browser checks separately identifiable.
+- Notebook examples must run in order from a fresh kernel. Keep construction code visible and commit cleared outputs. Plotly viewers consume snapshots/frames; verify animations and video export separately from core unit tests. See `notebooks/README.md` for the execution command.
 
 ## Verification and pull requests
 

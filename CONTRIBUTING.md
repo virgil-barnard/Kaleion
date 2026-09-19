@@ -44,4 +44,4 @@ Explain the problem, the resulting behavior, the checks run, and any remaining l
 
 The initial workflows and design direction come from Virgil Barnard's mathematical investigations. The v0.1 Python core was developed collaboratively with OpenAI Codex. Future contributions are recorded in commits and pull requests.
 
-The next planned feature is a small visual replay viewer for captured snapshots and motion. It should exercise these contracts before expanding the authoring interface.
+The [notebook walkthrough](notebooks/README.md) is the initial viewer for captured snapshots and motion. Notebook changes should execute from a fresh kernel in order; use the documented headless command and inspect affected plots or videos. Keep generated outputs out of the committed notebook. Plotly tests skip cleanly when the optional dependencies are absent; install `.[notebooks]` when working on those adapters. The video encoder check is a separate smoke test, not a dependency of the offline core unit suite.

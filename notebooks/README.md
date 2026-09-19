@@ -1,0 +1,71 @@
+# Kaleion notebooks
+
+Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is an editable walkthrough of the module, with interactive 2D/3D plots, parameter-case scrubbers, recorded motion and undo, and two embedded MP4 videos. It uses finite constructions and no external datasets.
+
+## Install and launch
+
+From the repository root on WSL/Linux/macOS:
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e '.[notebooks]'
+python3 -m ipykernel install --sys-prefix --name kaleion --display-name "Kaleion"
+python3 -m jupyterlab notebooks/01_discovery_workbench.ipynb
+```
+
+Reuse an existing environment if already installed. Choose the **Kaleion** kernel, then **Restart Kernel and Run All Cells**. The first cell prints the kernel executable so you can confirm it belongs to `.venv`. In VS Code, open the repository in WSL, open the notebook, and choose that environment or the Kaleion kernel. If WSL does not open a browser automatically, copy JupyterLab's local URL from the terminal into your Windows browser.
+
+Notebook dependencies are optional: `python3 -m pip install -e .` still installs only the core. Installing `.[notebooks]` adds JupyterLab, the kernel/conversion tools, Plotly, Pillow, and imageio-ffmpeg. Plotly is imported only when its adapter is used. The FFmpeg wheels include an encoder on common platforms; if yours does not, install FFmpeg and point `IMAGEIO_FFMPEG_EXE` to its executable.
+
+## What to try
+
+| Section | Capability |
+| --- | --- |
+| Alternative placements | The same integer occurrences on a line, snake, and 3D helix |
+| Lenses | Rules on values, indices, geometry, and moving spatial windows |
+| Quotient region | Cardinalities become a new arrangement, with retained zero groups and contributors |
+| Remainder table | Gather and keyed cyclic shifts driven by those cardinalities |
+| Scattered 3D cloud | One driver changes either coordinates or integer contents |
+| Rectangular spiral | Structural cycle-end incidence, exact parameter cases, retained hits |
+| Tensor operations | Gather, substitution, tile, padding, Young diagram, and 3D grid incidence |
+| Captures and replay | Undo follows a recorded path; workspace JSON preserves observations |
+
+Edit the parameter or construction cells, then rerun downstream cells. Plot controls change presentation only. They do not implicitly reevaluate the kernel. Figure hover labels preserve exact integers as strings, including values beyond JavaScript's safe integer range. Floating coordinates still have ordinary numerical limits.
+
+## Animations and videos
+
+`snapshot_figure`, `animation_figure`, and `transition_figure` live in `kaleion.viewers.plotly`. They accept evaluated results, hold axes fixed across playback, and show exact before/after labels rather than fractional integers. The 3D camera remains interactive. An incidence's false points stay visible; an evaluation failure remains visibly identified if a motion retains old geometry.
+
+Exact sweep cases are discrete. Smooth paths are sampled from Kaleion's recorded transitions. Plotly is not asked to infer a construction between two cases. Large scenes or many 3D frames can play below the requested rate; this preliminary viewer targets small investigations rather than streaming or GPU-scale data. `connect=True` explicitly draws storage order and should only be used when that order represents the path you want to see.
+
+`kaleion.viewers.video.write_mp4` is a separate Pillow/FFmpeg raster adapter for 1D/2D samples. It writes an H.264 MP4, then checks the encoded frame count. It needs no browser or Kaleido, and consumes the same snapshot/frame inputs as the Plotly adapter. It is not a pixel-identical recording of Plotly. For 3D, use the interactive HTML export or explicitly project an arrangement into 2D before capturing its motion.
+
+Run All writes these generated outputs into `build/notebooks/`:
+
+- `roll-and-undo.mp4`, `spiral-cases.mp4`: videos embedded into the executed notebook.
+- `roll-and-undo.html`, `spiral.html`, `cloud-3d.html`: standalone interactive views with Plotly.js embedded and no CDN dependency.
+- `investigation.json`, `construction-graph.json`: captured state/history and symbolic definitions.
+
+GitHub's notebook preview does not run interactive JavaScript. Run the notebook locally or open its generated HTML views in a browser. Newly executed local cells are trusted by Jupyter; only trust saved notebook outputs if you trust their source. Clearing outputs before committing keeps embedded Plotly.js, videos, generated IDs, and execution counts out of reviews.
+
+## Execute without the UI
+
+With the environment activated and the kernel installed as above, run from the repository root:
+
+```sh
+python3 -m jupyter nbconvert --to notebook --execute notebooks/01_discovery_workbench.ipynb --output-dir build/notebooks --output 01_discovery_workbench.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/01_discovery_workbench.executed.ipynb --output-dir build/notebooks
+```
+
+The committed source notebook has no outputs. Execution creates a populated copy, including its plots and embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.
+
+For a quick separate encoder check:
+
+```sh
+python3 notebooks/check_video.py
+```
+
+Core and optional Plotly unit tests remain under `tests/` and run with `python3 -m unittest discover -s tests -v`. The notebook itself exercises the end-to-end examples; no web server or browser is needed for headless execution or the encoder check.
+
+References: [Plotly animation frames](https://plotly.com/python/animations/), [interactive HTML export](https://plotly.com/python/interactive-html-export/), [renderer selection](https://plotly.com/python/renderers/), [imageio-ffmpeg](https://github.com/imageio/imageio-ffmpeg).
