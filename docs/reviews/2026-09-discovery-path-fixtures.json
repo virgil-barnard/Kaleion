@@ -1,0 +1,206 @@
+{
+  "status": "preliminary finite feasibility checks; proposed animations not implemented",
+  "base_revision": "71afa96a5afaf1a48bd19dc09ad0926d268ff307",
+  "method": "Independent Python binary polynomial arithmetic, finite enumeration, and exact GF(2) row reduction; the 2048-entry signed code/dual table was also evaluated with Kaleion.",
+  "cyclic_code": {
+    "G_rows_low_degree_first": [
+      [
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1
+      ]
+    ],
+    "H_rows_low_degree_first": [
+      [
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1
+      ]
+    ],
+    "weights": {
+      "0": 1,
+      "3": 7,
+      "4": 7,
+      "7": 1
+    },
+    "dual_weights": {
+      "0": 1,
+      "4": 7
+    },
+    "coverage": 128,
+    "fano_lines": 7,
+    "signed_table_extent": 2048,
+    "dual_survivors": 8,
+    "bad_stencil_bits": 15,
+    "cyclic_closure_witness": {
+      "word": 68,
+      "shifted_word": 9
+    },
+    "unreversed_quotient_odd_row_pair": [
+      0,
+      2
+    ],
+    "nonlinear_removed_word": 11,
+    "nonlinear_signed_sums": [
+      -1,
+      1,
+      15
+    ],
+    "macwilliams_coefficients_before_division": [
+      16,
+      0,
+      0,
+      0,
+      112,
+      0,
+      0,
+      0
+    ]
+  },
+  "reed_solomon": {
+    "q": 7,
+    "n": 7,
+    "k": 3,
+    "codewords": 343,
+    "minimum_distance": 5,
+    "received": [
+      1,
+      1,
+      3,
+      6,
+      1,
+      5,
+      2
+    ],
+    "unique_candidate": [
+      1,
+      2,
+      3
+    ],
+    "E": [
+      5,
+      1,
+      1
+    ],
+    "Q": [
+      5,
+      4,
+      4,
+      5,
+      3
+    ],
+    "three_error_counterexample": {
+      "received": [
+        1,
+        6,
+        5,
+        5,
+        6,
+        2,
+        2
+      ],
+      "true_coefficients": [
+        1,
+        2,
+        3
+      ],
+      "wrong_coefficients": [
+        1,
+        1,
+        4
+      ],
+      "distance_from_true": 3,
+      "distance_from_wrong": 2
+    }
+  },
+  "torus": {
+    "vertices": 9,
+    "edges": 18,
+    "faces": 9,
+    "boundary_ranks": [
+      8,
+      8
+    ],
+    "homology_dimension": 2,
+    "closed_nonboundary_loop": true
+  },
+  "rsk": {
+    "permutation": [
+      4,
+      1,
+      7,
+      3,
+      8,
+      2,
+      6,
+      5
+    ],
+    "shape": [
+      3,
+      3,
+      2
+    ],
+    "lis": 3,
+    "two_chain_max": 6
+  },
+  "sandpile": {
+    "graph": "K4 with one sink",
+    "stable_states": 27,
+    "recurrent_states": 16,
+    "spanning_trees": 16,
+    "schedule_independence_cases": 343
+  }
+}
