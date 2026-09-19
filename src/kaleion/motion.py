@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from types import MappingProxyType
+from typing import Mapping
 import numpy as np
 
 from .ir import Expr, expression, param, F
-from .model import Snapshot, IncidenceSnapshot, Ref
-from .evaluate import evaluate_expression
+from .model import IncidenceSnapshot
+from .expressions import evaluate_expression
 from .tensor import readonly, coordinates
 
 
@@ -16,6 +18,10 @@ class Motion:
     """A path reads sx/sy/sz, tx/ty/tz and parameter time in [0,1]."""
 
     path: tuple[Expr, ...] | None = None
+
+    def __post_init__(self):
+        if self.path is not None:
+            object.__setattr__(self, "path", tuple(map(expression, self.path)))
 
     @classmethod
     def arc(cls, *, height=1.0, axis=1, dimension=2):
@@ -82,15 +88,65 @@ def _items(value):
     return value.source if isinstance(value, IncidenceSnapshot) else value
 
 
+def _membership(result, ids):
+    if not isinstance(result, IncidenceSnapshot):
+        return (None,) * len(ids)
+    mask = dict(zip(result.source.ids, map(bool, result.mask)))
+    return tuple(mask.get(oid) for oid in ids)
+
+
+@dataclass(frozen=True, eq=False)
+class _Tracks:
+    """Captured correspondence; only the path's progress changes during playback."""
+
+    start: np.ndarray
+    end: np.ndarray
+    before_ids: tuple
+    after_ids: tuple
+    values_before: tuple
+    values_after: tuple
+    opacity_before: np.ndarray
+    opacity_after: np.ndarray
+    status: str
+    matched_before: tuple
+    matched_after: tuple
+
+    def __post_init__(self):
+        for name in ("start", "end", "opacity_before", "opacity_after"):
+            object.__setattr__(self, name, readonly(getattr(self, name), float))
+
+    def frame(self, motion, fraction):
+        return Frame(
+            motion.positions(self.start, self.end, fraction),
+            (1 - fraction) * self.opacity_before + fraction * self.opacity_after,
+            self.before_ids,
+            self.after_ids,
+            self.values_before,
+            self.values_after,
+            fraction,
+            self.status,
+            self.matched_before,
+            self.matched_after,
+        )
+
+
 @dataclass(frozen=True, eq=False)
 class Transition:
+    """Captured endpoints and paths, with correspondence prepared once per root."""
+
     before: object
     after: object
-    motions: dict
+    motions: Mapping[str, Motion]
     backwards: bool = False
+    _tracks_cache: dict = field(default_factory=dict, init=False, repr=False)
+
+    def __post_init__(self):
+        object.__setattr__(self, "motions", MappingProxyType(dict(self.motions)))
 
     def reverse(self):
-        return Transition(self.before, self.after, self.motions, not self.backwards)
+        reversed_path = Transition(self.before, self.after, self.motions, not self.backwards)
+        object.__setattr__(reversed_path, "_tracks_cache", self._tracks_cache)
+        return reversed_path
 
     @property
     def start(self):
@@ -101,6 +157,18 @@ class Transition:
         return self.before if self.backwards else self.after
 
     def _tracks(self, name):
+        if name not in self._tracks_cache:
+            self._tracks_cache[name] = self._prepare_tracks(name)
+        return self._tracks_cache[name]
+
+    def _prepare_tracks(self, name):
+        def capture(start, end, bi, ai, bv, av, alpha0, alpha1, status):
+            return _Tracks(
+                start, end, bi, ai, bv, av, alpha0, alpha1, status,
+                _membership(self.before.results.get(name), bi),
+                _membership(self.after.results.get(name), ai),
+            )
+
         old = _items(self.before.results.get(name))
         new = _items(self.after.results.get(name))
         failed = name in self.after.errors or name in self.before.errors
@@ -108,7 +176,7 @@ class Transition:
             kept = old if old is not None else new
             if kept is None or kept.positions is None:
                 return None
-            return (
+            return capture(
                 kept.positions,
                 kept.positions,
                 tuple(kept.ids),
@@ -132,21 +200,33 @@ class Transition:
             )
         lookup = {} if old is None else {oid: i for i, oid in enumerate(old.ids)}
         captured = {**self.before.evaluated, **self.after.evaluated}
+        indexes, resolved = {}, {}
 
-        def ancestor(ref, seen):
-            if old is None or ref is None:
-                return None
-            if ref.node == old.node and ref.occurrence in lookup:
-                return lookup[ref.occurrence]
-            token = (ref.node, ref.occurrence)
-            if token in seen:
-                return None
-            seen.add(token)
-            snap = _items(captured.get(ref.node))
-            if snap is None or ref.occurrence not in snap.ids:
-                return None
-            idx = snap.ids.index(ref.occurrence)
-            return ancestor(snap.motion_parents[idx], seen)
+        def ancestor(ref):
+            trail, seen, result = [], set(), None
+            while old is not None and ref is not None:
+                if ref.node == old.node and ref.occurrence in lookup:
+                    result = lookup[ref.occurrence]
+                    break
+                if ref in resolved:
+                    result = resolved[ref]
+                    break
+                if ref in seen:
+                    break
+                seen.add(ref)
+                trail.append(ref)
+                snap = _items(captured.get(ref.node))
+                if snap is None:
+                    break
+                if ref.node not in indexes:
+                    indexes[ref.node] = {oid: i for i, oid in enumerate(snap.ids)}
+                idx = indexes[ref.node].get(ref.occurrence)
+                if idx is None:
+                    break
+                ref = snap.motion_parents[idx]
+            for ref in trail:
+                resolved[ref] = result
+            return result
 
         starts, ends, bi, ai, bv, av, alpha0, alpha1, used = (
             [],
@@ -163,7 +243,7 @@ class Transition:
             for j, oid in enumerate(new.ids):
                 i = lookup.get(oid)
                 if i is None:
-                    i = ancestor(new.motion_parents[j], set())
+                    i = ancestor(new.motion_parents[j])
                 ends.append(new.positions[j])
                 ai.append(oid)
                 av.append(new.values[j])
@@ -191,7 +271,7 @@ class Transition:
                 av.append(None)
                 alpha0.append(1.0)
                 alpha1.append(0.0)
-        return (
+        return capture(
             np.asarray(starts, float).reshape(-1, dimension),
             np.asarray(ends, float).reshape(-1, dimension),
             tuple(bi),
@@ -208,7 +288,7 @@ class Transition:
             tracks = self._tracks(name)
             if tracks is None:
                 continue
-            start, end, *_ = tracks
+            start, end = tracks.start, tracks.end
             motion = self.motions.get(name, Motion())
             if not np.allclose(
                 motion.positions(start, end, 0), start, atol=1e-12, rtol=0
@@ -226,28 +306,7 @@ class Transition:
         tracks = self._tracks(name)
         if tracks is None:
             return None
-        start, end, bi, ai, bv, av, a0, a1, status = tracks
         motion = self.motions.get(name, Motion())
-        positions = motion.positions(start, end, q)
-
-        def membership(state, ids):
-            result = state.results.get(name)
-            if not isinstance(result, IncidenceSnapshot):
-                return tuple(None for _ in ids)
-            mask = dict(zip(result.source.ids, map(bool, result.mask)))
-            return tuple(mask.get(oid) for oid in ids)
-
         # For a duplicated gather, q=0 may contain coincident tracks. They are
         # display correspondences, not additional mathematical occurrences.
-        return Frame(
-            positions,
-            (1 - q) * a0 + q * a1,
-            bi,
-            ai,
-            bv,
-            av,
-            q,
-            status,
-            membership(self.before, bi),
-            membership(self.after, ai),
-        )
+        return tracks.frame(motion, q)

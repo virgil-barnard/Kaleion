@@ -8,6 +8,7 @@ The module boundary is chosen around a hidden decision: expression representatio
 | --- | --- | --- |
 | `ir.py` | Immutable expression/operation definitions, definition identity, graph encoding | Versioned definitions with explicit dependencies; no rendering or numerical execution |
 | `api.py` | Typed construction vocabulary and operator syntax | Pure builders returning new definitions |
+| `expressions.py` | Scalar/field interpretation, including explicit driver reads | Context, parameters, and an injected resolver produce a value or an error; no graph scheduling |
 | `tensor.py` | Exact integer rules, array validation, elementary numerical kernels | Checked numerical conventions, gathering, grouping, and segment reduction |
 | `model.py` | Evaluated data, occurrence/source identity, lineage, snapshot encoding | Immutable finite snapshots independent of reevaluation |
 | `evaluate.py` | CPU evaluation, dependency ordering, parameter cases, bounded work | A result or an explicit error for each requested root |
@@ -19,11 +20,10 @@ The module boundary is chosen around a hidden decision: expression representatio
 The evaluator currently uses NumPy directly as well as the kernel helpers. There is no interchangeable backend interface pretending to be complete. A future GPU evaluator can consume the same operation definitions while implementing supported operations and numerical types. Some reference algorithms—key factorization, lineage assembly, and the spiral scan—are Python control flow today.
 
 The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) audits these boundaries
-against lessons 01–08 and proposes staged changes. Its proposed modules and recipes
-are not implemented contracts. The first priority is a confirmed composition gap:
-an incidence wrapped by `with_params` evaluates, but its current Boolean-combination
-and selection builders assume a direct incidence node. The plan records a reproduction
-and the scoped-universe contract the repair must preserve.
+against lessons 01–08. Its first delivered changes centralize incidence-universe
+semantics in `ir.py`, separate field interpretation from evaluation sessions, group
+contributors in one pass, and prepare motion correspondence once. Later index/group
+modules, buffer ownership changes, and authoring recipes remain planned.
 
 ## Four different things an arrangement contains
 
@@ -75,6 +75,11 @@ For grouping key g, mask m, and integer values v, the implemented reductions are
 
 The output key domain comes from the source before masking. If the grouping consists of retained axes of a declared rectangular domain, use their Cartesian domain even when an eliminated axis is empty. For other expressions, use observed source keys in first-appearance order. A total reduction returns one item, with sum/count zero on an empty universe. `any` returns an integer indicator 0 or 1.
 
+Contributor assembly visits each selected occurrence once and freezes one ordered
+bucket per output key: O(M + K) work for M selected occurrences and K groups.
+Zero and negative weights still have contributors; their arithmetic contribution
+does not determine whether they belonged to the incidence.
+
 Counts here measure occurrences. Distinct-source or geometric-area measures must be expressed separately; they are not implicit aliases for count. The graph, key, relation, source extent, and contributor identities remain available for later analytical statements.
 
 NumPy's [take](https://numpy.org/doc/stable/reference/generated/numpy.take.html) and [ufunc.at](https://numpy.org/doc/stable/reference/generated/numpy.ufunc.at.html) provide useful implementation primitives. Kaleion validates its own address rules before calling a kernel. Repeated-index accumulation uses `add.at`, rather than buffered indexed assignment that could lose repeated contributions.
@@ -112,6 +117,20 @@ Bindings can read coordinates as well as labels. Constructor bindings use explic
 
 Definitions are immutable. Calling `.evaluate()` creates a bounded evaluator. Each root resolves its dependencies, and one evaluation invocation caches common nodes. Local parameter cases get distinct runtime identities and separate caches: evaluating one graph at n=4 must not substitute its result into a sibling evaluated at n=2.
 
+`Incidence.universe` exposes its collection or arrangement definition with the same
+nested parameter cases. Selection derives its result kind from that universe and
+retains selected identities and placement. Boolean operations compare declared
+universe definitions, including case order and binding expressions. They do not infer
+equivalence from equal evaluated arrays, or discard apparently unused bindings.
+
+Binding applies to the whole wrapped definition. For example,
+`A.where(F.value < param("n")).with_params(n=4)` evaluates the predicate with n=4;
+`A.with_params(n=4).where(F.value < param("n"))` evaluates the new predicate with the
+surrounding n. Those incidences can share a declared universe while retaining
+different predicate scopes. Composition evaluates both predicates in their own
+scopes, then combines their masks. Failed predicates remain errors, even if a
+different predicate is true everywhere.
+
 The execution record contains operation status, runtime case ID, parameters, finite extent, and a catalog of relevant primitive families. This is an operation-level trace, not kernel instrumentation or an autodiff tape.
 
 An invalid rule marks that branch failed. An unrelated root can still succeed. Workspace edits record failed definitions so that they can be corrected or undone. A presentation may retain the previous geometry, marked as retained after failure. Missing or failed data never becomes a zero count automatically.
@@ -126,11 +145,26 @@ For a forward transition path P(t), undo samples P(1−t). It restores the prior
 
 Correspondence is built from identity first, then explicit motion lineage. A duplicated gather can split into several tracks; omitted items fade. Reduction contributors do not imply a one-to-one trajectory. Changes of dimension require an explicit common projection/embedding before a motion is constructed.
 
+Each captured transition prepares correspondence and membership once per displayed
+root, during validation or first sampling. Occurrence lookup indexes and memoized
+ancestry avoid repeated linear searches. Prepared tracks are private, immutable
+data shared with the reversed transition; playback changes only progress along the
+path. The transition owns a frozen copy of the motion mapping and each path's
+expression sequence. This retains O(T) track data for T display correspondences
+per root until the transition is released.
+
 Frame labels and incidence masks retain original before/after values. A reversed frame carries the same endpoint pairs and a reversed fraction. Presentation opacity may vary continuously, but mathematical membership remains Boolean. The frame type cannot be passed into a construction as an arrangement.
 
 Custom motion paths use captured start/end coordinates and a `time` parameter. They must agree with the endpoints. External drivers are evaluated in the construction before motion is captured, so later driver edits cannot change an old undo path. Endpoint validation is not a proof that an arbitrary custom path is defined at every intermediate time; a sampling failure is a presentation error.
 
 JSON persistence retains snapshots, histories, pending redo, motion expressions, observations, and definitions. Reopening a capture does not require an evaluator or source recomputation. The first version intentionally stores materialized states; compression, structural sharing on disk, and incremental checkpointing can replace that strategy without changing the command contract.
+
+Schema 1 and legacy Icarus envelopes remain readable. Existing direct-incidence
+Boolean constructions retain their definitions. Compositions that preserve nested
+scope use the new `incidence_boolean` operation, version 1 (`and`, `or`, or `not`).
+Older evaluators cannot execute that new operation; its captured results remain
+ordinary schema-1 snapshots. Prepared motion tracks are not serialized: reopening
+reconstructs them from retained snapshots, without evaluating source definitions.
 
 ## Extension points to exercise next
 

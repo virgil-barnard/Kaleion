@@ -2,6 +2,36 @@
 
 Executed September 19, 2026 on Python 3.12.14 with NumPy 2.3.5. The tests exercise the Python implementation; prior browser-prototype checks are recorded separately in the architecture document.
 
+## First core refinement
+
+- **65 tests pass**, including ten new regressions for scoped Boolean incidences,
+  typed selection, nested/scalar bindings, empty domains, failure isolation, graph
+  and captured-history round trips, ordered contributors with signed weights,
+  prepared/reversed motion, and the independent field interpreter.
+- `python3 examples/discovery.py --out build/example-output` retains all reference
+  values. The committed baseline workspace reopens, and reevaluating its saved
+  definitions reproduces every serialized result exactly. Legacy Icarus import and
+  pending-redo tests remain in the suite.
+- All seven README Python blocks run in sequence. All eight notebooks execute
+  their 77 code cells in fresh IPython processes, including MP4 exports and saved
+  investigations. Source notebooks retain cleared outputs. See the host limitation
+  and playback results in [notebooks/VALIDATION.md](notebooks/VALIDATION.md).
+- The [refactor diagnostic](docs/reviews/2026-09-core-refactor-probes.json) records
+  the working tree's core-source digest and its base revision. At 2,000 one-item
+  groups, median evaluation time is about 0.027 s, versus about 0.50 s in the
+  [baseline](docs/reviews/2026-09-core-design-probes.json). Contributor assembly is
+  now one pass, with exact contributor ordering and zero groups retained.
+- The captured 200-item transition prepares correspondence once during validation;
+  21 forward and 21 reverse samples perform no additional preparation. Motion
+  regressions also check duplicate gathers through several ancestors, fades,
+  incidence membership, frozen path inputs, and sampling without source execution.
+
+The timing comparison describes this finite fixture on one host. Snapshot buffer
+copying and per-target driver-alignment evidence remain separate work. Prepared
+tracks add retained presentation data per transition; they are rebuilt from saved
+snapshots on reopening. Schema-1 and legacy imports remain supported; executing
+the new `incidence_boolean` operation requires the updated evaluator.
+
 ## Reproduce
 
 ```sh
@@ -12,7 +42,7 @@ python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
 
-Observed: **30 tests passed**, with no test failures. Editable installation and a wheel build also succeeded. All six Python code blocks in README.md were executed in sequence successfully. Runtime needs NumPy; tests require no extra test framework.
+Baseline observation: **30 tests passed**, with no test failures. Editable installation and a wheel build also succeeded. All six then-existing Python code blocks in README.md were executed in sequence successfully. Runtime needs NumPy; tests require no extra test framework. The current refactor results appear above.
 
 The original v0.1 archive's exported workspace was also loaded directly: all JSON data except the renamed format identifier was preserved on re-export, and its pending redo executed successfully. The numerical, expression, model, and motion modules match the original baseline source after accounting for the package docstring rename.
 

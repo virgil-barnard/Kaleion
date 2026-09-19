@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from uuid import uuid4
 
-from .ir import Expr, Node, F, expression, vector
+from .ir import Expr, Node, F, expression, vector, incidence_universe
 
 
 def _node(value):
@@ -30,7 +30,7 @@ class Object:
         return Evaluator(parameters).get(self.node)
 
     def with_params(self, **bindings):
-        """Re-evaluate this definition in a declared local parameter case."""
+        """Bind a local parameter case to this whole definition; evaluate later."""
         return wrap(
             Node(
                 "case",
@@ -356,11 +356,28 @@ class Lens:
 
 @dataclass(frozen=True, eq=False)
 class Incidence(Object):
+    """A Boolean relation applied to one declared collection or arrangement."""
+
+    @property
+    def universe(self):
+        """The collection or arrangement being inspected, including local cases."""
+        return wrap(incidence_universe(self.node))
+
     def _combine(self, other, op):
-        if self.node.inputs[0].id != other.node.inputs[0].id:
-            raise ValueError("Incidences need the same declared universe")
-        a, b = self.node.attributes["rule"], other.node.attributes["rule"]
-        return Lens(a & b if op == "and" else a | b)(wrap(self.node.inputs[0]))
+        if not isinstance(other, Incidence):
+            return NotImplemented
+        universe = self.universe
+        if not universe.same_definition(other.universe):
+            raise ValueError(
+                "Incidences need the same declared universe, including parameter scope"
+            )
+        if self.node.op == other.node.op == "incidence":
+            # Keep existing definitions compact and their saved identities stable.
+            a, b = self.node.attributes["rule"], other.node.attributes["rule"]
+            return Lens(a & b if op == "and" else a | b)(universe)
+        return Incidence(
+            Node("incidence_boolean", "incidence", (self.node, other.node), {"operator": op})
+        )
 
     def __and__(self, other):
         return self._combine(other, "and")
@@ -371,10 +388,15 @@ class Incidence(Object):
         return self._combine(other, "or")
 
     def __invert__(self):
-        return Lens(~self.node.attributes["rule"])(wrap(self.node.inputs[0]))
+        if self.node.op == "incidence":
+            return Lens(~self.node.attributes["rule"])(self.universe)
+        return Incidence(
+            Node("incidence_boolean", "incidence", (self.node,), {"operator": "not"})
+        )
 
     def select(self):
-        return wrap(Node("select", self.node.inputs[0].kind, (self.node,), {}))
+        """Retain matched occurrences and their placement, when present."""
+        return wrap(Node("select", self.universe.node.kind, (self.node,), {}))
 
     def reduce(self, reducer="count", *, by=None, value=F.value):
         if reducer not in ("count", "sum", "any"):
@@ -405,9 +427,11 @@ class Incidence(Object):
         )
 
     def count(self, *, by=None):
+        """Count matches per retained key, or over the whole universe."""
         return self.reduce("count", by=by)
 
     def sum(self, *, by=None, value=F.value):
+        """Sum exact integer weights over matches, retaining the chosen keys."""
         return self.reduce("sum", by=by, value=value)
 
     def any(self, *, by=None):

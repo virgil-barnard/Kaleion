@@ -66,7 +66,7 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 The [lesson guide](docs/lessons/README.md) provides educational notes for all eight notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve the original plans and remaining investigations.
 
-The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. It records a composition defect and execution costs, then proposes a staged refactor and simpler authoring recipes. It is a plan, not an implemented API change.
+The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Its first stage now repairs parameter-bound incidence composition and separates field interpretation from graph execution. Contributor grouping and captured motion also avoid repeated work. Later stages propose simpler authoring recipes and stronger explanation tools; the plan marks what remains.
 
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 
@@ -104,6 +104,22 @@ print(len(result.contributor_ids(3)))  # 4
 `by=F.i` retains the `i` key and reduces over the other indices. It does not mean “sum away i.” For a declared rectangular domain, retained-axis groups exist even if the reduced axis has length zero. Other grouping expressions use keys observed in the source, before filtering by the relation.
 
 The result is a collection of integer cardinalities with contributors and a derivation. Giving those integers a placement does not change what was counted. They can immediately receive another lens and another reduction.
+
+## Compose incidences within their universe
+
+`I.universe` names the collection or arrangement inspected by an incidence, including its local parameter cases. Complement, intersection, union, and selection also work after `with_params`:
+
+```python
+line = Collection.sequence(param("n")).arrange(F.value, 0)
+even = line.where(F.value % 2 == 0).with_params(n=4)
+below_n = line.where(F.value < param("n")).with_params(n=4)
+
+print((even & below_n).select().evaluate().values.tolist())  # [2]
+print((~even).select().evaluate().values.tolist())           # [1, 3]
+print(even.universe.evaluate().values.tolist())              # [1, 2, 3, 4]
+```
+
+Each predicate keeps its original parameter scope. `with_params` binds the whole wrapped definition, including its source; a predicate added afterwards uses the surrounding evaluation parameters. Boolean combinations require the same declared universe and scope. Equal lengths or equal values alone do not establish that correspondence, and Kaleion does not infer equivalence between different binding expressions. `select()` preserves the selected identities and their placement, so its result can immediately be arranged, transformed, or measured again.
 
 ## One arrangement can drive different kinds of change
 

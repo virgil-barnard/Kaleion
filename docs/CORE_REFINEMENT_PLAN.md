@@ -1,6 +1,6 @@
 # Kaleion core refinement plan
 
-September 19, 2026 · Proposal following lessons 01–08
+September 19, 2026 · Accepted plan following lessons 01–08; first implementation delivered
 
 **Recommendation:** retain the public mathematical vocabulary and refactor the
 implementation around field evaluation, index/group maps, and captured evidence.
@@ -8,10 +8,31 @@ Start with a composability defect and three avoidable execution costs. Then make
 the repeated notebook constructions easier to express. A wholesale rewrite or an
 immediate TensorFlow/PyTorch dependency is not justified by the current evidence.
 
-This reviews merged baseline `e7a88c1` and the [lesson review notes](lessons/REVIEW_NOTES.md).
-It proposes changes; it does not claim they are implemented. [DESIGN.md](../DESIGN.md)
-remains the current contract. The [diagnostic script](../examples/core_design_probe.py)
-and [recorded results](reviews/2026-09-core-design-probes.json) make the findings reproducible.
+The original review below concerns baseline `e7a88c1` and the
+[lesson review notes](lessons/REVIEW_NOTES.md). [DESIGN.md](../DESIGN.md) remains the
+current contract. The [diagnostic script](../examples/core_design_probe.py) and
+[baseline results](reviews/2026-09-core-design-probes.json) preserve the audit evidence.
+
+## Delivery status
+
+- **Stage A delivered:** bound and nested-case incidences compose and select with
+  their original scopes. `Incidence.universe` exposes the inspected collection or
+  arrangement. The field interpreter now lives in `expressions.py`; motion has no
+  import from graph execution.
+- **Stage B partially delivered:** contributor grouping takes one pass over the
+  selected items. Correspondence, occurrence indexes, ancestry, and membership are
+  prepared once per captured motion root and reused for playback and undo.
+- **Next:** establish internal buffer ownership before sharing unchanged snapshot
+  arrays; then extract index/group plans and evidence queries. Prefix/rank and case
+  family recipes remain the next author-facing improvements, as described in C–D.
+
+The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
+the tested working tree with a core-source digest. For 2,000 one-item groups, the
+diagnostic fell from roughly 0.50 s to 0.027 s on this host. Its motion fixture now
+prepares tracks once at capture and performs no new preparation for 21 forward and
+21 reverse samples; the baseline rebuilt tracks for each forward frame. Snapshot
+copying and the missing per-target driver references remain visible in the report.
+These timings are bounded observations, not a general performance guarantee.
 
 From the repository root, with the documented virtual environment active:
 
@@ -41,7 +62,7 @@ Preserve deliberately declared order: sequence order, stable sorting, and the ex
 first-appearance grouping convention. Key matching must remain independent of storage.
 An ordered scan needs a declared order; a driver binding does not need positional zip.
 
-## 2. What the core currently does well—and where it leaks
+## 2. What the reviewed baseline does well—and where it leaks
 
 The 2,610-line core, excluding optional viewers, is still small. Keep its separation
 of definitions, explicit evaluation, retained snapshots, motion, and viewers. Preserve
@@ -68,12 +89,12 @@ from kaleion import Collection, F, param
 A = Collection.sequence(4).arrange(F.value, 0)
 I = A.where(F.value > param("n")).with_params(n=2)
 I.evaluate().cardinality       # 2, correct in the reviewed baseline
-# (~I).evaluate()              # currently raises KeyError('rule')
-# (I & I).evaluate()           # currently raises KeyError('rule')
-# I.select().arrange(F.value, 0)  # currently fails: selection is typed as Incidence
+# (~I).evaluate()              # baseline raised KeyError('rule'); now works
+# (I & I).evaluate()           # baseline raised KeyError('rule'); now works
+# I.select().arrange(F.value, 0)  # baseline mistyped selection; now works
 ```
 
-This is a correctness problem, not a request for a more permissive universe rule.
+This was a correctness problem, not a request for a more permissive universe rule.
 Parameter binding can change a source domain. The repair must retain lexical scope
 and reject combinations of different declared universes unless alignment is explicit.
 Equal array lengths or equal coordinates are insufficient.
@@ -258,11 +279,11 @@ establish exclusive ownership. Retain schema-1 loading and legacy Icarus envelop
 If compressed evidence or storage needs a new format, version it explicitly and test
 reopening old captures without executing sources. Do not migrate history silently.
 
-**First implementation recommendation:** Stage A, followed by the one-pass contributor
+**First implementation completed:** Stage A, followed by the one-pass contributor
 and prepared-track changes from Stage B. These fix an observed abstraction leak and
 reduce real work without asking the user to learn another mathematical object.
 
-## Review validation
+## Original review validation
 
 The baseline's 55 tests and `python3 examples/discovery.py --out build/example-output`
 pass. The diagnostic reproduces the recorded non-timing findings; its known-failure
@@ -271,3 +292,9 @@ This proposal changes documentation and adds the diagnostic, without implementin
 the planned repairs or claiming a measured improvement. Notebook rendering checks
 were not repeated for a documentation review; their existing evidence remains in
 [notebooks/VALIDATION.md](../notebooks/VALIDATION.md).
+
+The subsequent implementation passes 65 unit tests and the reference example.
+All eight notebooks execute with their construction, contributor, save/reopen, and
+motion assertions; the same host limitation on live Jupyter kernel sockets applies.
+See [VALIDATION.md](../VALIDATION.md) for the current implementation checks and
+[DESIGN.md](../DESIGN.md) for new-operation compatibility and track-memory costs.
