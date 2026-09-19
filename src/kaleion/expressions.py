@@ -9,21 +9,13 @@ import numpy as np
 from .ir import Expr
 from .model import Snapshot
 from . import tensor as T
+from .indexing import row_keys, align
 
 
 def _literal(value):
     out = np.asarray(value)
     # All integer arithmetic starts with Python integers, before a ufunc runs.
     return np.asarray(value, dtype=object) if out.dtype.kind in "iu" else out
-
-
-def _rows(value, length):
-    a = np.asarray(value)
-    if a.ndim <= 1:
-        return T.key_rows([a], length)
-    if a.ndim != 2 or a.shape[0] != length:
-        raise ValueError("A composite key needs one tuple per occurrence")
-    return T.key_rows([a[:, i] for i in range(a.shape[1])], length)
 
 
 def evaluate_expression(rule, context, params, resolve, *, length=0, depth=0):
@@ -63,9 +55,9 @@ def evaluate_expression(rule, context, params, resolve, *, length=0, depth=0):
             return T.take(source.values, np.asarray(addr, dtype=np.int64))
         on, key, read = args[1:]
         source_ctx = source.context()
-        source_keys = _rows(ev(key, source_ctx, len(source)), len(source))
-        target_keys = _rows(ev(on), length)
-        addresses = T.align(source_keys, target_keys)
+        source_keys = row_keys(ev(key, source_ctx, len(source)), len(source))
+        target_keys = row_keys(ev(on), length)
+        addresses = align(source_keys, target_keys)
         values = ev(read, source_ctx, len(source))
         if values.ndim == 0:
             values = T.broadcast(values, len(source))

@@ -9,8 +9,9 @@ The module boundary is chosen around a hidden decision: expression representatio
 | `ir.py` | Immutable expression/operation definitions, definition identity, graph encoding | Versioned definitions with explicit dependencies; no rendering or numerical execution |
 | `api.py` | Typed construction vocabulary and operator syntax | Pure builders returning new definitions |
 | `expressions.py` | Scalar/field interpretation, including explicit driver reads | Context, parameters, and an injected resolver produce a value or an error; no graph scheduling |
-| `tensor.py` | Exact integer rules, array validation, elementary numerical kernels | Checked numerical conventions, gathering, grouping, and segment reduction |
-| `model.py` | Evaluated data, occurrence/source identity, lineage, snapshot encoding | Immutable finite snapshots independent of reevaluation |
+| `tensor.py` | Exact integer rules, array validation, elementary numerical kernels | Checked arithmetic, broadcasting, gathering, and segment reduction |
+| `indexing.py` | Key representation, alignment, group domains, rectangular address maps | Checked keys and addresses; no occurrence identity or placement policy |
+| `model.py` | Buffer ownership, evaluated data, occurrence/source identity, lineage, snapshot encoding | Validated finite snapshots; unchanged owned buffers may be shared |
 | `evaluate.py` | CPU evaluation, dependency ordering, parameter cases, bounded work | A result or an explicit error for each requested root |
 | `motion.py` | Correspondence tracks, paths, reverse sampling | Presentation frames derived from captured states; no changes to mathematical results |
 | `history.py` | Workspace commands, exact retained states, captures, persistence | Undo/redo, independent observations, portable historical results |
@@ -22,8 +23,9 @@ The evaluator currently uses NumPy directly as well as the kernel helpers. There
 The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) audits these boundaries
 against lessons 01–08. Its first delivered changes centralize incidence-universe
 semantics in `ir.py`, separate field interpretation from evaluation sessions, group
-contributors in one pass, and prepare motion correspondence once. Later index/group
-modules, buffer ownership changes, and authoring recipes remain planned.
+contributors in one pass, and prepare motion correspondence once. Snapshot ownership
+and shared indexing rules are now implemented too. Operation-handler separation,
+driver-evidence queries, and shorter authoring recipes remain planned.
 
 ## Four different things an arrangement contains
 
@@ -41,6 +43,28 @@ For an evaluated arrangement with N items:
 Independent source constructors receive independent namespaces. Deriving placements or labels preserves item identity when appropriate. Gather/Tile/Concat can create new occurrence IDs while preserving source identities. Source identities must not be inferred from equal labels or coincident coordinates.
 
 Rectangular logical indices are destination slots after an axis gather or roll. To retain an original index as data, annotate it under a separate name before the operation. `F.index` is the current flat ordinal, not a persistent identity. Keyed bindings use explicit source/target keys rather than physical order.
+
+## Snapshot ownership
+
+Public snapshot construction copies and validates incoming buffers, even if a
+caller marks an array read-only. Identity, shape, axis, and lineage containers are
+converted to immutable tuples. Attribute elements must be finite immutable scalars;
+mutable objects inside an object array are refused. Exact integer contents and
+integer attributes normalize NumPy integer scalars to Python integers before
+arithmetic, so object dtype cannot conceal fixed-width overflow.
+
+The evaluator uses a private update path on already validated snapshots. It shares
+only unchanged owned buffers and frozen metadata members; new or changed inputs
+are copied and validated. Runtime identity changes therefore allocate no new data
+buffers. Placement changes retain the contents and attributes; annotation copies
+new fields while retaining the others. A public `dataclasses.replace` still uses
+the copying constructor. Read-only flags are a use contract; clients needing
+writable data should make their own copies.
+
+Sharing is local to retained snapshots in an evaluation. Workspace edits and
+parameter cases still use separate evaluators; this change does not introduce a
+cross-case cache or deduplicate arrays on disk. Schema-1 captures remain materialized
+and reopen independently of the original process.
 
 ## Tensor interpretation
 
@@ -64,6 +88,15 @@ These operations form the reference implementation vocabulary; the table describ
 | Count / Sum | Factorize keys → masked weights → segment sum | Initialize all declared groups, including zero groups |
 | Driver binding | Key alignment → Gather selected source field | Unique source keys; complete requested matches |
 | Spiral | Bounded stateful scan → positions and structural fields | Special reference constructor, not a general recursive language |
+
+`indexing.py` owns first-appearance grouping, declared Cartesian group domains,
+unique-key alignment, address bounds, and rectangular Gather/Tile/Roll/Concat maps.
+Roll reduces exact shifts modulo the axis extent before using flat strides, avoiding
+full coordinate grids. The evaluator's indexing adapter names placement policy as
+`drop`, `gather`, or `fixed`; it also owns occurrence and lineage policy. Sharing an
+address calculation does not make Gather and Roll the same mathematical operation.
+The former `tensor.key_rows`, `factorize`, and `align` entry points delegate to the
+new module for compatibility.
 
 For grouping key g, mask m, and integer values v, the implemented reductions are:
 

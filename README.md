@@ -8,6 +8,31 @@ This release starts with the primitive classes and operators. A [Jupyter walkthr
 
 Kaleion is the new name of the Icarus Python v0.1 baseline. This package keeps version **0.1.0** and the same mathematical operations, with renamed imports and documentation. See [CHANGELOG.md](CHANGELOG.md) for the rename details.
 
+## A glimpse of the lessons
+
+These images come from the working notebooks. Follow a preview to its construction, then run it in Jupyter to rotate, inspect, and replay the figures. GitHub displays the images; interactive Plotly controls work in Jupyter and the exported HTML.
+
+<table>
+<tr>
+<td width="50%"><a href="notebooks/01_discovery_workbench.ipynb"><img src="docs/images/lessons/01-spiral.png" alt="A rectangular integer spiral with structural cycle ends highlighted"><br><b>01 · Arrange, inspect, discover</b></a><br>Find structural patterns in a rectangular spiral.</td>
+<td width="50%"><a href="notebooks/02_floor_sum_proof.ipynb"><img src="docs/images/lessons/02-floor-sums.png" alt="Two complementary stepped incidences cover an integer rectangle"><br><b>02 · Two incidences fill a rectangle</b></a><br>See reciprocal floor sums as a disjoint cover.</td>
+</tr>
+<tr>
+<td><a href="notebooks/03_three_incidence_box.ipynb"><img src="docs/images/lessons/03-three-incidences.png" alt="Three colored stepped solids partition a box of 240 unit cells"><br><b>03 · Three incidences fill a box</b></a><br>Extend the construction into three dimensions.</td>
+<td><a href="notebooks/04_measured_motion.ipynb"><img src="docs/images/lessons/04-measured-motion.png" alt="An independent plane lifted into steps by two derived column-count arrangements"><br><b>04 · Measurements become motion</b></a><br>Use incidence counts to move another arrangement.</td>
+</tr>
+<tr>
+<td><a href="notebooks/05_finite_radon.ipynb"><img src="docs/images/lessons/05-finite-radon.png" alt="A modular line through a five-by-five image beside its table of line counts"><br><b>05 · Recover an image from counts</b></a><br>Explore the finite Radon transform.</td>
+<td><a href="notebooks/06_young_layers.ipynb"><img src="docs/images/lessons/06-young-layers.png" alt="Cells of a Young diagram halfway through a recorded three-dimensional turn"><br><b>06 · Turn a diagram; count its layers</b></a><br>Conjugate and pack a Young diagram using measurements.</td>
+</tr>
+<tr>
+<td><a href="notebooks/07_additive_structure.ipynb"><img src="docs/images/lessons/07-additive-structure.png" alt="Ordered pairs stacked by their shared sums and measured ranks"><br><b>07 · How many ways can a sum occur?</b></a><br>Make convolution and additive energy visible.</td>
+<td><a href="notebooks/08_ehrhart_counts.ipynb"><img src="docs/images/lessons/08-ehrhart-counts.png" alt="The twenty-eight lattice points in the sixth integer dilation of a triangle"><br><b>08 · Count as a triangle grows</b></a><br>Discover polynomial and periodic counting laws.</td>
+</tr>
+</table>
+
+The images are static previews; selected motion frames show presentation states. [Preview sources and regeneration](docs/images/lessons/README.md).
+
 ## Run it
 
 Requires Python 3.11 or newer and NumPy. Tested here with Python 3.12.14 and NumPy 2.3.5.
@@ -66,7 +91,7 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 The [lesson guide](docs/lessons/README.md) provides educational notes for all eight notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve the original plans and remaining investigations.
 
-The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Its first stage now repairs parameter-bound incidence composition and separates field interpretation from graph execution. Contributor grouping and captured motion also avoid repeated work. Later stages propose simpler authoring recipes and stronger explanation tools; the plan marks what remains.
+The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core now also shares unchanged owned snapshot buffers and centralizes address and grouping rules. Later stages propose simpler authoring recipes and stronger explanation tools; the plan marks what remains.
 
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 
@@ -260,6 +285,12 @@ The available spiral and Young constructors are reference constructions. Arbitra
 An operation graph records inputs, parameters, expressions, and operation versions. Evaluation records add case identity, status, finite extent, and declared primitive families. These families explain the lowering strategy; they are not instrumentation of every NumPy call or a derivative tape.
 
 Each result carries occurrence IDs and source identities separately. A reduction records its universe, grouping keys, populations, contributors, and finite formula. Placement preserves its measurement interpretation. Changing the measured values retains the derivation in the graph but removes the active cardinality claim from that result.
+
+Snapshots copy incoming data and expose read-only arrays. Derived placements reuse
+unchanged integer contents and attributes within an evaluation. This keeps long
+construction chains smaller while preserving captured state. For editable NumPy
+data, use an explicit copy such as `snapshot.values.copy()`. The ownership rules
+and the distinction from caching across workspace edits are in [DESIGN.md](DESIGN.md).
 
 ```python
 from pathlib import Path

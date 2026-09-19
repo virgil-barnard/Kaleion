@@ -1,0 +1,254 @@
+{
+  "fixture": "2,000 integer occurrences; initial 2D placement followed by 24 moves; 26 retained snapshots",
+  "method": "Same updated diagnostic and interpreter, importing either the archived merged core or the working tree. Median of three timed evaluations; separate single tracemalloc evaluation. Peak excludes prebuilt definitions and earlier untraced objects. Array bytes exclude Python scalar objects, lineage, and metadata.",
+  "baseline": {
+    "revision": "0b7d61c2534203d04fa8af2fb63cb4ea8bdab105",
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "core_source": "alternate import path",
+    "core_modified_from_revision": null,
+    "core_sha256": "29d16755e70739fc2fdbdae1d1cfda9a161f6a4d3c6e0abe2c7a38b7e32e90e1",
+    "case_composition": {
+      "evaluate": {
+        "type": "IncidenceSnapshot",
+        "cardinality": 2
+      },
+      "complement": {
+        "type": "IncidenceSnapshot",
+        "cardinality": 2
+      },
+      "intersection": {
+        "type": "IncidenceSnapshot",
+        "cardinality": 2
+      },
+      "select_then_arrange": {
+        "type": "Snapshot",
+        "cardinality": null
+      }
+    },
+    "snapshot_node_only_replace": {
+      "occurrences": 200,
+      "exact_calls": 1,
+      "readonly_calls": 5,
+      "shares_values": false,
+      "shares_positions": false,
+      "shared_fields": 0,
+      "fields": 3
+    },
+    "snapshot_internal_update": {
+      "available": false
+    },
+    "placement_chain": {
+      "items": 2000,
+      "moves": 24,
+      "retained_snapshots": 26,
+      "median_of_3_seconds": 0.05412653500025044,
+      "peak_traced_bytes": 8194993,
+      "value_buffers": 26,
+      "attribute_buffers": 52,
+      "position_buffers": 25,
+      "value_and_attribute_array_bytes": 1248000,
+      "array_bytes_note": "Unique ndarray storage; excludes Python scalar objects, lineage, and metadata"
+    },
+    "binding_evidence": {
+      "driver_is_definition_dependency": true,
+      "direct_driver_parent_refs": 0,
+      "direct_target_parent_refs": 2,
+      "positions": [
+        [
+          20.0,
+          0.0
+        ],
+        [
+          11.0,
+          0.0
+        ]
+      ]
+    },
+    "reduction_seconds": [
+      {
+        "items": 250,
+        "groups": 1,
+        "selected": 250,
+        "median_of_3": 0.0010142690007342026
+      },
+      {
+        "items": 250,
+        "groups": 250,
+        "selected": 250,
+        "median_of_3": 0.0027304659997753333
+      },
+      {
+        "items": 500,
+        "groups": 1,
+        "selected": 500,
+        "median_of_3": 0.001343846000963822
+      },
+      {
+        "items": 500,
+        "groups": 500,
+        "selected": 500,
+        "median_of_3": 0.005253650000668131
+      },
+      {
+        "items": 1000,
+        "groups": 1,
+        "selected": 1000,
+        "median_of_3": 0.0025068190007004887
+      },
+      {
+        "items": 1000,
+        "groups": 1000,
+        "selected": 1000,
+        "median_of_3": 0.010322690999601036
+      },
+      {
+        "items": 2000,
+        "groups": 1,
+        "selected": 2000,
+        "median_of_3": 0.004789610000443645
+      },
+      {
+        "items": 2000,
+        "groups": 2000,
+        "selected": 2000,
+        "median_of_3": 0.021507252000446897
+      }
+    ],
+    "motion_preparation": {
+      "occurrences": 200,
+      "frames": 21,
+      "reverse_frames": 21,
+      "track_constructions": 1,
+      "during_capture": 1,
+      "during_frames_and_reverse": 0
+    }
+  },
+  "refactored": {
+    "revision": "0b7d61c2534203d04fa8af2fb63cb4ea8bdab105",
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "core_source": "working tree",
+    "core_modified_from_revision": true,
+    "core_sha256": "0e55f80cc9ee4f9d7e699b6e9bf0766afa596f614cef6a80c54a82794cce2895",
+    "case_composition": {
+      "evaluate": {
+        "type": "IncidenceSnapshot",
+        "cardinality": 2
+      },
+      "complement": {
+        "type": "IncidenceSnapshot",
+        "cardinality": 2
+      },
+      "intersection": {
+        "type": "IncidenceSnapshot",
+        "cardinality": 2
+      },
+      "select_then_arrange": {
+        "type": "Snapshot",
+        "cardinality": null
+      }
+    },
+    "snapshot_node_only_replace": {
+      "occurrences": 200,
+      "exact_calls": 1,
+      "readonly_calls": 1,
+      "shares_values": false,
+      "shares_positions": false,
+      "shared_fields": 0,
+      "fields": 3
+    },
+    "snapshot_internal_update": {
+      "exact_calls": 0,
+      "readonly_calls": 0,
+      "shares_values": true,
+      "shares_positions": true,
+      "shared_fields": 3
+    },
+    "placement_chain": {
+      "items": 2000,
+      "moves": 24,
+      "retained_snapshots": 26,
+      "median_of_3_seconds": 0.04182244500043453,
+      "peak_traced_bytes": 6860304,
+      "value_buffers": 1,
+      "attribute_buffers": 2,
+      "position_buffers": 25,
+      "value_and_attribute_array_bytes": 48000,
+      "array_bytes_note": "Unique ndarray storage; excludes Python scalar objects, lineage, and metadata"
+    },
+    "binding_evidence": {
+      "driver_is_definition_dependency": true,
+      "direct_driver_parent_refs": 0,
+      "direct_target_parent_refs": 2,
+      "positions": [
+        [
+          20.0,
+          0.0
+        ],
+        [
+          11.0,
+          0.0
+        ]
+      ]
+    },
+    "reduction_seconds": [
+      {
+        "items": 250,
+        "groups": 1,
+        "selected": 250,
+        "median_of_3": 0.0007018680007604416
+      },
+      {
+        "items": 250,
+        "groups": 250,
+        "selected": 250,
+        "median_of_3": 0.002176039997721091
+      },
+      {
+        "items": 500,
+        "groups": 1,
+        "selected": 500,
+        "median_of_3": 0.0011314459989080206
+      },
+      {
+        "items": 500,
+        "groups": 500,
+        "selected": 500,
+        "median_of_3": 0.004034641999169253
+      },
+      {
+        "items": 1000,
+        "groups": 1,
+        "selected": 1000,
+        "median_of_3": 0.0020973120008420665
+      },
+      {
+        "items": 1000,
+        "groups": 1000,
+        "selected": 1000,
+        "median_of_3": 0.00825965099647874
+      },
+      {
+        "items": 2000,
+        "groups": 1,
+        "selected": 2000,
+        "median_of_3": 0.003975022998929489
+      },
+      {
+        "items": 2000,
+        "groups": 2000,
+        "selected": 2000,
+        "median_of_3": 0.0161667899992608
+      }
+    ],
+    "motion_preparation": {
+      "occurrences": 200,
+      "frames": 21,
+      "reverse_frames": 21,
+      "track_constructions": 1,
+      "during_capture": 1,
+      "during_frames_and_reverse": 0
+    }
+  }
+}
