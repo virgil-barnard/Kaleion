@@ -1,0 +1,273 @@
+# Kaleion core refinement plan
+
+September 19, 2026 · Proposal following lessons 01–08
+
+**Recommendation:** retain the public mathematical vocabulary and refactor the
+implementation around field evaluation, index/group maps, and captured evidence.
+Start with a composability defect and three avoidable execution costs. Then make
+the repeated notebook constructions easier to express. A wholesale rewrite or an
+immediate TensorFlow/PyTorch dependency is not justified by the current evidence.
+
+This reviews merged baseline `e7a88c1` and the [lesson review notes](lessons/REVIEW_NOTES.md).
+It proposes changes; it does not claim they are implemented. [DESIGN.md](../DESIGN.md)
+remains the current contract. The [diagnostic script](../examples/core_design_probe.py)
+and [recorded results](reviews/2026-09-core-design-probes.json) make the findings reproducible.
+
+From the repository root, with the documented virtual environment active:
+
+```sh
+mkdir -p build
+python3 examples/core_design_probe.py > build/core-design-probes.json
+```
+
+The diagnostic reports observed failures rather than treating them as successful
+contract tests. Its internal probes belong to this audit and should evolve with the refactor.
+
+## 1. Apply Parnas to actual change decisions
+
+Parnas's circular-shift example hides whether shifts are stored, indexed, or computed
+on demand. He also identifies unnecessary ordering promises as a restriction on
+future implementations. Module interfaces need not become repeated runtime calls;
+the implementation can combine work efficiently. These are the relevant lessons
+from the [archived 1971 report](https://kilthub.cmu.edu/articles/journal_contribution/On_the_criteria_to_be_used_in_decomposing_systems_into_modules/6607958),
+preceding the [1972 ACM paper](https://doi.org/10.1145/361598.361623).
+
+Our application: assign each changeable decision one owner, expose its mathematical
+contract, and measure the compiled or interpreted work separately. Module count and
+operator count are poor targets for minimization. An interface with fewer hidden
+assumptions is simpler even when it lives in another small file.
+
+Preserve deliberately declared order: sequence order, stable sorting, and the existing
+first-appearance grouping convention. Key matching must remain independent of storage.
+An ordered scan needs a declared order; a driver binding does not need positional zip.
+
+## 2. What the core currently does well—and where it leaks
+
+The 2,610-line core, excluding optional viewers, is still small. Keep its separation
+of definitions, explicit evaluation, retained snapshots, motion, and viewers. Preserve
+integer exactness, occurrence/source distinctions, zero groups, failed-branch isolation,
+and undo by retained state. The notebooks establish useful examples of those contracts;
+they do not establish arbitrary composition, large-scale performance, or usability.
+
+| Finding in the reviewed source | Consequence | Recommended response |
+| --- | --- | --- |
+| `Incidence._combine`, `__invert__`, and `select` inspect the immediate node's attributes/input kind | After `with_params`, evaluation works but Boolean composition fails and selection has the wrong symbolic type | Centralize the incidence's scoped universe and result-kind semantics; stop assuming every incidence node is a direct `where` |
+| `evaluate.py` combines scheduling, expression interpretation, address construction, grouping policy, and lineage assembly | Adding a constructor or changing evidence storage reaches the same evaluator machinery | Extract pure expression evaluation and map/group helpers; separate named-operation execution from session scheduling |
+| `_reduce` scans selected items again for every output group's parents | Contributor assembly costs O(KM) for K groups and M selected items, despite a linear segment-sum kernel | Bucket contributors once, retaining group order and empty groups |
+| `Snapshot.__post_init__` copies unchanged buffers during `replace`; `Evaluator.get` uses `replace` to assign runtime node identity | Even a node-name change copies values, fields, and positions | Introduce an internal validated construction path with explicit buffer ownership |
+| `Transition.frame` rebuilds tracks on every sample and ancestry lookup uses tuple searches | Fixed correspondence work repeats during playback | Prepare immutable tracks and occurrence lookup indexes once per captured transition |
+| Binding expressions record graph dependencies, but derived snapshots' direct parents identify only the target items | A generic per-target explanation cannot obtain matched driver items from `parents` alone | Record/query binding alignment separately from target continuity and motion correspondence |
+| Concatenation drops active reduction metadata; lesson 08 retains case roots manually | A measured family is reusable but awkward to explain | Add a case-family recipe and a provenance query over scoped result references |
+| `Sweep` depends on history's state factory; workspace edits create fresh evaluators; JSON expands materialized results repeatedly | Case execution, caching, and storage choices are not fully hidden | Delegate case requests to one evaluation service; stage cache/storage work after ownership is sound |
+
+The parameter-case defect has a small reproduction:
+
+```python
+from kaleion import Collection, F, param
+
+A = Collection.sequence(4).arrange(F.value, 0)
+I = A.where(F.value > param("n")).with_params(n=2)
+I.evaluate().cardinality       # 2, correct in the reviewed baseline
+# (~I).evaluate()              # currently raises KeyError('rule')
+# (I & I).evaluate()           # currently raises KeyError('rule')
+# I.select().arrange(F.value, 0)  # currently fails: selection is typed as Incidence
+```
+
+This is a correctness problem, not a request for a more permissive universe rule.
+Parameter binding can change a source domain. The repair must retain lexical scope
+and reject combinations of different declared universes unless alignment is explicit.
+Equal array lengths or equal coordinates are insufficient.
+A focused semantic query for an incidence's source and scope is the first step;
+this defect does not justify introducing a general type-inference framework.
+
+The bounded diagnostic also found:
+
+- Changing only a 200-item snapshot's node label invokes one exact-value conversion
+  and five read-only-copy calls. None of its value, position, or three field buffers
+  is shared with the original.
+- Sampling 21 frames of one captured 200-item transition constructs its tracks 21 times.
+- A two-item keyed displacement has the driver in its definition dependencies and
+  produces the correct positions, but has zero direct driver-parent references.
+- For 2,000 selected items, a total count took about 5 ms, while one group per item
+  took about 0.5 s on this host. The nested contributor loop explains an avoidable
+  cost. These are baseline timings, not measurements of an implemented speedup.
+
+## 3. A small mathematical substrate
+
+Use a finite **occurrence domain** D with typed fields on it: integer contents,
+attributes, logical keys, optional coordinates, and Boolean incidence. Identity
+remains protected bookkeeping; it is not an ordinary editable label.
+
+Two maps explain much of the current behavior:
+
+- An index map `u: E → D` transports a field by `f'(e) = f(u(e))`. Gather, indexed
+  lookup, roll, tiling, and keyed reads can share this numerical mechanism.
+- A grouping map `g: D → K` combines selected field values over each fiber:
+
+  \[
+  S(k)=\sum_{d\in D:\,g(d)=k}\mathbf1_{R(d)}\,w(d).
+  \]
+
+  Count uses weight one. Sum uses an integer-valued expression. K must be declared
+  or derived under an explicit policy, so empty fibers and unavailable inputs differ.
+
+The implementation needs the following families; this is a useful working basis,
+not a claim of universal mathematical minimality.
+
+| Family | Responsibility | Existing or anticipated uses |
+| --- | --- | --- |
+| Finite domains | Enumerate occurrences, products, disjoint unions, and declared keys | Sequence, Grid, paired domains, Concat, case families |
+| Field expressions | Evaluate typed arithmetic, predicates, and coordinates | Values, Annotate, Place, Move, Lens |
+| Index maps | Transport fields with checked addresses | Gather, Lookup, Roll, Tile, Select, keyed binding |
+| Grouped reduction | Combine selected weights over a specified key domain | Count, Sum, Any, convolution, finite-line measurements |
+| Ordered scan | Accumulate along explicit order, optionally within groups | Prefix offsets and predecessor ranks; proposed extension |
+| Bounded recurrence | Carry state and emit occurrences/roles under a work limit | General authored spirals, stair steps, and 3D paths; later extension |
+
+Count is a readable operation even if its kernel is a masked sum. Roll is a readable
+operation even if its kernel is gather. **Shared kernels do not imply identical
+operation semantics.** Today's Gather creates fresh occurrences and drops placement;
+Roll preserves occurrence identity while moving contents between fixed slots;
+Select preserves selected identities and, when present, placement. Retain those
+policies when sharing address computation. Likewise, Pad needs explicit fill keys,
+attribute fills, and source identities; naive concatenation is not a compatibility proof.
+
+Keep named operations in the saved construction graph. An internal execution plan
+may fuse or specialize them without erasing their names, parameters, or evidence.
+Do not expand every efficient operation into a large product merely to reduce the
+number of opcodes. In particular, dense matrices are optional representations of
+relations, not the required representation of an index map or a reduction.
+An associative prefix scan and an arbitrary stateful recurrence have different
+scheduling guarantees; arbitrary authored steps do not imply a parallel algorithm.
+
+## 4. Boundaries worth making explicit
+
+These are ownership boundaries, not a mandate to create a class for every row.
+Extract a small function or record first; preserve public imports and method names.
+
+| Owner | Decision hidden | Small contract |
+| --- | --- | --- |
+| Definitions: `ir.py` / `api.py` | Expression encoding, scoping, output kinds, named operation meaning | Immutable definitions; scoped universe information; dependencies; versioned graph compatibility |
+| Field evaluator: proposed `expressions.py` | Interpretation of scalar/field expressions | Rule + field context + parameters + injected source resolver → value or explicit error |
+| Indexing: proposed `indexing.py` | Key representation, alignment, address generation, grouping/order plans | Checked index maps and grouping maps with explicit domains, multiplicity, and order |
+| Numerical kernels: `tensor.py` | Exact-integer representation and implementation of bulk arithmetic | Checked field operations, gather, segment reduction; explicit numerical limits |
+| Results and evidence: `model.py`, with focused lineage helpers | Buffer ownership, occurrence-reference encoding, contributor storage | Immutable results; distinct identity/causal/motion references; bounded explanation queries |
+| Evaluation session and operation handlers | When work executes versus how a named operation is carried out | Session owns scope, cache, budgets, and root outcomes; handlers consume resolved inputs and return results/evidence |
+| Motion: `motion.py` | Matching captured occurrences and sampling their path | Prepared tracks + path + progress → Frame, independent of source reevaluation |
+| History and codecs | Retention, restoration, and on-disk sharing | Captured states and commands; compatible import/export without source execution |
+| Viewers and later notation | Plot technology and mathematical presentation | Consume captured results or semantic definition views; never invent arithmetic or proof status |
+
+`motion.py` should import the small field evaluator rather than the graph evaluator.
+History and Sweep should request captured results through the same evaluation entry
+point. Separate handlers can share the indexing and result-building functions;
+introducing a plugin registry or inheritance framework is unnecessary for this step.
+
+Three pieces of evidence must remain distinct: **operation dependencies**, **which
+items contributed or were read**, and **which occurrence continues through motion**.
+A later derivative tape is another record. Putting all four in one generic edge list
+would make the system shorter to describe but harder to interpret correctly.
+
+## 5. Enrich the authoring language with proven recipes
+
+The following are proposed capabilities, not current API signatures.
+
+| Recipe or view | Required choices and result | First demonstrations |
+| --- | --- | --- |
+| Paired domain | Two finite sources, distinct field namespaces, both source references; full domain versus selected relation remains explicit | Finite Radon measurement; equal-sum pairs |
+| Exclusive prefix sum | Source order and optional groups; one result per source key; first result zero | Young layer offsets; packing measured quotient columns |
+| Rank within groups | Group key and unique order key, or an explicit tie policy; one rank per input occurrence | Equal-sum stacks; packing unordered height layers |
+| Measured case family | Finite case keys, named parameter bindings, retained measurement references; compound case/group keys for grouped outputs | Ehrhart counts; quotient profiles as parameters vary |
+| Explanation query | Scoped target reference → matched driver → measurement/contributors; include weight/read expression and coverage | Existing column, pixel, layer, sum, and dilation explanations |
+| Finite comparison | Both key domains, declared meaning, residuals and witnesses; missing keys stay explicit | Quotient partition, reconstruction, reciprocity |
+
+A prefix or rank should use an ordered scan or stable grouping/sorting, not materialize
+all predecessor pairs. If sorting is necessary, its cost is normally O(N log N);
+an already ordered grouped scan can be linear. Explicitly listing every prefix's
+contributors still takes quadratic space. Store a compact order/range derivation
+and expand the requested explanation, rather than promising free full provenance.
+
+Case families must preserve the parameter environment of each measurement, including
+zeros and variable group domains. Neither concatenated storage order nor one unscoped
+key should become the identity of a case. The current single-case roots remain valid
+inputs to the explanation adapter during migration.
+
+Add a notation renderer once the semantic views are reliable. It should display
+named sets, predicates, grouped sums, parameter cases, and equality scope beside
+the plots, with aliases separate from definition identity. Unknown/custom operations
+remain named operations with stated inputs. They must not acquire invented formulas.
+This advances the intended Euclid-like reading experience before a new parser or GUI.
+
+## 6. Preserve the path to future capabilities
+
+| Future capability | Boundary it exercises | Constraint to retain |
+| --- | --- | --- |
+| Authored recurrences and scattered 3D arrangements | Finite-domain generation and bounded recurrence | Explicit initial state, step/emission rule, stop/budget behavior, stable occurrence keys, structural roles, and checkpoint state |
+| Larger logical products | Domain/indexing | Logical rank is independent of display dimension; today's 1–3-axis Grid limit is an API restriction, not a mathematical requirement |
+| Infinite-scroll presentation | Evaluation requests and result coverage | Request finite extents; camera visibility does not redefine the mathematical domain or a whole-domain count |
+| GPU execution | Kernels and operation execution plans | Exact arithmetic cannot silently become floating point; fixed-width kernels require checked range assumptions and a compatible fallback or explicit refusal |
+| Differentiation | Numerical domains and optional derivative rules | Fixed-index gather on continuous fields has a scatter-add adjoint; integer addresses, predicates, sorting choices, and cardinalities do not acquire gradients by being animated |
+| Finite fields or continuous weights | Explicit numerical-domain extensions | Residue fields, integers, floats, and geometric tolerances have different laws; integer-weight Sum does not already support arbitrary real weights |
+| Proof assistance | Definitions, explanations, and finite comparisons | A checked finite equality and a universal theorem are different claims; exploratory/custom operations may remain opaque to a prover |
+
+Continuous coordinates and some attributes already exist. Differentiating that
+continuous subgraph need not first turn all contents into floats. Continuous contents
+or weighted real reductions would need their own explicit value-domain extension.
+Keep these experiments independent of exact integer discovery and of motion replay.
+
+Changing the NumPy import in `tensor.py` would not provide a device backend:
+expression evaluation, snapshots, and motion also materialize NumPy buffers. First
+accelerate one contained execution segment and make transfer to the existing CPU
+snapshot explicit. Avoid a host/device transfer at every operation. Device-resident
+results would later require a result-access boundary as well as numerical kernels.
+
+Do not require every future construction to lower to the small built-in vocabulary.
+When a concrete authored rule needs an extension, require bounded inputs/outputs,
+versions, declared capabilities, and an explicit identity policy. An opaque operation
+may support forward snapshots without supporting compilation, inspection, or proof.
+Portable captures must remain inspectable when its implementation is unavailable.
+
+## 7. Deliver in small, reviewable stages
+
+| Stage | Work | Acceptance gate |
+| --- | --- | --- |
+| A · Repair composition | Add regressions for bound/nested-case incidence Boolean operations and selection; centralize scoped universe/result-kind interpretation; extract the pure field evaluator | Existing lessons still run; new compositions succeed; incompatible universes fail intentionally; motion no longer imports graph execution |
+| B · Remove repeated work | One-pass contributor grouping; prepared motion tracks and lookup indexes; internal owned-buffer construction | Same values, identities, ordered contributors, zero groups, errors, and reverse paths; linear contributor assembly; one track preparation per immutable endpoint pair; unchanged buffers reused safely |
+| C · Establish the shared mechanisms | Extract index/group plans and evidence-building helpers; separate session scheduling from operation handlers; retain named definitions | Roll, Gather, Tile, Lookup, Select, and reductions use the shared mechanisms while preserving their different policies and v1 import behavior |
+| D · Shorten two real investigations | Introduce prefix/rank and case-family recipes, a bounded explanation query, and explicit keyed comparisons; rewrite small sections of lessons 06–08 alongside their reference constructions | Two independent uses per convenience; numerical equivalence, key coverage, contributor explanations, and undo checked; no dense predecessor expansion |
+| E · Test one new reach | Express the rectangular spiral and a restart-and-grow stair step through one bounded recurrence; then choose either a windowed evaluator or one accelerated continuous-field example | Preserve spiral prefix/role fixtures; declare coverage and work bounds; supported results match reference; unsupported capabilities fail without losing captures |
+
+Stages A–C refine contracts and internals. Stage D should deliver an observable
+improvement in reading and composing mathematics. Start the touch-interface design
+after that comparison. Full GPU support, general proof automation, and a broad custom
+language should remain separate projects driven by actual investigations.
+
+Efficiency gates need declared fixtures and measured outcomes. Alongside the eight
+lessons, use many small reduction groups, repeated-gather ancestry, a long sequence
+of placement-only edits, and a reordered parameter family. Compare operation work,
+peak memory, capture size, and sample latency against the recorded baseline. Do not
+set a universal frame-rate or speedup promise from one host's microbenchmark.
+
+Refactoring must also preserve eager expression error behavior (`choose` currently
+evaluates both branches), checked address bounds, and existing budget failures in
+compatibility mode. New streaming/work budgets require a declared contract. Cache
+reuse must respect definition, parameter scope, extent, numerical policy, and applicable
+budgets; a stale or failed result cannot become a zero or masquerade as a current case.
+
+At external boundaries, continue copying/validating caller-owned mutable arrays.
+Internal sharing needs an ownership contract; NumPy's read-only flag alone does not
+establish exclusive ownership. Retain schema-1 loading and legacy Icarus envelopes.
+If compressed evidence or storage needs a new format, version it explicitly and test
+reopening old captures without executing sources. Do not migrate history silently.
+
+**First implementation recommendation:** Stage A, followed by the one-pass contributor
+and prepared-track changes from Stage B. These fix an observed abstraction leak and
+reduce real work without asking the user to learn another mathematical object.
+
+## Review validation
+
+The baseline's 55 tests and `python3 examples/discovery.py --out build/example-output`
+pass. The diagnostic reproduces the recorded non-timing findings; its known-failure
+reports reveal cases the existing suite does not cover. Local document links resolve.
+This proposal changes documentation and adds the diagnostic, without implementing
+the planned repairs or claiming a measured improvement. Notebook rendering checks
+were not repeated for a documentation review; their existing evidence remains in
+[notebooks/VALIDATION.md](../notebooks/VALIDATION.md).

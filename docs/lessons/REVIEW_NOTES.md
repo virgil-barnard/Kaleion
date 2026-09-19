@@ -4,6 +4,11 @@ These are observations from [lessons 01–08](README.md), not an approved redesi
 The new investigations fit the existing runtime operations. Their authoring code
 shows where a clearer notation, reusable recipe, or faster evaluator might help.
 
+The subsequent [core refinement plan](../CORE_REFINEMENT_PLAN.md) checks these
+observations against the implementation and Parnas's decomposition criteria. It
+includes a parameter-case composition defect, measured copying and playback costs,
+and an ordered migration plan. No refactor is claimed by that document.
+
 ## What the examples establish
 
 | Repeated construction | Evidence | Question for the review |
@@ -58,6 +63,12 @@ general identity in these lessons has a separate argument with stated assumption
 
 These are candidates for review, not missing prerequisites for continuing lessons.
 A convenience operation should first make at least two real constructions clearer.
+
+The core audit sharpens the explanation requirement: definition dependencies are
+already recorded, but a driven snapshot's direct parents currently name the target
+items, not its matched driver items. A general inspector therefore needs a binding
+alignment query or captured alignment evidence as well as presentation work. Keep
+that evidence separate from the single correspondence used for motion.
 
 ## Separation of responsibilities and practical limits
 

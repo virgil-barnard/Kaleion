@@ -18,6 +18,13 @@ The module boundary is chosen around a hidden decision: expression representatio
 
 The evaluator currently uses NumPy directly as well as the kernel helpers. There is no interchangeable backend interface pretending to be complete. A future GPU evaluator can consume the same operation definitions while implementing supported operations and numerical types. Some reference algorithms—key factorization, lineage assembly, and the spiral scan—are Python control flow today.
 
+The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) audits these boundaries
+against lessons 01–08 and proposes staged changes. Its proposed modules and recipes
+are not implemented contracts. The first priority is a confirmed composition gap:
+an incidence wrapped by `with_params` evaluates, but its current Boolean-combination
+and selection builders assume a direct incidence node. The plan records a reproduction
+and the scoped-universe contract the repair must preserve.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:

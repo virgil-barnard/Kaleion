@@ -66,6 +66,8 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 The [lesson guide](docs/lessons/README.md) provides educational notes for all eight notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve the original plans and remaining investigations.
 
+The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. It records a composition defect and execution costs, then proposes a staged refactor and simpler authoring recipes. It is a plan, not an implemented API change.
+
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 
 See [notebooks/README.md](notebooks/README.md) for VS Code/WSL usage, offline exports, and headless execution. Generated videos, HTML, and executed notebooks go under the ignored `build/notebooks/` directory; the committed notebooks have cleared outputs for readable reviews.
