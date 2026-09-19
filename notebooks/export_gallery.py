@@ -31,6 +31,10 @@ PREVIEWS = (
      "07-additive-structure", "Equal sums form stacks · measured ranks set the heights"),
     ("08_ehrhart_counts", "Integer dilations · count", "6",
      "08-ehrhart-counts", "Count lattice points as a triangle grows · n = 6"),
+    ("09_norm_fibers", "One measured fiber per level", None,
+     "09-norm-fibers", "Norm fibers · multiplication becomes a cyclic turn"),
+    ("10_hermitian_partitions", "28 points · two measured partitions", "49",
+     "10-hermitian-partitions", "The same 28 points · seven measured groups of four"),
 )
 
 
@@ -84,6 +88,18 @@ def preview(notebook, title_prefix, frame_name, caption):
             scene_camera_eye=dict(x=1.6, y=-1.9, z=1.25),
             scene_xaxis_range=(0.5, 3.5), scene_yaxis_range=(0.5, 3.5),
             scene_xaxis_dtick=1, scene_yaxis_dtick=1,
+        )
+    if notebook.name.startswith("09_"):
+        figure.update_layout(scene_zaxis_title="Norm")
+    if notebook.name.startswith("10_"):
+        # Fit the selected partition, rather than the bounds of the whole path.
+        figure.update_xaxes(
+            range=(-1.6, 19.6), tickvals=list(range(0, 19, 3)),
+            ticktext=list(map(str, range(1, 8))),
+            title="Secant group (ordered by pole key)",
+        )
+        figure.update_yaxes(
+            range=(-0.7, 3.7), dtick=1, title="Rank within group", scaleanchor=None,
         )
     return figure
 

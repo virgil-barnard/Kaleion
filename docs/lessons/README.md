@@ -17,16 +17,20 @@ support an educational page or a touch interface.
 | [06 · Turn a diagram; count its layers](06_young_layers.md) | What do layer counts preserve and forget? | Conjugation → measured prefix offsets → packing and lost order |
 | [07 · How many ways can a sum occur?](07_additive_structure.md) | What does the distribution of equal sums reveal? | Convolution → measured ranks → stacks and additive energy |
 | [08 · Count lattice points as a triangle grows](08_ehrhart_counts.md) | When are dilation counts polynomial? | Parameter families → finite differences → driven probes and reciprocity |
+| [09 · A field changes its clothes](09_norm_fibers.md) | Can multiplication become a turn? | Norm fibers → counts → phase coordinates → cyclic action and undo |
+| [10 · One curve, two ways to gather it](10_hermitian_partitions.md) | How can the same 28 points form different partitions? | Projective quotient → polars → coverage → measured owners and ranks |
 
 Read 01 as a reference tour. The mathematical sequence is 02 → 03 → 04.
 Lesson 05 opens a second path through finite geometry and imaging. Lessons 06 → 07
 connect counting, order, and multiplicity; 08 introduces parameter families and
-quasipolynomials. Every notebook includes its own definitions and can run in a fresh kernel.
+quasipolynomials. Lessons 09 → 10 develop finite-field motion and Hermitian geometry.
+Every notebook includes its own definitions and can run in a fresh kernel.
 
 The [future lessons](FUTURE_LESSONS.md) preserve the original briefs and remaining
 investigations, with delivery status made explicit. [Review notes](REVIEW_NOTES.md)
-collect concrete findings from the eight notebooks for our next architecture and
-notation discussion.
+collect concrete findings from the ten notebooks for our next architecture and
+notation discussion. [UI discovery notes](UI_DISCOVERY_NOTES.md) identify the
+declarative choices behind the new constructions and their module responsibilities.
 
 ## A common narrative
 

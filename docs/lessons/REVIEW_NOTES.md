@@ -1,6 +1,6 @@
 # Evidence for the next Kaleion review
 
-These are observations from [lessons 01–08](README.md), not an approved redesign.
+These are observations from [lessons 01–10](README.md), not an approved redesign.
 The new investigations fit the existing runtime operations. Their authoring code
 shows where a clearer notation, reusable recipe, or faster evaluator might help.
 
@@ -22,6 +22,16 @@ and explanation tools below.
 | Exact case family | 08's measured dilations and finite differences | How should a family expose case parameters and measured contributors? |
 | Keyed comparison with witnesses | 04's bump, 05's failed divisibility, 08's reciprocity residuals | Which equality is intended: totals, keyed values, subsets, or occurrences? |
 | Contributor explanation | A column in 04, a pixel in 05, a layer in 06, a sum in 07, a dilation in 08 | Can a common inspector follow target → bound driver → original contributors? |
+| Invariant and within-fiber order | 09's norm fibers, generators, and measured angular spacing | How do grouping, size, representative choice, and order remain separate declarations? |
+| Quotient versus coincidence | 10's 728 representatives at 91 positions, followed by 91 measured classes | Can an interface make the change of occurrence domain unmistakable? |
+| Relation becomes an owner assignment | 10's pencils and spreads, checked point by point | Can coverage witnesses accompany every proposed single-valued correspondence? |
+| An object supplies relation arguments | 10's selected pole and polar lens | How are source roles and parameter bindings named when keys label both points and lines? |
+
+The [UI discovery notes](UI_DISCOVERY_NOTES.md) develop these new cases into
+concrete authoring choices, with Parnas-style separation of decisions. Lesson 10
+also exposes saved-state size: explicit domain restriction and lossless compact
+JSON keep its full motion capture below the existing import budget. Shared
+persistent storage remains a separate execution/history problem.
 
 ## Distinctions the interface must preserve
 
@@ -95,3 +105,6 @@ record finite evidence and environment limitations.
 For the review, start with 06's ordering counterexample, 07's collapse/stack motion,
 and 08's measured family. They expose three different kinds of information the
 future notation and interface must make visible before we choose touch gestures.
+Then compare 09's coordinate change with actual multiplication, and 10's complete
+partition with the missing-polar witnesses. They test whether an author can state
+what changes and what a measured correspondence actually guarantees.
