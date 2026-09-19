@@ -2,6 +2,50 @@
 
 Executed September 19, 2026 on Python 3.12.14 with NumPy 2.3.5. The tests exercise the Python implementation; prior browser-prototype checks are recorded separately in the architecture document.
 
+## Snapshot ownership and shared indexing
+
+- **74 tests pass.** Nine new tests cover external array/container aliasing,
+  immutable field elements and references, exact NumPy integer inputs, validated
+  internal updates, unchanged-buffer sharing, captured history, and independent
+  coordinate oracles for all three axes. Large positive and negative fiber shifts,
+  repeated gathers, tiling, concatenation, occurrence policies, and budgets are checked.
+- The reference example retains all results. Both the committed baseline workspace
+  and freshly exported workspace reopen; every saved root reproduces its serialized
+  result under reevaluation, and JSON round trips are exact.
+- All eight notebooks rerun their 77 code cells in fresh in-process IPython
+  sessions, including videos and captured-state assertions. Notebook sources remain
+  cleared. Live kernel sockets are unavailable on this host, as documented below.
+- The [recorded comparison](docs/reviews/2026-09-ownership-indexing-probes.json)
+  uses the same diagnostic against merged core `0b7d61c` and the refactored working
+  tree, with both source digests recorded. For 2,000 items and 24 moves:
+
+  | Measure | Merged baseline | Refactored |
+  | --- | ---: | ---: |
+  | Retained snapshots | 26 | 26 |
+  | Integer-value buffers | 26 | 1 |
+  | Attribute buffers | 52 | 2 |
+  | Position buffers | 25 | 25 |
+  | Value/attribute array storage | 1,248,000 B | 48,000 B |
+  | Peak traced allocations during evaluation | 8.2 MB | 6.9 MB |
+  | Median evaluation time, three runs | 54 ms | 42 ms |
+
+The array-storage count excludes Python scalar objects, references, and metadata;
+the traced peak includes allocations during one evaluation, excluding the prebuilt
+definition. Timing and peak memory describe this fixture on one host. Internal
+node-only updates share contents, positions, and all fields; public replacement
+still copies. Separate evaluators and saved files do not deduplicate buffers.
+No operation version or saved schema changes in this pass.
+
+## README lesson gallery
+
+Eight 960 × 600 PNG previews were exported from the freshly executed lessons,
+using Plotly.js in Chromium with HTTP(S) requests blocked. All eight loaded and
+exported without page errors. Their figures, selected frames, camera framing,
+and README links were checked; together the PNGs are about 0.5 MB. The
+[export recipe](docs/images/lessons/README.md) preserves the source selections.
+This is a static export check, not a repeat of the full playback regression.
+The optional Kaleido batch route is documented but was not used on this host.
+
 ## First core refinement
 
 - **65 tests pass**, including ten new regressions for scoped Boolean incidences,
@@ -26,8 +70,8 @@ Executed September 19, 2026 on Python 3.12.14 with NumPy 2.3.5. The tests exerci
   regressions also check duplicate gathers through several ancestors, fades,
   incidence membership, frozen path inputs, and sampling without source execution.
 
-The timing comparison describes this finite fixture on one host. Snapshot buffer
-copying and per-target driver-alignment evidence remain separate work. Prepared
+The timing comparison describes this finite fixture on one host. At that stage,
+snapshot sharing and per-target driver-alignment evidence remained separate work. Prepared
 tracks add retained presentation data per transition; they are rebuilt from saved
 snapshots on reopening. Schema-1 and legacy imports remain supported; executing
 the new `incidence_boolean` operation requires the updated evaluator.
@@ -44,7 +88,7 @@ python3 examples/discovery.py --out build/example-output
 
 Baseline observation: **30 tests passed**, with no test failures. Editable installation and a wheel build also succeeded. All six then-existing Python code blocks in README.md were executed in sequence successfully. Runtime needs NumPy; tests require no extra test framework. The current refactor results appear above.
 
-The original v0.1 archive's exported workspace was also loaded directly: all JSON data except the renamed format identifier was preserved on re-export, and its pending redo executed successfully. The numerical, expression, model, and motion modules match the original baseline source after accounting for the package docstring rename.
+The original v0.1 archive's exported workspace was also loaded directly: all JSON data except the renamed format identifier was preserved on re-export, and its pending redo executed successfully. At that original release, the numerical, expression, model, and motion modules matched the baseline source after accounting for the package docstring rename.
 
 Packaging check:
 
@@ -101,6 +145,6 @@ The runnable example exports 21 forward and 21 reverse frames for an arc-driven 
 
 ## What this evidence does not establish
 
-These are finite executable fixtures, not proofs for all possible parameters, expressions, or future observations. No browser integration, renderer, GPU/autodiff backend, external proof system, or existing repository migration was exercised. There is no performance or usability claim for arbitrary recursive programs; the general recursive authoring mechanism remains future work.
+These are finite executable fixtures, not proofs for all possible parameters, expressions, or future observations. Browser and renderer checks are recorded separately above and in [notebooks/VALIDATION.md](notebooks/VALIDATION.md). No GPU/autodiff backend, external proof system, or existing repository migration was exercised. There is no performance or usability claim for arbitrary recursive programs; the general recursive authoring mechanism remains future work.
 
 The reference evaluator uses exact integer contents and floating-point geometry. Reversal compares the same recorded path samples; it does not establish that floating-point geometry represents exact real arithmetic. Process isolation, asynchronous cancellation, streaming extents, and compressed persistent history are also outside this release.

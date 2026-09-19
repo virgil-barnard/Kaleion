@@ -15,22 +15,27 @@ import platform
 from statistics import median
 import subprocess
 from time import perf_counter
+import tracemalloc
 from unittest.mock import patch
 
 import numpy as np
 
-from kaleion import Collection, F, Motion, Transition, Workspace, param, vector
+from kaleion import Collection, Evaluator, F, Motion, Transition, Workspace, param, vector
 from kaleion import model
 
 
 def collect():
     report = {"revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
               "python": platform.python_version(), "numpy": np.__version__}
+    core_dir = Path(model.__file__).resolve().parent
+    working_tree = core_dir == Path("src/kaleion").resolve()
+    report["core_source"] = "working tree" if working_tree else "alternate import path"
     report["core_modified_from_revision"] = bool(subprocess.check_output(
-        ["git", "status", "--porcelain", "--", "src/kaleion"], text=True))
+        ["git", "status", "--porcelain", "--", "src/kaleion"], text=True)) if working_tree else None
     core = sha256()
-    for path in sorted(Path("src/kaleion").rglob("*.py")):
-        core.update(str(path).encode() + b"\0" + path.read_bytes() + b"\0")
+    for path in sorted(core_dir.rglob("*.py")):
+        name = Path("src/kaleion") / path.relative_to(core_dir)
+        core.update(str(name).encode() + b"\0" + path.read_bytes() + b"\0")
     report["core_sha256"] = core.hexdigest()
     source = Collection.sequence(4).arrange(F.value, 0)
     incidence = source.where(F.value > param("n")).with_params(n=2)
@@ -55,6 +60,46 @@ def collect():
             "shares_positions": bool(np.shares_memory(snap.positions, renamed.positions)),
             "shared_fields": sum(np.shares_memory(snap.fields[k], renamed.fields[k]) for k in snap.fields),
             "fields": len(snap.fields)}
+    if hasattr(snap, "_with_changes"):
+        with patch("kaleion.model.exact", wraps=model.exact) as exact, patch("kaleion.model.readonly", wraps=model.readonly) as readonly:
+            renamed = snap._with_changes(node=snap.node + ":runtime")
+            report["snapshot_internal_update"] = {
+                "exact_calls": exact.call_count, "readonly_calls": readonly.call_count,
+                "shares_values": bool(np.shares_memory(snap.values, renamed.values)),
+                "shares_positions": bool(np.shares_memory(snap.positions, renamed.positions)),
+                "shared_fields": sum(np.shares_memory(snap.fields[k], renamed.fields[k]) for k in snap.fields)}
+    else:
+        report["snapshot_internal_update"] = {"available": False}
+
+    # One retained construction graph: these buffers can be shared within an
+    # evaluation. This does not imply caching between workspace edits or cases.
+    points = Collection.sequence(2000, start=0).arrange(F.value, 0)
+    chain = points
+    for _ in range(24):
+        chain = chain.move(vector(1, 0))
+    elapsed = []
+    for _ in range(3):
+        start = perf_counter()
+        engine = Evaluator()
+        result = engine.get(chain.node)
+        elapsed.append(perf_counter() - start)
+    np.testing.assert_array_equal(result.positions[:, 0], np.arange(2000) + 24)
+    retained = list(engine.evaluated.values())
+    values = {id(s.values): s.values for s in retained}
+    attributes = {id(a): a for s in retained for a in s.fields.values()}
+    positions = {id(s.positions): s.positions for s in retained if s.positions is not None}
+    tracemalloc.start()
+    measured = Evaluator()
+    measured.get(chain.node)
+    _, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    report["placement_chain"] = {
+        "items": 2000, "moves": 24, "retained_snapshots": len(retained),
+        "median_of_3_seconds": median(elapsed), "peak_traced_bytes": peak,
+        "value_buffers": len(values), "attribute_buffers": len(attributes),
+        "position_buffers": len(positions),
+        "value_and_attribute_array_bytes": sum(a.nbytes for a in (*values.values(), *attributes.values())),
+        "array_bytes_note": "Unique ndarray storage; excludes Python scalar objects, lineage, and metadata"}
 
     driver = Collection.literal([10, 20], keys=[1, 0])
     target = Collection.sequence(2, start=0).arrange(F.value, 0)

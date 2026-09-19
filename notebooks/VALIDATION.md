@@ -1,5 +1,23 @@
 # Notebook viewer validation
 
+## Snapshot ownership and indexing regression check
+
+All eight notebooks rerun successfully in fresh in-process IPython sessions: 77
+code cells, including construction, contributor, motion, undo, saved-state, and
+MP4-export assertions. Their source cells and cleared-output state are unchanged.
+The core suite now passes 74 tests. The same kernel-socket limitation applies.
+
+The committed baseline and new example captures reproduce every saved result
+exactly under reevaluation. This pass changes snapshot storage and numerical
+address rules; viewer code is unchanged. Browser interaction checks were not
+repeated; the preceding playback evidence below remains separately identified.
+
+The README's eight static lesson previews were separately exported through
+Plotly.js in Chromium, with network requests blocked and no page errors. Their
+selected frames and visual framing were inspected. The generator consumes saved
+Plotly outputs rather than reimplementing lesson constructions; no source
+notebook outputs were committed. The optional Kaleido export route was not run.
+
 ## First core refinement regression check
 
 - All eight source notebooks run in fresh in-process IPython sessions: 77 code

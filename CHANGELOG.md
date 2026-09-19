@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added a README gallery from all eight lessons, with notebook links and a figure exporter for regenerating the static previews.
+
+- Share unchanged validated snapshot buffers and frozen metadata during internal derivation; public constructors still copy caller data. Seal identity/lineage containers and reject mutable field elements.
+- Normalize NumPy integer scalars and integer attributes before arithmetic, closing fixed-width overflow paths in captured data.
+- Centralize key/group rules and rectangular address generation in `indexing.py`; keep named-operation identity policies and saved formats unchanged. Roll uses flat strides and reuses fixed placement.
 - Fix Boolean composition and selection after incidence parameter binding, including nested scopes. Add `Incidence.universe` to expose the inspected collection or arrangement.
 - Separate field interpretation into `expressions.py`, shared by construction evaluation and captured motion.
 - Build reduction contributors in one pass; prepare motion correspondence and incidence membership once per captured root, shared by playback and undo.

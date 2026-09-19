@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
 from hashlib import sha256
 import json
 from math import prod
@@ -12,6 +11,7 @@ from .ir import Node, incidence_universe
 from .expressions import evaluate_expression
 from .model import Snapshot, IncidenceSnapshot, Ref
 from . import tensor as T
+from . import indexing
 
 
 class EvaluationError(ValueError):
@@ -103,7 +103,7 @@ class Evaluator:
             )
             if n > self.max_items:
                 raise ValueError("Result exceeds item budget")
-            result = replace(result, node=node.id + "@" + self.case_id)
+            result = result._with_changes(node=node.id + "@" + self.case_id)
             self.cache[node.id] = result
             self.evaluated[result.node] = result
             self.records[node.id].update(
@@ -132,7 +132,6 @@ class Evaluator:
         return results, errors
 
     def _new(self, node, values, fields, *, positions=None, axes=(), shape=None):
-        values = T.exact(values)
         origin = node.attributes["origin"]
         ids = tuple(f"{origin}:{i}" for i in range(len(values)))
         fields = {"key": np.arange(len(values), dtype=object), **fields}
@@ -161,7 +160,7 @@ class Evaluator:
             node=node.id, parents=tuple((r,) for r in refs), motion_parents=refs
         )
         base.update(changes)
-        return replace(source, **base)
+        return source._with_changes(**base)
 
     def _index(
         self,
@@ -171,7 +170,7 @@ class Evaluator:
         *,
         preserve_ids=False,
         fields=None,
-        positions=False,
+        placement="drop",
         shape=None,
         axes=(),
     ):
@@ -187,39 +186,31 @@ class Evaluator:
         attrs = {k: T.take(v, addresses) for k, v in source.fields.items()}
         if fields is not None:
             attrs.update(fields)
-        pos = (
-            T.take(source.positions, addresses)
-            if positions and source.positions is not None
-            else None
-        )
+        if placement not in ("drop", "gather", "fixed"):
+            raise ValueError("Unknown placement policy")
+        pos = None
+        if source.positions is not None:
+            if placement == "gather":
+                pos = T.take(source.positions, addresses)
+            elif placement == "fixed":
+                pos = source.positions
         metadata = {**source.metadata, "operation": node.op}
         if "contributor_ids" in metadata:
             for key in ("keys", "population", "contributor_ids"):
                 metadata[key] = tuple(source.metadata[key][j] for j in addresses)
-        return Snapshot(
-            node.id,
-            values,
-            ids,
-            tuple(source.sources[j] for j in addresses),
-            attrs,
-            pos,
-            tuple(axes),
-            shape,
-            tuple((r,) for r in refs),
-            refs,
-            metadata,
+        return source._with_changes(
+            node=node.id,
+            values=values,
+            ids=ids,
+            sources=tuple(source.sources[j] for j in addresses),
+            fields=attrs,
+            positions=pos,
+            axes=tuple(axes),
+            shape=shape,
+            parents=tuple((r,) for r in refs),
+            motion_parents=refs,
+            metadata=metadata,
         )
-
-    def _dimensions(self, source, axis):
-        if source.shape is None or axis not in source.axes:
-            raise ValueError(f"{axis!r} is not a declared rectangular index axis")
-        return source.axes.index(axis)
-
-    def _grid_fields(self, shape, axes):
-        if prod(shape) > self.max_items:
-            raise ValueError("Shape exceeds item budget")
-        ind = np.indices(shape, dtype=np.int64).reshape(len(shape), -1)
-        return {name: ind[k].astype(object) for k, name in enumerate(axes)}
 
     def _execute(self, node):
         a, op = node.attributes, node.op
@@ -247,7 +238,7 @@ class Evaluator:
             shape = tuple(
                 T.size(self.expr(v), "Axis size", self.max_items) for v in a["shape"]
             )
-            fields = self._grid_fields(shape, a["axes"])
+            fields = indexing.grid_fields(shape, a["axes"], max_items=self.max_items)
             ctx = {**fields, "index": np.arange(prod(shape), dtype=object)}
             values = T.broadcast(self.expr(a["values"], context=ctx), prod(shape))
             return self._new(node, values, fields, axes=a["axes"], shape=shape)
@@ -292,7 +283,7 @@ class Evaluator:
                 raise ValueError("Nested cases exceed node budget")
             self.evaluated.update(child.evaluated)
             if isinstance(result, IncidenceSnapshot):
-                return replace(result, node=node.id)
+                return result._with_changes(node=node.id)
             return self._derive(node, result)
         if op not in _PRIMITIVES:
             raise ValueError(f"Unregistered operation {op}")
@@ -340,7 +331,7 @@ class Evaluator:
                 source.source,
                 np.flatnonzero(source.mask),
                 preserve_ids=True,
-                positions=node.kind == "arrangement",
+                placement="gather" if node.kind == "arrangement" else "drop",
             )
         if not isinstance(source, Snapshot):
             raise ValueError("This operation needs integer items")
@@ -410,11 +401,11 @@ class Evaluator:
                 source,
                 np.argsort(values, kind="stable"),
                 preserve_ids=True,
-                positions=node.kind == "arrangement",
+                placement="gather" if node.kind == "arrangement" else "drop",
             )
         if op in ("gather", "tile"):
             axis = a["axis"]
-            dim = None if axis is None else self._dimensions(source, axis)
+            dim = None if axis is None else indexing.axis_dimension(source.axes, source.shape, axis)
             bound = len(source) if dim is None else source.shape[dim]
             if op == "tile":
                 times = T.size(self.expr(a["times"]), "Repeat count", self.max_items)
@@ -428,65 +419,37 @@ class Evaluator:
                     if isinstance(given, Node)
                     else self.expr(given)
                 )
-                indices = T.exact(indices)
-                if indices.ndim != 1:
-                    raise ValueError("Gather indices must be a 1D sequence")
-                if any(i < 0 or i >= bound for i in indices):
-                    raise IndexError("Gather address outside declared axis")
-                indices = np.asarray(indices, dtype=np.int64)
-                if a.get("bijective") and (
-                    len(indices) != bound or len(set(indices.tolist())) != bound
-                ):
-                    raise ValueError("A permutation requires a bijection")
+                indices = indexing.checked_indices(indices, bound, bijective=a.get("bijective", False))
             if dim is None:
                 return self._index(node, source, indices)
-            shape = list(source.shape)
-            shape[dim] = len(indices)
-            shape = tuple(shape)
-            if prod(shape) > self.max_items:
-                raise ValueError("Gather exceeds item budget")
-            address = np.take(
-                np.arange(len(source)).reshape(source.shape), indices, axis=dim
-            ).ravel()
+            address, shape = indexing.gather_axis(source.shape, indices, dim, max_items=self.max_items)
             return self._index(
                 node,
                 source,
                 address,
-                fields=self._grid_fields(shape, source.axes),
+                fields=indexing.grid_fields(shape, source.axes, max_items=self.max_items),
                 shape=shape,
                 axes=source.axes,
             )
         if op == "roll":
-            dim = self._dimensions(source, a["axis"])
+            dim = indexing.axis_dimension(source.axes, source.shape, a["axis"])
             if source.positions is None:
                 raise ValueError("Roll needs a placed index domain")
             if len(source) == 0:
                 return self._derive(node, source)
             shifts = T.exact(T.broadcast(self.expr(a["shift"], source), len(source)))
-            coords = np.indices(source.shape).reshape(len(source.shape), -1)
-            # One cyclic displacement per fiber; a cell-varying address map is Gather.
-            shaped = shifts.reshape(source.shape)
-            first = np.take(shaped, 0, axis=dim)
-            if not np.all(shaped == np.expand_dims(first, dim)):
-                raise ValueError("Roll shift must be constant along each shifted fiber")
-            source_coords = coords.copy()
-            source_coords[dim] = np.asarray(
-                (coords[dim].astype(object) - shifts) % source.shape[dim],
-                dtype=np.int64,
-            )
-            address = np.ravel_multi_index(tuple(source_coords), source.shape)
+            address = indexing.roll_axis(source.shape, shifts, dim)
             result = self._index(
                 node,
                 source,
                 address,
                 preserve_ids=True,
-                fields=self._grid_fields(source.shape, source.axes),
+                placement="fixed",
+                fields=indexing.grid_fields(source.shape, source.axes, max_items=self.max_items),
                 shape=source.shape,
                 axes=source.axes,
             )
-            return replace(
-                result,
-                positions=source.positions,
+            return result._with_changes(
                 metadata={
                     **result.metadata,
                     "dimension": source.positions.shape[1],
@@ -504,23 +467,16 @@ class Evaluator:
         a = node.attributes
         source = incidence.source
         groups = a["groups"]
-        if groups:
-            rows = T.key_rows([self.expr(e, source) for _, e in groups], len(source))
-            if source.shape is not None and all(
-                e.op == "field" and e.args[0] in source.axes for _, e in groups
-            ):
-                retained_shape = tuple(
-                    source.shape[source.axes.index(e.args[0])] for _, e in groups
-                )
-                keys = tuple(
-                    tuple(int(v) for v in row) for row in np.ndindex(retained_shape)
-                )
-                address = {key: i for i, key in enumerate(keys)}
-                inverse = np.asarray([address[key] for key in rows], dtype=np.int64)
-            else:
-                keys, inverse = T.factorize(rows)
-        else:
-            keys, inverse = ((),), np.zeros(len(source), dtype=np.int64)
+        retained_shape = None
+        if groups and source.shape is not None and all(
+            e.op == "field" and e.args[0] in source.axes for _, e in groups
+        ):
+            retained_shape = tuple(
+                source.shape[source.axes.index(e.args[0])] for _, e in groups
+            )
+        keys, inverse = indexing.group_keys(
+            [self.expr(e, source) for _, e in groups], len(source), retained_shape=retained_shape
+        )
         population = T.segment_sum(
             np.ones(len(source), dtype=object), inverse, len(keys)
         )
@@ -641,35 +597,17 @@ class Evaluator:
         axis = node.attributes["axis"]
         shape, axes, address = None, (), np.arange(len(left) + len(right))
         if axis is not None:
-            dim = self._dimensions(left, axis)
-            if (
-                left.axes != right.axes
-                or right.shape is None
-                or any(
-                    a != b
-                    for i, (a, b) in enumerate(zip(left.shape, right.shape))
-                    if i != dim
-                )
-            ):
+            dim = indexing.axis_dimension(left.axes, left.shape, axis)
+            if left.axes != right.axes or right.shape is None:
                 raise ValueError("Non-concatenated axes must agree")
-            shape = tuple(
-                a + b if i == dim else a
-                for i, (a, b) in enumerate(zip(left.shape, right.shape))
-            )
+            address, shape = indexing.concat_axis(left.shape, right.shape, dim)
             axes = left.axes
-            address = np.concatenate(
-                (
-                    np.arange(len(left)).reshape(left.shape),
-                    np.arange(len(left), len(left) + len(right)).reshape(right.shape),
-                ),
-                axis=dim,
-            ).ravel()
         fields = {
             k: np.concatenate((left.fields[k], right.fields[k]))[address]
             for k in left.fields
         }
         if shape is not None:
-            fields.update(self._grid_fields(shape, axes))
+            fields.update(indexing.grid_fields(shape, axes, max_items=self.max_items))
         refs = tuple(Ref(left.node, o) for o in left.ids) + tuple(
             Ref(right.node, o) for o in right.ids
         )

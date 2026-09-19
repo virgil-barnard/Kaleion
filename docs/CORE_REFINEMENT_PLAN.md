@@ -1,6 +1,6 @@
 # Kaleion core refinement plan
 
-September 19, 2026 · Accepted plan following lessons 01–08; first implementation delivered
+September 19, 2026 · Accepted plan following lessons 01–08; stages A–B delivered
 
 **Recommendation:** retain the public mathematical vocabulary and refactor the
 implementation around field evaluation, index/group maps, and captured evidence.
@@ -19,20 +19,34 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   their original scopes. `Incidence.universe` exposes the inspected collection or
   arrangement. The field interpreter now lives in `expressions.py`; motion has no
   import from graph execution.
-- **Stage B partially delivered:** contributor grouping takes one pass over the
+- **Stage B delivered:** contributor grouping takes one pass over the
   selected items. Correspondence, occurrence indexes, ancestry, and membership are
   prepared once per captured motion root and reused for playback and undo.
-- **Next:** establish internal buffer ownership before sharing unchanged snapshot
-  arrays; then extract index/group plans and evidence queries. Prefix/rank and case
-  family recipes remain the next author-facing improvements, as described in C–D.
+  Internal derivation now shares unchanged validated buffers; public construction
+  copies inputs and seals identity, lineage, scalar attributes, and metadata.
+- **Stage C started:** `indexing.py` owns keys, alignment, group domains, and
+  rectangular address rules. Named operations retain explicit identity and placement
+  policies. The evaluator still owns both scheduling and operation dispatch.
+- **Next:** separate operation execution from session scheduling where that reduces
+  coupling, and make driver alignment available to explanation queries. Prefix/rank
+  and case-family recipes remain the next author-facing improvements in stage D.
 
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the
 diagnostic fell from roughly 0.50 s to 0.027 s on this host. Its motion fixture now
 prepares tracks once at capture and performs no new preparation for 21 forward and
-21 reverse samples; the baseline rebuilt tracks for each forward frame. Snapshot
-copying and the missing per-target driver references remain visible in the report.
+21 reverse samples; the baseline rebuilt tracks for each forward frame. That first
+report still exposes snapshot copying and missing per-target driver references.
 These timings are bounded observations, not a general performance guarantee.
+
+The [ownership/indexing comparison](reviews/2026-09-ownership-indexing-probes.json)
+checks the same 2,000-item, 24-move graph against merged revision `0b7d61c`. Across
+26 retained snapshots, value buffers fall from 26 to one, and unchanged attribute
+buffers from 52 to two. Their array storage falls from 1,248,000 to 48,000 bytes;
+total traced peak memory falls from about 8.2 to 6.9 MB. Median evaluation time on
+this host falls from about 54 to 42 ms. Changed placement still requires 25 distinct
+buffers. Cross-case caching, disk deduplication, and per-target driver explanations
+remain separate work.
 
 From the repository root, with the documented virtual environment active:
 
@@ -279,9 +293,10 @@ establish exclusive ownership. Retain schema-1 loading and legacy Icarus envelop
 If compressed evidence or storage needs a new format, version it explicitly and test
 reopening old captures without executing sources. Do not migrate history silently.
 
-**First implementation completed:** Stage A, followed by the one-pass contributor
-and prepared-track changes from Stage B. These fix an observed abstraction leak and
-reduce real work without asking the user to learn another mathematical object.
+**Implementation completed:** Stages A–B and the index/group-rule portion of C.
+These fix observed abstraction leaks and reduce real work without asking the user
+to learn another mathematical object. The next refinements should help explain
+driver reads and shorten actual notebook constructions.
 
 ## Original review validation
 
@@ -293,7 +308,7 @@ the planned repairs or claiming a measured improvement. Notebook rendering check
 were not repeated for a documentation review; their existing evidence remains in
 [notebooks/VALIDATION.md](../notebooks/VALIDATION.md).
 
-The subsequent implementation passes 65 unit tests and the reference example.
+The current implementation passes 74 unit tests and the reference example.
 All eight notebooks execute with their construction, contributor, save/reopen, and
 motion assertions; the same host limitation on live Jupyter kernel sockets applies.
 See [VALIDATION.md](../VALIDATION.md) for the current implementation checks and

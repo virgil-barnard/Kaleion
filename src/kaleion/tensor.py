@@ -18,15 +18,20 @@ def readonly(value, dtype=None):
 
 
 def exact(value, *, bits=4096):
-    out = np.asarray(value, dtype=object)
-    for v in out.flat:
+    out = np.array(value, dtype=object, copy=True)
+    for i, v in enumerate(out.flat):
         if not isinstance(v, (int, np.integer)) or isinstance(v, (bool, np.bool_)):
             raise ValueError(
                 "Integer contents require exact integers; use // for integer quotient"
             )
-        if int(v).bit_length() > bits:
+        integer = int(v)
+        if integer.bit_length() > bits:
             raise ValueError("Integer exceeds the configured bit budget")
-    return np.array(out, dtype=object, copy=True)
+        # Object dtype can still contain np.int64 scalars with fixed-width
+        # arithmetic. Normalize them before any numerical operation runs.
+        if type(v) is not int:
+            out.flat[i] = integer
+    return out
 
 
 def size(value, label, maximum, minimum=0):
@@ -83,44 +88,21 @@ def segment_sum(values, segments, count):
 
 
 def factorize(keys):
-    """Stable first-appearance order; bindings use keys, never this storage order."""
-    unique, lookup, inverse = [], {}, []
-    for key in keys:
-        if key not in lookup:
-            lookup[key] = len(unique)
-            unique.append(key)
-        inverse.append(lookup[key])
-    return tuple(unique), np.asarray(inverse, dtype=np.int64)
+    """Compatibility entry point; key-domain policy lives in indexing."""
+    from .indexing import factorize as implementation
+    return implementation(keys)
 
 
 def key_rows(columns, length):
-    cols = [broadcast(c, length) for c in columns]
-    rows = []
-    for row in zip(*cols):
-        key = tuple(v.item() if isinstance(v, np.generic) else v for v in row)
-        if any(
-            isinstance(v, (list, tuple, dict))
-            or isinstance(v, float)
-            and not np.isfinite(v)
-            for v in key
-        ):
-            raise ValueError("Keys must be finite scalar values")
-        rows.append(key)
-    return tuple(rows)
+    """Compatibility entry point; key representation lives in indexing."""
+    from .indexing import key_rows as implementation
+    return implementation(columns, length)
 
 
 def align(source_keys, target_keys):
-    table = {}
-    for i, key in enumerate(source_keys):
-        if key in table:
-            raise ValueError(
-                f"Ambiguous driver key {key}; reduce or disambiguate explicitly"
-            )
-        table[key] = i
-    missing = [key for key in target_keys if key not in table]
-    if missing:
-        raise KeyError(f"Missing driver key {missing[0]}; no implicit fill")
-    return np.asarray([table[key] for key in target_keys], dtype=np.int64)
+    """Compatibility entry point; keyed correspondence lives in indexing."""
+    from .indexing import align as implementation
+    return implementation(source_keys, target_keys)
 
 
 _BINARY = {
