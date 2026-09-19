@@ -1,0 +1,790 @@
+{
+  "schema": 1,
+  "roots": {
+    "counts": "n_bf69d681d1bad7c11841aaec",
+    "driver": "n_675d868d5a5e82d3df19f6fc",
+    "moved": "n_e4ec61d07ea2af9378fcd913",
+    "values": "n_c2eed6f125b929b6f07e2cc0",
+    "constructor": "n_99def913887cf0e334b1a665",
+    "gather_roll": "n_d992365fea95afe4352b4204"
+  },
+  "nodes": {
+    "n_54d351d47579d7313147d62b": {
+      "op": "grid",
+      "version": 1,
+      "kind": "collection",
+      "inputs": [],
+      "attributes": {
+        "shape": [
+          {
+            "$expr": "param",
+            "args": [
+              "b"
+            ]
+          },
+          {
+            "$expr": "param",
+            "args": [
+              "a"
+            ]
+          }
+        ],
+        "axes": [
+          "i",
+          "j"
+        ],
+        "values": {
+          "$expr": "add",
+          "args": [
+            {
+              "$expr": "mul",
+              "args": [
+                {
+                  "$expr": "param",
+                  "args": [
+                    "a"
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "i"
+                  ]
+                }
+              ]
+            },
+            {
+              "$expr": "mul",
+              "args": [
+                {
+                  "$expr": "param",
+                  "args": [
+                    "b"
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "j"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "name": "Quotient region",
+        "origin": "87821fb5bd3e432f85d4b9be2b724e08"
+      }
+    },
+    "n_f8b4c8aaa287b2271557c362": {
+      "op": "place",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_54d351d47579d7313147d62b"
+      ],
+      "attributes": {
+        "coordinates": [
+          {
+            "$expr": "field",
+            "args": [
+              "j"
+            ]
+          },
+          {
+            "$expr": "neg",
+            "args": [
+              {
+                "$expr": "field",
+                "args": [
+                  "i"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "n_3e499fc1db12c60cb7a0422a": {
+      "op": "incidence",
+      "version": 1,
+      "kind": "incidence",
+      "inputs": [
+        "n_f8b4c8aaa287b2271557c362"
+      ],
+      "attributes": {
+        "rule": {
+          "$expr": "ge",
+          "args": [
+            {
+              "$expr": "field",
+              "args": [
+                "value"
+              ]
+            },
+            {
+              "$expr": "mul",
+              "args": [
+                {
+                  "$expr": "param",
+                  "args": [
+                    "a"
+                  ]
+                },
+                {
+                  "$expr": "param",
+                  "args": [
+                    "b"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "n_bf69d681d1bad7c11841aaec": {
+      "op": "reduce",
+      "version": 1,
+      "kind": "collection",
+      "inputs": [
+        "n_3e499fc1db12c60cb7a0422a"
+      ],
+      "attributes": {
+        "reducer": "count",
+        "groups": [
+          [
+            "i",
+            {
+              "$expr": "field",
+              "args": [
+                "i"
+              ]
+            }
+          ]
+        ],
+        "value": {
+          "$expr": "field",
+          "args": [
+            "value"
+          ]
+        }
+      }
+    },
+    "n_675d868d5a5e82d3df19f6fc": {
+      "op": "place",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_bf69d681d1bad7c11841aaec"
+      ],
+      "attributes": {
+        "coordinates": [
+          {
+            "$expr": "field",
+            "args": [
+              "key"
+            ]
+          },
+          {
+            "$expr": "field",
+            "args": [
+              "value"
+            ]
+          }
+        ]
+      }
+    },
+    "n_ad473ef8beeced76bc218893": {
+      "op": "literal",
+      "version": 1,
+      "kind": "collection",
+      "inputs": [],
+      "attributes": {
+        "values": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "keys": null,
+        "fields": {},
+        "name": "Scattered integers",
+        "origin": "429acc50a3bb468a99cdb0ce2c4791f6"
+      }
+    },
+    "n_233d547e58156a14b55916f8": {
+      "op": "positions",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_ad473ef8beeced76bc218893"
+      ],
+      "attributes": {
+        "positions": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            2,
+            4,
+            0
+          ],
+          [
+            0,
+            4,
+            1
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            4,
+            1
+          ],
+          [
+            2,
+            4,
+            0
+          ]
+        ]
+      }
+    },
+    "n_e4ec61d07ea2af9378fcd913": {
+      "op": "move",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_233d547e58156a14b55916f8"
+      ],
+      "attributes": {
+        "displacement": {
+          "$expr": "vector",
+          "args": [
+            {
+              "$expr": "aligned",
+              "args": [
+                {
+                  "$node": "n_675d868d5a5e82d3df19f6fc"
+                },
+                {
+                  "$expr": "mod",
+                  "args": [
+                    {
+                      "$expr": "field",
+                      "args": [
+                        "value"
+                      ]
+                    },
+                    {
+                      "$expr": "literal",
+                      "args": [
+                        7
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "key"
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "value"
+                  ]
+                }
+              ]
+            },
+            {
+              "$expr": "literal",
+              "args": [
+                0
+              ]
+            },
+            {
+              "$expr": "neg",
+              "args": [
+                {
+                  "$expr": "aligned",
+                  "args": [
+                    {
+                      "$node": "n_675d868d5a5e82d3df19f6fc"
+                    },
+                    {
+                      "$expr": "mod",
+                      "args": [
+                        {
+                          "$expr": "field",
+                          "args": [
+                            "value"
+                          ]
+                        },
+                        {
+                          "$expr": "literal",
+                          "args": [
+                            7
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "$expr": "field",
+                      "args": [
+                        "key"
+                      ]
+                    },
+                    {
+                      "$expr": "field",
+                      "args": [
+                        "value"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "n_c2eed6f125b929b6f07e2cc0": {
+      "op": "values",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_233d547e58156a14b55916f8"
+      ],
+      "attributes": {
+        "rule": {
+          "$expr": "add",
+          "args": [
+            {
+              "$expr": "field",
+              "args": [
+                "value"
+              ]
+            },
+            {
+              "$expr": "aligned",
+              "args": [
+                {
+                  "$node": "n_675d868d5a5e82d3df19f6fc"
+                },
+                {
+                  "$expr": "mod",
+                  "args": [
+                    {
+                      "$expr": "field",
+                      "args": [
+                        "value"
+                      ]
+                    },
+                    {
+                      "$expr": "literal",
+                      "args": [
+                        7
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "key"
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "value"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "n_daf7b46c8a8ce56fc5da3045": {
+      "op": "spiral",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [],
+      "attributes": {
+        "count": {
+          "$expr": "literal",
+          "args": [
+            36
+          ]
+        },
+        "initial": {
+          "$expr": "param",
+          "args": [
+            "n"
+          ]
+        },
+        "values": {
+          "$expr": "add",
+          "args": [
+            {
+              "$expr": "field",
+              "args": [
+                "index"
+              ]
+            },
+            {
+              "$expr": "literal",
+              "args": [
+                1
+              ]
+            }
+          ]
+        },
+        "name": "Rectangular spiral",
+        "origin": "46162df275ef4005a0a501e98d57453d"
+      }
+    },
+    "n_ec14ff14d324627b3eb207bb": {
+      "op": "incidence",
+      "version": 1,
+      "kind": "incidence",
+      "inputs": [
+        "n_bf69d681d1bad7c11841aaec"
+      ],
+      "attributes": {
+        "rule": {
+          "$expr": "eq",
+          "args": [
+            {
+              "$expr": "field",
+              "args": [
+                "key"
+              ]
+            },
+            {
+              "$expr": "literal",
+              "args": [
+                3
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "n_9a7ba51013b27f588160b5f7": {
+      "op": "select",
+      "version": 1,
+      "kind": "collection",
+      "inputs": [
+        "n_ec14ff14d324627b3eb207bb"
+      ],
+      "attributes": {}
+    },
+    "n_99def913887cf0e334b1a665": {
+      "op": "case",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_daf7b46c8a8ce56fc5da3045"
+      ],
+      "attributes": {
+        "bindings": {
+          "n": {
+            "$expr": "scalar",
+            "args": [
+              {
+                "$node": "n_9a7ba51013b27f588160b5f7"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "n_8c8a4342aa0366d2a81373d3": {
+      "op": "grid",
+      "version": 1,
+      "kind": "collection",
+      "inputs": [],
+      "attributes": {
+        "shape": [
+          {
+            "$expr": "param",
+            "args": [
+              "b"
+            ]
+          },
+          {
+            "$expr": "param",
+            "args": [
+              "a"
+            ]
+          }
+        ],
+        "axes": [
+          "i",
+          "j"
+        ],
+        "values": {
+          "$expr": "add",
+          "args": [
+            {
+              "$expr": "field",
+              "args": [
+                "i"
+              ]
+            },
+            {
+              "$expr": "mul",
+              "args": [
+                {
+                  "$expr": "param",
+                  "args": [
+                    "b"
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "j"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "name": "Remainder table",
+        "origin": "3569bc46775a4860b6c01c9fe0b2cfdf"
+      }
+    },
+    "n_2eb1d524dce9291aa1338048": {
+      "op": "place",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_8c8a4342aa0366d2a81373d3"
+      ],
+      "attributes": {
+        "coordinates": [
+          {
+            "$expr": "field",
+            "args": [
+              "j"
+            ]
+          },
+          {
+            "$expr": "neg",
+            "args": [
+              {
+                "$expr": "field",
+                "args": [
+                  "i"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "n_f6dae6f90a08cbc4d81d121d": {
+      "op": "items",
+      "version": 1,
+      "kind": "collection",
+      "inputs": [
+        "n_2eb1d524dce9291aa1338048"
+      ],
+      "attributes": {}
+    },
+    "n_f362ebdc099dec1e9c23de38": {
+      "op": "incidence",
+      "version": 1,
+      "kind": "incidence",
+      "inputs": [
+        "n_2eb1d524dce9291aa1338048"
+      ],
+      "attributes": {
+        "rule": {
+          "$expr": "eq",
+          "args": [
+            {
+              "$expr": "mod",
+              "args": [
+                {
+                  "$expr": "field",
+                  "args": [
+                    "value"
+                  ]
+                },
+                {
+                  "$expr": "param",
+                  "args": [
+                    "a"
+                  ]
+                }
+              ]
+            },
+            {
+              "$expr": "literal",
+              "args": [
+                0
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "n_17726a70704414c15a7cb164": {
+      "op": "select",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_f362ebdc099dec1e9c23de38"
+      ],
+      "attributes": {}
+    },
+    "n_99f4be580756865fa984762b": {
+      "op": "order",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_17726a70704414c15a7cb164"
+      ],
+      "attributes": {
+        "field": {
+          "$expr": "field",
+          "args": [
+            "value"
+          ]
+        }
+      }
+    },
+    "n_1f29204594db18cc7d8639ff": {
+      "op": "values",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_99f4be580756865fa984762b"
+      ],
+      "attributes": {
+        "rule": {
+          "$expr": "field",
+          "args": [
+            "i"
+          ]
+        }
+      }
+    },
+    "n_3ae3c45ac9bd948bd631367d": {
+      "op": "gather",
+      "version": 1,
+      "kind": "collection",
+      "inputs": [
+        "n_f6dae6f90a08cbc4d81d121d"
+      ],
+      "attributes": {
+        "indices": {
+          "$node": "n_1f29204594db18cc7d8639ff"
+        },
+        "axis": "i"
+      }
+    },
+    "n_bec52ef20bc4935469cd6487": {
+      "op": "place",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_3ae3c45ac9bd948bd631367d"
+      ],
+      "attributes": {
+        "coordinates": [
+          {
+            "$expr": "field",
+            "args": [
+              "j"
+            ]
+          },
+          {
+            "$expr": "neg",
+            "args": [
+              {
+                "$expr": "field",
+                "args": [
+                  "i"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "n_d992365fea95afe4352b4204": {
+      "op": "roll",
+      "version": 1,
+      "kind": "arrangement",
+      "inputs": [
+        "n_bec52ef20bc4935469cd6487"
+      ],
+      "attributes": {
+        "axis": "j",
+        "shift": {
+          "$expr": "neg",
+          "args": [
+            {
+              "$expr": "aligned",
+              "args": [
+                {
+                  "$node": "n_675d868d5a5e82d3df19f6fc"
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "i"
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "key"
+                  ]
+                },
+                {
+                  "$expr": "field",
+                  "args": [
+                    "value"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

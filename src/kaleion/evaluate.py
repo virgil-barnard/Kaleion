@@ -1,0 +1,789 @@
+"""Bounded reference evaluator. Dependency resolution is independent of display."""
+
+from __future__ import annotations
+
+from dataclasses import replace
+from hashlib import sha256
+import json
+from math import prod
+from types import MappingProxyType
+import numpy as np
+
+from .ir import Expr, Node, graph
+from .model import Snapshot, IncidenceSnapshot, Ref
+from . import tensor as T
+
+
+class EvaluationError(ValueError):
+    pass
+
+
+def _literal(value):
+    out = np.asarray(value)
+    # All integer arithmetic starts with Python integers, before a ufunc runs.
+    return np.asarray(value, dtype=object) if out.dtype.kind in "iu" else out
+
+
+def _rows(value, length):
+    a = np.asarray(value)
+    if a.ndim <= 1:
+        return T.key_rows([a], length)
+    if a.ndim != 2 or a.shape[0] != length:
+        raise ValueError("A composite key needs one tuple per occurrence")
+    return T.key_rows([a[:, i] for i in range(a.shape[1])], length)
+
+
+def evaluate_expression(rule, context, params, resolve, *, length=0, depth=0):
+    if depth > 100:
+        raise ValueError("Expression depth exceeds budget")
+    if not isinstance(rule, Expr):
+        return _literal(rule)
+    op, args = rule.op, rule.args
+    if op == "literal":
+        return _literal(args[0])
+    if op == "field":
+        if args[0] not in context:
+            raise KeyError(f"Unbound field {args[0]}")
+        return np.asarray(context[args[0]])
+    if op == "param":
+        if args[0] not in params:
+            raise KeyError(f"Unbound parameter {args[0]}")
+        return _literal(params[args[0]])
+    ev = lambda e, ctx=context, n=length: evaluate_expression(
+        e, ctx, params, resolve, length=n, depth=depth + 1
+    )
+    if op in ("scalar", "lookup", "aligned"):
+        source = resolve(args[0])
+        if not isinstance(source, Snapshot):
+            raise ValueError("A driver must supply a collection or arrangement")
+        if op == "scalar":
+            if len(source) != 1:
+                raise ValueError("scalar() requires exactly one item")
+            return _literal(source.values[0])
+        if op == "lookup":
+            address = T.broadcast(ev(args[1]), length)
+            addr = T.exact(address)
+            if any(v < 0 or v >= len(source) for v in addr):
+                raise IndexError("Substitution address outside table")
+            return T.take(source.values, np.asarray(addr, dtype=np.int64))
+        on, key, read = args[1:]
+        source_ctx = source.context()
+        source_keys = _rows(ev(key, source_ctx, len(source)), len(source))
+        target_keys = _rows(ev(on), length)
+        addresses = T.align(source_keys, target_keys)
+        values = ev(read, source_ctx, len(source))
+        if values.ndim == 0:
+            values = T.broadcast(values, len(source))
+        if len(values) != len(source):
+            raise ValueError("Driver read shape mismatch")
+        return T.take(values, addresses)
+    return T.operation(op, [ev(a) for a in args])
+
+
+_PRIMITIVES = {
+    "sequence": ("arange", "broadcast", "multiply", "add"),
+    "literal": ("constant",),
+    "grid": ("cartesian_indices", "elementwise"),
+    "young": ("ragged_indices", "elementwise"),
+    "spiral": ("bounded_scan", "concatenate", "elementwise"),
+    "place": ("elementwise", "stack"),
+    "positions": ("constant",),
+    "move": ("keyed_gather_or_broadcast", "add"),
+    "values": ("elementwise", "keyed_gather_or_lookup"),
+    "annotate": ("elementwise",),
+    "items": ("view",),
+    "incidence": ("elementwise_predicate",),
+    "select": ("nonzero", "gather"),
+    "reduce": ("factorize_keys", "segment_sum", "nonzero"),
+    "gather": ("address_map", "gather"),
+    "roll": ("subtract", "mod", "gather"),
+    "order": ("stable_argsort", "gather"),
+    "tile": ("tile_addresses", "gather"),
+    "concat": ("concatenate", "address_map"),
+    "pad": ("constant", "concatenate"),
+    "case": ("bind_parameters", "evaluate_construction"),
+}
+
+
+class Evaluator:
+    def __init__(self, parameters=None, *, max_items=10_000, max_nodes=2000):
+        if (
+            not isinstance(max_items, int)
+            or not 1 <= max_items <= 1_000_000
+            or not isinstance(max_nodes, int)
+            or not 1 <= max_nodes <= 10_000
+        ):
+            raise ValueError("Invalid finite evaluator budget")
+        self.parameters = dict(parameters or {})
+        for name, value in self.parameters.items():
+            if (
+                not isinstance(name, str)
+                or not isinstance(value, (int, float, bool))
+                or isinstance(value, float)
+                and not np.isfinite(value)
+            ):
+                raise ValueError("Parameters must be named finite scalars")
+        self.max_items, self.max_nodes = max_items, max_nodes
+        self.cache, self.errors, self.records, self._active = {}, {}, {}, set()
+        self.evaluated = {}
+        self.case_id = sha256(
+            json.dumps(self.parameters, sort_keys=True, allow_nan=False).encode()
+        ).hexdigest()[:16]
+
+    def expr(self, rule, data=None, context=None):
+        ctx = data.context() if data is not None else context or {}
+        return evaluate_expression(
+            rule,
+            ctx,
+            self.parameters,
+            self.get,
+            length=len(data) if data is not None else len(ctx.get("index", ())),
+        )
+
+    def get(self, node):
+        if node.id in self.cache:
+            return self.cache[node.id]
+        if node.id in self.errors:
+            raise EvaluationError(self.errors[node.id])
+        if node.id in self._active:
+            raise EvaluationError("Dependency cycle")
+        if len(self.records) >= self.max_nodes or len(self._active) >= 100:
+            raise EvaluationError("Evaluation exceeds node/depth budget")
+        self._active.add(node.id)
+        self.records[node.id] = {
+            "operation": node.op,
+            "primitive_families": _PRIMITIVES.get(node.op, ()),
+            "parameters": dict(self.parameters),
+        }
+        try:
+            result = self._execute(node)
+            n = (
+                len(result.source)
+                if isinstance(result, IncidenceSnapshot)
+                else len(result)
+            )
+            if n > self.max_items:
+                raise ValueError("Result exceeds item budget")
+            result = replace(result, node=node.id + "@" + self.case_id)
+            self.cache[node.id] = result
+            self.evaluated[result.node] = result
+            self.records[node.id].update(
+                status="ready",
+                evaluation=result.node,
+                extent=n,
+                coverage="complete finite requested extent",
+            )
+            return result
+        except (ValueError, TypeError, KeyError, IndexError, ArithmeticError) as e:
+            message = f"{node.op} ({node.id}): {e}"
+            self.errors[node.id] = message
+            self.records[node.id].update(status="failed", error=message)
+            raise EvaluationError(message) from e
+        finally:
+            self._active.remove(node.id)
+
+    def run(self, roots):
+        results, errors = {}, {}
+        for name, root in roots.items():
+            node = root.node if hasattr(root, "node") else root
+            try:
+                results[name] = self.get(node)
+            except EvaluationError as e:
+                errors[name] = str(e)
+        return results, errors
+
+    def _new(self, node, values, fields, *, positions=None, axes=(), shape=None):
+        values = T.exact(values)
+        origin = node.attributes["origin"]
+        ids = tuple(f"{origin}:{i}" for i in range(len(values)))
+        fields = {"key": np.arange(len(values), dtype=object), **fields}
+        meta = {
+            "name": node.attributes.get("name", node.op),
+            "complete": True,
+            "finite": True,
+        }
+        if positions is not None:
+            meta["dimension"] = np.asarray(positions).shape[1]
+        return Snapshot(
+            node.id,
+            values,
+            ids,
+            ids,
+            fields,
+            positions,
+            tuple(axes),
+            shape,
+            metadata=meta,
+        )
+
+    def _derive(self, node, source, **changes):
+        refs = tuple(Ref(source.node, oid) for oid in source.ids)
+        base = dict(
+            node=node.id, parents=tuple((r,) for r in refs), motion_parents=refs
+        )
+        base.update(changes)
+        return replace(source, **base)
+
+    def _index(
+        self,
+        node,
+        source,
+        addresses,
+        *,
+        preserve_ids=False,
+        fields=None,
+        positions=False,
+        shape=None,
+        axes=(),
+    ):
+        addresses = np.asarray(addresses, dtype=np.int64)
+        if len(addresses) > self.max_items:
+            raise ValueError("Gather exceeds item budget")
+        values = T.take(source.values, addresses)
+        ids = tuple(
+            source.ids[j] if preserve_ids else f"{node.id}:{i}"
+            for i, j in enumerate(addresses)
+        )
+        refs = tuple(Ref(source.node, source.ids[j]) for j in addresses)
+        attrs = {k: T.take(v, addresses) for k, v in source.fields.items()}
+        if fields is not None:
+            attrs.update(fields)
+        pos = (
+            T.take(source.positions, addresses)
+            if positions and source.positions is not None
+            else None
+        )
+        metadata = {**source.metadata, "operation": node.op}
+        if "contributor_ids" in metadata:
+            for key in ("keys", "population", "contributor_ids"):
+                metadata[key] = tuple(source.metadata[key][j] for j in addresses)
+        return Snapshot(
+            node.id,
+            values,
+            ids,
+            tuple(source.sources[j] for j in addresses),
+            attrs,
+            pos,
+            tuple(axes),
+            shape,
+            tuple((r,) for r in refs),
+            refs,
+            metadata,
+        )
+
+    def _dimensions(self, source, axis):
+        if source.shape is None or axis not in source.axes:
+            raise ValueError(f"{axis!r} is not a declared rectangular index axis")
+        return source.axes.index(axis)
+
+    def _grid_fields(self, shape, axes):
+        if prod(shape) > self.max_items:
+            raise ValueError("Shape exceeds item budget")
+        ind = np.indices(shape, dtype=np.int64).reshape(len(shape), -1)
+        return {name: ind[k].astype(object) for k, name in enumerate(axes)}
+
+    def _execute(self, node):
+        a, op = node.attributes, node.op
+        if op == "sequence":
+            n = T.size(self.expr(a["length"]), "Length", self.max_items)
+            values = np.arange(n, dtype=object) * self.expr(a["step"]) + self.expr(
+                a["start"]
+            )
+            return self._new(
+                node, values, {"s": np.arange(n, dtype=object)}, axes=("s",), shape=(n,)
+            )
+        if op == "literal":
+            if len(a["values"]) > self.max_items:
+                raise ValueError("Literal exceeds item budget")
+            fields = dict(a["fields"])
+            if a["keys"] is not None:
+                fields["key"] = np.asarray(a["keys"], dtype=object)
+            if set(fields) & {"value", "index", "x", "y", "z", "s"}:
+                raise ValueError("Attributes shadow reserved bindings")
+            fields["s"] = np.arange(len(a["values"]), dtype=object)
+            return self._new(
+                node, a["values"], fields, axes=("s",), shape=(len(a["values"]),)
+            )
+        if op == "grid":
+            shape = tuple(
+                T.size(self.expr(v), "Axis size", self.max_items) for v in a["shape"]
+            )
+            fields = self._grid_fields(shape, a["axes"])
+            ctx = {**fields, "index": np.arange(prod(shape), dtype=object)}
+            values = T.broadcast(self.expr(a["values"], context=ctx), prod(shape))
+            return self._new(node, values, fields, axes=a["axes"], shape=shape)
+        if op == "young":
+            partition = tuple(
+                T.size(v, "Row length", self.max_items) for v in a["partition"]
+            )
+            if sum(partition) > self.max_items or any(
+                x < y for x, y in zip(partition, partition[1:])
+            ):
+                raise ValueError(
+                    "A Young diagram needs a nonincreasing partition within the item budget"
+                )
+            i = np.repeat(np.arange(len(partition)), partition).astype(object)
+            j = np.asarray([j for n in partition for j in range(n)], dtype=object)
+            ctx = {"i": i, "j": j, "index": np.arange(len(i), dtype=object)}
+            return self._new(
+                node,
+                T.broadcast(self.expr(a["values"], context=ctx), len(i)),
+                {"i": i, "j": j},
+                axes=("i", "j"),
+            )
+        if op == "spiral":
+            return self._spiral(node)
+        if op == "case":
+            bindings = {}
+            for k, rule in a["bindings"].items():
+                v = self.expr(rule)
+                if v.ndim:
+                    raise ValueError(
+                        "A constructor parameter needs a scalar; reduce explicitly"
+                    )
+                bindings[k] = v.item()
+            child = Evaluator(
+                {**self.parameters, **bindings},
+                max_items=self.max_items,
+                max_nodes=self.max_nodes,
+            )
+            result = child.get(node.inputs[0])
+            self.records[node.id].update(bindings=bindings, subtrace=child.records)
+            if len(self.evaluated) + len(child.evaluated) > self.max_nodes:
+                raise ValueError("Nested cases exceed node budget")
+            self.evaluated.update(child.evaluated)
+            if isinstance(result, IncidenceSnapshot):
+                return replace(result, node=node.id)
+            return self._derive(node, result)
+        if op not in _PRIMITIVES:
+            raise ValueError(f"Unregistered operation {op}")
+        source = self.get(node.inputs[0])
+        if op == "incidence":
+            return IncidenceSnapshot(
+                node.id,
+                source,
+                T.broadcast(self.expr(a["rule"], source), len(source), boolean=True),
+                str(a["rule"]),
+            )
+        if op == "reduce":
+            return self._reduce(node, source)
+        if op == "select":
+            return self._index(
+                node,
+                source.source,
+                np.flatnonzero(source.mask),
+                preserve_ids=True,
+                positions=node.kind == "arrangement",
+            )
+        if not isinstance(source, Snapshot):
+            raise ValueError("This operation needs integer items")
+        if op == "items":
+            return self._derive(node, source, positions=None)
+        if op == "values":
+            metadata = dict(source.metadata)
+            if "contributor_ids" in metadata:
+                for k in (
+                    "reducer",
+                    "formula",
+                    "contributor_ids",
+                    "keys",
+                    "population",
+                    "incidence",
+                    "universe",
+                    "counted",
+                ):
+                    metadata.pop(k, None)
+                metadata["prior_measurement"] = source.node
+            return self._derive(
+                node,
+                source,
+                values=T.broadcast(self.expr(a["rule"], source), len(source)),
+                metadata=metadata,
+            )
+        if op == "annotate":
+            fields = {
+                **source.fields,
+                **{
+                    name: T.broadcast(self.expr(rule, source), len(source))
+                    for name, rule in a["fields"].items()
+                },
+            }
+            if source.shape and set(a["fields"]) & set(source.axes):
+                raise ValueError("Logical index axes are changed with index operations")
+            return self._derive(node, source, fields=fields)
+        if op in ("place", "positions", "move"):
+            if op == "place":
+                pos = T.coordinates(
+                    [self.expr(e, source) for e in a["coordinates"]], len(source)
+                )
+            elif op == "positions":
+                pos = np.asarray(a["positions"], dtype=float)
+            else:
+                if source.positions is None:
+                    raise ValueError("Move needs an arrangement")
+                delta = np.asarray(self.expr(a["displacement"], source), dtype=float)
+                if delta.shape not in (
+                    (source.positions.shape[1],),
+                    source.positions.shape,
+                ):
+                    raise ValueError(
+                        "Displacement needs a vector, or one vector per occurrence"
+                    )
+                pos = source.positions + delta
+            return self._derive(
+                node,
+                source,
+                positions=pos,
+                metadata={**source.metadata, "dimension": pos.shape[1]},
+            )
+        if op == "order":
+            values = T.broadcast(self.expr(a["field"], source), len(source))
+            return self._index(
+                node,
+                source,
+                np.argsort(values, kind="stable"),
+                preserve_ids=True,
+                positions=node.kind == "arrangement",
+            )
+        if op in ("gather", "tile"):
+            axis = a["axis"]
+            dim = None if axis is None else self._dimensions(source, axis)
+            bound = len(source) if dim is None else source.shape[dim]
+            if op == "tile":
+                times = T.size(self.expr(a["times"]), "Repeat count", self.max_items)
+                if len(source) * times > self.max_items:
+                    raise ValueError("Tiling exceeds item budget")
+                indices = np.tile(np.arange(bound), times)
+            else:
+                given = a["indices"]
+                indices = (
+                    self.get(given).values
+                    if isinstance(given, Node)
+                    else self.expr(given)
+                )
+                indices = T.exact(indices)
+                if indices.ndim != 1:
+                    raise ValueError("Gather indices must be a 1D sequence")
+                if any(i < 0 or i >= bound for i in indices):
+                    raise IndexError("Gather address outside declared axis")
+                indices = np.asarray(indices, dtype=np.int64)
+                if a.get("bijective") and (
+                    len(indices) != bound or len(set(indices.tolist())) != bound
+                ):
+                    raise ValueError("A permutation requires a bijection")
+            if dim is None:
+                return self._index(node, source, indices)
+            shape = list(source.shape)
+            shape[dim] = len(indices)
+            shape = tuple(shape)
+            if prod(shape) > self.max_items:
+                raise ValueError("Gather exceeds item budget")
+            address = np.take(
+                np.arange(len(source)).reshape(source.shape), indices, axis=dim
+            ).ravel()
+            return self._index(
+                node,
+                source,
+                address,
+                fields=self._grid_fields(shape, source.axes),
+                shape=shape,
+                axes=source.axes,
+            )
+        if op == "roll":
+            dim = self._dimensions(source, a["axis"])
+            if source.positions is None:
+                raise ValueError("Roll needs a placed index domain")
+            if len(source) == 0:
+                return self._derive(node, source)
+            shifts = T.exact(T.broadcast(self.expr(a["shift"], source), len(source)))
+            coords = np.indices(source.shape).reshape(len(source.shape), -1)
+            # One cyclic displacement per fiber; a cell-varying address map is Gather.
+            shaped = shifts.reshape(source.shape)
+            first = np.take(shaped, 0, axis=dim)
+            if not np.all(shaped == np.expand_dims(first, dim)):
+                raise ValueError("Roll shift must be constant along each shifted fiber")
+            source_coords = coords.copy()
+            source_coords[dim] = np.asarray(
+                (coords[dim].astype(object) - shifts) % source.shape[dim],
+                dtype=np.int64,
+            )
+            address = np.ravel_multi_index(tuple(source_coords), source.shape)
+            result = self._index(
+                node,
+                source,
+                address,
+                preserve_ids=True,
+                fields=self._grid_fields(source.shape, source.axes),
+                shape=source.shape,
+                axes=source.axes,
+            )
+            return replace(
+                result,
+                positions=source.positions,
+                metadata={
+                    **result.metadata,
+                    "dimension": source.positions.shape[1],
+                    "roll_axis": a["axis"],
+                    "roll_shifts": shifts.tolist(),
+                },
+            )
+        if op == "concat":
+            return self._concat(node, source, self.get(node.inputs[1]))
+        if op == "pad":
+            return self._pad(node, source)
+        raise ValueError(f"Unsupported operation {op}")
+
+    def _reduce(self, node, incidence):
+        a = node.attributes
+        source = incidence.source
+        groups = a["groups"]
+        if groups:
+            rows = T.key_rows([self.expr(e, source) for _, e in groups], len(source))
+            if source.shape is not None and all(
+                e.op == "field" and e.args[0] in source.axes for _, e in groups
+            ):
+                retained_shape = tuple(
+                    source.shape[source.axes.index(e.args[0])] for _, e in groups
+                )
+                keys = tuple(
+                    tuple(int(v) for v in row) for row in np.ndindex(retained_shape)
+                )
+                address = {key: i for i, key in enumerate(keys)}
+                inverse = np.asarray([address[key] for key in rows], dtype=np.int64)
+            else:
+                keys, inverse = T.factorize(rows)
+        else:
+            keys, inverse = ((),), np.zeros(len(source), dtype=np.int64)
+        population = T.segment_sum(
+            np.ones(len(source), dtype=object), inverse, len(keys)
+        )
+        selected = np.flatnonzero(incidence.mask)
+        values = np.ones(len(selected), dtype=object)
+        if a["reducer"] == "sum":
+            values = T.exact(T.broadcast(self.expr(a["value"], source), len(source)))[
+                selected
+            ]
+        reduced = T.segment_sum(values, inverse[selected], len(keys))
+        if a["reducer"] == "any":
+            reduced = (reduced != 0).astype(object)
+        if a["reducer"] == "any":
+            reduced = np.asarray([int(v) for v in reduced], dtype=object)
+        ids = tuple(
+            f"{node.id}:key:{json.dumps(key, separators=(',', ':'))}" for key in keys
+        )
+        fields = {
+            name: np.asarray([key[i] for key in keys], dtype=object)
+            for i, (name, _) in enumerate(groups)
+        }
+        fields["key"] = (
+            np.asarray([key[0] for key in keys], dtype=object)
+            if len(groups) == 1
+            else np.arange(len(keys), dtype=object)
+        )
+        parents = tuple(
+            tuple(Ref(source.node, source.ids[i]) for i in selected if inverse[i] == k)
+            for k in range(len(keys))
+        )
+        formula = f"{a['reducer']} over {{p in A : {incidence.rule}}}, grouped by " + (
+            ", ".join(str(e) for _, e in groups) or "the whole finite domain"
+        )
+        return Snapshot(
+            node.id,
+            reduced,
+            ids,
+            ids,
+            fields,
+            parents=parents,
+            metadata={
+                "reducer": a["reducer"],
+                "counted": "occurrences",
+                "keys": keys,
+                "population": population.tolist(),
+                "contributor_ids": tuple(
+                    tuple(r.occurrence for r in row) for row in parents
+                ),
+                "universe": source.node,
+                "incidence": incidence.node,
+                "formula": formula,
+                "complete": True,
+                "finite": True,
+            },
+        )
+
+    def _spiral(self, node):
+        a = node.attributes
+        limit = T.size(self.expr(a["count"]), "Extent", self.max_items)
+        n = T.size(self.expr(a["initial"]), "Initial run", self.max_items, minimum=1)
+        coords, cycles, ends, seed_ends, widths, heights = [], [], [], [], [], []
+
+        def add(x, y, cycle, seed=False):
+            coords.append((x, y))
+            cycles.append(cycle)
+            ends.append(False)
+            seed_ends.append(seed)
+            widths.append(0)
+            heights.append(0)
+
+        for x in range(min(n, limit)):
+            add(x, 0, 1, x == n - 1)
+        minx, maxx, miny, maxy, k = 0, n - 1, 0, 0, 2
+        while len(coords) < limit:
+            if k % 2 == 0:
+                maxy += 1
+                row = [(x, maxy) for x in range(maxx, minx - 1, -1)]
+                minx -= 1
+                col = [(minx, y) for y in range(maxy, miny - 1, -1)]
+            else:
+                miny -= 1
+                row = [(x, miny) for x in range(minx, maxx + 1)]
+                maxx += 1
+                col = [(maxx, y) for y in range(miny, maxy + 1)]
+            complete = len(coords) + len(row) + len(col) <= limit
+            for x, y in (row + col)[: limit - len(coords)]:
+                add(x, y, k)
+            if complete:
+                ends[-1] = True
+                widths[-1] = maxx - minx + 1
+                heights[-1] = maxy - miny + 1
+            k += 1
+        pos = np.asarray(coords, dtype=float).reshape(-1, 2)
+        fields = {
+            "cycle": np.asarray(cycles, dtype=object),
+            "cycle_end": np.asarray(ends, bool),
+            "seed_end": np.asarray(seed_ends, bool),
+            "width": np.asarray(widths, dtype=object),
+            "height": np.asarray(heights, dtype=object),
+        }
+        ctx = {
+            **fields,
+            "index": np.arange(limit, dtype=object),
+            "x": pos[:, 0],
+            "y": pos[:, 1],
+        }
+        values = T.broadcast(self.expr(a["values"], context=ctx), limit)
+        return self._new(node, values, fields, positions=pos)
+
+    def _concat(self, node, left, right):
+        if len(left) + len(right) > self.max_items:
+            raise ValueError("Concatenation exceeds item budget")
+        if set(left.fields) != set(right.fields):
+            raise ValueError(
+                "Concatenation needs matching attribute names; annotate missing attributes explicitly"
+            )
+        axis = node.attributes["axis"]
+        shape, axes, address = None, (), np.arange(len(left) + len(right))
+        if axis is not None:
+            dim = self._dimensions(left, axis)
+            if (
+                left.axes != right.axes
+                or right.shape is None
+                or any(
+                    a != b
+                    for i, (a, b) in enumerate(zip(left.shape, right.shape))
+                    if i != dim
+                )
+            ):
+                raise ValueError("Non-concatenated axes must agree")
+            shape = tuple(
+                a + b if i == dim else a
+                for i, (a, b) in enumerate(zip(left.shape, right.shape))
+            )
+            axes = left.axes
+            address = np.concatenate(
+                (
+                    np.arange(len(left)).reshape(left.shape),
+                    np.arange(len(left), len(left) + len(right)).reshape(right.shape),
+                ),
+                axis=dim,
+            ).ravel()
+        fields = {
+            k: np.concatenate((left.fields[k], right.fields[k]))[address]
+            for k in left.fields
+        }
+        if shape is not None:
+            fields.update(self._grid_fields(shape, axes))
+        refs = tuple(Ref(left.node, o) for o in left.ids) + tuple(
+            Ref(right.node, o) for o in right.ids
+        )
+        parents = tuple(refs[i] for i in address)
+        sources = left.sources + right.sources
+        return Snapshot(
+            node.id,
+            np.concatenate((left.values, right.values))[address],
+            tuple(f"{node.id}:{i}" for i in range(len(address))),
+            tuple(sources[i] for i in address),
+            fields,
+            axes=axes,
+            shape=shape,
+            parents=tuple((r,) for r in parents),
+            motion_parents=parents,
+            metadata={"operation": "concat", "complete": True, "finite": True},
+        )
+
+    def _pad(self, node, source):
+        a = node.attributes
+        before = T.size(self.expr(a["before"]), "Before padding", self.max_items)
+        after = T.size(self.expr(a["after"]), "After padding", self.max_items)
+        count = before + len(source) + after
+        if count > self.max_items:
+            raise ValueError("Padding exceeds item budget")
+        value = self.expr(a["value"])
+        if value.ndim:
+            raise ValueError("Padding fill must be scalar")
+        sequence_axis = source.axes == ("s",) and source.shape is not None
+        extra = set(source.fields) - {"key"} - ({"s"} if sequence_axis else set())
+        if extra - set(a["attribute_fill"]):
+            raise ValueError(
+                "Declare padding fill for attributes: "
+                + ", ".join(sorted(extra - set(a["attribute_fill"])))
+            )
+        ids = tuple(f"{node.id}:{i}" for i in range(count))
+        vals = np.concatenate(
+            (
+                np.full(before, value.item(), dtype=object),
+                source.values,
+                np.full(after, value.item(), dtype=object),
+            )
+        )
+        fields = {}
+        for k, values in source.fields.items():
+            if k == "key":
+                fields[k] = np.asarray(
+                    [f"pad:{node.id}:{i}" for i in range(before)]
+                    + values.tolist()
+                    + [f"pad:{node.id}:{before+len(source)+i}" for i in range(after)],
+                    dtype=object,
+                )
+            elif k == "s" and sequence_axis:
+                fields[k] = np.arange(count, dtype=object)
+            else:
+                fields[k] = np.concatenate(
+                    (
+                        np.full(before, a["attribute_fill"][k]),
+                        values,
+                        np.full(after, a["attribute_fill"][k]),
+                    )
+                )
+        refs = (
+            (None,) * before
+            + tuple(Ref(source.node, o) for o in source.ids)
+            + (None,) * after
+        )
+        sources = ids[:before] + source.sources + ids[before + len(source) :]
+        return Snapshot(
+            node.id,
+            vals,
+            ids,
+            sources,
+            fields,
+            axes=("s",) if sequence_axis else (),
+            shape=(count,) if sequence_axis else None,
+            parents=tuple(() if r is None else (r,) for r in refs),
+            motion_parents=refs,
+            metadata={
+                "operation": "pad",
+                "fill": value.item(),
+                "complete": True,
+                "finite": True,
+            },
+        )
