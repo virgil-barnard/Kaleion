@@ -2,6 +2,8 @@
 
 Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is an editable walkthrough of the module, with interactive 2D/3D plots, parameter-case scrubbers, recorded motion and undo, and two embedded MP4 videos. It uses finite constructions and no external datasets.
 
+[02_floor_sum_proof.ipynb](02_floor_sum_proof.ipynb) is a self-contained construction page for reciprocal floor sums. It places readable notation beside two incidences on a shared integer rectangle, checks their grouped counts and union/intersection, and animates packing and undo. The written argument proves the identity for all positive coprime parameters greater than one; exact finite examples also expose the `gcd(a, b) - 1` overlap correction. "Area" here counts unit cells, with explicit integer summation bounds. This notebook uses the existing symbolic Python API and does not introduce a text-language parser or proof assistant.
+
 ## Install and launch
 
 From the repository root on WSL/Linux/macOS:
@@ -14,7 +16,7 @@ python3 -m ipykernel install --sys-prefix --name kaleion --display-name "Kaleion
 python3 -m jupyterlab notebooks/01_discovery_workbench.ipynb
 ```
 
-Reuse an existing environment if already installed. Choose the **Kaleion** kernel, then **Restart Kernel and Run All Cells**. The first cell prints the kernel executable so you can confirm it belongs to `.venv`. In VS Code, open the repository in WSL, open the notebook, and choose that environment or the Kaleion kernel. If WSL does not open a browser automatically, copy JupyterLab's local URL from the terminal into your Windows browser.
+Reuse an existing environment if already installed. Choose the **Kaleion** kernel, then **Restart Kernel and Run All Cells**. The first notebook prints the kernel executable so you can confirm it belongs to `.venv`. In VS Code, open the repository in WSL, open the notebook, and choose that environment or the Kaleion kernel. If WSL does not open a browser automatically, copy JupyterLab's local URL from the terminal into your Windows browser. Open the second notebook in the same session, or substitute its filename in the launch command above.
 
 Notebook dependencies are optional: `python3 -m pip install -e .` still installs only the core. Installing `.[notebooks]` adds JupyterLab, the kernel/conversion tools, Plotly, Pillow, and imageio-ffmpeg. Plotly is imported only when its adapter is used. The FFmpeg wheels include an encoder on common platforms; if yours does not, install FFmpeg and point `IMAGEIO_FFMPEG_EXE` to its executable.
 
@@ -49,6 +51,8 @@ Run All writes these generated outputs into `build/notebooks/`:
 
 GitHub's notebook preview does not run interactive JavaScript. Run the notebook locally or open its generated HTML views in a browser. Newly executed local cells are trusted by Jupyter; only trust saved notebook outputs if you trust their source. Clearing outputs before committing keeps embedded Plotly.js, videos, generated IDs, and execution counts out of reviews.
 
+The second notebook writes to `build/notebooks/floor-sum/`: `partition.html`, `packing.html` (for coprime parameters), and `noncoprime.html` are standalone interactive views; `floor-sum-workspace.json` preserves the definitions, results, and capture; `floor-sum-cases.json` records the finite checks. Its packing animation uses the same captured transition for forward playback and undo.
+
 ## Execute without the UI
 
 With the environment activated and the kernel installed as above, run from the repository root:
@@ -56,9 +60,11 @@ With the environment activated and the kernel installed as above, run from the r
 ```sh
 python3 -m jupyter nbconvert --to notebook --execute notebooks/01_discovery_workbench.ipynb --output-dir build/notebooks --output 01_discovery_workbench.executed.ipynb --ExecutePreprocessor.timeout=180
 python3 -m jupyter nbconvert --to html build/notebooks/01_discovery_workbench.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/02_floor_sum_proof.ipynb --output-dir build/notebooks --output 02_floor_sum_proof.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/02_floor_sum_proof.executed.ipynb --output-dir build/notebooks
 ```
 
-The committed source notebook has no outputs. Execution creates a populated copy, including its plots and embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.
+The committed source notebooks have no outputs. Execution creates populated copies with plots and, in the first notebook, embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.
 
 For a quick separate encoder check:
 

@@ -1,4 +1,5 @@
 import json
+from math import gcd
 import unittest
 import numpy as np
 
@@ -138,6 +139,55 @@ class SymbolicTests(unittest.TestCase):
 
 
 class DiscoveryTests(unittest.TestCase):
+    def test_floor_sum_incidences_cover_with_exact_diagonal_overlap(self):
+        a, b = param("a"), param("b")
+        rectangle = (
+            Collection.grid(b - 1, a - 1, values=1)
+            .annotate(u=F.i + 1, v=F.j + 1)
+            .arrange(F.u, F.v)
+        )
+        lower = rectangle.where(b * F.v <= a * F.u)
+        upper = rectangle.where(a * F.u <= b * F.v)
+        columns, rows = lower.count(by=F.u), upper.count(by=F.v)
+        roots = {
+            "D": rectangle, "union": lower | upper, "overlap": lower & upper,
+            "columns": columns, "rows": rows,
+            "left": columns.sum(), "right": rows.sum(),
+        }
+        for av, bv in [(11, 7), (7, 11), (12, 8), (2, 3), (2, 2)]:
+            with self.subTest(a=av, b=bv):
+                state = Workspace(roots, {"a": av, "b": bv}).state
+                self.assertFalse(state.errors)
+                r = state.results
+                self.assertEqual(r["columns"].values.tolist(),
+                                 [av * x // bv for x in range(1, bv)])
+                self.assertEqual(r["rows"].values.tolist(),
+                                 [bv * y // av for y in range(1, av)])
+                self.assertTrue(r["union"].mask.all())
+                self.assertEqual(r["union"].source.ids, r["D"].ids)
+                d = gcd(av, bv)
+                overlap = r["overlap"]
+                shared = list(zip(overlap.source.fields["u"][overlap.mask],
+                                  overlap.source.fields["v"][overlap.mask]))
+                self.assertEqual(shared, [(k * bv // d, k * av // d)
+                                          for k in range(1, d)])
+                total = r["left"].values[0] + r["right"].values[0]
+                self.assertEqual(total - overlap.cardinality, (av - 1) * (bv - 1))
+
+    def test_quotient_region_reorients_to_floor_columns_without_new_items(self):
+        _, region, incidence, _, _ = quotient_fixture()
+        a = param("a")
+        reoriented = region.arrange(F.i, a - F.j).where(F.value >= a * param("b"))
+        for av, bv in [(11, 7), (12, 8)]:
+            with self.subTest(a=av, b=bv):
+                original = incidence.evaluate(a=av, b=bv)
+                moved = reoriented.evaluate(a=av, b=bv)
+                self.assertEqual(moved.source.ids, original.source.ids)
+                np.testing.assert_array_equal(moved.mask, original.mask)
+                points = {tuple(p) for p in moved.source.positions[moved.mask]}
+                self.assertEqual(points, {(x, y) for x in range(bv)
+                                          for y in range(1, av * x // bv + 1)})
+
     def test_quotient_and_remainder_grid_of_cases(self):
         remainder, region, lens, counts, rolled = quotient_fixture()
         for a in range(2, 14):
