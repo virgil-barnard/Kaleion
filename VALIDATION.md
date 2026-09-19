@@ -2,6 +2,29 @@
 
 Executed September 19, 2026 on Python 3.12.14 with NumPy 2.3.5. The tests exercise the Python implementation; prior browser-prototype checks are recorded separately in the architecture document.
 
+## Finite-geometry discovery lessons
+
+- **82 tests pass** with `python3 -m unittest discover -s tests -v`. Eight new
+  independent-oracle tests exercise the actual norm-fiber and Hermitian notebook
+  definitions, including exact field coordinates, quotient contributors, keyed
+  coverage/ranks, invalid choices, and saved reverse motion.
+- `python3 examples/discovery.py --out build/example-output` retains all reference
+  results. No core implementation, dependency, operation version, or schema changes.
+- Both new notebooks execute 23 code cells in fresh in-process IPython sessions;
+  the norm lesson also runs fully at `P=11`. Their source outputs remain cleared.
+  Offline browser checks cover 13 new views, both converted notebooks, every polar
+  selection, animation endpoints, reversed paths, camera retention, and controls.
+  Both 100-frame MP4s decode completely. Two new static previews extend the gallery.
+- All new captures reopen with provenance and history. The full Hermitian motion
+  capture is about 18.3 MiB in compact JSON, below the unchanged 32 MiB import budget.
+  The notebook narrows explicit pair domains and removes JSON whitespace; it does
+  not discard evaluated states or evidence.
+
+The [notebook validation record](notebooks/VALIDATION.md#norm-fibers-and-hermitian-partitions)
+details these finite fixtures, visual checks, the existing Plotly Pause cancellation
+event, and the host's lack of live kernel sockets. Prior checks below remain
+historical evidence; the existing eight notebooks were not rerun for this addition.
+
 ## Snapshot ownership and shared indexing
 
 - **74 tests pass.** Nine new tests cover external array/container aliasing,

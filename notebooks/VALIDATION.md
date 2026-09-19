@@ -1,5 +1,56 @@
 # Notebook viewer validation
 
+## Norm fibers and Hermitian partitions
+
+- Lessons 09 and 10 execute all 23 code cells in fresh in-process IPython sessions,
+  including saved-state, contributor, motion, and MP4 assertions. Lesson 09 also
+  executes fully at `P=11`. Source notebooks validate with cleared outputs. The
+  previously documented local-kernel socket restriction applies; this is not a
+  live JupyterLab session.
+- **82 unit tests pass.** Eight new tests load the actual tagged construction
+  cells without a notebook kernel or Plotly. Independent polynomial arithmetic
+  and finite set oracles check products, conjugation, norm fibers, generators,
+  all projective classes, all polar incidences, both partitions, sparse retained
+  keys, reversed driver storage, infinity-chart poles, contributors, saved reverse
+  paths, and invalid-pole failure isolation. The reference example is unchanged.
+- At `p=7`, norm counts are `[1,8,8,8,8,8,8]`. Multiplication changes the exact
+  labels along a cyclic path; a generator change preserves values and identity.
+  At `p=5`, the displayed quotient has nine zero-norm elements and nonzero zero
+  divisors. The general norm-fiber argument is written separately in the lesson.
+- The `F_9` investigation starts with 728 representatives of 91 classes, eight
+  contributors each. Its curve has 28 points, 28 tangents, and 63 four-point
+  secants. Every curve point has ten line incidences; each pair shares one secant.
+  Measured owners and ranks give nine triples plus the focus, and seven quadruples.
+  Removing the default external polar leaves exactly keys `[85,86,88,89]` uncovered.
+- Offline Chromium checks load all 13 standalone HTML views and both converted
+  notebooks, with HTTP(S) requests blocked. The converted notebooks contain six
+  and seven interactive figures and one embedded video each. Every one of the 91
+  polar frames selects exactly its measured incidence row.
+- The 150-frame norm motion, 50-frame generator change, 50-frame projective
+  normalization, and 100-frame partition motion reach their checked endpoints,
+  preserve occurrence colors, reverse exactly, and respond to Play/Pause/Restart.
+  The 3D views retain a changed camera. The known Plotly 6.9.0 `undefined` promise
+  cancellation appears once for each active Pause; playback stops and Restart
+  works. No other page errors occurred.
+- Screenshots at 1100 and 700 pixels were inspected for the motion sequences,
+  along with coefficient/fiber views, the incidence matrix, polars, and missing
+  points. Both MP4 files decode all 100 frames at 960×640 and 24 fps. Sampled
+  decoded frames were inspected; the norm video's labels use `beta` so the
+  raster adapter's available font displays them correctly. The videos use the
+  raster adapter's own styling, not the Plotly identity-color palette.
+- Both new 960×600 gallery images export offline without browser errors and
+  total about 129 KiB. The Hermitian preview fits its selected frame and labels
+  group order and within-group rank with independent screen scales.
+
+The partition lesson restricts products to the declared support (91×28 incidence,
+28×28 rank comparisons). All ten new workspace files reopen with their complete
+evidence. Compact JSON removes whitespace only: the default partition motion is
+about 18.3 MiB, compared with 37.0 MiB indented, and retains its pending redo path.
+The 32 MiB import budget, saved schema, core operations, and dependencies are
+unchanged. Sharing evaluated dependencies across saved states remains future work.
+These finite checks do not prove the general unital theorems; their source and
+scope are identified separately in the lesson.
+
 ## Snapshot ownership and indexing regression check
 
 All eight notebooks rerun successfully in fresh in-process IPython sessions: 77

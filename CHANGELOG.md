@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add norm-fiber and Hermitian-geometry lessons using existing primitives: finite-field cyclic motion, projective classes, polar lenses, measured partitions, counterexamples, captured undo, and two MP4 exports.
+- Add educational notes, concrete UI discovery choices, and future briefs for Burnside counting, syndrome fibers, and Hermitian block exchanges. Extend the README gallery to ten lessons.
+- Check finite arithmetic, projective incidence, keyed coverage/rank drivers, contributors, and restored motion with eight independent-oracle lesson tests. No core operation, dependency, or saved schema changes.
 - Added a README gallery from all eight lessons, with notebook links and a figure exporter for regenerating the static previews.
 
 - Share unchanged validated snapshot buffers and frozen metadata during internal derivation; public constructors still copy caller data. Seal identity/lineage containers and reject mutable field elements.

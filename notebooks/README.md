@@ -16,7 +16,11 @@ Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is a
 
 [08_ehrhart_counts.ipynb](08_ehrhart_counts.ipynb) counts integer dilations of a triangle, keeps those cases as symbolic inputs to a measured family, and derives finite differences. The measurements drive independent probes in a 102-frame sequence. Interior/boundary comparisons explain reciprocity; a rational triangle demonstrates a period-two quasipolynomial. A separate embedded MP4 holds the exact dilation cases.
 
-The [lesson guide](../docs/lessons/README.md) contains educational notes for every existing notebook and [detailed plans](../docs/lessons/FUTURE_LESSONS.md) for the next investigations. The notes separate a lesson's construction, visual question, general explanation, finite evidence, and remaining design questions. [Review notes](../docs/lessons/REVIEW_NOTES.md) collect evidence from all eight lessons for the upcoming design discussion.
+[09_norm_fibers.ipynb](09_norm_fibers.ipynb) constructs a quadratic finite field with coefficient formulas, counts norm fibers, and chooses a phase generator. Measured sizes determine angular spacing; multiplication becomes one cyclic turn. A 150-frame grid/rings/cylinder/undo sequence and a separate coordinate-change animation distinguish changing values from changing their arrangement. A reducible quotient and a triangle-inequality counterexample expose the domain assumptions.
+
+[10_hermitian_partitions.ipynb](10_hermitian_partitions.ipynb) normalizes 728 nonzero triples into 91 projective classes, then selects a 28-point Hermitian curve. Inspect all 91 polar lenses and derive line owners and ranks from incidences. A 100-frame sequence gathers the same points into nine triples plus one point, then seven quadruples, and reverses both actions. Removing a polar line exposes four uncovered points.
+
+The [lesson guide](../docs/lessons/README.md) contains educational notes for every existing notebook and [detailed plans](../docs/lessons/FUTURE_LESSONS.md) for the next investigations. The notes separate a lesson's construction, visual question, general explanation, finite evidence, and remaining design questions. [Review notes](../docs/lessons/REVIEW_NOTES.md) collect evidence from all ten lessons. [UI discovery notes](../docs/lessons/UI_DISCOVERY_NOTES.md) connect the new constructions to proposed declarative choices and separate module responsibilities.
 
 ## Install and launch
 
@@ -65,7 +69,7 @@ Run All writes these generated outputs into `build/notebooks/`:
 
 GitHub's notebook preview does not run interactive JavaScript. Run the notebook locally or open its generated HTML views in a browser. Newly executed local cells are trusted by Jupyter; only trust saved notebook outputs if you trust their source. Clearing outputs before committing keeps embedded Plotly.js, videos, generated IDs, and execution counts out of reviews.
 
-The main README includes [static previews from all eight lessons](../README.md#a-glimpse-of-the-lessons). [Gallery regeneration](../docs/images/lessons/README.md) extracts those figures from executed notebooks without rerunning their constructions. PNG previews stay small and work directly on GitHub; full interactive outputs remain under `build/`.
+The main README includes [static previews from all ten lessons](../README.md#a-glimpse-of-the-lessons). [Gallery regeneration](../docs/images/lessons/README.md) extracts those figures from executed notebooks without rerunning their constructions. PNG previews stay small and work directly on GitHub; full interactive outputs remain under `build/`.
 
 The second notebook writes to `build/notebooks/floor-sum/`: `partition.html`, `packing.html` (for coprime parameters), and `noncoprime.html` are standalone interactive views; `floor-sum-workspace.json` preserves the definitions, results, and capture; `floor-sum-cases.json` records the finite checks. Its packing animation uses the same captured transition for forward playback and undo.
 
@@ -81,7 +85,11 @@ The seventh writes to `build/notebooks/additive-structure/`: five HTML figures (
 
 The eighth writes to `build/notebooks/ehrhart-counts/`: five HTML figures (`integer-dilations`, `count-differences`, `measured-difference-motion`, `interior-boundary`, `rational-periodicity`), two workspaces, `checks.json`, `case-explanation.json`, and `integer-dilations.mp4`. Use `4 <= MAX_N <= 12`. `INSPECT_N` selects a case whose original point contributors are shown. The default video has nine held integer cases, not interpolated counts.
 
-All notebooks use the existing optional dependencies. Lessons 06–08 share [lesson_views.py](lesson_views.py), a presentation-only helper beside the notebooks; their mathematical constructions remain visible. Longer presentation cells can be expanded in Jupyter when initially folded. A normal notebook execution needs no browser, but displaying interactive figures does.
+The ninth writes to `build/notebooks/norm-fibers/`: six HTML figures (`coefficient-grid`, `fiber-counts`, `grid-fibers-turn`, `fiber-cylinder`, `generator-change`, `reducible-counterexample`), four workspaces, `checks.json`, `fiber-explanation.json`, and `fiber-turn-and-undo.mp4`. Use `P` in `{3,7,11}` and a norm-one `BETA` of order `P+1`. `INSPECT_NORM` selects a retained key. The video explicitly projects the planar stages of the 3D motion into 2D.
+
+The tenth writes to `build/notebooks/hermitian-partitions/`: seven HTML figures (`projective-quotient`, `hermitian-curve`, `incidence-matrix`, `line-counts`, `polar-lens`, `two-partitions`, `missing-polar`), six workspaces, `checks.json`, `point-explanation.json`, and `two-partitions-and-undo.mp4`. This model uses `P=3`, giving the field `F_9`. Choose `FOCUS` on the curve and `EXTERNAL` outside it, then rerun downstream cells. The polar scrubber selects previously evaluated cases. Capture files use compact JSON with all evidence retained; the default partition-motion file is about 18.3 MiB, below the existing 32 MiB import budget. This is a small enumerated investigation, not a scalable finite-geometry backend.
+
+All notebooks use the existing optional dependencies. Lessons 06–10 share [lesson_views.py](lesson_views.py), a presentation-only helper beside the notebooks; their mathematical constructions remain visible. Lessons 09–10 also share [quadratic_coordinates.py](quadratic_coordinates.py), visible coefficient formulas composed from integer operations, without adding a core value domain. Longer presentation cells can be expanded in Jupyter when initially folded. A normal notebook execution needs no browser, but displaying interactive figures does.
 
 ## Execute without the UI
 
@@ -104,9 +112,13 @@ python3 -m jupyter nbconvert --to notebook --execute notebooks/07_additive_struc
 python3 -m jupyter nbconvert --to html build/notebooks/07_additive_structure.executed.ipynb --output-dir build/notebooks
 python3 -m jupyter nbconvert --to notebook --execute notebooks/08_ehrhart_counts.ipynb --output-dir build/notebooks --output 08_ehrhart_counts.executed.ipynb --ExecutePreprocessor.timeout=180
 python3 -m jupyter nbconvert --to html build/notebooks/08_ehrhart_counts.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/09_norm_fibers.ipynb --output-dir build/notebooks --output 09_norm_fibers.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/09_norm_fibers.executed.ipynb --output-dir build/notebooks
+python3 -m jupyter nbconvert --to notebook --execute notebooks/10_hermitian_partitions.ipynb --output-dir build/notebooks --output 10_hermitian_partitions.executed.ipynb --ExecutePreprocessor.timeout=180
+python3 -m jupyter nbconvert --to html build/notebooks/10_hermitian_partitions.executed.ipynb --output-dir build/notebooks
 ```
 
-The committed source notebooks have no outputs. Execution creates populated copies with plots and, in lessons 01, 07, and 08, embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.
+The committed source notebooks have no outputs. Execution creates populated copies with plots and, in lessons 01, 07, 08, 09, and 10, embedded videos. Per-figure HTML exports are the fully offline viewing option; the full nbconvert document may retain template links such as math-rendering assets.
 
 For a quick separate encoder check:
 

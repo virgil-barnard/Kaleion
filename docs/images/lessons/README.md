@@ -12,10 +12,12 @@ These PNGs are exported from Plotly figures in the executed notebooks with their
 | `06-young-layers.png` | [06 · Young layers](../../../notebooks/06_young_layers.ipynb) | Halfway through the recorded 3D turn, frame `10` |
 | `07-additive-structure.png` | [07 · Additive structure](../../../notebooks/07_additive_structure.ipynb) | Completed stacking by measured rank, frame `41` |
 | `08-ehrhart-counts.png` | [08 · Ehrhart counts](../../../notebooks/08_ehrhart_counts.ipynb) | Exact dilation `n = 6`, frame `6` |
+| `09-norm-fibers.png` | [09 · Norm fibers](../../../notebooks/09_norm_fibers.ipynb) | Six measured norm fibers in 3D, `p = 7` |
+| `10-hermitian-partitions.png` | [10 · Hermitian partitions](../../../notebooks/10_hermitian_partitions.ipynb) | Seven groups of four, frame `49`; fitted axes with independent screen scales |
 
 ## Regenerate
 
-First execute all eight notebooks with default parameters, following the [notebook instructions](../../../notebooks/README.md#execute-without-the-ui). Their populated copies belong in `build/notebooks/*.executed.ipynb`; the source notebooks remain cleared.
+First execute all ten notebooks with default parameters, following the [notebook instructions](../../../notebooks/README.md#execute-without-the-ui). Their populated copies belong in `build/notebooks/*.executed.ipynb`; the source notebooks remain cleared.
 
 From the repository root, with the notebook environment activated:
 

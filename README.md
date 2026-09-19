@@ -29,6 +29,10 @@ These images come from the working notebooks. Follow a preview to its constructi
 <td><a href="notebooks/07_additive_structure.ipynb"><img src="docs/images/lessons/07-additive-structure.png" alt="Ordered pairs stacked by their shared sums and measured ranks"><br><b>07 · How many ways can a sum occur?</b></a><br>Make convolution and additive energy visible.</td>
 <td><a href="notebooks/08_ehrhart_counts.ipynb"><img src="docs/images/lessons/08-ehrhart-counts.png" alt="The twenty-eight lattice points in the sixth integer dilation of a triangle"><br><b>08 · Count as a triangle grows</b></a><br>Discover polynomial and periodic counting laws.</td>
 </tr>
+<tr>
+<td><a href="notebooks/09_norm_fibers.ipynb"><img src="docs/images/lessons/09-norm-fibers.png" alt="Forty-eight nonzero field elements arranged into six norm fibers on separate levels"><br><b>09 · A field changes its clothes</b></a><br>Rearrange a finite field so multiplication becomes a turn.</td>
+<td><a href="notebooks/10_hermitian_partitions.ipynb"><img src="docs/images/lessons/10-hermitian-partitions.png" alt="Twenty-eight Hermitian curve points regrouped into seven secants of four points each"><br><b>10 · One curve, two ways to gather it</b></a><br>Let incidence measurements drive different partitions.</td>
+</tr>
 </table>
 
 The images are static previews; selected motion frames show presentation states. [Preview sources and regeneration](docs/images/lessons/README.md).
@@ -89,7 +93,11 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 [Count lattice points as a triangle grows](notebooks/08_ehrhart_counts.ipynb) preserves parameter cases in a measured family, derives finite differences, and uses them to move independent probes. Interior counts explain reciprocity; a rational triangle introduces periodic polynomial formulas. Its video shows exact integer dilation cases.
 
-The [lesson guide](docs/lessons/README.md) provides educational notes for all eight notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve the original plans and remaining investigations.
+[A field changes its clothes](notebooks/09_norm_fibers.ipynb) brings the norm-fiber and rotation experiments from [Finite-Hermitian-Geometry](https://github.com/virgil-barnard/Finite-Hermitian-Geometry) into Kaleion. Derived fiber counts set angular spacing, multiplication becomes a cyclic turn, and the fibers separate in 3D. Changing the generator and breaking the field assumption expose two different kinds of change.
+
+[One curve, two ways to gather it](notebooks/10_hermitian_partitions.ipynb) constructs projective classes and a 28-point Hermitian curve over `F_9`. Explore its polar lenses, then use coverage counts and measured ranks to gather the same points into nine triples plus one point, or seven quadruples. Removing a line exposes uncovered points; captured motion reverses both partitions.
+
+The [lesson guide](docs/lessons/README.md) provides educational notes for all ten notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, error-correcting codes, further Hermitian investigations, and earlier extensions.
 
 The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core now also shares unchanged owned snapshot buffers and centralizes address and grouping rules. Later stages propose simpler authoring recipes and stronger explanation tools; the plan marks what remains.
 

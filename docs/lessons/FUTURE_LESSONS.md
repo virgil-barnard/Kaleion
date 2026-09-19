@@ -6,6 +6,85 @@ The five investigations in the preceding plan now have notebooks: lessons
 their original briefs and explicitly identifies remaining extensions. The
 [review notes](REVIEW_NOTES.md) record what the delivered constructions reveal.
 
+Two further investigations are now delivered: [09 · Norm fibers](09_norm_fibers.md)
+and [10 · Hermitian partitions](10_hermitian_partitions.md). They bring finite-field
+motion, projective quotienting, polars, and measured partitions into Kaleion. The
+[UI discovery notes](UI_DISCOVERY_NOTES.md) connect them to earlier lessons. The
+following candidates are planned, not implemented.
+
+## Next · Symmetry, orbits, and Burnside counting
+
+**Question:** Why can we not count necklaces by dividing the number of strings by
+the number of rotations?
+
+**Start with:** the 64 binary strings of length six and the six cyclic rotations.
+Declare the action using integer bit positions. Relate a string to each rotation
+that fixes it; count along both axes. Choose the least rotated code as an explicit
+orbit key, preserving the strings that contribute to each class.
+
+**Motion:** rotate the six positions of a selected string, then gather all strings
+by their orbit keys. Derive orbit sizes and use measured ranks to separate members.
+Show the same rotation acting on several strings at once. Undo restores the
+original occurrences, including strings that never visibly moved.
+
+**Explanation:** the fixed-string counts for rotations `0,...,5` are
+`[64,2,4,8,4,2]`, whose average is 14 necklaces. Double-count pairs `(rotation,string)`
+where the rotation fixes the string. Each orbit contributes six such pairs through
+its stabilizers. Compare this count with the 14 explicitly formed orbit classes.
+
+**Challenge:** constant and alternating strings have smaller orbits. Their
+stabilizers explain the failure of uniform division and show that an action need
+not move every point. Do not confuse a motion's stationary tracks with failed work.
+
+**Capability questions:** a finite action family, explicit orbit representatives,
+and unequal group sizes. Can the same product/group/rank recipes serve lessons
+07, 09, and 10? Keep orbit quotienting distinct from arranging all members together.
+
+## Next · Syndrome fibers and the limits of correction
+
+**Question:** What does an error syndrome reveal, and what information does it lose?
+
+**Start with:** 128 binary vectors of length seven. Let a three-row parity-check
+matrix have the seven distinct nonzero binary columns. Compute each three-bit
+syndrome using exact mod-two sums. Count and display its eight fibers of size 16;
+the zero fiber consists of the 16 codewords of this small Hamming code.
+
+**Motion:** choose a codeword, flip one bit, and watch the vector move to the
+syndrome fiber labeled by that bit's check column. Build the single-error relation,
+verify unique coverage, then use the derived correction argument to return it.
+Separate this inferred correction from undo, which restores recorded history.
+
+**Explanation and challenge:** distinct nonzero columns identify a single flipped
+bit. Two flipped bits can share a syndrome with a different one-bit error, so the
+single-error correction can produce the wrong codeword. Display both compatible
+histories as witnesses. A duplicated check column supplies another ambiguity.
+
+**Completion evidence:** all syndrome fibers and contributors, exhaustive
+single-error checks, two-error witnesses, measured placement, and reversible motion.
+Field addition must be declared; ordinary integer addition of bit-vector codes
+does not implement it. This can begin as a small integer-expression recipe.
+
+## Later · Exchange blocks in a Hermitian spread
+
+**Question:** Can different families of disjoint secants cover exactly the same
+curve points, and can one family be replaced while preserving a full partition?
+
+**Start with:** lesson 10's exact Hermitian incidence and regular spread. The
+norm-defined, triply ruled families in
+[Dover, *A Search for Spreads of Hermitian Unitals*](https://arxiv.org/pdf/1702.01297)
+provide a concrete construction to study. First transcribe a small case and check
+all stated hypotheses; do not infer a block exchange from equal totals alone.
+
+**Motion:** hold the covered point set fixed, change the selected line family,
+and regroup the points using newly measured owners and ranks. Display which
+blocks changed and which stayed fixed.
+
+**Completion evidence:** explicit families, pointwise coverage and disjointness,
+an invalid exchange with witnesses, contributor inspection, and exact undo. This
+should exercise relation-family editing and finite set comparison. Assess bounded
+pair domains and capture size before attempting higher field orders or a search
+over spreads; no large search engine is implied by the current viewer.
+
 ## 06 · Young diagrams, conjugate partitions, and counting by layers
 
 **Delivered:** [lesson 06](06_young_layers.md) includes derived conjugation, measured
