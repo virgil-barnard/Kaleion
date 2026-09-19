@@ -2,7 +2,8 @@
 
 Lessons [09](09_norm_fibers.md) and [10](10_hermitian_partitions.md) extend the
 [earlier review evidence](REVIEW_NOTES.md). These are tested authoring needs and
-proposed UI capabilities, not a new core API or a prescribed set of touch gestures.
+proposed UI capabilities. The first four authoring choices are now implemented
+in Python; touch gestures remain undecided. See the [authoring guide](../AUTHORING.md).
 
 ## Two construction stories
 
@@ -15,8 +16,9 @@ points → choose a pole → inspect its polar and pencil → count coverage →
 unique owners → measure order within groups → use owner and rank for placement →
 compare another partition → inspect missing points and undo.
 
-These stories reuse existing operations. Their repeated decisions suggest a small
-declarative vocabulary before any commitment to menus or gestures:
+These stories motivated explicit grouping, member order, scoped coverage, and
+named placement. Their remaining decisions guide the next refinements before
+any commitment to menus or gestures:
 
 | Author's choice | Evidence | Candidate interaction |
 | --- | --- | --- |
@@ -48,6 +50,7 @@ already applies that criterion. These lessons add the following evidence:
 | --- | --- | --- |
 | Representation of field arithmetic | A local coordinate recipe today; a numerical domain only if later needed | Explicit exact formulas and domain restrictions |
 | How a declaration becomes executable nodes | Authoring recipes and operation graph | Definitions, source identities, and declared keys |
+| How measured predecessor evidence is represented | `measurements.py` | Query a retained key; expand its prefix without evaluating sources |
 | How keyed products, ranks, and reductions execute | Evaluator and indexing policy | Exact results, zero groups, failures, and contributors |
 | How states and evidence are stored | Snapshots and history | Stable captures and replay without reevaluation |
 | How a transition is sampled | Motion | Recorded correspondence and validated endpoints |
@@ -57,14 +60,22 @@ The notebook coordinate helper changes no evaluator opcode. A different camera
 does not change the domain. A failed relation does not become zero coverage.
 Animated frames never become mathematical source arrangements.
 
-## Gaps to investigate before adding primitives
+## Delivered choices and remaining gaps
 
-- **Products and ordered groups.** Current pair-domain definitions are correct but
-  verbose. Compare a small named-role recipe across lessons 05, 07, and 10 before
-  proposing a core product or rank operation. Preserve source keys and order.
-- **Coverage and comparisons.** Return witnesses with the compared domains, rather
-  than treating equality of totals as a correspondence. Lesson 10 checks coverage
-  explicitly before using the summed owner key.
+Lessons 07 and 10 now use `group_by(...).order_by(...).ranks(key=...)`.
+Counts, member order, group display order, binding keys, and coordinates are
+separate declarations. Lesson 10 completes its pencil with the tangent singleton;
+`coverage.unique(...)` checks all 28 keys before adopting owners. Missing and
+overlapping witnesses remain independent roots if a requirement fails.
+Rank evidence stores ordered rosters and prefix ranges; playback still reads captures.
+
+- **Products and prefixes.** Pair-domain definitions remain verbose. Compare a
+  named-role recipe across lessons 05, 07, and 10. Ordered ranks are implemented;
+  weighted exclusive prefix sums, needed for Young layer offsets, remain a gap.
+- **Coverage and comparisons.** Current coverage checks an existing pre-mask
+  reduction domain, including zero groups. Comparing unrelated expected key
+  domains still needs explicit domain differences and witnesses. Equal totals
+  alone never establish a correspondence.
 - **Explanation across bindings.** The notebook can follow named intermediate
   measurements. A general inspector still needs captured driver-alignment evidence;
   direct snapshot parents alone do not identify every matched driver occurrence.

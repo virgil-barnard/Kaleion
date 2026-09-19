@@ -1,6 +1,6 @@
 # Kaleion core refinement plan
 
-September 19, 2026 · Accepted plan following lessons 01–08; stages A–B delivered
+September 19, 2026 · Accepted plan following lessons 01–08; stages A–B delivered, C–D started
 
 **Recommendation:** retain the public mathematical vocabulary and refactor the
 implementation around field evaluation, index/group maps, and captured evidence.
@@ -27,9 +27,15 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
 - **Stage C started:** `indexing.py` owns keys, alignment, group domains, and
   rectangular address rules. Named operations retain explicit identity and placement
   policies. The evaluator still owns both scheduling and operation dispatch.
-- **Next:** separate operation execution from session scheduling where that reduces
-  coupling, and make driver alignment available to explanation queries. Prefix/rank
-  and case-family recipes remain the next author-facing improvements in stage D.
+- **Stage D started:** explicit grouping, strict member order, coverage with
+  witnesses and guarded assignment, and named coordinates simplify lessons 07 and
+  10. Ordered ranks replace dense predecessor products and retain compact evidence.
+  `grouping.py` owns authoring choices; `measurements.py` hides contributor storage.
+  The [authoring guide](AUTHORING.md) states the implemented contracts.
+- **Next:** prefix sums, measured case families, driver-alignment explanations,
+  and comparisons of arbitrary key domains. Separate operation execution from
+  session scheduling when that reduces concrete coupling. Coverage is scoped to
+  an existing reduction domain, so it does not complete the general comparison work.
 
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the
@@ -47,6 +53,15 @@ total traced peak memory falls from about 8.2 to 6.9 MB. Median evaluation time 
 this host falls from about 54 to 42 ms. Changed placement still requires 25 distinct
 buffers. Cross-case caching, disk deduplication, and per-target driver explanations
 remain separate work.
+
+The [ordered-group comparison](reviews/2026-09-grouping-probes.json) runs the old
+dense predecessor recipe and new rank operation in the same current evaluator.
+For 96 items in six groups, the largest intermediate falls from 9,216 to 96 items,
+and compact captured JSON from 6,357,997 to 80,962 bytes. The rank stores 96 ordered
+occurrences and 96 prefix ranges instead of enumerating all 720 predecessor entries.
+Core-source digests identify the tested implementation; timings and traced memory
+are observations on one host. Reproduce with
+`python3 examples/grouping_probe.py --out build/grouping-probe.json`.
 
 From the repository root, with the documented virtual environment active:
 
@@ -203,7 +218,9 @@ would make the system shorter to describe but harder to interpret correctly.
 
 ## 5. Enrich the authoring language with proven recipes
 
-The following are proposed capabilities, not current API signatures.
+The table is the original recipe agenda. Strict ranks are now implemented as
+`source.group_by(...).order_by(...).ranks(key=...)`, along with scoped coverage and
+named placement. The other rows remain proposed capabilities, not API signatures.
 
 | Recipe or view | Required choices and result | First demonstrations |
 | --- | --- | --- |
@@ -293,10 +310,11 @@ establish exclusive ownership. Retain schema-1 loading and legacy Icarus envelop
 If compressed evidence or storage needs a new format, version it explicitly and test
 reopening old captures without executing sources. Do not migrate history silently.
 
-**Implementation completed:** Stages A–B and the index/group-rule portion of C.
-These fix observed abstraction leaks and reduce real work without asking the user
-to learn another mathematical object. The next refinements should help explain
-driver reads and shorten actual notebook constructions.
+**Implementation completed:** Stages A–B, the index/group-rule portion of C, and
+the ordered-rank/coverage portion of D exercised in lessons 07 and 10. Stage D is
+not complete: prefix sums, case families, broad keyed comparisons, and explanations
+across driver bindings remain. The next refinements should address those concrete
+gaps before adding another layer of notation.
 
 ## Original review validation
 
@@ -308,8 +326,8 @@ the planned repairs or claiming a measured improvement. Notebook rendering check
 were not repeated for a documentation review; their existing evidence remains in
 [notebooks/VALIDATION.md](../notebooks/VALIDATION.md).
 
-The current implementation passes 74 unit tests and the reference example.
-All eight notebooks execute with their construction, contributor, save/reopen, and
-motion assertions; the same host limitation on live Jupyter kernel sockets applies.
-See [VALIDATION.md](../VALIDATION.md) for the current implementation checks and
+The ownership/indexing implementation passed 74 tests and all eight notebooks.
+Later deliveries and their current checks are recorded in
+[VALIDATION.md](../VALIDATION.md); the same host limitation on live Jupyter kernel
+sockets applies. See
 [DESIGN.md](../DESIGN.md) for new-operation compatibility and track-memory costs.

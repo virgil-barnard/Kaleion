@@ -8,10 +8,12 @@ The module boundary is chosen around a hidden decision: expression representatio
 | --- | --- | --- |
 | `ir.py` | Immutable expression/operation definitions, definition identity, graph encoding | Versioned definitions with explicit dependencies; no rendering or numerical execution |
 | `api.py` | Typed construction vocabulary and operator syntax | Pure builders returning new definitions |
+| `grouping.py` | Grouping, member-order, and coverage declarations | Small immutable records; recipes build definitions without evaluation |
 | `expressions.py` | Scalar/field interpretation, including explicit driver reads | Context, parameters, and an injected resolver produce a value or an error; no graph scheduling |
 | `tensor.py` | Exact integer rules, array validation, elementary numerical kernels | Checked arithmetic, broadcasting, gathering, and segment reduction |
-| `indexing.py` | Key representation, alignment, group domains, rectangular address maps | Checked keys and addresses; no occurrence identity or placement policy |
+| `indexing.py` | Key representation, alignment, group domains, member ordering, rectangular address maps | Checked keys and addresses; no occurrence identity or placement policy |
 | `model.py` | Buffer ownership, evaluated data, occurrence/source identity, lineage, snapshot encoding | Validated finite snapshots; unchanged owned buffers may be shared |
+| `measurements.py` | Captured contributor representation and queries | Enumerated contributors or versioned ordered prefixes; no evaluator or viewer dependency |
 | `evaluate.py` | CPU evaluation, dependency ordering, parameter cases, bounded work | A result or an explicit error for each requested root |
 | `motion.py` | Correspondence tracks, paths, reverse sampling | Presentation frames derived from captured states; no changes to mathematical results |
 | `history.py` | Workspace commands, exact retained states, captures, persistence | Undo/redo, independent observations, portable historical results |
@@ -24,8 +26,9 @@ The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) audits these boundaries
 against lessons 01–08. Its first delivered changes centralize incidence-universe
 semantics in `ir.py`, separate field interpretation from evaluation sessions, group
 contributors in one pass, and prepare motion correspondence once. Snapshot ownership
-and shared indexing rules are now implemented too. Operation-handler separation,
-driver-evidence queries, and shorter authoring recipes remain planned.
+and shared indexing rules are now implemented too. Explicit grouping, strict ranks,
+coverage guards, and named placement shorten lessons 07 and 10. Operation-handler
+separation, driver-evidence queries, prefix sums, and case families remain planned.
 
 ## Four different things an arrangement contains
 
@@ -86,6 +89,8 @@ These operations form the reference implementation vocabulary; the table describ
 | Lookup | Gather table values by declared integer addresses | Content substitution, distinct from reindexing the source |
 | Concat / Pad | Concatenate data and lineage; Pad creates explicit fill items | Shape/attribute compatibility checked |
 | Count / Sum | Factorize keys → masked weights → segment sum | Initialize all declared groups, including zero groups |
+| Group rank | Factorize keys → lexicographic sort → predecessor count | Unique item keys and strict member order; compact prefix evidence |
+| Require | Check all incidence entries → pass through items | Failed checks block this dependency; witnesses remain inspectable |
 | Driver binding | Key alignment → Gather selected source field | Unique source keys; complete requested matches |
 | Spiral | Bounded stateful scan → positions and structural fields | Special reference constructor, not a general recursive language |
 
@@ -115,6 +120,38 @@ does not determine whether they belonged to the incidence.
 
 Counts here measure occurrences. Distinct-source or geometric-area measures must be expressed separately; they are not implicit aliases for count. The graph, key, relation, source extent, and contributor identities remain available for later analytical statements.
 
+### Grouping and ordering are independent
+
+`items.group_by(...)` declares retained keys. Its `count` and `sum` methods build
+the existing reductions. `groups.order_by(...)` declares lexicographic **member**
+order; `groups.order_by(...).ranks(key=...)` produces a measurement for each selected
+item. Output item keys must be globally unique, and member-order tuples must be
+unique within a group. Ties fail instead of silently adopting storage order.
+An incidence ranks only selected occurrences; a count retains its pre-mask domain.
+The storage order of resulting groups is chosen separately with
+`counts.order_by(...)`.
+
+Retained fields keep their declared names. `F.key` aliases the sole retained key,
+or supplies an ordinal for a composite key only when `key` is not itself a retained
+field. `groups.key` reads the complete scalar/composite key from a grouped result.
+This corrects an earlier edge case where a retained field named `key` was overwritten.
+
+Rank execution takes O(N log N) worst-case time and stores O(N) evidence: one ordered
+roster of source occurrence IDs per group, and one `(group, stop)` prefix range per
+result. `Snapshot.contributor_ids(key)` finds that retained key and expands only its
+prefix. Requesting every prefix can still produce quadratic total output. Rank
+parents anchor the item being ranked; its counted predecessors are recorded
+separately, with the evaluated source identified by metadata `universe`.
+Reindexing and placement preserve this evidence. Value transformations remove the
+active measurement claim and retain its derivation.
+
+`groups.coverage()` is a recipe around counts. It exposes missing and multiply
+covered groups, finite `exactly(...)` checks, and `on_keys(...)` in the grouped-count
+context. `unique(value=...)` guards a weighted sum with coverage exactly one before
+using it as an assignment. Equal-valued duplicate matches still fail. This checks
+the existing reduction domain; it does not compare arbitrary external key universes.
+See the [authoring guide](docs/AUTHORING.md) for executable examples.
+
 NumPy's [take](https://numpy.org/doc/stable/reference/generated/numpy.take.html) and [ufunc.at](https://numpy.org/doc/stable/reference/generated/numpy.ufunc.at.html) provide useful implementation primitives. Kaleion validates its own address rules before calling a kernel. Repeated-index accumulation uses `add.at`, rather than buffered indexed assignment that could lose repeated contributions.
 
 ## Explicit binary binding
@@ -137,6 +174,11 @@ changed = A.with_values(F.value + driver_values)
 This avoids giving `A + B` an arbitrary meaning among displacement, label addition, superposition, and concatenation. Operator overloads are used where the meaning is declared: scalar expression arithmetic, predicate composition, pipeline application, and pipeline composition. Python's [numeric emulation model](https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types) supplies the syntax hooks; it does not determine our mathematical semantics.
 
 Bindings can read coordinates as well as labels. Constructor bindings use explicit singleton extraction to distinguish one parameter value from a per-item field. All binding sources become graph dependencies, so failures and provenance follow them.
+
+Placement accepts `arrange(x=..., y=..., z=...)` and `place(...)` with the same
+named coordinates. Declare x, x/y, or x/y/z, with no gaps or mixing of positional
+and named arguments. Positional placement remains supported. A bound count or rank
+is an ordinary coordinate expression; no row-specific driver object is needed.
 
 ## Numerical contracts
 
@@ -168,6 +210,11 @@ The execution record contains operation status, runtime case ID, parameters, fin
 
 An invalid rule marks that branch failed. An unrelated root can still succeed. Workspace edits record failed definitions so that they can be corrected or undone. A presentation may retain the previous geometry, marked as retained after failure. Missing or failed data never becomes a zero count automatically.
 
+`items.require(checks, message=...)` is an explicit graph dependency. All entries of
+the supplied incidence must be true before its items are evaluated and passed
+through unchanged. Empty check domains pass vacuously. A failure reports witness
+keys; callers can retain the checks and their measurements as independent roots.
+
 This isolation is within one process. The reference evaluator has finite size/depth budgets but no worker termination, interruptible jobs, asynchronous scheduler, or process-failure recovery. Those are separate runtime responsibilities.
 
 ## Undo is a history operation
@@ -198,6 +245,13 @@ scope use the new `incidence_boolean` operation, version 1 (`and`, `or`, or `not
 Older evaluators cannot execute that new operation; its captured results remain
 ordinary schema-1 snapshots. Prepared motion tracks are not serialized: reopening
 reconstructs them from retained snapshots, without evaluating source definitions.
+
+Grouping adds `rank` and `require` operations, version 1. Older evaluators cannot
+execute these definitions. Ordered-rank snapshots store contributor-prefix format
+version 1 inside schema-1 metadata; the updated query implementation is needed to
+read that evidence. Older captures with enumerated contributors still load and
+remain queryable. The new compact prefix record does not deduplicate snapshots
+across history states or change capture restoration semantics.
 
 ## Extension points to exercise next
 

@@ -20,6 +20,31 @@ def _key_expr(value):
     return expression(value)
 
 
+def _named_groups(by):
+    groups = () if by is None else (by,) if isinstance(by, (str, Expr)) else tuple(by)
+    named = []
+    for n, group in enumerate(groups):
+        e = _key_expr(group)
+        name = e.args[0] if e.op == "field" else f"group_{n}"
+        if name in {"value", "index", "x", "y", "z"}:
+            name = f"group_{n}"
+        named.append((name, e))
+    if len({name for name, _ in named}) != len(named):
+        raise ValueError("Group names must be distinct")
+    return tuple(named)
+
+
+def _coordinates(positional, named):
+    if not named:
+        return positional
+    if positional:
+        raise TypeError("Use positional coordinates or named x, y, z coordinates")
+    names = "xyz"[:len(named)]
+    if not 1 <= len(named) <= 3 or set(named) != set(names):
+        raise ValueError("Named coordinates must be x, x/y, or x/y/z")
+    return tuple(named[k] for k in names)
+
+
 @dataclass(frozen=True, eq=False)
 class Object:
     node: Node
@@ -141,7 +166,9 @@ class Collection(Object):
             )
         )
 
-    def arrange(self, *coordinates):
+    def arrange(self, *coordinates, **named):
+        """Declare placement with positional coordinates or explicit x/y/z names."""
+        coordinates = _coordinates(coordinates, named)
         return Arrangement(
             Node(
                 "place",
@@ -189,6 +216,21 @@ class Collection(Object):
 
     def count(self, *, by=None):
         return self.reduce("count", by=by)
+
+    def group_by(self, *keys):
+        """Declare retained groups; ordering and measurements are separate choices."""
+        from .grouping import Grouping
+
+        return Grouping(self, _named_groups(keys))
+
+    def require(self, condition, *, message="Required incidence check failed"):
+        """Pass these items through only when every declared check is true."""
+        if not isinstance(condition, Incidence):
+            raise TypeError("require() needs an incidence of checks")
+        if not isinstance(message, str):
+            raise TypeError("A requirement message must be text")
+        return wrap(Node("require", self.node.kind, (self.node, condition.node),
+                         {"message": message}))
 
     def gather(self, indices, *, axis=None):
         """Return a collection; placement is deliberately specified afterwards."""
@@ -299,8 +341,8 @@ class Arrangement(Collection):
     def items(self):
         return Collection(Node("items", "collection", (self.node,), {}))
 
-    def place(self, *coordinates):
-        return self.arrange(*coordinates)
+    def place(self, *coordinates, **named):
+        return self.arrange(*coordinates, **named)
 
     def move(self, displacement):
         return Arrangement(
@@ -401,18 +443,7 @@ class Incidence(Object):
     def reduce(self, reducer="count", *, by=None, value=F.value):
         if reducer not in ("count", "sum", "any"):
             raise ValueError("Reducer must be count, sum, or any")
-        groups = (
-            () if by is None else (by,) if isinstance(by, (str, Expr)) else tuple(by)
-        )
-        named = []
-        for n, group in enumerate(groups):
-            e = _key_expr(group)
-            name = e.args[0] if e.op == "field" else f"group_{n}"
-            if name in {"value", "index", "x", "y", "z"}:
-                name = f"group_{n}"
-            named.append((name, e))
-        if len({name for name, _ in named}) != len(named):
-            raise ValueError("Group names must be distinct")
+        named = _named_groups(by)
         return Collection(
             Node(
                 "reduce",
@@ -436,6 +467,12 @@ class Incidence(Object):
 
     def any(self, *, by=None):
         return self.reduce("any", by=by)
+
+    def group_by(self, *keys):
+        """Retain keys of the pre-mask universe, including its zero groups."""
+        from .grouping import Grouping
+
+        return Grouping(self, _named_groups(keys))
 
 
 @dataclass(frozen=True)

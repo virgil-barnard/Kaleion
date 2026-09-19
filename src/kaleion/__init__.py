@@ -30,6 +30,7 @@ from .model import Snapshot, IncidenceSnapshot, Ref
 from .motion import Motion, Transition, Frame
 from .history import Workspace, State, Observation
 from .sweep import Construction, Sweep
+from .grouping import Grouping, Coverage
 
 __version__ = "0.1.0"
 __all__ = [
@@ -67,4 +68,6 @@ __all__ = [
     "graph",
     "load_graph",
     "wrap",
+    "Grouping",
+    "Coverage",
 ]

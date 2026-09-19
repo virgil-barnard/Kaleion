@@ -26,14 +26,17 @@ enabled by changing a parameter.
    intersection with the curve. A curve point selects its tangent; an external
    point selects a four-point secant.
 5. Through a chosen curve point, select its nine secants and omit their common
-   point. Measure coverage before interpreting the sum of line keys as a unique
-   owner. Measured predecessor counts then provide group order and point rank.
+   point from those blocks. Its tangent supplies the singleton block. Declare
+   coverage on all 28 point keys, then use `coverage.unique(value=F.i)` to derive
+   owners only after every key has exactly one match. Order the blocks separately
+   from their members; measured strict ranks supply their placement slots.
 6. Use those measurements to gather the 28 points into one point plus nine triples.
    Choose an external pole, take its six secants, and add its polar. The resulting
    measured correspondence gathers the same points into seven quadruples.
 7. Remove that polar: four points become uncovered. Inspect their keys and trace
    one assigned point through its incidence contributor to its eight projective
-   representatives. Reverse both motions from recorded history.
+   representatives. Inspect its rank's predecessor evidence too. Reverse both
+   motions from recorded history.
 
 The default poles are key `4`, representing `[1:0:1+i]`, and external key `0`,
 representing `[1:0:0]`. The notebook marks the permitted choices. Tests also use
@@ -63,19 +66,20 @@ the diagram is not a Euclidean metric model. Background on Hermitian forms:
 
 ## What this teaches us about Kaleion
 
-The existing primitives express the entire construction. A future interface
+The [explicit authoring choices](../AUTHORING.md) now express grouping, member
+order, coverage, and named measurement-driven placement. A future interface
 needs explicit domain roles, selection-as-relation-argument, coverage witnesses,
 ordered groups, and a distinction between quotienting and moving points together.
 A sum of owner keys is meaningful only after coverage is one; zero alone is
 ambiguous. The [UI notes](UI_DISCOVERY_NOTES.md) make these choices concrete.
 
-Pair domains also expose a practical limit. Restricting incidence to curve points
-and rank comparisons to `28×28` avoids unused work. Complete snapshots still
-repeat across saved states: the default motion capture is about 18.3 MiB with
-compact JSON, versus 37.0 MiB with indentation. The notebook removes whitespace
-only and verifies reopening, retaining all definitions, evaluated dependencies,
-contributors, observations, and pending redo. The 32 MiB import budget is unchanged.
-Compact shared capture storage remains future work.
+Pair domains also expose a practical limit. Incidence still uses the declared
+91×28 support. Ranks now sort within groups and store compact predecessor prefixes,
+removing the old `28×28` rank domain. With all definitions, evaluated dependencies,
+contributors, observations, and pending redo retained, the default motion capture
+is about 11.4 MiB in compact JSON, down from 18.3 MiB before this refinement.
+The 32 MiB import budget is unchanged. Complete snapshots still repeat across saved
+states; shared capture storage remains separate future work.
 
 Exports in `build/notebooks/hermitian-partitions/` include seven offline views,
 an MP4, six workspace files, `checks.json`, and `point-explanation.json`.

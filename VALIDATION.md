@@ -2,6 +2,51 @@
 
 Executed September 19, 2026 on Python 3.12.14 with NumPy 2.3.5. The tests exercise the Python implementation; prior browser-prototype checks are recorded separately in the architecture document.
 
+## Explicit grouping, order, coverage, and placement
+
+- **94 tests pass** with `python3 -m unittest discover -s tests -v`. Twelve new
+  public-contract regressions cover strict order and ties, composite keys (including
+  a field named `key`), exact integers beyond 64 bits, zero groups, reordered
+  drivers, compact rank evidence, missing/duplicate coverage, failure isolation,
+  named 3D placement, and captured undo/redo without reevaluation. The eight
+  finite-geometry tests now exercise the refactored notebook definitions.
+- `python3 examples/discovery.py --out build/example-output` retains its results.
+  The committed baseline and fresh example captures reproduce every saved root
+  exactly under reevaluation. Schema-1 and legacy compatibility tests still pass.
+  New `rank` and `require` operations and contributor-prefix version 1 require
+  the updated implementation; dependencies and the outer saved schema are unchanged.
+- `python3 examples/grouping_choices.py` checks measured stacks, independent
+  3D probe placement and reverse motion, unique representatives, and bad coverage
+  `[0,1,2,1,1,1]` despite an unchanged total. All eight README Python blocks and
+  all four authoring-guide Python blocks execute in sequence.
+- Changed lessons 07 and 10 execute all 19 code cells in fresh in-process IPython
+  sessions. Nine workspace files reopen; their compact rank evidence is queryable
+  with evaluation disabled. Source notebooks validate and retain cleared outputs.
+- Offline browser checks load their 12 standalone views and both converted
+  notebooks, verify measured endpoints and exact reverse paths, and exercise
+  playback controls. Both MP4s decode completely. See the
+  [viewer record](notebooks/VALIDATION.md#explicit-choice-refinement).
+- The [reproducible diagnostic](examples/grouping_probe.py) compares the old dense
+  predecessor recipe and ordered ranks in the same current evaluator. For 96 items
+  in six groups, both match an independent predecessor-count oracle:
+
+  | Measure | Dense recipe | Ordered rank |
+  | --- | ---: | ---: |
+  | Largest intermediate extent | 9,216 | 96 |
+  | Evaluated nodes | 6 | 3 |
+  | Compact workspace bytes | 6,357,997 | 80,962 |
+  | Peak traced allocations | 3,700,180 B | 77,227 B |
+  | Median evaluation, three runs | 47.295 ms | 1.305 ms |
+
+The [raw results](docs/reviews/2026-09-grouping-probes.json) record the base revision
+and core-source digest. These are one host's finite fixture, with inputs prebuilt;
+no timing threshold or general speedup is asserted. Rank evidence stores 96 ordered
+occurrences and 96 prefix ranges; querying all prefixes can still emit quadratic
+output. Coverage uses the existing pre-mask group domain and does not manufacture
+absent expected keys. Arbitrary key-domain comparisons and general driver-read
+explanations remain future work. Earlier validation sections below are historical;
+the eight unchanged notebooks were not reexecuted for this pass.
+
 ## Finite-geometry discovery lessons
 
 - **82 tests pass** with `python3 -m unittest discover -s tests -v`. Eight new

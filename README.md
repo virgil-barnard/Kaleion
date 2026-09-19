@@ -6,7 +6,7 @@ A working Python reference model for constructing integer arrangements, inspecti
 
 This release starts with the primitive classes and operators. A [Jupyter walkthrough](notebooks/01_discovery_workbench.ipynb) provides an initial programmatic viewer with interactive Plotly plots, 3D rotation, scrubbable animations, and embedded MP4 videos. It also exports definitions, captured workspaces, and sampled motion as JSON. The existing single-HTML authoring prototype remains a separate application; an adapter between them has not been implemented.
 
-Kaleion is the new name of the Icarus Python v0.1 baseline. This package keeps version **0.1.0** and the same mathematical operations, with renamed imports and documentation. See [CHANGELOG.md](CHANGELOG.md) for the rename details.
+Kaleion began as the renamed Icarus Python v0.1 baseline. The package version remains **0.1.0**; [CHANGELOG.md](CHANGELOG.md) records the baseline and subsequent unreleased refinements.
 
 ## A glimpse of the lessons
 
@@ -99,7 +99,7 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 The [lesson guide](docs/lessons/README.md) provides educational notes for all ten notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, error-correcting codes, further Hermitian investigations, and earlier extensions.
 
-The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core now also shares unchanged owned snapshot buffers and centralizes address and grouping rules. Later stages propose simpler authoring recipes and stronger explanation tools; the plan marks what remains.
+The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core shares unchanged owned snapshot buffers and centralizes address and grouping rules. Explicit grouping, member order, coverage checks, and named placement now simplify lessons 07 and 10; prefix sums, case families, and broader explanation tools remain planned.
 
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 
@@ -137,6 +137,34 @@ print(len(result.contributor_ids(3)))  # 4
 `by=F.i` retains the `i` key and reduces over the other indices. It does not mean “sum away i.” For a declared rectangular domain, retained-axis groups exist even if the reduced axis has length zero. Other grouping expressions use keys observed in the source, before filtering by the relation.
 
 The result is a collection of integer cardinalities with contributors and a derivation. Giving those integers a placement does not change what was counted. They can immediately receive another lens and another reduction.
+
+## Choose groups, order, coverage, and placement
+
+These are separate declarations; a visible row is not required:
+
+```python
+points = Collection.grid(3, 4, values=F.i + F.j).annotate(point=F.key)
+groups = points.group_by(F.value)
+counts = groups.count()
+ranks = groups.order_by(F.point).ranks(key=F.point)
+height = ranks.bind(on=F.point, key=F.key)
+stacks = points.arrange(x=F.value, y=height)
+
+coverage = points.where(height == 0).group_by(F.value).coverage()
+representatives = coverage.unique(value=F.point)
+```
+
+`ranks` counts strict predecessors within each group, with compact contributor
+evidence. An order tie requires another declared order field. `coverage.unique`
+requires exactly one match for every retained key; missing or repeated matches
+fail explicitly, while `coverage.missing` and `coverage.overlaps` remain available
+for inspection. Coverage uses the declared pre-mask group domain, including its
+zero groups; it does not invent absent keys.
+
+The [authoring guide](docs/AUTHORING.md) explains contexts, composite keys,
+independent measurement-driven placement, and saved evidence. Run
+`python3 examples/grouping_choices.py` for a complete small investigation,
+including a failed assignment whose total count still looks correct.
 
 ## Compose incidences within their universe
 

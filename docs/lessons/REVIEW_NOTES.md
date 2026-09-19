@@ -1,8 +1,8 @@
 # Evidence for the next Kaleion review
 
-These are observations from [lessons 01–10](README.md), not an approved redesign.
-The new investigations fit the existing runtime operations. Their authoring code
+These are observations from [lessons 01–10](README.md). Their authoring code
 shows where a clearer notation, reusable recipe, or faster evaluator might help.
+The delivery note below distinguishes implemented changes from remaining ideas.
 
 The subsequent [core refinement plan](../CORE_REFINEMENT_PLAN.md) checks these
 observations against the implementation and Parnas's decomposition criteria. It
@@ -11,6 +11,25 @@ and an ordered migration plan. The first implementation fixes that defect, isola
 field evaluation, and removes repeated contributor grouping and motion preparation.
 The plan's delivery status distinguishes these changes from the remaining recipes
 and explanation tools below.
+
+## Delivered: explicit discovery choices
+
+Lessons 07 and 10 now declare grouping, strict member order, coverage, and named
+placement directly. The [authoring guide](../AUTHORING.md) gives their contracts.
+Two new operations earn their place: `rank` avoids dense predecessor products,
+and `require` makes checked coverage a prerequisite for adopting an assignment.
+Coverage otherwise composes existing counts, predicates, sums, and bindings.
+
+The [recorded probe](../reviews/2026-09-grouping-probes.json) compares both rank
+recipes on the same 96-item fixture and evaluator, with a source digest. The new
+operation preserves exact ranks and queryable contributors while keeping ordered
+evidence linear in source size. A counterexample with coverage `[0,1,2,1,1,1]`
+demonstrates why equal totals do not establish unique owners. Compact prefix
+queries work from saved captures without source execution.
+
+These choices simplify two independent constructions without changing their visible
+endpoints. They do not yet provide weighted prefix sums, measured case families,
+arbitrary key-domain comparisons, or an inspector that follows every driver read.
 
 ## What the examples establish
 
@@ -61,11 +80,11 @@ preserve the derivation without attaching misleading count metadata to a new val
 or lift shows a captured path. Integer dilations are discrete evaluations. Every
 general identity in these lessons has a separate argument with stated assumptions.
 
-## Small experiments to consider before changing the core
+## Remaining experiments
 
-1. Write the same layer packing and sum stacking with a proposed paired-domain and
-   ordered-rank recipe. Compare readability with the existing visible definitions.
-   Keep source keys, ordering, zero groups, and identity explicit.
+1. Extend the comparison to layer packing with a weighted prefix recipe, then
+   shorten pair-domain construction. The strict-rank recipe is already exercised
+   in sum stacking and Hermitian partitions. Preserve their keys and evidence.
 2. Sketch one explanation schema that handles the five concrete contributor examples.
    Include zero groups, weighted sums, a parameter case, and multiple derivation steps.
    Keep large contributor lists out of individual animation frames.

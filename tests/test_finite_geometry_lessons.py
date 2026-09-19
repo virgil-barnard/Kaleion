@@ -216,6 +216,10 @@ class HermitianPartitionLessons(unittest.TestCase):
                                or (external and key == focus))]
                 expected_groups = {key: sorted(self.lines[key]-{focus}) for key in chosen}
                 expected_cover = Counter(k for group in expected_groups.values() for k in group)
+                if not external:
+                    expected_cover[focus] = 1  # The tangent supplies the singleton block.
+                    self.assertEqual(r["unique_line"].values[
+                        r["unique_line"].fields["key"].tolist().index(focus)], focus)
                 self.assertEqual(r["cover_count"].fields["key"].tolist(), sorted(self.curve))
                 self.assertEqual(r["cover_count"].values.tolist(), [expected_cover[k] for k in sorted(self.curve)])
                 self.assertEqual(set(expected_cover.values()), {1})
