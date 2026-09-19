@@ -14,6 +14,7 @@ The module boundary is chosen around a hidden decision: expression representatio
 | `motion.py` | Correspondence tracks, paths, reverse sampling | Presentation frames derived from captured states; no changes to mathematical results |
 | `history.py` | Workspace commands, exact retained states, captures, persistence | Undo/redo, independent observations, portable historical results |
 | `sweep.py` | Parameter-case selection and retention | Explicit coverage through a case, independent of playback sampling |
+| `viewers/` | Optional plotting, playback controls, and video encoding | Consume snapshots/frames; never evaluate definitions or mutate mathematical state |
 
 The evaluator currently uses NumPy directly as well as the kernel helpers. There is no interchangeable backend interface pretending to be complete. A future GPU evaluator can consume the same operation definitions while implementing supported operations and numerical types. Some reference algorithms—key factorization, lineage assembly, and the spiral scan—are Python control flow today.
 
@@ -127,7 +128,7 @@ JSON persistence retains snapshots, histories, pending redo, motion expressions,
 ## Extension points to exercise next
 
 1. Let someone author an unfamiliar arrangement and reuse its counts without editing the evaluator. Record which missing operation actually blocked them.
-2. Add a renderer consuming `Snapshot` and `Frame`, then controls that emit the same definitions and commands.
+2. Exercise the optional Plotly notebook viewer, which consumes `Snapshot` and `Frame`, before adding authoring controls that emit the same definitions and commands.
 3. Extract a general bounded scan/recurrence construction once several authored recipes establish the needed state and emission contracts.
 4. Introduce additional numerical domains or backends with explicit capabilities. Continuous-value differentiation will require a value-domain extension; present contents are integers.
 5. Build finite comparison statements from declared key alignment and provenance before attempting proof assistance.

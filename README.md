@@ -4,7 +4,7 @@
 
 A working Python reference model for constructing integer arrangements, inspecting them through relations, deriving new arrangements from counts, and using those results to transform other arrangements. Definitions are symbolic; evaluation, mathematical state, provenance, and motion are separate.
 
-This release starts with the primitive classes and operators. It has no front end. It exports definitions, captured workspaces, and sampled motion as JSON for a future renderer. The existing single-HTML prototype remains a separate application; an adapter between them has not been implemented.
+This release starts with the primitive classes and operators. A [Jupyter walkthrough](notebooks/01_discovery_workbench.ipynb) provides an initial programmatic viewer with interactive Plotly plots, 3D rotation, scrubbable animations, and embedded MP4 videos. It also exports definitions, captured workspaces, and sampled motion as JSON. The existing single-HTML authoring prototype remains a separate application; an adapter between them has not been implemented.
 
 Kaleion is the new name of the Icarus Python v0.1 baseline. This package keeps version **0.1.0** and the same mathematical operations, with renamed imports and documentation. See [CHANGELOG.md](CHANGELOG.md) for the rename details.
 
@@ -37,6 +37,24 @@ python3 -m unittest discover -s tests -v
 In each new terminal, run `source .venv/bin/activate` from the repository directory before working. Run `deactivate` when finished. If Ubuntu/WSL reports that virtual-environment creation is unavailable, install its venv support with `sudo apt install python3-venv`, then retry the setup.
 
 The runtime dependency is NumPy; the tests use Python's standard library. No TensorFlow, PyTorch, browser, or network service is needed to execute the installed core.
+
+## Explore in Jupyter
+
+With the virtual environment above activated, install the optional notebook dependencies and register its kernel:
+
+```sh
+python3 -m pip install -e '.[notebooks]'
+python3 -m ipykernel install --sys-prefix --name kaleion --display-name "Kaleion"
+python3 -m jupyterlab notebooks/01_discovery_workbench.ipynb
+```
+
+Select the **Kaleion** kernel, then **Restart Kernel and Run All Cells**. The notebook starts with integer arrangements and lenses, derives counts with contributor provenance, drives cyclic shifts and 3D motion from those counts, explores structural spiral hits, and saves/reopens an investigation. Every construction is visible Python code that you can edit.
+
+The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
+
+See [notebooks/README.md](notebooks/README.md) for VS Code/WSL usage, offline exports, and headless execution. Generated videos, HTML, and executed notebooks go under the ignored `build/notebooks/` directory; the committed notebook has cleared outputs for readable reviews.
+
+## Package and reference exports
 
 The distribution and import name are both `kaleion`. For scripts written against the previous package, change `from icarus import ...` to `from kaleion import ...`; the old import namespace is not installed by this package. Install from this checkout using the command above.
 
@@ -226,7 +244,7 @@ New Python exports identify themselves as `kaleion-python`, schema 1. `Workspace
 - Default evaluation limit: 10,000 occurrences per result and 2,000 operation nodes. Larger configured finite budgets are possible. Evaluation is synchronous; there is no worker cancellation, chunked infinite scrolling, or incremental cross-case cache.
 - One failed dependency blocks its dependents; independent roots still evaluate. This is computation-level isolation within one process.
 - No GPU adapter, automatic differentiation, theorem prover, polynomial interpolation engine, or migration of the original Icarus repository in this package.
-- Custom paths, straight motion, and arcs are implemented. A special cyclic wrap/cut-and-reassemble presentation and a browser renderer remain future adapters.
+- Custom paths, straight motion, and arcs are implemented and viewable in the optional Plotly adapter. A special cyclic wrap/cut-and-reassemble presentation and a full authoring GUI remain future work.
 
 See [DESIGN.md](DESIGN.md) for contracts and tensor lowering, [VALIDATION.md](VALIDATION.md) for checks, and [KALEION_DISCOVERY_ARCHITECTURE.md](KALEION_DISCOVERY_ARCHITECTURE.md) for the broader architecture and remaining work.
 

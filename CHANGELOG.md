@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add an optional `notebooks` dependency group with JupyterLab, Plotly, and portable MP4 rendering.
+- Add a programmatic discovery walkthrough covering arrangements, lenses, counts and contributors, quotient/remainder transforms, 3D drivers, structural sweeps, and history.
+- Add snapshot/frame Plotly adapters and a separate 1D/2D video adapter; the mathematical evaluator and saved formats are unchanged.
+
 ## 0.1.0 · Kaleion baseline · September 19, 2026
 
 **Discover mathematics through motion.**
