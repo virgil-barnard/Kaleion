@@ -12,15 +12,31 @@ Kaleion is the new name of the Icarus Python v0.1 baseline. This package keeps v
 
 Requires Python 3.11 or newer and NumPy. Tested here with Python 3.12.14 and NumPy 2.3.5.
 
-From the extracted `kaleion` directory:
+Clone the repository, or use the extracted `kaleion` source directory:
 
 ```sh
-python -m pip install -e .
-python examples/discovery.py
-python -m unittest discover -s tests -v
+git clone https://github.com/virgil-barnard/Kaleion.git kaleion
+cd kaleion
 ```
 
-Using a virtual environment is optional. The runtime dependency is NumPy; the tests use Python's standard library. No TensorFlow, PyTorch, browser, or network service is needed to execute the installed core.
+From that directory, create and activate a virtual environment (WSL, Linux, or macOS):
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e .
+```
+
+With the environment activated, run the example and tests:
+
+```sh
+python3 examples/discovery.py
+python3 -m unittest discover -s tests -v
+```
+
+In each new terminal, run `source .venv/bin/activate` from the repository directory before working. Run `deactivate` when finished. If Ubuntu/WSL reports that virtual-environment creation is unavailable, install its venv support with `sudo apt install python3-venv`, then retry the setup.
+
+The runtime dependency is NumPy; the tests use Python's standard library. No TensorFlow, PyTorch, browser, or network service is needed to execute the installed core.
 
 The distribution and import name are both `kaleion`. For scripts written against the previous package, change `from icarus import ...` to `from kaleion import ...`; the old import namespace is not installed by this package. Install from this checkout using the command above.
 
@@ -213,3 +229,7 @@ New Python exports identify themselves as `kaleion-python`, schema 1. `Workspace
 - Custom paths, straight motion, and arcs are implemented. A special cyclic wrap/cut-and-reassemble presentation and a browser renderer remain future adapters.
 
 See [DESIGN.md](DESIGN.md) for contracts and tensor lowering, [VALIDATION.md](VALIDATION.md) for checks, and [KALEION_DISCOVERY_ARCHITECTURE.md](KALEION_DISCOVERY_ARCHITECTURE.md) for the broader architecture and remaining work.
+
+## Contributing
+
+Develop changes on a feature branch and submit a pull request. [CONTRIBUTING.md](CONTRIBUTING.md) describes the validation commands, design boundaries, and contribution attribution.
