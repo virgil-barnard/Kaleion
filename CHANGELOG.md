@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add lesson 11: cyclic generator polynomials and matrices, a derived dual, Fano-plane supports, and an explicit incidence correspondence with the eight-element field constructed from the same cubic. Synchronize a Singer cycle in cyclic and projective charts, with captured undo, a measured single-error correction, and assumption-breaking witnesses.
+- Add seven independent-oracle lesson tests, educational/UI notes, two MP4 exports, and README previews for lesson 11. All constructions use existing core operations and dependencies.
+
 - Make grouping, strict member order, scoped coverage, and named measurement-driven coordinates explicit authoring choices. Add `Grouping` and `Coverage`, plus an executable guide and core-only example.
 - Add version-1 `rank` and `require` operations. Ranks sort within groups and retain linear-size ordered-prefix evidence; requirements guard reuse while leaving independent witnesses inspectable. Updated code reads old captures; new operations and contributor-prefix version 1 need the updated implementation.
 - Refactor lessons 07 and 10 to use these choices, preserving their motion endpoints. Complete the Hermitian pencil with its tangent singleton so all 28 keys have exactly one owner. Keep captured evidence queryable after save/reopen and reverse motion.

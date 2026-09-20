@@ -35,6 +35,10 @@ PREVIEWS = (
      "09-norm-fibers", "Norm fibers · multiplication becomes a cyclic turn"),
     ("10_hermitian_partitions", "28 points · two measured partitions", "49",
      "10-hermitian-partitions", "The same 28 points · seven measured groups of four"),
+    ("11_cyclic_code_plane", "Seven lines · seven dual complements", None,
+     "11-code-and-dual", "A code and its dual · seven projective lines and their complements"),
+    ("11_cyclic_code_plane", "One action · cyclic shift and projective motion", "16",
+     "11-field-and-plane", "Field multiplication · one cyclic turn moves a projective line"),
 )
 
 
@@ -65,7 +69,7 @@ def preview(notebook, title_prefix, frame_name, caption):
     figure.layout.sliders = ()
     figure.update_layout(
         width=960, height=600,
-        title=dict(text=caption, x=0.04, y=0.96, font=dict(size=23)),
+        title=dict(text=caption, x=0.04, y=0.96, font=dict(size=21 if notebook.name.startswith("11_") else 23)),
         font=dict(size=16),
         margin=dict(l=65, r=45, t=95, b=70),
     )

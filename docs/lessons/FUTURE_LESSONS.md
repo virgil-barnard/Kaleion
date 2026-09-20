@@ -17,9 +17,11 @@ a connected sequence through cyclic generator polynomials and matrices, dual
 codes, Fano geometry, syndrome coverings, and Fourier/MacWilliams cancellation.
 Further branches explore Reed–Solomon error locators, homology and surface codes,
 RSK insertion, and sandpile groups. Each brief states its proposed motion,
-counterexample, finite fixture, and software questions. Begin the code/dual sequence
-next; it incorporates and extends the syndrome-fiber brief below. These are plans
-with preliminary algebraic checks, not additional delivered notebooks.
+counterexample, finite fixture, and software questions.
+[11 · A code becomes a projective plane](11_cyclic_code_plane.md) now delivers the
+polynomial/matrix, dual, Fano-plane, and extension-field correspondence, with a
+single-error correction coda. Continue with the full covering/coset and spectral
+investigations; the remaining briefs are plans with preliminary checks.
 
 The [authoring refinement](../AUTHORING.md) is delivered in lessons 07 and 10:
 grouping, strict member order and ranks, scoped coverage with guarded assignments,
@@ -57,6 +59,11 @@ and unequal group sizes. Can the same product/group/rank recipes serve lessons
 07, 09, and 10? Keep orbit quotienting distinct from arranging all members together.
 
 ## Next · Syndrome fibers and the limits of correction
+
+**Delivery boundary:** lesson 11 computes all syndromes, derives the unique
+single-error correction, and shows a two-error witness. Grouped syndrome-fiber
+motion, complete received-word coverage, and alternative corruption histories
+remain for this follow-up.
 
 **Question:** What does an error syndrome reveal, and what information does it lose?
 

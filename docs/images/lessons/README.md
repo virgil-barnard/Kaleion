@@ -14,10 +14,12 @@ These PNGs are exported from Plotly figures in the executed notebooks with their
 | `08-ehrhart-counts.png` | [08 · Ehrhart counts](../../../notebooks/08_ehrhart_counts.ipynb) | Exact dilation `n = 6`, frame `6` |
 | `09-norm-fibers.png` | [09 · Norm fibers](../../../notebooks/09_norm_fibers.ipynb) | Six measured norm fibers in 3D, `p = 7` |
 | `10-hermitian-partitions.png` | [10 · Hermitian partitions](../../../notebooks/10_hermitian_partitions.ipynb) | Seven groups of four, frame `49`; fitted axes with independent screen scales |
+| `11-code-and-dual.png` | [11 · A code becomes a projective plane](../../../notebooks/11_cyclic_code_plane.ipynb) | Seven weight-three codewords and their weight-four dual complements |
+| `11-field-and-plane.png` | [11 · A code becomes a projective plane](../../../notebooks/11_cyclic_code_plane.ipynb) | One completed multiplication by alpha in two charts, frame `16`; packed field labels |
 
 ## Regenerate
 
-First execute all ten notebooks with default parameters, following the [notebook instructions](../../../notebooks/README.md#execute-without-the-ui). Their populated copies belong in `build/notebooks/*.executed.ipynb`; the source notebooks remain cleared.
+First execute all eleven notebooks with default parameters, following the [notebook instructions](../../../notebooks/README.md#execute-without-the-ui). Their populated copies belong in `build/notebooks/*.executed.ipynb`; the source notebooks remain cleared. Lesson 11 supplies two previews of its code/dual and field/plane correspondence.
 
 From the repository root, with the notebook environment activated:
 

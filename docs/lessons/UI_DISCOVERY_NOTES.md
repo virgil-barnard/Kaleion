@@ -90,3 +90,31 @@ Rank evidence stores ordered rosters and prefix ranges; playback still reads cap
 The next review can compare these declarations with the visible notebook code,
 asking where the reader must still understand storage details. That is a more
 useful target for simplification than reducing the number of Python classes alone.
+
+## Lesson 11 · A coordinate dictionary connects two discoveries
+
+The [code/field/plane lesson](11_cyclic_code_plane.md) adds an explicit bridge:
+polynomial coefficient degree → a power of a field element → a parity-check
+column → a projective point. None of these labels silently supplies another's
+arithmetic. A future reader should be able to select a point and inspect this
+dictionary, its direction, and the incidence it preserves.
+
+Three further choices emerge. First, the integer overlap count and its parity
+need separate names and inspectable evidence: two contributors may cancel.
+Second, adopting a quotient, inverse, or error candidate requires a declared
+coverage condition, with failed witnesses left available. Third, showing one
+action in two charts needs coordinated presentation without duplicating the
+mathematical occurrences or making the viewer evaluate that action.
+
+The notebook uses existing products, counts, sums, ranks, bindings, and requirements.
+Its bounded polynomial and field recipes remain visible; a helper owns only
+captured-data plotting. Two root edits share a displayed progress value, with their
+recorded undo paths retained separately. This is useful evidence for a later
+coordinated-view authoring contract, not a reason to add code-specific evaluator
+operations or to claim an atomic multi-root edit already exists.
+
+The finite comparisons also distinguish equality from isomorphism. The code's
+support masks equal the field-trace masks after choosing a dictionary and matching
+line keys by their supports. The projective plane itself is not a field. Ask a
+novice to predict a third point in both coordinate systems before designing the
+controls for this correspondence.
