@@ -24,6 +24,7 @@ Kaleion is an experimental mathematics workspace. Read `README.md` and the relev
 - Undo restores captured state; reverse animation samples the recorded path. Presentation frames are not mathematical input arrangements.
 - Keep saved-format compatibility explicit. Update import/export tests and documentation when a schema or operation meaning changes.
 - Extend the operation vocabulary only for a concrete construction that existing operations cannot express clearly. Keep changes focused and avoid unrelated refactors.
+- When changing a lesson or its helpers, update the lesson doc's function/scaffolding inventory and `docs/lessons/HELPER_INVENTORY.md`. Include substantial inline work and keep construction, evidence, motion, and presentation responsibilities explicit.
 
 ## Unit tests
 

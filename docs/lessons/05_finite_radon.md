@@ -63,3 +63,34 @@ its own explicit direction convention and no external inversion dependency.
 
 Exports go to `build/notebooks/finite-radon/`: five offline HTML figures, construction,
 motion, and corrupted-measurement workspaces, finite checks, and `pixel-explanation.json`.
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/05_finite_radon.ipynb) defines six top-level functions.
+See the [cross-lesson inventory](HELPER_INVENTORY.md) for related recipes.
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `field(snapshot, names)` | Read integer values by declared key-field names; reject duplicate keys. |
+| `matrix(snapshot, names)` | Pivot the keyed snapshot onto sorted axes, checking that every cell of the Cartesian domain exists. |
+| `heatmap(snapshot, names, maximum)` | Render that matrix with shared scales and labels. |
+| `check_reconstruction(captured)` | Check the binary source, line sizes and counts, direction coverage, exact divisibility, recovered values, and zero residual against the captured finite case. |
+| `line_explorer(captured)` | Build synchronized image/measurement panels. Frames highlight captured point–line incidences and the corresponding measured count; they do not reevaluate a relation. |
+| `explain_pixel(captured, key)` | Join a pixel to incident line keys, their counts, sampling-pair contributors, and source pixels; show the arithmetic of backprojection and exact division. |
+
+**Shared functions used.** No lesson helper module is used. The public
+`animation_figure` presents the measured lifts; custom heatmaps and line exploration
+use Plotly directly.
+
+**Inline scaffolding.** The notebook defines the binary image, a point–line
+product domain, incidence, counts, backprojection, exact quotient/remainder, and
+residual. Direction-by-direction displacement, captures, reverse sampling,
+source edits, deliberately corrupted counts, and exports are assembled in cells.
+The dense sampling domain has `p^3(p+1)` occurrences, so product construction also
+carries a real execution cost.
+
+**Abstraction evidence.** The snapshot pivot can share a contract with 04. The
+product-domain recipe also appears in 07, 10, and 11, while `explain_pixel` makes
+the additional need for joins between captured references concrete. A future
+helper must preserve declared key domains, exact division checks, and zero
+measurements; a plotting convenience alone would not remove that work.

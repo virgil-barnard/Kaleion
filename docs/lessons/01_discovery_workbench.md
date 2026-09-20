@@ -49,3 +49,27 @@ future work. Video export is an explicit 1D/2D raster adapter; 3D stays interact
 The UI lesson is the repeated separation between **construct**, **place**, **inspect**,
 **measure**, and **transform**. A single visual item can participate in several of
 these roles without merging their responsibilities.
+
+## Functions and authoring scaffolding
+
+This notebook defines **no local functions**. Its scaffolding is inline; that
+still represents authoring work. The [cross-lesson inventory](HELPER_INVENTORY.md)
+compares these responsibilities with the later lessons.
+
+| Inline responsibility | Primitives and choices required |
+| --- | --- |
+| Give one sequence several shapes | `Collection`, `arrange`, expressions, and trigonometry define the line, snake, and helix; identity checks distinguish placement from replacement. |
+| Sweep a lens and measure a region | `Lens.window`, `where`, `Sweep`, and `count(by=...)` declare the domain, relation, cases, and retained keys. Counts become a separately placed profile. |
+| Reuse a measurement as an argument | Explicit `bind` keys connect counts to a roll, displacement, or value change; a scalar count supplies a `Construction` parameter. `Move` and `Values` demonstrate distinct effects. |
+| Recognize a structural spiral pattern | A rectangular-spiral sweep uses the `cycle_end` role, retains observations across specified cases, and checks the resulting values against an independent composite-number enumeration. A Plotly chart presents the retained mask. |
+| Exercise other constructions | Lookup, gather, tile, pad, a Young diagram, and a three-dimensional incidence have their own small declarations and checks. |
+| Present and preserve changes | Workspace edits, captures, undo, frame sampling, captions, graph/workspace JSON, and HTML/MP4 exports are assembled explicitly. Discrete sweep cases and smooth transition frames have different sampling rules. |
+
+**Shared functions used.** There are no imports from the lesson helper modules.
+The public viewers `snapshot_figure`, `animation_figure`, `transition_figure`, and
+`write_mp4` consume snapshots or frames; they do not define the constructions.
+
+**Abstraction evidence.** Transition sampling, captions, and export bookkeeping
+recur throughout the series. Those are candidates for small authoring helpers.
+The variety of domains here is also a useful check on any proposed abstraction:
+it must not assume that an arrangement has rows or that screen position is a key.

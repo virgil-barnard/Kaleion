@@ -51,3 +51,35 @@ The sections in this notebook count different incidences along their respective
 axes. In [lesson 04](04_measured_motion.md), all three are reduced along **one common
 axis**. That produces a common key domain whose counts can drive another arrangement
 and reveal a stronger, pointwise equality.
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/03_three_incidence_box.ipynb) defines nine top-level
+functions and two nested functions. Most support presentation rather than the
+mathematical construction. See the [cross-lesson inventory](HELPER_INVENTORY.md).
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `inspect_box(state)` | Check a captured box against section-count formulas, shared identities, full coverage, and inclusion–exclusion; report the tested parameters and intersections. |
+| `membership_codes(state)`; `membership_name(code)` | Encode membership in X/Y/Z as display bit flags and readable intersection labels. These are derived display data. |
+| `mesh_vertices(positions)`; `voxel_trace(positions, centers, code)` | Build slightly inset unit-cell meshes and a Plotly trace. Gaps improve visibility; they do not change the counted volume. |
+| `box_outline(extents)` | Draw the declared box boundary. |
+| `volume_figure(state, positions=None, controls=True)` | Combine captured membership, voxel traces, filtering controls, bounds, and camera settings. Optional positions allow the same view to present a motion frame. |
+| `slice_figure(state, axis)` | Present a rectangular section scrubber with captured counts. This particular view requires disjoint X/Y/Z membership and the notebook's known box ordering. |
+| `slice_figure.slice_data(t)`; `slice_figure.title(t)` | Nested section extraction and caption helpers: select one array slice and read its measured count. |
+| `motion_figure(state, samples, labels)` | Match captured occurrence identities to moving voxel positions and build multi-trace Plotly playback with stable colors and bounds. |
+
+**Shared functions used.** No lesson helper module is used. The custom voxel and
+slice figures use Plotly directly; core snapshots, motion, and workspace history
+supply their data.
+
+**Inline scaffolding.** Box construction, the three inequalities, intersections,
+section counts, and displacement targets remain visible declarations. The lesson
+also assembles staged edits, undo and sampling loops, alternative parameter
+cases, and saved figures/workspaces.
+
+**Abstraction evidence.** Reusable voxel and section adapters could shorten this
+lesson without adding a new mathematical operation. A coordinated frame viewer
+also overlaps with 04, 05, and 11. Rectangular indexing, disjoint membership, and
+identity matching are separate contracts; none should become an implicit
+restriction on all arrangements.

@@ -65,3 +65,31 @@ Exports in `build/notebooks/young-layers/` include four offline HTML figures, th
 workspaces, `checks.json`, and `layer-explanation.json`. The 3D motion exports to
 interactive HTML. See the [Sage partition reference](https://doc.sagemath.org/html/en/reference/combinat/sage/combinat/partition.html)
 for established conjugation terminology and alternative diagram conventions.
+
+## Functions and authoring scaffolding
+
+This [notebook](../../notebooks/06_young_layers.ipynb) defines **no local functions**.
+Its mathematical recipes and playback orchestration are inline. See the
+[cross-lesson inventory](HELPER_INVENTORY.md) for their recurring responsibilities.
+
+| Inline responsibility | Primitives and choices required |
+| --- | --- |
+| Build and conjugate a diagram | Validate a finite nonincreasing height list, bind heights to a cell domain, select occupied cells, and count by columns or levels. A second construction checks conjugation twice. |
+| Distinguish identity from shape | Move the original selected occurrences into the transposed placement; compare occupied coordinates with a separately constructed diagram without claiming identical occurrences. |
+| Measure packing offsets | Construct the level/predecessor product, select earlier levels, and sum their lengths while retaining the destination level. Bind these exclusive prefix totals into strip placement. |
+| Show turning and packing | Declare a custom three-dimensional turn and an arc path, commit both changes, undo both, and assemble sampled frames, captions, and identity-based colors. |
+| Explain and challenge | Recover layer contributors by source ID; inspect the measured offset and an unordered-height counterexample; distinguish equal counts from preserved order. |
+| Preserve the investigation | Save three workspaces, figures, explanation data, and checks that contributors survive reopening. |
+
+**Shared functions used.** [lesson_views.py](../../notebooks/lesson_views.py)
+supplies `cell_panels`, `profiles`, `replay`, and `save_figures`.
+`cell_panels` uses `xy_cells`; panels and profiles use `style`; `replay` delegates
+to the public animation viewer. These helpers consume captured data and do not
+own conjugation or prefix construction.
+
+**Abstraction evidence.** The weighted exclusive prefix is the substantial
+construction opportunity: each offset is a sum of earlier measured lengths, with
+an explicit order and a first value of zero. The strict ranks now used in 07 and
+10 count predecessors and do not replace weighted prefixes. A future scan needs
+a compact contributor contract as well as correct totals. Sampling and captions
+are a separate, smaller presentation extraction.

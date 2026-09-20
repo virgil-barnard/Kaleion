@@ -80,3 +80,31 @@ The video uses the existing 2D raster adapter and the same captured frames as Pl
 it is not a screen recording of the interactive figure.
 
 For the broader mathematical setting, see [Yufei Zhao, Structure of Set Addition](https://yufeizhao.com/gtacbook/7.pdf).
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/07_additive_structure.ipynb) defines two top-level
+functions. See the [cross-lesson inventory](HELPER_INVENTORY.md).
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `integer_pairs(left_values, right_values)` | Construct two literal inputs and their product domain; bind each factor by its index; name `a`, `b`, `total`, and `pair_key`; place the pairs. The sum remains a symbolic value. |
+| `representation_counts(pairs, lower, upper)` | Declare an inclusive interval of sum bins, build the pair/bin matching incidence, and count retaining the bin. Return the profile and incidence, including bins with zero matches. The caller chooses the bin coverage. |
+
+**Shared functions used.** [lesson_views.py](../../notebooks/lesson_views.py)
+provides `cell_panels`, `profiles`, `replay`, and `save_figures`, using `xy_cells`
+and `style` internally. Public `animation_figure` and `write_mp4` also present
+captured samples.
+
+**Inline scaffolding.** Equal-sum groups declare `order_by(F.pair_key)` before
+`ranks`; measured ranks drive stack placement by explicit bindings. The energy
+comparison uses both squared representation counts and a dense quadruple
+incidence as a finite check. Alternative input sets, a moving diagonal lens,
+staged edits and undo, sample labels/colors, contributor explanations, and
+HTML/MP4/workspace exports remain inline.
+
+**Abstraction evidence.** Named product factors and explicit output bins recur in
+05 and 11. A recipe could shorten their declarations while exposing multiplicity,
+key meaning, and zero-bin coverage. Grouping, strict ordering, and ranks already
+exist in the core; the remaining work is authoring clarity. The dense energy
+construction is an explanatory reference, not an efficient convolution algorithm.

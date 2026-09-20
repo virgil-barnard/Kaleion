@@ -121,3 +121,55 @@ Continue with the [syndrome covering and spectral cancellation briefs](CODES_AND
 A later extension can construct `PG(2,3)` from one-dimensional `F_3` subspaces of
 `F_27`: 26 nonzero representatives become 13 projective points. Unlike the binary
 case, scalar equivalence is visible and must be measured before taking the quotient.
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/11_cyclic_code_plane.ipynb) defines 22 top-level
+functions and one nested function. They cover several different responsibilities;
+their count is not a proposed count of core operations or classes. See the
+[cross-lesson inventory](HELPER_INVENTORY.md).
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `bit(word, degree)`; `binary_sum(left, right, width)` | Compose exact arithmetic for packed binary coefficients and their componentwise sum. Width is explicit; ordinary integer addition is different. |
+| `polynomial_product(left, right, left_width, right_width)` | Build bounded binary coefficient convolution. This is a visible expression recipe, not a general polynomial engine. |
+| `coefficients(packed)` | Expand a packed expression into seven coefficient slots, including zeros. |
+| `cubic_remainder(items, modulus, highest_degree)` | Unroll a declared number of binary long-division steps, each a symbolic value transformation. Degree-three modulus and bounded input degree are part of the recipe. |
+| `generator_rows(polynomial, dimension)` | Copy coefficient slots and assign each copy its cyclically shifted degree; return the copies and resulting matrix. |
+| `generator_placements(copies, matrix)`; `generator_placements.rings(items, degree)` | Choose ring and matrix placements. The nested ring helper owns radius, angle, and height conventions. |
+| `generator_turn()`; `support_turn()` | Describe custom presentation paths for generator-row turns and support rotation. The paths interpolate captured positions. |
+| `span(matrix, dimension)` | Declare message/row/degree products, count selected contributions, take parity, and derive packed words and weights. Return intermediate definitions for inspection. |
+| `dual_polynomial(polynomial)` | Enumerate bounded quotient candidates, require unique factor coverage, and reverse the five quotient coefficients into seven slots. |
+| `cross_parities(left, right, left_dimension, right_dimension)` | Count row-pair overlaps and reduce them modulo two. |
+| `parity_checks(matrix, dimension)` | Construct all 128 words' row checks, syndrome values, and zero-syndrome kernel; retain the intermediate counts. |
+| `fano_supports(code, check_matrix)` | Pack check-matrix columns, select weight-three words, measure their order, and bind those words and columns onto a support product. |
+| `fano_chart()`; `support_placements(supports, chart)` | Declare the seven chart positions and the ring, shifted-ring, and ranked-panel placements. Drawn geometry does not define incidence. |
+| `field_model(polynomial, columns)` | Construct the bounded multiplication table, inverse-coverage guard, powers, coordinate dictionary, trace, and trace incidences. Return their definitions separately. |
+| `multiply_by_alpha(points, field)` | Apply the exact field multiplication binding, then update exponent and column-coordinate annotations. This is the mathematical action presented by the motion. |
+| `field_placements(points, chart)` | Put the same labeled points in exponent-ring and projective-chart coordinates. |
+| `single_error_rule(syndromes)` | Declare no-error and single-bit candidates; require a unique candidate for each syndrome and measure the correction mask. |
+| `sampled(transition, name, label, steps=25)` | Sample one captured transition and attach captions. This helper assembles presentation data. |
+| `compact_workspace(workspace, filename)` | Write compact workspace JSON under the notebook's output directory and reconstruct a workspace from the same in-memory payload. This combines a file effect and a deserialization check; it does not read the saved file back. |
+
+**Shared functions used.** [code_views.py](../../notebooks/code_views.py) provides
+`binary_panels`, `fano_gallery`, and `linked_field_motion`. Its private
+`_captured_lines` groups captured supports and `_line_path` chooses chart strokes;
+neither constructs projective incidence. Those viewers use `xy_cells` and `style`
+from [lesson_views.py](../../notebooks/lesson_views.py); the notebook directly uses
+that module's `replay` and `save_figures` as well. The public `animation_figure`
+and `write_mp4` handle further captured playback/export.
+
+**Inline scaffolding.** Workspace registration, generator edits, seven cycle
+steps, undo, identity colors, finite kernel/span and trace/support comparisons,
+dictionary display, four counterexamples, and contributor explanations remain in
+cells. Coordinated field playback pairs two recorded workspace edits at the same
+progress; it is not an atomic multi-root action. HTML, video, and evidence exports
+also require orchestration beyond the named recipes.
+
+**Abstraction evidence.** `span`, `cross_parities`, and `parity_checks` repeat a
+named-product → incidence → retained-count → parity construction. Quotient,
+inverse, and syndrome selection repeat guarded assignment. These are candidates
+for small composable recipes, with widths, keys, and coverage exposed. Playback
+coordination, coefficient arithmetic, finite comparisons, and chart routing each
+hide different decisions and should remain independently replaceable. A code
+subclass would not automatically remove those four kinds of authoring work.
