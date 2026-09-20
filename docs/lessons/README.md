@@ -31,6 +31,9 @@ investigations, with delivery status made explicit. [Review notes](REVIEW_NOTES.
 collect concrete findings from the ten notebooks for our next architecture and
 notation discussion. [UI discovery notes](UI_DISCOVERY_NOTES.md) identify the
 declarative choices behind the new constructions and their module responsibilities.
+The [codes and discovery paths](CODES_AND_DISCOVERY_PATHS.md) expand the next
+investigations into dual codes, spectral cancellation, topology, and local
+combinatorial dynamics, with concrete motion designs and checked finite seeds.
 
 ## A common narrative
 
