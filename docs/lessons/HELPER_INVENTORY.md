@@ -7,13 +7,13 @@ extraction. The individual lesson notes list every local function, the shared
 functions used, inline scaffolding, and the assumptions a reusable version would
 need to expose.
 
-The source baseline is `5e73af0` on main, after lesson 11. There are **57 top-level
-and five nested notebook functions**, plus **17 functions in three shared lesson
+After extracting the snapshot adapters from lessons 04–05, there are **53 top-level
+and five nested notebook functions**, plus **19 functions in four shared lesson
 modules**. These counts describe source organization, not mathematical complexity
 or a proposed number of primitives. Lessons 01 and 06 have no local functions but
 still require substantial authoring work.
 
-The scope is the numbered notebooks and their three project helper modules.
+The scope is the numbered notebooks and their four project helper modules.
 Core APIs and third-party utilities are named where they clarify a responsibility;
 this is not a catalog of every Python or Plotly call. Private and nested helpers
 are included. Imports alone do not establish use.
@@ -25,8 +25,8 @@ are included. Imports alone do not establish use.
 | [01 · Discovery workbench](01_discovery_workbench.md#functions-and-authoring-scaffolding) | 0 + 0 | Inline shapes, lenses, measurement bindings, retention, sampling, and persistence | None; public viewers |
 | [02 · Floor sums](02_floor_sum_proof.md#functions-and-authoring-scaffolding) | 2 + 1 | Finite-case report, rectangular mask view; inline packing | None; public viewer and Plotly |
 | [03 · Incidence box](03_three_incidence_box.md#functions-and-authoring-scaffolding) | 9 + 2 | Finite-case report, voxels, slices, membership displays, playback | None; Plotly |
-| [04 · Measured motion](04_measured_motion.md#functions-and-authoring-scaffolding) | 7 + 1 | Keyed snapshot pivot, plane edges, discrepancy report, contributor explanation | None; public viewer and Plotly |
-| [05 · Finite Radon](05_finite_radon.md#functions-and-authoring-scaffolding) | 6 + 0 | Keyed pivot, reconstruction check, linked highlights, contributor joins | None; public viewer and Plotly |
+| [04 · Measured motion](04_measured_motion.md#functions-and-authoring-scaffolding) | 5 + 1 | Plane edges, discrepancy report, contributor explanation | `snapshot_views`; public viewer and Plotly |
+| [05 · Finite Radon](05_finite_radon.md#functions-and-authoring-scaffolding) | 4 + 0 | Reconstruction check, linked highlights, contributor joins | `snapshot_views`; public viewer and Plotly |
 | [06 · Young layers](06_young_layers.md#functions-and-authoring-scaffolding) | 0 + 0 | Inline conjugation, weighted prefixes, paths, receipts, and replay assembly | `lesson_views` |
 | [07 · Additive structure](07_additive_structure.md#functions-and-authoring-scaffolding) | 2 + 0 | Product and bin recipes; inline ranks, energy checks, and lens sweep | `lesson_views` |
 | [08 · Ehrhart counts](08_ehrhart_counts.md#functions-and-authoring-scaffolding) | 2 + 0 | Measured case family and finite difference; inline evidence and probes | `lesson_views` |
@@ -57,6 +57,23 @@ combinations rather than treating every existing function as an ideal module.
 “Direct” means called in notebook source, including inside a local function.
 “Indirect” means reached through another helper. Colors and other constants are
 not counted as functions.
+
+### Captured integer-key adapters
+
+Source: [notebooks/snapshot_views.py](../../notebooks/snapshot_views.py).
+Both functions are used directly in 04–05, replacing four local definitions.
+They do not import Plotly, evaluate definitions, or modify captured evidence.
+
+| Function | Input → result and required choices |
+| --- | --- |
+| `keyed_values` | Snapshot and explicit key-field names → a detached tuple-keyed dictionary in occurrence order. Require unique exact integer keys, preserving integer values and zeros. |
+| `rectangular_values` | Snapshot and explicit x/y field names → ascending axis labels and rows indexed by y, columns by x. Uses `keyed_values`; require a complete product of observed labels, without filling holes. |
+
+Empty input with valid key fields yields an empty map or three empty lists. A
+one-dimensional lookup retains one-tuple keys. Neither coordinates nor shape
+metadata supplies implicit keys or absent axis labels. The lessons still check
+their expected full domains independently. This is not a new core operation or
+a general comparison/evidence API; returned containers carry no measurement claim.
 
 ### Presentation helpers
 
@@ -105,12 +122,12 @@ All five functions serve lesson 11 and consume captured data.
 
 ## Opportunities supported by multiple lessons
 
-These are candidates for later work, not APIs introduced by this documentation.
+The snapshot adapter is delivered; other rows remain candidates for later work.
 Each proposal should first shorten an actual lesson while preserving its evidence.
 
 | Recurring work | Evidence to compare | Smallest useful boundary and required choices |
 | --- | --- | --- |
-| Keyed snapshot lookup and pivot | 04 `keyed`/`field_matrix`; 05 `field`/`matrix`; contrast 02–03's ordered reshapes | Read-only adapter with named keys, duplicate detection, axis order, and missing-cell policy. A rectangular output must be requested explicitly. |
+| Keyed snapshot lookup and pivot · delivered | 04–05 now share `keyed_values`/`rectangular_values`; contrast 02–03's ordered reshapes | Explicit integer keys and x/y axes; reject duplicates and holes; ascending observed axes. This does not replace a check against an independently declared domain. |
 | Named product and measurement recipes | 05 point/line pairs; 07 `integer_pairs`/`representation_counts`; 10 `hermitian_incidence`; 11 `span`/`cross_parities`/`parity_checks` | Declare factor roles and key bindings, then compose incidence and retained reductions. Expose multiplicity, expected bins, and product size; efficient execution is a separate concern. |
 | Guarded assignment | 10 measured owners; 11 quotient, inverse, and syndrome candidates | Reuse existing `coverage`, `on_keys`, `exactly`, `unique`, and `require`. Clarify the expected domain and failure witnesses; do not infer uniqueness from matching totals. |
 | Captured explanation | 04 `explain_column`; 05 `explain_pixel`; inline receipts in 06–11 | Follow scoped target references through declared driver keys to measurements and contributors, including weight/read expressions. Parent IDs alone do not explain a keyed driver. |
@@ -120,8 +137,8 @@ Each proposal should first shorten an actual lesson while preserving its evidenc
 | Weighted exclusive prefix | 06's level packing; compare unit-weight ranks in 07 and 10 | Explicit order, optional groups, zero initial offset, and queryable evidence with bounded storage. Existing ranks handle predecessor counts; weighted accumulation remains a separate need. |
 | Arithmetic and coordinate recipes | 09–10 quadratic formulas; 11 binary polynomial formulas and coordinate dictionary | Separate modulus/basis/encoding, exact arithmetic, and chart placement. First demonstrate a shared contract across models; a packed integer alone does not identify its arithmetic. |
 
-The first inexpensive extraction to try is the keyed snapshot adapter in 04–05.
-Sampling/caption assembly is another contained authoring improvement. The
+The keyed snapshot adapter in 04–05 is the first completed extraction from this
+inventory. Sampling/caption assembly is another contained authoring improvement. The
 explanation query, weighted prefix, and measured family need explicit evidence
 contracts before a convenience wrapper can solve the real problem. Those needs
 agree with the remaining work in the [core refinement plan](../CORE_REFINEMENT_PLAN.md).
