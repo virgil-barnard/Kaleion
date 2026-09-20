@@ -1,9 +1,12 @@
 # Discovery paths through codes, duality, and motion
 
-**Status: proposed lessons, not implemented notebooks.** September 19, 2026.
-Small algebraic fixtures were checked while preparing these briefs; the signed
-code/dual measurement also ran through Kaleion. The proposed animations and their
-educational effectiveness remain to be tested.
+**Status:** A–B's main constructions are delivered in
+[11 · A code becomes a projective plane](11_cyclic_code_plane.md), including the
+extension-field incidence correspondence and synchronized Singer-cycle motion.
+Its syndrome-correction coda begins C; full covering/coset motion and D–H remain
+proposed. Updated September 20, 2026. Small algebraic fixtures were checked while
+preparing these briefs; notebook validation is recorded separately. Educational
+effectiveness for novice authors remains to be tested.
 
 The eventual goal is a novice authoring a construction and noticing an unfamiliar
 relationship. For now, build complete investigations that reveal the decisions
@@ -78,10 +81,12 @@ H=\begin{pmatrix}
 \end{pmatrix}.
 \]
 
-**Motion.** Reverse the quotient stencil, shift it into rows, and pass those rows
+**Motion design.** Reverse the quotient stencil, shift it into rows, and pass those rows
 over G. Each overlap has even parity: `G H^T = 0` over `F_2`. Let H switch roles
 from checking C to generating its dual, then use G to check the dual. Exact row
 operations can change a displayed basis while leaving the generated set fixed.
+Lesson 11 constructs and checks the reciprocal and overlap table; animated
+quotient reversal, row superposition, and basis changes remain extensions.
 
 **A second discovery.** H's columns are the seven distinct nonzero three-bit
 vectors. Place those columns as the seven points of the Fano plane. Each of C's
@@ -258,7 +263,7 @@ schedule comparison, and reuse of measured histories as transformation arguments
 
 ## Development order and the novice interface
 
-Build A–B first, then C–D. Their common seven-bit domain lets a reader change
+Continue lesson 11 with C–D. Their common seven-bit domain lets a reader change
 viewpoint without learning a new example each time. Follow with F for the largest
 conceptual leap, and use E, G, and H to test genuine execution/authoring gaps.
 Keep the previously planned Burnside and Hermitian block-exchange lessons active.
@@ -290,9 +295,10 @@ through the later examples.
 
 ## Scope of the preliminary checks
 
-The [recorded fixture results](../reviews/2026-09-discovery-path-fixtures.json)
+The original [recorded fixture results](../reviews/2026-09-discovery-path-fixtures.json)
 identify the code ordering and finite cases checked with independent Python
 arithmetic, enumeration, and binary row reduction. Only the signed code/dual sum
 was additionally evaluated through Kaleion. This is feasibility evidence for a
-plan, not notebook validation or a performance benchmark. No GUI, new notebook,
-runtime operation, or dependency is introduced by these briefs.
+plan, not notebook validation or a performance benchmark. Lesson 11 now provides
+separate executable evidence for the code/dual/field/plane route; these planning
+fixtures remain unchanged. No new runtime operation or dependency was needed.

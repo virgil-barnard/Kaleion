@@ -1,5 +1,57 @@
 # Notebook viewer validation
 
+## Lesson 11 · Cyclic code, field, and projective plane
+
+September 20, 2026; Python 3.12.14, NumPy 2.3.5, Plotly 6.9.0.
+
+- All 21 code cells execute in fresh in-process IPython sessions for the default
+  `(generator,message,error_mask)=(11,5,4)` and alternative `(13,9,3)`. Mathematical,
+  contributor, capture, undo, and video assertions pass. The host still prohibits
+  live Jupyter kernel sockets, so this does not claim a live JupyterLab session.
+  The source validates as nbformat 4, parses, and has cleared outputs.
+- The full core suite passes **101 tests**, including seven new lesson tests that
+  load the actual tagged construction cells without Plotly or a notebook kernel.
+  Independent bitwise polynomial multiplication/division checks both cubics,
+  their generators, reciprocal quotients, code/dual spans, all 128 parity masks,
+  and cyclic closure. `examples/discovery.py --out build/example-output` passes.
+- The default code has 16 words with weights `{0:1,3:7,4:7,7:1}`; its dual has
+  eight words with weights `{0:1,4:7}`. Every G/H cross-parity is zero. Every one
+  of the 21 point pairs belongs to exactly one weight-three support, and all
+  seven complements match nonzero dual words. Reordered matrices, words, weights,
+  and column drivers preserve results through explicit keys.
+- For each cubic, all 64 field products match an independent remainder oracle;
+  nonzero inverse coverage is one. The coordinate dictionary is bijective and
+  preserves all 64 additions. All 49 trace incidences reproduce the code's lines;
+  multiplication by alpha carries each line to another and has a seven-step cycle.
+- All 128 zero/single-error transmissions per cubic decode to their source. All
+  336 two-error transmissions per cubic decode to a different codeword. The
+  zero correction retains its sole contributor. A cancelled coefficient retains
+  its two integer contributors, while its derived parity makes no cardinality
+  claim. A failed quotient/inverse requirement leaves independent witnesses usable.
+- Captured generator and field motion replays and reverses with evaluation
+  disabled. The seven notebook workspace exports reopen with their evaluated
+  dependencies and pending redo; the cycle capture is about 4.35 MiB. JSON exports
+  preserve the quotient contributor and explicit field/H-column dictionary.
+- Chromium loads all seven standalone figures and the converted notebook with
+  HTTP(S) blocked. The notebook contains seven figures, the coordinate table, and
+  two embedded videos. The 75-frame generator, 82-frame support, and 136-frame
+  synchronized field sequences reach the checked endpoints and undo targets.
+  The two field charts agree at all checked action boundaries; a full cycle returns
+  to the initial positions and colors. A changed 3D camera persists across frames.
+- Play, Pause, and Restart work. The previously observed Plotly 6.9.0 `undefined`
+  cancellation event occurs on active Pause, with no other page errors. Screenshots
+  at 1100 and 700 pixels were inspected. Both 960×600 gallery previews export
+  offline without errors and were inspected.
+- Both H.264 videos decode all frames (82 and 136) at 1000×620, 20 fps. Decoded
+  start/intermediate/end frames were inspected. The field video's captions spell
+  `alpha` because the portable default raster font does not provide the Greek
+  glyph. Video points and incidence colors come from the captured frames; the
+  interactive field figure additionally draws the projective incidence strokes.
+
+These finite checks support the specified seven-slot lesson. The written linear
+algebra and field arguments explain the correspondence. No runtime, schema,
+dependency, or general polynomial/field implementation changes are included.
+
 ## Explicit choice refinement
 
 - Changed lessons 07 and 10 execute their 7 and 12 code cells in fresh in-process

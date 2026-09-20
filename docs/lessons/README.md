@@ -19,16 +19,19 @@ support an educational page or a touch interface.
 | [08 · Count lattice points as a triangle grows](08_ehrhart_counts.md) | When are dilation counts polynomial? | Parameter families → finite differences → driven probes and reciprocity |
 | [09 · A field changes its clothes](09_norm_fibers.md) | Can multiplication become a turn? | Norm fibers → counts → phase coordinates → cyclic action and undo |
 | [10 · One curve, two ways to gather it](10_hermitian_partitions.md) | How can the same 28 points form different partitions? | Projective quotient → polars → coverage → measured owners and ranks |
+| [11 · A code becomes a projective plane](11_cyclic_code_plane.md) | How does a cyclic code reveal a field and a moving plane? | Polynomial → generator/dual → Fano supports → field trace → Singer cycle |
 
 Read 01 as a reference tour. The mathematical sequence is 02 → 03 → 04.
 Lesson 05 opens a second path through finite geometry and imaging. Lessons 06 → 07
 connect counting, order, and multiplicity; 08 introduces parameter families and
 quasipolynomials. Lessons 09 → 10 develop finite-field motion and Hermitian geometry.
+Lesson 11 connects coding theory to a projective plane through an explicit field
+coordinate dictionary; it includes a first syndrome-correction construction.
 Every notebook includes its own definitions and can run in a fresh kernel.
 
 The [future lessons](FUTURE_LESSONS.md) preserve the original briefs and remaining
 investigations, with delivery status made explicit. [Review notes](REVIEW_NOTES.md)
-collect concrete findings from the ten notebooks for our next architecture and
+collect concrete findings from the notebooks for our next architecture and
 notation discussion. [UI discovery notes](UI_DISCOVERY_NOTES.md) identify the
 declarative choices behind the new constructions and their module responsibilities.
 The [codes and discovery paths](CODES_AND_DISCOVERY_PATHS.md) expand the next

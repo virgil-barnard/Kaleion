@@ -33,6 +33,10 @@ These images come from the working notebooks. Follow a preview to its constructi
 <td><a href="notebooks/09_norm_fibers.ipynb"><img src="docs/images/lessons/09-norm-fibers.png" alt="Forty-eight nonzero field elements arranged into six norm fibers on separate levels"><br><b>09 · A field changes its clothes</b></a><br>Rearrange a finite field so multiplication becomes a turn.</td>
 <td><a href="notebooks/10_hermitian_partitions.ipynb"><img src="docs/images/lessons/10-hermitian-partitions.png" alt="Twenty-eight Hermitian curve points regrouped into seven secants of four points each"><br><b>10 · One curve, two ways to gather it</b></a><br>Let incidence measurements drive different partitions.</td>
 </tr>
+<tr>
+<td><a href="notebooks/11_cyclic_code_plane.ipynb"><img src="docs/images/lessons/11-code-and-dual.png" alt="Seven Fano-plane triples highlighted in amber, with their dual codeword complements in violet"><br><b>11 · A code becomes a projective plane</b></a><br>Discover the Fano plane in a cyclic code and its dual.</td>
+<td><a href="notebooks/11_cyclic_code_plane.ipynb"><img src="docs/images/lessons/11-field-and-plane.png" alt="Multiplication in the eight-element field shown as one circular shift and the corresponding motion of a projective line"><br><b>11 · The same action in two charts</b></a><br>Let the same cubic construct a field whose multiplication moves the plane.</td>
+</tr>
 </table>
 
 The images are static previews; selected motion frames show presentation states. [Preview sources and regeneration](docs/images/lessons/README.md).
@@ -97,7 +101,9 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 [One curve, two ways to gather it](notebooks/10_hermitian_partitions.ipynb) constructs projective classes and a 28-point Hermitian curve over `F_9`. Explore its polar lenses, then use coverage counts and measured ranks to gather the same points into nine triples plus one point, or seven quadruples. Removing a line exposes uncovered points; captured motion reverses both partitions.
 
-The [lesson guide](docs/lessons/README.md) provides educational notes for all ten notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, error-correcting codes, further Hermitian investigations, and earlier extensions.
+[A code becomes a projective plane](notebooks/11_cyclic_code_plane.ipynb) begins with a cyclic Hamming-code polynomial, unfolds its generator matrix, derives its dual, and finds the Fano plane among the codeword supports. The same cubic constructs an eight-element field. An explicit coordinate dictionary connects the field and projective incidences, while synchronized charts show field multiplication as a cyclic shift and a motion of projective lines. It includes measured single-error correction, four counterexamples, captured undo, and two MP4s.
+
+The [lesson guide](docs/lessons/README.md) provides educational notes for all eleven notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, further coding theory, Hermitian investigations, and earlier extensions.
 
 The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core shares unchanged owned snapshot buffers and centralizes address and grouping rules. Explicit grouping, member order, coverage checks, and named placement now simplify lessons 07 and 10; prefix sums, case families, and broader explanation tools remain planned.
 
