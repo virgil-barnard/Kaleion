@@ -75,3 +75,31 @@ motion is separate presentation, with fixed axes and independent screen scales.
 Exports in `build/notebooks/ehrhart-counts/` include five offline HTML figures, two
 workspaces, `checks.json`, `case-explanation.json`, and `integer-dilations.mp4`.
 The video holds exact cases at 12 fps rather than interpolating lattice counts.
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/08_ehrhart_counts.ipynb) defines two top-level
+functions. See the [cross-lesson inventory](HELPER_INVENTORY.md).
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `measured_family(incidence)` | Build a count definition for each scale from zero through the notebook's `MAX_N`; bind that case's parameter, annotate its scale, concatenate, and place the family. Return both the family and the individual measurement roots. No evaluated count is fed back as an anonymous literal. |
+| `difference(series, last, step=1)` | Restrict to the scales with an available successor, bind that successor by its scale key, and subtract the current value. This is a finite keyed difference with an explicit stride and endpoint. |
+
+**Shared functions used.** [lesson_views.py](../../notebooks/lesson_views.py)
+provides `profiles`, `replay`, and `save_figures`; profiles use `style` internally.
+Public `animation_figure` and `write_mp4` also consume captured samples.
+
+**Inline scaffolding.** A fixed finite lattice domain carries closed, interior,
+and rational-triangle lenses. Counts, successive differences, and parity
+subfamilies drive probes and plots. Parameter-case checks, contributor receipts,
+staged edits/undo, transition sampling, and exports are assembled explicitly.
+The discrete dilation video holds exact cases; it does not treat interpolated
+membership as a new mathematical case.
+
+**Abstraction evidence.** The measured family is a strong candidate for a recipe
+with explicit case keys and accessible per-case evidence. The notebook keeps
+separate case roots because concatenation does not combine their active reduction
+metadata. `Sweep` already presents parameter cases, but it does not by itself
+supply this reusable measured arrangement. Difference/shift ergonomics can be
+considered independently of the family and its evidence representation.

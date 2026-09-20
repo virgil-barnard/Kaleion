@@ -52,3 +52,29 @@ The default case `(11,7)` gives `30 + 30 = 60`. The `(12,8)` case gives
 This lesson requires explicit union/intersection on a shared universe and makes
 boundary conventions visible. Unit-cell area is the counting measure, not the area
 of the marker glyphs. Its extension is [three incidences in a box](03_three_incidence_box.md).
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/02_floor_sum_proof.ipynb) defines two top-level
+functions and one nested function. See the [cross-lesson inventory](HELPER_INVENTORY.md)
+for related responsibilities elsewhere.
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `inspect_case(state)` | Read a captured case; check shared identities, floor-count oracles, coverage, overlap, and inclusion–exclusion; return a finite-case report. It does not construct the incidences or prove the general identity. |
+| `incidence_page(state)` | Turn captured masks into a heatmap with formula labels and P/Q/Both/Overlap controls. The viewer owns colors, layout, and captions. |
+| `incidence_page.grid(values)` | Nested display adapter: reshape values using the declared rectangle dimensions, then transpose for the chart. It relies on this construction's storage order. |
+
+**Shared functions used.** No lesson helper module is used. The public
+`animation_figure` presents captured motion; the incidence page uses Plotly directly.
+
+**Inline scaffolding.** The notebook declares the shared rectangle and its two
+inequalities, reductions, overlap, and union; constructs the equivalent quotient
+region and its placements; and stages packing with workspace edits and an arc
+path. Parameter cases, captures, reverse playback samples, assertions, and
+HTML/JSON exports are also inline.
+
+**Abstraction evidence.** A captured-case report recurs in lessons 03–05. A mask
+viewer could share presentation work with 03's sections, but must declare its
+logical axes and ordering. Lessons 04–05 instead pivot by explicit keys; blindly
+reusing the reshape here would fail for reordered occurrences.

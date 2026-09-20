@@ -83,3 +83,35 @@ states; shared capture storage remains separate future work.
 
 Exports in `build/notebooks/hermitian-partitions/` include seven offline views,
 an MP4, six workspace files, `checks.json`, and `point-explanation.json`.
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/10_hermitian_partitions.ipynb) defines four top-level
+functions. See the [cross-lesson inventory](HELPER_INVENTORY.md).
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `projective_quotient(p=3)` | Construct nonzero triples, normalize the first nonzero coordinate, encode representative keys, and count the classes. This bounded recipe uses `p=3`; moving 728 representatives together is distinct from reducing them to 91 classes. |
+| `projective_points(p=3, labels=None)` | Decode canonical point labels into coordinates, annotate self-pairing, and assign an affine chart plus an infinity strip. Coordinate decoding and display placement are currently coupled. |
+| `hermitian_incidence(points, p=3)` | Build the point/curve product, bind both coordinate triples by their declared indices or keys, apply the Hermitian pairing, and count hits. The right-hand domain is the 28-point curve, not all 91 points. |
+| `hermitian_partition(points, incidence, line_counts, focus, p=3, external=False)` | Select the relevant secants or polar, measure per-point coverage, guard the owner assignment with unique coverage, declare block/member order, and bind measured ranks into packing. Return named intermediate stages so coverage and ownership remain inspectable. |
+
+**Shared functions used.**
+[quadratic_coordinates.py](../../notebooks/quadratic_coordinates.py) supplies direct
+calls to `field_multiply`, `field_conjugate`, `field_norm`, `hermitian_pair`, and
+`element_label`; `hermitian_pair` also calls `field_sum` internally.
+[lesson_views.py](../../notebooks/lesson_views.py) provides `style`, `profiles`,
+`replay`, and `save_figures`; the public `snapshot_figure` and `write_mp4` support
+additional presentations.
+
+**Inline scaffolding.** Polar exploration builds its own multi-trace frame family.
+Normalization and partition edits, reverse playback, color assignment, an omitted
+line's coverage witness, and export loops are inline. Explanations manually join
+owners to incidence pairs and point classes, and inspect rank predecessors.
+
+**Abstraction evidence.** Coordinate decoding, canonicalization, incidence, and
+packing have different reasons to change; they need not become one projective
+arrangement subclass. Guarded assignments recur in 11's quotient, inverse, and
+syndrome constructions. Coverage, strict ranks, and named placement are already
+public capabilities; the opportunity is to compose them readably and explain
+the bindings, while keeping failed coverage visible.

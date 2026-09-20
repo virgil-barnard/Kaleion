@@ -56,3 +56,34 @@ and assigning measured values to placement in the future interface.
 
 Exports in `build/notebooks/norm-fibers/` include six offline HTML views, an MP4,
 four workspace files, `checks.json`, and `fiber-explanation.json`.
+
+## Functions and authoring scaffolding
+
+The [notebook](../../notebooks/09_norm_fibers.ipynb) defines three top-level functions.
+See the [cross-lesson inventory](HELPER_INVENTORY.md).
+
+| Local function | Responsibility and assumptions |
+| --- | --- |
+| `norm_fibers(p)` | Validate the supported primes 3, 7, and 11; construct coefficient-coded elements, annotate their norm, place the coefficient grid, and count by norm. Arithmetic assumptions and the initial chart are currently combined in this recipe. |
+| `phase_atlas(points, p, beta)` | Check that the chosen norm-one generator has order `p+1`; unroll symbolic products; choose the least-coded element of each nonzero norm fiber as its anchor; bind anchors and powers into a keyed phase atlas. The finite Python orbit check validates the input choice. |
+| `in_norm_fibers(source, atlas, counts, cylinder=False)` | Bind phase and measured fiber size into placement formulas for rings or a cylinder. The source's norm annotation must correspond to its current values. |
+
+**Shared functions used.** From
+[quadratic_coordinates.py](../../notebooks/quadratic_coordinates.py), this lesson
+calls `field_multiply`, `field_norm`, and `element_label`. The additional imported
+`field_sum`, `field_conjugate`, and `hermitian_pair` are not called here.
+[lesson_views.py](../../notebooks/lesson_views.py) supplies `style`, `profiles`,
+`replay`, and `save_figures`; public `snapshot_figure` and `write_mp4` also serve
+the views.
+
+**Inline scaffolding.** The cells construct multiplication actions, compare them
+with a change of phase coordinates, and stage paths and undo. They assemble
+fiber figures, identity colors, explicit two-dimensional projections of captured
+frames for video, zero-divisor and misleading-distance witnesses, contributor
+explanations, and saved workspaces/figures.
+
+**Abstraction evidence.** An orbit/coordinate-atlas recipe could separate the
+chosen representatives and phase keys from ring geometry. The shared quadratic
+arithmetic also supports 10; 11 uses a different coefficient model. Any later
+common arithmetic abstraction must state its basis and modulus. Packed integer
+labels and screen distance do not determine the field operations.

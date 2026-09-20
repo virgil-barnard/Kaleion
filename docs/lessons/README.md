@@ -34,6 +34,9 @@ investigations, with delivery status made explicit. [Review notes](REVIEW_NOTES.
 collect concrete findings from the notebooks for our next architecture and
 notation discussion. [UI discovery notes](UI_DISCOVERY_NOTES.md) identify the
 declarative choices behind the new constructions and their module responsibilities.
+The [helper inventory](HELPER_INVENTORY.md) catalogs local functions, shared
+helpers, and inline authoring work in every lesson, with concrete overlaps to
+review before extracting a recipe, module, or class.
 The [codes and discovery paths](CODES_AND_DISCOVERY_PATHS.md) expand the next
 investigations into dual codes, spectral cancellation, topology, and local
 combinatorial dynamics, with concrete motion designs and checked finite seeds.
@@ -53,8 +56,9 @@ combinatorial dynamics, with concrete motion designs and checked finite seeds.
 7. **Record.** Save definitions, measurements, captures, and explanation data.
 
 Each lesson note records prerequisites, a suggested reading/teaching sequence,
-experiments, and software implications. It should support both a reader following
-the mathematics and a developer deciding whether a recurring task deserves a helper.
+experiments, software implications, and the functions and inline scaffolding
+required to author it. It should support both a reader following the mathematics
+and a developer deciding whether a recurring task deserves a helper.
 
 ## Conventions that matter educationally
 
@@ -83,3 +87,7 @@ Before extracting a new primitive, record the actual obstacle. Distinguish a
 plotting convenience, a readable construction recipe, an execution optimization,
 and a missing mathematical operation. The lessons should inform the future UI by
 revealing repeated choices, without committing us to gestures prematurely.
+
+Update the lesson's function inventory alongside changes to its notebook or
+helpers. Follow the [inventory conventions](HELPER_INVENTORY.md#maintaining-the-inventory)
+so repeated work and consequential assumptions remain easy to compare.
