@@ -1,5 +1,55 @@
 # Notebook viewer validation
 
+## Lessons 04–05 · Shared integer-key snapshot adapters
+
+September 20, 2026; based on main `6604481`. Python 3.12.14, NumPy 2.5.3,
+Plotly 6.9.0, IPython 9.17.1. No dependency declarations changed. The previous
+environment's interpreter was unavailable, so a new venv was installed using the
+existing `.[notebooks]` dependency group.
+
+- `python3 -m unittest discover -s tests -p test_snapshot_views.py -v`: seven
+  independent adapter tests pass. Fixtures cover shuffled storage, transposed
+  axes, coincident 3D placement, negative and >64-bit keys/values, single and
+  composite keys, zero counts, duplicate keys, missing cells, invalid key types,
+  empty inputs, and a wholly absent axis label. Captured measurements remain
+  unchanged and queryable while evaluator calls are disabled.
+  The same seven tests pass with `python3 -O`, confirming that adapter validation
+  does not disappear when Python assertions are disabled.
+- `python3 -m unittest discover -s tests -v`: **108 tests pass**.
+  `python3 examples/discovery.py --out build/example-output` passes with the
+  established counts, gather/roll column, spiral hits, and save outputs.
+- Both changed notebooks execute every code cell in separate fresh in-process
+  IPython sessions: 11 cells in 04 and 10 in 05. The coprime plane reaches height
+  4; the `(6,4,5)` case retains its excess-2 witness at `(3,2)`. The 25-pixel image
+  reconstructs exactly from 30 line counts; corrupting one line still yields five
+  diagonal divisibility witnesses. Contributor and captured-undo assertions pass.
+- Nine self-contained Plotly HTML figures are exported. A separate data-level
+  check compares their height, count, reconstruction, and discrepancy heatmaps
+  with direct finite-enumeration oracles, without using the new adapters. All
+  30 line-highlight cases match their modular predicates. The 78-frame plane
+  sequence and 144-frame reconstruction sequence have finite coordinates, one
+  slider step per frame, and matching first/last coordinates after undo.
+- Both executed notebooks convert to HTML with `python3 -m jupyter nbconvert
+  --to html`; both committed source notebooks validate and retain cleared outputs.
+  These lessons use 3D interactive playback, not MP4. No video path changed.
+
+**Host limits:** the ordinary `nbconvert --execute` commands were attempted for
+both notebooks, but local kernel startup failed with `Operation not permitted`
+before execution. Fresh in-process IPython was the fallback, not a live JupyterLab
+session. A separate offline browser check was attempted; the available Chromium
+exited with SIGSEGV before loading a page. This run verifies exported plot/frame
+data and HTML generation, **not browser rendering or interactive controls**. The
+earlier browser evidence below remains historical, not a new check of this change.
+
+**Migration boundary:** four notebook-local helpers become two functions in
+`snapshot_views.py`; lookup keys and x/y fields are explicit at call sites. Valid
+integer-key cases keep their orientation and values. Duplicate keys and incomplete
+observed rectangles now raise `ValueError` instead of relying on assertions;
+noninteger keys are rejected rather than truncated with `int`. No core API,
+mathematical definition, operation version, saved schema, or evidence format changes.
+Expected-domain checks remain in the notebooks because observed labels alone
+cannot expose an entirely absent row or column.
+
 ## Lesson 11 · Cyclic code, field, and projective plane
 
 September 20, 2026; Python 3.12.14, NumPy 2.3.5, Plotly 6.9.0.

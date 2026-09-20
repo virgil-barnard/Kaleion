@@ -101,6 +101,25 @@ The tenth writes to `build/notebooks/hermitian-partitions/`: seven HTML figures 
 
 All notebooks use the existing optional dependencies. Lessons 06–10 share [lesson_views.py](lesson_views.py), a presentation-only helper beside the notebooks; their mathematical constructions remain visible. Lessons 09–10 also share [quadratic_coordinates.py](quadratic_coordinates.py), visible coefficient formulas composed from integer operations, without adding a core value domain. Longer presentation cells can be expanded in Jupyter when initially folded. A normal notebook execution needs no browser, but displaying interactive figures does.
 
+Lessons 04–05 share [snapshot_views.py](snapshot_views.py), with no Plotly dependency:
+
+```python
+from snapshot_views import keyed_values, rectangular_values
+
+by_key = keyed_values(captured_counts, keys=("u", "v"))
+xs, ys, rows = rectangular_values(captured_counts, x="u", y="v")
+```
+
+Run from `notebooks/` or use the notebook's explicit path setup. These are
+lesson-support functions, not imports from the installed `kaleion` API. They read
+snapshots only; keep using symbolic bindings for construction and motion drivers.
+Keys are unique exact integers; x/y select fields rather than screen coordinates.
+Rows follow ascending y labels, columns ascending x labels. Missing cells fail,
+zeros remain, and empty snapshots yield empty output. Entirely absent axis labels
+cannot be inferred: retain separate checks of the expected mathematical domain.
+The returned dictionaries/lists are detached inspection data, without provenance
+claims. The original captured measurement and its contributors remain unchanged.
+
 ## Execute without the UI
 
 With the environment activated and the kernel installed as above, run from the repository root:

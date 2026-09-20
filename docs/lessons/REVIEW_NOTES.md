@@ -33,6 +33,16 @@ arbitrary key-domain comparisons, or an inspector that follows every driver read
 
 ## What the examples establish
 
+The first extraction from the [helper inventory](HELPER_INVENTORY.md) is now
+delivered: 04–05 share `keyed_values` and `rectangular_values` in
+[snapshot_views.py](../../notebooks/snapshot_views.py). Two pure functions replace
+four local ones while leaving mathematical definitions, evidence, and plotting
+choices separate. Duplicate keys and holes fail explicitly; zero counts remain
+present. Axes are selected by name and sorted, not inferred from storage or position.
+Completeness is relative to observed axis labels: detecting an entirely missing
+row requires the independent expected-domain checks that both lessons retain.
+The adapter does not implement the broader keyed comparison or explanation agenda.
+
 | Repeated construction | Evidence | Question for the review |
 | --- | --- | --- |
 | Measure, bind by keys, change a target | 04's lifted plane, 05's reconstruction, 06's packing, 07's stacks, 08's probes | Can the author declare the target quantity and correspondence in one readable expression? |

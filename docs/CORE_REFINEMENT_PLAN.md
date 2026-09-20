@@ -37,6 +37,13 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   session scheduling when that reduces concrete coupling. Coverage is scoped to
   an existing reduction domain, so it does not complete the general comparison work.
 
+A contained lesson-support extraction now shares strict integer-key lookup and
+rectangular snapshot projection between lessons 04–05. It replaces four local
+helpers with two read-only functions, without adding a core operation or changing
+Stage D's remaining evidence work. The [helper inventory](lessons/HELPER_INVENTORY.md)
+records the delivered boundary and the difference between an observed rectangle
+and an independently declared expected domain.
+
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the
 diagnostic fell from roughly 0.50 s to 0.027 s on this host. Its motion fixture now

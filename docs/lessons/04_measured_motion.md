@@ -63,13 +63,11 @@ The 3D animation is interactive HTML, not an MP4 recording.
 
 ## Functions and authoring scaffolding
 
-The [notebook](../../notebooks/04_measured_motion.ipynb) defines seven top-level
+The [notebook](../../notebooks/04_measured_motion.ipynb) defines five top-level
 functions and one nested function. See the [cross-lesson inventory](HELPER_INVENTORY.md).
 
 | Local function | Responsibility and assumptions |
 | --- | --- |
-| `keyed(snapshot)` | Read integer values into a dictionary keyed by `(u, v)`; reject duplicate keys. This is a snapshot adapter, not a symbolic binding. |
-| `field_matrix(snapshot)` | Pivot that dictionary onto sorted axes; require a complete Cartesian key domain before producing a dense matrix. |
 | `height_maps(captured)` | Show the three measured height fields with a common color scale. |
 | `plane_motion(captured, frames, captions)` | Extend the public animation viewer with logical-neighbor edges and a reference plane; keep the vertical range fixed over playback. |
 | `plane_motion.grid(frame)` | Nested renderer: locate each logical edge's endpoints by occurrence identity. This path assumes identities persist through the move. |
@@ -77,16 +75,24 @@ functions and one nested function. See the [cross-lesson inventory](HELPER_INVEN
 | `discrepancy_figure(captured)` | Pair the lifted endpoint with an exact excess heatmap. Some reference labels and bounds are specific to the chosen counterexample. |
 | `explain_column(captured, key)` | Follow a target key to three measured drivers and their contributor IDs, then recover source coordinates from the named captured domain. |
 
-**Shared functions used.** No lesson helper module is used. `plane_motion` wraps
-`kaleion.viewers.plotly.animation_figure`; the other views use Plotly directly.
+**Shared functions used.** [snapshot_views.py](../../notebooks/snapshot_views.py)
+provides `keyed_values(snapshot, keys=("u", "v"))` and
+`rectangular_values(snapshot, x="u", y="v")`. The former rejects duplicate or
+noninteger keys; the latter requires a complete product of observed axis labels
+and returns ascending axes with rows indexed by y, columns by x. Neither reads
+placement nor fills missing cells with zero. `plane_motion` wraps the public
+`animation_figure`; the other views use Plotly directly.
 
 **Inline scaffolding.** Three incidences are reduced while retaining `(u, v)`;
 explicit keyed bindings lift an independently constructed plane. The notebook
 registers the roots needed for explanations, stages the displacements and undo,
 samples captions/frames, and captures alternative cases and exports.
 
-**Abstraction evidence.** `keyed`/`field_matrix` closely match 05's `field`/`matrix`.
-They offer a small extraction with clear uniqueness and completeness checks.
+**Abstraction evidence.** The former `keyed`/`field_matrix` pair and 05's
+`field`/`matrix` now share two read-only adapters. Key and rectangular-domain
+validation is independent of Plotly and is covered by adversarial tests. An
+entirely absent axis label cannot be inferred from observed keys; `inspect_case`
+still checks the full expected key domain separately.
 `explain_column` exposes a different need: a read-only explanation of driver
 alignment. Its manual knowledge of root names and keys should not be hidden in a
 renderer or mistaken for a general provenance query.

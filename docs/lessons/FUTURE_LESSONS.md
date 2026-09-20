@@ -30,6 +30,14 @@ choices. Weighted prefix sums, case families, arbitrary key-domain comparisons,
 and explanations across driver bindings remain open; add them only when a concrete
 construction establishes their contracts.
 
+Lessons 04–05 now share strict, read-only integer-key lookup and rectangular
+display adapters; see the [helper inventory](HELPER_INVENTORY.md#captured-integer-key-adapters).
+Future lessons can reuse these without adopting rectangular mathematical domains.
+They check the product of observed axis labels, not an independently specified
+universe. A useful next experiment is to remove an entire measurement row and
+make a finite comparison report explain the missing keys separately from zero
+measurements and nonzero residuals. This remains a planned comparison capability.
+
 ## Next · Symmetry, orbits, and Burnside counting
 
 **Question:** Why can we not count necklaces by dividing the number of strings by
