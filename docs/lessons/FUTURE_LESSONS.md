@@ -31,12 +31,14 @@ and explanations across driver bindings remain open; add them only when a concre
 construction establishes their contracts.
 
 Lessons 04–05 now share strict, read-only integer-key lookup and rectangular
-display adapters; see the [helper inventory](HELPER_INVENTORY.md#captured-integer-key-adapters).
+display adapters; see the [helper inventory](HELPER_INVENTORY.md#captured-integer-key-adapters-and-comparison).
 Future lessons can reuse these without adopting rectangular mathematical domains.
 They check the product of observed axis labels, not an independently specified
-universe. A useful next experiment is to remove an entire measurement row and
-make a finite comparison report explain the missing keys separately from zero
-measurements and nonzero residuals. This remains a planned comparison capability.
+universe. Lessons 04–05 now also share a finite keyed-value comparison report.
+Lesson 05 removes an entire reconstructed row and shows that an independently
+declared domain exposes missing zero-valued occurrences separately from nonzero
+residuals. Comparison of subsets, occurrence identities, totals, or a declared
+incidence correspondence remains future work rather than modes hidden behind `==`.
 
 ## Next · Symmetry, orbits, and Burnside counting
 
@@ -272,9 +274,10 @@ counterexample to a naive universal polynomial claim for rational vertices.
 - **A generic explanation view:** expose target → matched driver occurrence → measured
   contributors from captured data. The notebook-specific explanations in 04–08 establish
   concrete examples; do not duplicate large contributor lists into every animation frame.
-- **Explicit finite comparisons:** return keyed residuals and witnesses, with both key
-  domains checked. Equality of totals, keyed values, subsets, or occurrences must be
-  stated separately. These are groundwork for later analytical statements and proof aid.
+- **Explicit finite comparisons:** exact keyed-value residuals, witnesses, and domain
+  failures are now available to lessons 04–05. Extend only when a lesson needs a
+  separately stated comparison of totals, subsets, occurrences, or a declared
+  correspondence. These remain groundwork for later analytical statements and proof aid.
 
 ## Further lesson candidates
 

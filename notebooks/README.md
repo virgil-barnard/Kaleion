@@ -8,7 +8,7 @@ Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is a
 
 [04_measured_motion.ipynb](04_measured_motion.ipynb) derives three column-count arrangements and uses them as keyed motion drivers for an independent plane. Heatmaps, a 78-frame lift/undo animation, a discrepancy view, and contributor inspection connect a flat endpoint to a pointwise equality. The `(6,4,5)` counterexample exposes double-counting as a bump. All definitions are included, so the notebook can run independently of lesson 03.
 
-[05_finite_radon.ipynb](05_finite_radon.ipynb) asks whether measurements determine an image. It starts with ambiguous row/column projections, builds modular lines over a prime field, and reconstructs every pixel from line counts. A line-selection scrubber and staged 3D reconstruction/undo demonstrate measured fields driving other arrangements. A source edit propagates through the computation; an altered line count produces exact-division witnesses. The default 5×5 case has 30 line measurements and a 144-frame reconstruction/undo animation.
+[05_finite_radon.ipynb](05_finite_radon.ipynb) asks whether measurements determine an image. It starts with ambiguous row/column projections, builds modular lines over a prime field, and reconstructs every pixel from line counts. A line-selection scrubber and staged 3D reconstruction/undo demonstrate measured fields driving other arrangements. A source edit propagates through the computation; an altered line count produces exact-division witnesses. Removing a complete result row shows why missing keys, zero values, and residuals need separate reports. The default 5×5 case has 30 line measurements and a 144-frame reconstruction/undo animation.
 
 [06_young_layers.ipynb](06_young_layers.ipynb) counts a Young diagram by columns and layers, constructs its conjugate, and turns the original cells through 3D. Measured prefix offsets pack the cells into a strip; an ordering counterexample shows what the counts forget. The default ten-cell example has 84 turn/pack/undo frames.
 
@@ -87,7 +87,7 @@ The third notebook writes to `build/notebooks/three-incidences/`: `solids.html`,
 
 The fourth writes to `build/notebooks/measured-motion/`: `height-maps.html`, `lift-and-undo.html`, `discrepancy.html`, and `column-explanation.html`; measurement and motion workspaces; `cases.json`; and `column-explanation.json`. Edit `COLUMN` to inspect another key in the counterexample. The saved explanation links the target occurrence, measured driver occurrences, and original contributors. Grid edges between target points are presentation guides. The box is limited to 1500 occurrences for these fully displayed views.
 
-The fifth writes to `build/notebooks/finite-radon/`: `ambiguous-projections.html`, `line-measurements.html`, `reconstruction-and-undo.html`, `recovered-image.html`, and `corrupted-measurement.html`; reconstruction, motion, and corrupted-measurement workspaces; `cases.json`; and `pixel-explanation.json`. Edit `PIXEL` to inspect a reconstruction and `image_x` to move the source's selected column. Use prime `p` in `{2,3,5,7}` and keep `0 <= image_x < p`. The displayed pair domain has `p^3(p+1)` occurrences and is not an optimized imaging backend. All arithmetic reconstruction uses exact integer values; the general prime-field argument is written separately from the finite checks.
+The fifth writes to `build/notebooks/finite-radon/`: `ambiguous-projections.html`, `line-measurements.html`, `reconstruction-and-undo.html`, `recovered-image.html`, and `corrupted-measurement.html`; reconstruction, motion, corrupted-measurement, and missing-domain workspaces; `cases.json`; and `pixel-explanation.json`. Edit `PIXEL` to inspect a reconstruction and `image_x` to move the source's selected column. Use prime `p` in `{2,3,5,7}` and keep `0 <= image_x < p`. The displayed pair domain has `p^3(p+1)` occurrences and is not an optimized imaging backend. All arithmetic reconstruction uses exact integer values; the general prime-field argument is written separately from the finite checks.
 
 The sixth writes to `build/notebooks/young-layers/`: four HTML figures (`diagrams`, `measurements`, `turn-pack-undo`, `lost-order`), three workspaces, `checks.json`, and `layer-explanation.json`. Edit `HEIGHTS` and `LAYER`. Heights must be nonnegative and nonincreasing for the main packing construction; trailing zeros and the empty list are supported. The fixed unordered example is separate. The 3D motion uses interactive HTML.
 
@@ -104,11 +104,17 @@ All notebooks use the existing optional dependencies. Lessons 06–10 share [les
 Lessons 04–05 share [snapshot_views.py](snapshot_views.py), with no Plotly dependency:
 
 ```python
-from snapshot_views import keyed_values, rectangular_values
+from snapshot_views import compare_keyed_values, keyed_values, rectangular_values
 
 by_key = keyed_values(captured_counts, keys=("u", "v"))
 xs, ys, rows = rectangular_values(captured_counts, x="u", y="v")
+report = compare_keyed_values(left, right, left_keys=("u", "v"), domain=expected_keys)
 ```
+
+The comparison report treats the supplied domain as authoritative: it lists
+missing and unexpected keys on each side and exact `left - right` residuals on
+shared keys. With no domain it can only compare the union of observed keys. It is
+a detached check of captured finite data, not a universal proof or new arrangement.
 
 Run from `notebooks/` or use the notebook's explicit path setup. These are
 lesson-support functions, not imports from the installed `kaleion` API. They read

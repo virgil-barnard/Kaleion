@@ -98,8 +98,10 @@ general identity in these lessons has a separate argument with stated assumption
 2. Sketch one explanation schema that handles the five concrete contributor examples.
    Include zero groups, weighted sums, a parameter case, and multiple derivation steps.
    Keep large contributor lists out of individual animation frames.
-3. Specify finite keyed comparison results: domains on both sides, missing keys,
-   residuals, and witnesses. Do not replace these distinctions with object `==`.
+3. The initial finite keyed-value report is delivered in lessons 04–05: it takes an
+   optional authoritative domain and separates missing/unexpected keys from exact
+   residual witnesses. Test another semantic kind before generalizing it to subsets,
+   occurrences, totals, or declared correspondences; do not hide them behind `==`.
 4. Give a parameter-family recipe a case key and accessible per-case measurement.
    Compare it with lesson 08's current `with_params` plus concatenation construction.
 

@@ -4,6 +4,7 @@
 
 - Extract strict, read-only integer-key snapshot adapters from lessons 04–05. Named keys and display axes replace four duplicated local helpers; duplicate keys, noninteger keys, and missing rectangular cells fail explicitly, while zeros and exact integers are preserved. Mathematical definitions, captured evidence, motion, and core APIs are unchanged.
 - Add seven adversarial adapter tests and update lesson/helper inventories with the distinction between observed-axis completeness and an independently declared key domain.
+- Add a finite keyed-value comparison report for captured snapshots. It aligns distinct declared fields, preserves exact integers, and separates missing and unexpected keys from exact left-minus-right residuals. Lessons 04–05 use it for measured equality and reconstruction; a deleted-row counterexample exposes absent zero-valued occurrences.
 
 - Add lesson 11: cyclic generator polynomials and matrices, a derived dual, Fano-plane supports, and an explicit incidence correspondence with the eight-element field constructed from the same cubic. Synchronize a Singer cycle in cyclic and projective charts, with captured undo, a measured single-error correction, and assumption-breaking witnesses.
 - Add seven independent-oracle lesson tests, educational/UI notes, two MP4 exports, and README previews for lesson 11. All constructions use existing core operations and dependencies.

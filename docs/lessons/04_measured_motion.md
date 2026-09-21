@@ -71,16 +71,19 @@ functions and one nested function. See the [cross-lesson inventory](HELPER_INVEN
 | `height_maps(captured)` | Show the three measured height fields with a common color scale. |
 | `plane_motion(captured, frames, captions)` | Extend the public animation viewer with logical-neighbor edges and a reference plane; keep the vertical range fixed over playback. |
 | `plane_motion.grid(frame)` | Nested renderer: locate each logical edge's endpoints by occurrence identity. This path assumes identities persist through the move. |
-| `inspect_case(captured)` | Check key coverage, height formulas, placement/value agreement, and identity preservation; return nonzero-discrepancy witnesses for the finite case. |
+| `inspect_case(captured)` | Compare the measured total with an independent constant-height snapshot on the declared footprint; check formulas, placement/value agreement, and identity preservation; return exact residual witnesses for the finite case. |
 | `discrepancy_figure(captured)` | Pair the lifted endpoint with an exact excess heatmap. Some reference labels and bounds are specific to the chosen counterexample. |
 | `explain_column(captured, key)` | Follow a target key to three measured drivers and their contributor IDs, then recover source coordinates from the named captured domain. |
 
 **Shared functions used.** [snapshot_views.py](../../notebooks/snapshot_views.py)
-provides `keyed_values(snapshot, keys=("u", "v"))` and
-`rectangular_values(snapshot, x="u", y="v")`. The former rejects duplicate or
-noninteger keys; the latter requires a complete product of observed axis labels
-and returns ascending axes with rows indexed by y, columns by x. Neither reads
-placement nor fills missing cells with zero. `plane_motion` wraps the public
+provides `keyed_values(snapshot, keys=("u", "v"))`,
+`rectangular_values(snapshot, x="u", y="v")`, and `compare_keyed_values`.
+The lookup rejects duplicate or
+noninteger keys; the rectangular adapter requires a complete product of observed
+axis labels and returns ascending axes with rows indexed by y, columns by x. Neither reads
+placement nor fills missing cells with zero. Comparison aligns the measured and
+reference snapshots on an independently declared finite domain and reports exact
+left-minus-right residual witnesses. `plane_motion` wraps the public
 `animation_figure`; the other views use Plotly directly.
 
 **Inline scaffolding.** Three incidences are reduced while retaining `(u, v)`;
@@ -89,10 +92,10 @@ registers the roots needed for explanations, stages the displacements and undo,
 samples captions/frames, and captures alternative cases and exports.
 
 **Abstraction evidence.** The former `keyed`/`field_matrix` pair and 05's
-`field`/`matrix` now share two read-only adapters. Key and rectangular-domain
+`field`/`matrix` now share read-only captured-data adapters. Key and rectangular-domain
 validation is independent of Plotly and is covered by adversarial tests. An
 entirely absent axis label cannot be inferred from observed keys; `inspect_case`
-still checks the full expected key domain separately.
+therefore supplies the full expected key domain to the finite comparison report.
 `explain_column` exposes a different need: a read-only explanation of driver
 alignment. Its manual knowledge of root names and keys should not be hidden in a
 renderer or mistaken for a general provenance query.

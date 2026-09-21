@@ -12,7 +12,7 @@ from kaleion.model import Snapshot
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "notebooks"))
 try:
-    from snapshot_views import keyed_values, rectangular_values
+    from snapshot_views import compare_keyed_values, keyed_values, rectangular_values
 finally:
     sys.path.pop(0)
 
@@ -108,6 +108,78 @@ class SnapshotViewsTests(unittest.TestCase):
             with self.assertRaises(TypeError):
                 keyed_values(incidence, keys=("i", "j"))
         self.assertEqual(workspace.to_json(), saved)
+
+    def test_comparison_aligns_distinct_fields_and_reports_exact_residuals(self):
+        big = 2**100 + 7
+        left = captured([0, big, -4], u=[2, 0, 1], v=[9, 9, 9])
+        right = captured([-7, 0, big], x=[1, 2, 0], y=[9, 9, 9])
+        report = compare_keyed_values(left, right, left_keys=("u", "v"),
+                                      right_keys=("x", "y"))
+        self.assertEqual(report.domain, ((2, 9), (0, 9), (1, 9)))
+        self.assertTrue(report.same_domain)
+        self.assertFalse(report.holds)
+        self.assertEqual([(item.key, item.residual) for item in report.nonzero],
+                         [((1, 9), 3)])
+        self.assertEqual(report.to_dict()["residual"], "left - right")
+        self.assertEqual(report.to_dict()["nonzero"],
+                         [{"key": [1, 9], "left": -4, "right": -7, "residual": 3}])
+
+    def test_explicit_domain_separates_missing_unexpected_and_zero(self):
+        left = captured([0, 8, 99], u=[0, 2, 9], v=[0, 0, 9])
+        right = captured([0, 4, 5], u=[0, 1, 2], v=[0, 0, 0])
+        report = compare_keyed_values(
+            left, right, left_keys=("u", "v"), domain=((0, 0), (1, 0), (2, 0)))
+        self.assertEqual(report.missing_left, ((1, 0),))
+        self.assertEqual(report.missing_right, ())
+        self.assertEqual(report.unexpected_left, ((9, 9),))
+        self.assertEqual(report.unexpected_right, ())
+        self.assertEqual([(x.key, x.residual) for x in report.differences],
+                         [((0, 0), 0), ((2, 0), 3)])
+        self.assertFalse(report.same_domain)
+        self.assertFalse(report.values_equal_on_common)
+        self.assertFalse(report.holds)
+
+    def test_expected_domain_exposes_a_row_missing_from_both_snapshots(self):
+        left = captured([0, 1], u=[0, 1], v=[0, 0])
+        right = captured([0, 1], u=[0, 1], v=[0, 0])
+        observed = compare_keyed_values(left, right, left_keys=("u", "v"))
+        self.assertTrue(observed.holds)
+        declared = compare_keyed_values(
+            left, right, left_keys=("u", "v"),
+            domain=((0, 0), (1, 0), (0, 1), (1, 1)))
+        self.assertEqual(declared.missing_left, ((0, 1), (1, 1)))
+        self.assertEqual(declared.missing_right, ((0, 1), (1, 1)))
+        self.assertTrue(declared.values_equal_on_common)
+        self.assertFalse(declared.holds)
+
+    def test_comparison_domain_validation_and_empty_cases(self):
+        empty = captured([], u=[], v=[])
+        inferred = compare_keyed_values(empty, empty, left_keys=("u", "v"))
+        self.assertTrue(inferred.holds)
+        self.assertEqual(inferred.domain, ())
+        explicit = compare_keyed_values(empty, empty, left_keys=("u", "v"), domain=())
+        self.assertTrue(explicit.holds)
+        self.assertTrue(explicit.explicit_domain)
+        one = captured([3], u=[0], v=[1])
+        invalid = ({(0, 1)}, ((0,),), ((0, 1), (0, 1)), ((True, 1),), ((0.5, 1),))
+        for domain in invalid:
+            with self.subTest(domain=domain), self.assertRaises((TypeError, ValueError)):
+                compare_keyed_values(one, one, left_keys=("u", "v"), domain=domain)
+        with self.assertRaisesRegex(ValueError, "same number"):
+            compare_keyed_values(one, one, left_keys=("u",), right_keys=("u", "v"))
+
+    def test_comparison_reads_reopened_snapshots_without_evaluation(self):
+        source = Collection.grid(3, 2, values=F.i - F.j).annotate(u=F.i, v=F.j)
+        workspace = Workspace({"left": source, "right": source.with_values(F.value)})
+        payload = workspace.to_json()
+        with patch("kaleion.evaluate.Evaluator.get", side_effect=AssertionError("reevaluation")):
+            restored = Workspace.from_json(payload)
+            report = compare_keyed_values(
+                restored.state.results["left"], restored.state.results["right"],
+                left_keys=("u", "v"), domain=tuple((u, v) for u in range(3) for v in range(2)))
+            self.assertTrue(report.holds)
+            self.assertEqual(len(report.differences), 6)
+        self.assertEqual(workspace.to_json(), payload)
 
 
 if __name__ == "__main__":
