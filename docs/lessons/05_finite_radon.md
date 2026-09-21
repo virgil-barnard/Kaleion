@@ -39,6 +39,8 @@ are where primality enters the argument.
 6. Inspect one reconstructed pixel's measured lines and their exact contributors.
 7. Edit the source and verify propagation. Then corrupt one line count: its p incident
    pixels become witnesses where the reconstruction numerator is not divisible by p.
+8. Delete a complete recovered row. An explicit pixel domain reports the missing
+   keys—including missing zero values—separately from numerical residuals.
 
 ## Experiments and limits
 
@@ -62,7 +64,8 @@ which also cites Kingston and Svalbe's work on periodic image arrays. Kaleion us
 its own explicit direction convention and no external inversion dependency.
 
 Exports go to `build/notebooks/finite-radon/`: five offline HTML figures, construction,
-motion, and corrupted-measurement workspaces, finite checks, and `pixel-explanation.json`.
+motion, corrupted-measurement, and missing-domain workspaces, finite checks, and
+`pixel-explanation.json`.
 
 ## Functions and authoring scaffolding
 
@@ -72,30 +75,36 @@ See the [cross-lesson inventory](HELPER_INVENTORY.md) for related recipes.
 | Local function | Responsibility and assumptions |
 | --- | --- |
 | `heatmap(snapshot, names, maximum)` | Render that matrix with shared scales and labels. |
-| `check_reconstruction(captured)` | Check the binary source, line sizes and counts, direction coverage, exact divisibility, recovered values, and zero residual against the captured finite case. |
+| `check_reconstruction(captured)` | Check the binary source, line sizes and counts, direction coverage, exact divisibility, and finite keyed equality of recovered and source values on the declared pixel domain. |
 | `line_explorer(captured)` | Build synchronized image/measurement panels. Frames highlight captured point–line incidences and the corresponding measured count; they do not reevaluate a relation. |
 | `explain_pixel(captured, key)` | Join a pixel to incident line keys, their counts, sampling-pair contributors, and source pixels; show the arithmetic of backprojection and exact division. |
 
 **Shared functions used.** [snapshot_views.py](../../notebooks/snapshot_views.py)
 provides `keyed_values` with explicit `keys=("u", "v")` or `keys=("m", "t")`, and
-`rectangular_values` with explicitly chosen x/y field names. Keys must be unique
+`rectangular_values` with explicitly chosen x/y field names, and
+`compare_keyed_values` with an explicitly declared pixel domain. Keys must be unique
 exact integers; rectangular output requires all pairs of the observed axis labels.
 Zero values remain zeros, absent cells fail, and axes are sorted independently of
-storage or placement. The public `animation_figure` presents the measured lifts;
-custom heatmaps and line exploration use Plotly directly.
+storage or placement. Comparison keeps missing and unexpected keys separate on
+both sides and computes exact residuals only for shared keys. The public
+`animation_figure` presents the measured lifts; custom heatmaps and line
+exploration use Plotly directly.
 
 **Inline scaffolding.** The notebook defines the binary image, a point–line
 product domain, incidence, counts, backprojection, exact quotient/remainder, and
 residual. Direction-by-direction displacement, captures, reverse sampling,
-source edits, deliberately corrupted counts, and exports are assembled in cells.
+source edits, deliberately corrupted counts, a deliberately deleted recovered row,
+and exports are assembled in cells.
 The dense sampling domain has `p^3(p+1)` occurrences, so product construction also
 carries a real execution cost.
 
 **Abstraction evidence.** The former `field`/`matrix` pair now shares a strict,
 read-only adapter contract with 04, without hiding the incidence or reconstruction.
-`check_reconstruction` still verifies the independently declared full key domain:
-an observed-domain pivot cannot discover an entirely missing row or column. The
+`check_reconstruction` supplies the independently declared full key domain to the
+shared comparison report: an observed-domain pivot cannot discover an entirely
+missing row or column. The missing-row counterexample demonstrates the difference
+between an absent occurrence, a retained zero, and a nonzero residual. The
 product-domain recipe also appears in 07, 10, and 11, while `explain_pixel` makes
 the additional need for joins between captured references concrete. A future
-helper must preserve declared key domains, exact division checks, and zero
-measurements; a plotting convenience alone would not remove that work.
+helper must preserve exact division checks and contributor joins; a plotting
+convenience alone would not remove that work.

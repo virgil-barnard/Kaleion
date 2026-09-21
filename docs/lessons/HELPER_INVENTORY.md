@@ -8,7 +8,7 @@ functions used, inline scaffolding, and the assumptions a reusable version would
 need to expose.
 
 After extracting the snapshot adapters from lessons 04–05, there are **53 top-level
-and five nested notebook functions**, plus **19 functions in four shared lesson
+and five nested notebook functions**, plus **20 functions in four shared lesson
 modules**. These counts describe source organization, not mathematical complexity
 or a proposed number of primitives. Lessons 01 and 06 have no local functions but
 still require substantial authoring work.
@@ -58,22 +58,25 @@ combinations rather than treating every existing function as an ideal module.
 “Indirect” means reached through another helper. Colors and other constants are
 not counted as functions.
 
-### Captured integer-key adapters
+### Captured integer-key adapters and comparison
 
 Source: [notebooks/snapshot_views.py](../../notebooks/snapshot_views.py).
-Both functions are used directly in 04–05, replacing four local definitions.
-They do not import Plotly, evaluate definitions, or modify captured evidence.
+All three functions are used directly in 04–05; the two adapters replace four
+local definitions. They do not import Plotly, evaluate definitions, or modify
+captured evidence.
 
 | Function | Input → result and required choices |
 | --- | --- |
 | `keyed_values` | Snapshot and explicit key-field names → a detached tuple-keyed dictionary in occurrence order. Require unique exact integer keys, preserving integer values and zeros. |
 | `rectangular_values` | Snapshot and explicit x/y field names → ascending axis labels and rows indexed by y, columns by x. Uses `keyed_values`; require a complete product of observed labels, without filling holes. |
+| `compare_keyed_values` | Two snapshots, explicit key fields, and an optional ordered expected domain → exact left-minus-right residuals plus missing and unexpected keys on each side. Without an expected domain it reports only the union of observed keys. |
 
 Empty input with valid key fields yields an empty map or three empty lists. A
 one-dimensional lookup retains one-tuple keys. Neither coordinates nor shape
-metadata supplies implicit keys or absent axis labels. The lessons still check
-their expected full domains independently. This is not a new core operation or
-a general comparison/evidence API; returned containers carry no measurement claim.
+metadata supplies implicit keys or absent axis labels. Comparison makes the expected
+domain an independent input when absent labels matter. This is not a new core
+operation or proof/evidence API; returned containers carry no measurement claim,
+and equality is only for the captured finite case.
 
 ### Presentation helpers
 
@@ -131,17 +134,18 @@ Each proposal should first shorten an actual lesson while preserving its evidenc
 | Named product and measurement recipes | 05 point/line pairs; 07 `integer_pairs`/`representation_counts`; 10 `hermitian_incidence`; 11 `span`/`cross_parities`/`parity_checks` | Declare factor roles and key bindings, then compose incidence and retained reductions. Expose multiplicity, expected bins, and product size; efficient execution is a separate concern. |
 | Guarded assignment | 10 measured owners; 11 quotient, inverse, and syndrome candidates | Reuse existing `coverage`, `on_keys`, `exactly`, `unique`, and `require`. Clarify the expected domain and failure witnesses; do not infer uniqueness from matching totals. |
 | Captured explanation | 04 `explain_column`; 05 `explain_pixel`; inline receipts in 06–11 | Follow scoped target references through declared driver keys to measurements and contributors, including weight/read expressions. Parent IDs alone do not explain a keyed driver. |
-| Finite comparison report | 02–05 inspection functions; 08 family assertions; 11 kernel/span and trace/support checks | State domains and the kind of equality: values, keyed values, subsets, occurrences, or a declared incidence correspondence. Return missing keys and counterexamples as well as totals. |
+| Finite comparison report · keyed values delivered | 04–05 use `compare_keyed_values`; 02–03, 08, and 11 still use specialized assertions | The delivered boundary compares exact integer values on declared keys and reports domain failures and residuals. Subsets, occurrences, totals, and declared incidence correspondences remain distinct future comparison kinds. |
 | Staged and coordinated replay | Inline sampling throughout; 11 `sampled`; 03/04/05 custom views; 11 `linked_field_motion` | Compose recorded transitions with explicit times, endpoint holds, captions, projection, and ID colors. Keep discrete case selection separate; synchronized views do not imply atomic multi-root history. |
 | Measured case family | 08 `measured_family`; compare parameter sweeps in 01 and 10 | A finite case-keyed construction with parameter bindings and retained per-case measurement references. Do not substitute sampled frames for a mathematical family or lose evidence at concatenation. |
 | Weighted exclusive prefix | 06's level packing; compare unit-weight ranks in 07 and 10 | Explicit order, optional groups, zero initial offset, and queryable evidence with bounded storage. Existing ranks handle predecessor counts; weighted accumulation remains a separate need. |
 | Arithmetic and coordinate recipes | 09–10 quadratic formulas; 11 binary polynomial formulas and coordinate dictionary | Separate modulus/basis/encoding, exact arithmetic, and chart placement. First demonstrate a shared contract across models; a packed integer alone does not identify its arithmetic. |
 
-The keyed snapshot adapter in 04–05 is the first completed extraction from this
-inventory. Sampling/caption assembly is another contained authoring improvement. The
-explanation query, weighted prefix, and measured family need explicit evidence
-contracts before a convenience wrapper can solve the real problem. Those needs
-agree with the remaining work in the [core refinement plan](../CORE_REFINEMENT_PLAN.md).
+The keyed snapshot adapter and finite keyed-value report in 04–05 are completed
+lesson-support extractions from this inventory. Sampling/caption assembly is
+another contained authoring improvement. The explanation query, weighted prefix,
+and measured family need explicit evidence contracts before a convenience wrapper
+can solve the real problem. Those needs agree with the remaining work in the
+[core refinement plan](../CORE_REFINEMENT_PLAN.md).
 
 ## Modules, objects, and inheritance
 

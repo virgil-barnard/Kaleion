@@ -33,16 +33,19 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   `grouping.py` owns authoring choices; `measurements.py` hides contributor storage.
   The [authoring guide](AUTHORING.md) states the implemented contracts.
 - **Next:** prefix sums, measured case families, driver-alignment explanations,
-  and comparisons of arbitrary key domains. Separate operation execution from
-  session scheduling when that reduces concrete coupling. Coverage is scoped to
-  an existing reduction domain, so it does not complete the general comparison work.
+  and comparison kinds beyond exact keyed integer values. Separate operation
+  execution from session scheduling when that reduces concrete coupling. Coverage
+  is scoped to an existing reduction domain, so it does not complete the general
+  comparison work.
 
-A contained lesson-support extraction now shares strict integer-key lookup and
-rectangular snapshot projection between lessons 04–05. It replaces four local
-helpers with two read-only functions, without adding a core operation or changing
-Stage D's remaining evidence work. The [helper inventory](lessons/HELPER_INVENTORY.md)
-records the delivered boundary and the difference between an observed rectangle
-and an independently declared expected domain.
+A contained lesson-support extraction now shares strict integer-key lookup,
+rectangular snapshot projection, and finite keyed-value comparison between lessons
+04–05. It replaces four local helpers with two read-only adapters and adds a report
+over captured snapshots, without adding a core operation. The report distinguishes
+missing and unexpected keys on both sides from exact residuals on common keys;
+its optional expected domain is an independent authoring choice. The
+[helper inventory](lessons/HELPER_INVENTORY.md) records this boundary. Comparisons
+of subsets, occurrences, totals, and declared correspondences remain separate work.
 
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the
@@ -319,7 +322,7 @@ reopening old captures without executing sources. Do not migrate history silentl
 
 **Implementation completed:** Stages A–B, the index/group-rule portion of C, and
 the ordered-rank/coverage portion of D exercised in lessons 07 and 10. Stage D is
-not complete: prefix sums, case families, broad keyed comparisons, and explanations
+not complete: prefix sums, case families, broader comparison meanings, and explanations
 across driver bindings remain. The next refinements should address those concrete
 gaps before adding another layer of notation.
 
