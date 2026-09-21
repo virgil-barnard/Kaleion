@@ -14,6 +14,7 @@ The module boundary is chosen around a hidden decision: expression representatio
 | `indexing.py` | Key representation, alignment, group domains, member ordering, rectangular address maps | Checked keys and addresses; no occurrence identity or placement policy |
 | `model.py` | Buffer ownership, evaluated data, occurrence/source identity, lineage, snapshot encoding | Validated finite snapshots; unchanged owned buffers may be shared |
 | `measurements.py` | Captured contributor representation and queries | Enumerated contributors or versioned ordered prefixes; no evaluator or viewer dependency |
+| `inspection.py` | Scoped navigation of captured items, measurement origins, and declared keyed reads | Read-only receipts from saved inputs; no graph execution, history edits, or plotting |
 | `evaluate.py` | CPU evaluation, dependency ordering, parameter cases, bounded work | A result or an explicit error for each requested root |
 | `motion.py` | Correspondence tracks, paths, reverse sampling | Presentation frames derived from captured states; no changes to mathematical results |
 | `history.py` | Workspace commands, exact retained states, captures, persistence | Undo/redo, independent observations, portable historical results |
@@ -28,7 +29,9 @@ semantics in `ir.py`, separate field interpretation from evaluation sessions, gr
 contributors in one pass, and prepare motion correspondence once. Snapshot ownership
 and shared indexing rules are now implemented too. Explicit grouping, strict ranks,
 coverage guards, and named placement shorten lessons 07 and 10. Operation-handler
-separation, driver-evidence queries, prefix sums, and case families remain planned.
+separation, weighted prefix sums, and case families remain planned. The
+[exploration workflow](docs/EXPLORATION_WORKFLOW.md) audits all eleven lessons;
+captured measurement and keyed-read inspection now serves lessons 04–05.
 
 ## Four different things an arrangement contains
 
@@ -179,6 +182,20 @@ Placement accepts `arrange(x=..., y=..., z=...)` and `place(...)` with the same
 named coordinates. Declare x, x/y, or x/y/z, with no gaps or mixing of positional
 and named arguments. Positional placement remains supported. A bound count or rank
 is an ordinary coordinate expression; no row-specific driver object is needed.
+
+## Captured inspection
+
+`Inspection(state)` resolves scoped references against a captured state's graph,
+execution contexts, and saved results. It can inspect one pointwise operation's
+keyed reads and follow preserved measurement evidence to its original Count, Sum,
+Any, or Rank. It reuses the field interpreter with a captured-only resolver; it
+never invokes operation execution. Direct parents, matched driver references,
+contributors, and motion correspondence retain their separate meanings.
+Receipts carry exact weights separately from source labels and report truncation.
+The contributor limit bounds expanded records, not stored parent references or
+weight-field work. Scalar/positional reads and nested bindings within binding
+keys/reads remain unsupported. The [query contract](docs/EXPLORATION_WORKFLOW.md#delivered-follow-a-measurement-through-its-actual-binding)
+lists the migration and limits. This adds no operation version or saved schema.
 
 ## Numerical contracts
 

@@ -1,6 +1,6 @@
 # Evidence for the next Kaleion review
 
-These are observations from [lessons 01–10](README.md). Their authoring code
+These are observations from [lessons 01–11](README.md). Their authoring code
 shows where a clearer notation, reusable recipe, or faster evaluator might help.
 The delivery note below distinguishes implemented changes from remaining ideas.
 
@@ -29,7 +29,23 @@ queries work from saved captures without source execution.
 
 These choices simplify two independent constructions without changing their visible
 endpoints. They do not yet provide weighted prefix sums, measured case families,
-arbitrary key-domain comparisons, or an inspector that follows every driver read.
+all comparison meanings, or an inspector that follows every driver read.
+
+## Delivered: captured explanations and a common exploration workflow
+
+The [workflow audit](../EXPLORATION_WORKFLOW.md) compares all eleven lessons and
+defines candidate UI choices without a new lesson superclass or GUI framework.
+`Inspection(state)` now hides captured scope and alignment details behind item,
+binding, and measurement queries. Lessons 04–05 follow actual saved driver reads
+instead of manually rebuilding their joins. Weighted-sum receipts distinguish
+source labels, weights, and read values; zero contributions retain their origins.
+Preserved measurements and pending undo/redo can be inspected after reopening.
+
+This extraction changes responsibility more than notebook length: each lesson
+still explains its mathematics and formats its own narrative. It adds no evaluator
+operation or saved schema. Scalar/positional reads, nested binding keys/reads,
+arbitrary recursive explanations, and efficient expansion of very large receipts
+remain outside the delivered contract.
 
 ## What the examples establish
 
@@ -41,7 +57,9 @@ choices separate. Duplicate keys and holes fail explicitly; zero counts remain
 present. Axes are selected by name and sorted, not inferred from storage or position.
 Completeness is relative to observed axis labels: detecting an entirely missing
 row requires the independent expected-domain checks that both lessons retain.
-The adapter does not implement the broader keyed comparison or explanation agenda.
+The subsequent `compare_keyed_values` report adds explicit expected domains and
+exact residuals. The captured inspector above addresses direct keyed reads; broader
+comparison meanings and read kinds still need separate contracts.
 
 | Repeated construction | Evidence | Question for the review |
 | --- | --- | --- |
@@ -95,9 +113,10 @@ general identity in these lessons has a separate argument with stated assumption
 1. Extend the comparison to layer packing with a weighted prefix recipe, then
    shorten pair-domain construction. The strict-rank recipe is already exercised
    in sum stacking and Hermitian partitions. Preserve their keys and evidence.
-2. Sketch one explanation schema that handles the five concrete contributor examples.
-   Include zero groups, weighted sums, a parameter case, and multiple derivation steps.
-   Keep large contributor lists out of individual animation frames.
+2. Apply the delivered captured inspector to further contributor examples. The
+   tests already include zero groups, signed weights, ranks, copied measurements,
+   and local parameter cases; lesson 05 follows several derivation steps. Next
+   expose the case-family boundary in 08. Keep receipts out of animation frames.
 3. The initial finite keyed-value report is delivered in lessons 04–05: it takes an
    optional authoritative domain and separates missing/unexpected keys from exact
    residual witnesses. Test another semantic kind before generalizing it to subsets,
@@ -110,9 +129,9 @@ A convenience operation should first make at least two real constructions cleare
 
 The core audit sharpens the explanation requirement: definition dependencies are
 already recorded, but a driven snapshot's direct parents currently name the target
-items, not its matched driver items. A general inspector therefore needs a binding
-alignment query or captured alignment evidence as well as presentation work. Keep
-that evidence separate from the single correspondence used for motion.
+items, not its matched driver items. `Inspection` now reconstructs direct keyed
+reads from saved inputs and scopes; this is not an instrumented execution tape.
+Keep those reads separate from the single correspondence used for motion.
 
 ## Separation of responsibilities and practical limits
 

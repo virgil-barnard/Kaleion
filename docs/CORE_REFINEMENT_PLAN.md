@@ -32,7 +32,12 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   10. Ordered ranks replace dense predecessor products and retain compact evidence.
   `grouping.py` owns authoring choices; `measurements.py` hides contributor storage.
   The [authoring guide](AUTHORING.md) states the implemented contracts.
-- **Next:** prefix sums, measured case families, driver-alignment explanations,
+- **Captured inspection delivered:** `Inspection(state)` follows pointwise keyed
+  reads and preserved measurements using saved scopes and inputs. Lessons 04–05
+  use it for their column/pixel explanations, including weights and original
+  contributors. No new operation or capture schema is needed. See the cross-lesson
+  [workflow and query limits](EXPLORATION_WORKFLOW.md).
+- **Next:** weighted prefix sums, named product recipes, measured case families,
   and comparison kinds beyond exact keyed integer values. Separate operation
   execution from session scheduling when that reduces concrete coupling. Coverage
   is scoped to an existing reduction domain, so it does not complete the general
@@ -230,7 +235,9 @@ would make the system shorter to describe but harder to interpret correctly.
 
 The table is the original recipe agenda. Strict ranks are now implemented as
 `source.group_by(...).order_by(...).ranks(key=...)`, along with scoped coverage and
-named placement. The other rows remain proposed capabilities, not API signatures.
+named placement. Captured keyed-read/measurement inspection is now implemented,
+as is the lesson-support report for exact keyed integer values. The remaining
+rows and broader forms of these queries are proposals, not API signatures.
 
 | Recipe or view | Required choices and result | First demonstrations |
 | --- | --- | --- |
@@ -322,9 +329,10 @@ reopening old captures without executing sources. Do not migrate history silentl
 
 **Implementation completed:** Stages A–B, the index/group-rule portion of C, and
 the ordered-rank/coverage portion of D exercised in lessons 07 and 10. Stage D is
-not complete: prefix sums, case families, broader comparison meanings, and explanations
-across driver bindings remain. The next refinements should address those concrete
-gaps before adding another layer of notation.
+not complete: weighted prefix sums, case families, broader comparison meanings,
+and explanation of scalar/positional or nested driver reads remain. Direct keyed
+bindings and captured measurement receipts now serve lessons 04–05. The next
+refinements should address those concrete gaps before adding another layer of notation.
 
 ## Original review validation
 

@@ -52,8 +52,8 @@ Measured values and motion remain separate: every calculation reads exact endpoi
 while frames interpolate a recorded path.
 
 The notebook includes an explicit contributor explanation keyed by `COLUMN`.
-The general graph records the driver dependency, but a generic per-target binding
-inspector and clickable cross-highlighting remain future presentation work.
+`Inspection` now follows each actual captured move's keyed read to its measurement
+and original contributors. Clickable cross-highlighting remains future presentation work.
 The example does not infer an inverse from a cardinality, and it does not assert
 that equal counts establish identical source occurrences.
 
@@ -73,7 +73,7 @@ functions and one nested function. See the [cross-lesson inventory](HELPER_INVEN
 | `plane_motion.grid(frame)` | Nested renderer: locate each logical edge's endpoints by occurrence identity. This path assumes identities persist through the move. |
 | `inspect_case(captured)` | Compare the measured total with an independent constant-height snapshot on the declared footprint; check formulas, placement/value agreement, and identity preservation; return exact residual witnesses for the finite case. |
 | `discrepancy_figure(captured)` | Pair the lifted endpoint with an exact excess heatmap. Some reference labels and bounds are specific to the chosen counterexample. |
-| `explain_column(captured, key)` | Follow a target key to three measured drivers and their contributor IDs, then recover source coordinates from the named captured domain. |
+| `explain_column(captured, key)` | Walk the three move/value-update stages using `Inspection`; format their matched driver measurements and source coordinates for this lesson. The stage names and presentation remain local. |
 
 **Shared functions used.** [snapshot_views.py](../../notebooks/snapshot_views.py)
 provides `keyed_values(snapshot, keys=("u", "v"))`,
@@ -84,7 +84,10 @@ axis labels and returns ascending axes with rows indexed by y, columns by x. Nei
 placement nor fills missing cells with zero. Comparison aligns the measured and
 reference snapshots on an independently declared finite domain and reports exact
 left-minus-right residual witnesses. `plane_motion` wraps the public
-`animation_figure`; the other views use Plotly directly.
+`animation_figure`; the other views use Plotly directly. Public
+`Inspection.find`, `bindings`, `measurement`, and `item` replace the local key/ID
+joins. Receipts include the actual target input, matched key, driver reference,
+and field read; they do not reconstruct correspondence from the displayed plane.
 
 **Inline scaffolding.** Three incidences are reduced while retaining `(u, v)`;
 explicit keyed bindings lift an independently constructed plane. The notebook
@@ -96,6 +99,8 @@ samples captions/frames, and captures alternative cases and exports.
 validation is independent of Plotly and is covered by adversarial tests. An
 entirely absent axis label cannot be inferred from observed keys; `inspect_case`
 therefore supplies the full expected key domain to the finite comparison report.
-`explain_column` exposes a different need: a read-only explanation of driver
-alignment. Its manual knowledge of root names and keys should not be hidden in a
-renderer or mistaken for a general provenance query.
+`explain_column` now obtains driver alignment through the shared captured query.
+It still knows this construction has three paired value-update/move stages, so it
+is a lesson narrative adapter, not an automatic explanation of any graph.
+The [exploration workflow](../EXPLORATION_WORKFLOW.md) compares this boundary with
+05's weighted backprojection and names the remaining unsupported read kinds.

@@ -32,6 +32,13 @@ The [authoring guide](../docs/AUTHORING.md) explains these choices in a smaller
 example. Restart the kernel after updating Kaleion: the new rank and requirement
 operations need the updated evaluator and contributor queries.
 
+Lessons 04–05 now use public `Inspection` queries for their contributor explanations.
+They follow actual captured binding inputs to measurements and source contributors;
+the lesson keeps its own mathematical formula and display choices. The
+[exploration workflow](../docs/EXPLORATION_WORKFLOW.md) maps this to choices shared
+across all eleven lessons and states the query limits. After updating, restart the
+kernel so `from kaleion import Inspection` uses the new module.
+
 ## Install and launch
 
 From the repository root on WSL/Linux/macOS:

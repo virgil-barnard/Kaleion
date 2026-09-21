@@ -8,8 +8,11 @@ functions used, inline scaffolding, and the assumptions a reusable version would
 need to expose.
 
 After extracting the snapshot adapters from lessons 04–05, there are **53 top-level
-and five nested notebook functions**, plus **20 functions in four shared lesson
-modules**. These counts describe source organization, not mathematical complexity
+and five nested notebook functions**, plus **22 top-level functions, six
+methods/property getters, and one nested helper in four shared lesson modules**.
+The module count includes the comparison records and two private key validators
+added after the initial adapter extraction. These counts describe source
+organization, not mathematical complexity
 or a proposed number of primitives. Lessons 01 and 06 have no local functions but
 still require substantial authoring work.
 
@@ -25,8 +28,8 @@ are included. Imports alone do not establish use.
 | [01 · Discovery workbench](01_discovery_workbench.md#functions-and-authoring-scaffolding) | 0 + 0 | Inline shapes, lenses, measurement bindings, retention, sampling, and persistence | None; public viewers |
 | [02 · Floor sums](02_floor_sum_proof.md#functions-and-authoring-scaffolding) | 2 + 1 | Finite-case report, rectangular mask view; inline packing | None; public viewer and Plotly |
 | [03 · Incidence box](03_three_incidence_box.md#functions-and-authoring-scaffolding) | 9 + 2 | Finite-case report, voxels, slices, membership displays, playback | None; Plotly |
-| [04 · Measured motion](04_measured_motion.md#functions-and-authoring-scaffolding) | 5 + 1 | Plane edges, discrepancy report, contributor explanation | `snapshot_views`; public viewer and Plotly |
-| [05 · Finite Radon](05_finite_radon.md#functions-and-authoring-scaffolding) | 4 + 0 | Reconstruction check, linked highlights, contributor joins | `snapshot_views`; public viewer and Plotly |
+| [04 · Measured motion](04_measured_motion.md#functions-and-authoring-scaffolding) | 5 + 1 | Plane edges, discrepancy report, formatted measurement explanation | `snapshot_views`; public `Inspection`, viewer, and Plotly |
+| [05 · Finite Radon](05_finite_radon.md#functions-and-authoring-scaffolding) | 4 + 0 | Reconstruction check, linked highlights, formatted binding/contributor explanation | `snapshot_views`; public `Inspection`, viewer, and Plotly |
 | [06 · Young layers](06_young_layers.md#functions-and-authoring-scaffolding) | 0 + 0 | Inline conjugation, weighted prefixes, paths, receipts, and replay assembly | `lesson_views` |
 | [07 · Additive structure](07_additive_structure.md#functions-and-authoring-scaffolding) | 2 + 0 | Product and bin recipes; inline ranks, energy checks, and lens sweep | `lesson_views` |
 | [08 · Ehrhart counts](08_ehrhart_counts.md#functions-and-authoring-scaffolding) | 2 + 0 | Measured case family and finite difference; inline evidence and probes | `lesson_views` |
@@ -70,6 +73,8 @@ captured evidence.
 | `keyed_values` | Snapshot and explicit key-field names → a detached tuple-keyed dictionary in occurrence order. Require unique exact integer keys, preserving integer values and zeros. |
 | `rectangular_values` | Snapshot and explicit x/y field names → ascending axis labels and rows indexed by y, columns by x. Uses `keyed_values`; require a complete product of observed labels, without filling holes. |
 | `compare_keyed_values` | Two snapshots, explicit key fields, and an optional ordered expected domain → exact left-minus-right residuals plus missing and unexpected keys on each side. Without an expected domain it reports only the union of observed keys. |
+| `_field_names`, `_key_tuple` | Private validation for declared field names and exact integer key tuples. |
+| `KeyedDifference.to_dict`; `KeyedComparison.nonzero`, `same_domain`, `values_equal_on_common`, `holds`, `to_dict` | Detached witness serialization and report predicates. `KeyedComparison.to_dict.keys` converts tuple keys to lists. |
 
 Empty input with valid key fields yields an empty map or three empty lists. A
 one-dimensional lookup retains one-tuple keys. Neither coordinates nor shape
@@ -77,6 +82,21 @@ metadata supplies implicit keys or absent axis labels. Comparison makes the expe
 domain an independent input when absent labels matter. This is not a new core
 operation or proof/evidence API; returned containers carry no measurement claim,
 and equality is only for the captured finite case.
+
+### Captured binding and measurement inspection
+
+Public source: [inspection.py](../../src/kaleion/inspection.py). Lessons 04–05 use
+`Inspection.find`, `item`, `bindings`, and `measurement`. The adapter hides captured
+scope resolution and contributor joins, reusing existing key/expression semantics.
+It returns immutable records with detached `to_dict()` exports and executes no
+graph operations. It handles retained zero groups, weighted sums, ordered ranks,
+copied measurements, and local parameter cases. The
+[workflow document](../EXPLORATION_WORKFLOW.md) states supported operations and limits.
+
+The local explanation functions remain: they choose narrative stages, coordinates,
+and the reconstruction formula. This extraction removes manual correspondence
+logic, not the mathematical explanation or necessarily lines of notebook code.
+The public adapter is not part of the four lesson-module function counts above.
 
 ### Presentation helpers
 
@@ -125,7 +145,8 @@ All five functions serve lesson 11 and consume captured data.
 
 ## Opportunities supported by multiple lessons
 
-The snapshot adapter is delivered; other rows remain candidates for later work.
+The snapshot adapter, keyed comparison, and direct keyed-read inspector are delivered;
+the table distinguishes those contracts from remaining work.
 Each proposal should first shorten an actual lesson while preserving its evidence.
 
 | Recurring work | Evidence to compare | Smallest useful boundary and required choices |
@@ -133,7 +154,7 @@ Each proposal should first shorten an actual lesson while preserving its evidenc
 | Keyed snapshot lookup and pivot · delivered | 04–05 now share `keyed_values`/`rectangular_values`; contrast 02–03's ordered reshapes | Explicit integer keys and x/y axes; reject duplicates and holes; ascending observed axes. This does not replace a check against an independently declared domain. |
 | Named product and measurement recipes | 05 point/line pairs; 07 `integer_pairs`/`representation_counts`; 10 `hermitian_incidence`; 11 `span`/`cross_parities`/`parity_checks` | Declare factor roles and key bindings, then compose incidence and retained reductions. Expose multiplicity, expected bins, and product size; efficient execution is a separate concern. |
 | Guarded assignment | 10 measured owners; 11 quotient, inverse, and syndrome candidates | Reuse existing `coverage`, `on_keys`, `exactly`, `unique`, and `require`. Clarify the expected domain and failure witnesses; do not infer uniqueness from matching totals. |
-| Captured explanation | 04 `explain_column`; 05 `explain_pixel`; inline receipts in 06–11 | Follow scoped target references through declared driver keys to measurements and contributors, including weight/read expressions. Parent IDs alone do not explain a keyed driver. |
+| Captured explanation · direct keyed reads delivered | 04 `explain_column`; 05 `explain_pixel` now share `Inspection`; compare inline receipts in 06–11 | Follow captured scopes and actual input keys to matched drivers, then measurement origins/contributors/weights. Scalar extraction, positional reads, nested binding keys/reads, and recursive graph explanations remain separate work. |
 | Finite comparison report · keyed values delivered | 04–05 use `compare_keyed_values`; 02–03, 08, and 11 still use specialized assertions | The delivered boundary compares exact integer values on declared keys and reports domain failures and residuals. Subsets, occurrences, totals, and declared incidence correspondences remain distinct future comparison kinds. |
 | Staged and coordinated replay | Inline sampling throughout; 11 `sampled`; 03/04/05 custom views; 11 `linked_field_motion` | Compose recorded transitions with explicit times, endpoint holds, captions, projection, and ID colors. Keep discrete case selection separate; synchronized views do not imply atomic multi-root history. |
 | Measured case family | 08 `measured_family`; compare parameter sweeps in 01 and 10 | A finite case-keyed construction with parameter bindings and retained per-case measurement references. Do not substitute sampled frames for a mathematical family or lose evidence at concatenation. |
@@ -142,9 +163,10 @@ Each proposal should first shorten an actual lesson while preserving its evidenc
 
 The keyed snapshot adapter and finite keyed-value report in 04–05 are completed
 lesson-support extractions from this inventory. Sampling/caption assembly is
-another contained authoring improvement. The explanation query, weighted prefix,
-and measured family need explicit evidence contracts before a convenience wrapper
-can solve the real problem. Those needs agree with the remaining work in the
+another contained authoring improvement. Weighted prefixes and measured families
+still need explicit evidence contracts. The inspector does not manufacture a
+measurement claim for a concatenated family or a transformed count. These needs
+agree with the remaining work in the
 [core refinement plan](../CORE_REFINEMENT_PLAN.md).
 
 ## Modules, objects, and inheritance
