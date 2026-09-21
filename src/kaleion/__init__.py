@@ -31,6 +31,7 @@ from .motion import Motion, Transition, Frame
 from .history import Workspace, State, Observation
 from .sweep import Construction, Sweep
 from .grouping import Grouping, Coverage
+from .inspection import Inspection
 
 __version__ = "0.1.0"
 __all__ = [
@@ -70,4 +71,5 @@ __all__ = [
     "wrap",
     "Grouping",
     "Coverage",
+    "Inspection",
 ]

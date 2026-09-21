@@ -105,7 +105,13 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 The [lesson guide](docs/lessons/README.md) provides educational notes for all eleven notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, further coding theory, Hermitian investigations, and earlier extensions.
 
-The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core shares unchanged owned snapshot buffers and centralizes address and grouping rules. Explicit grouping, member order, coverage checks, and named placement now simplify lessons 07 and 10; prefix sums, case families, and broader explanation tools remain planned.
+The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core shares unchanged owned snapshot buffers and centralizes address and grouping rules. Explicit grouping, member order, coverage checks, and named placement simplify lessons 07 and 10; weighted prefixes and measured case families remain planned.
+
+The [exploration workflow](docs/EXPLORATION_WORKFLOW.md) maps all eleven lessons to
+shared choices for a future UI. Lessons 04–05 now use `Inspection` to follow a
+captured point through its actual keyed driver to a measurement and its contributors.
+Try `python3 examples/inspection_choices.py` for a small example with zero groups,
+signed weights, missing keys, saved evidence, and undo.
 
 The `notebooks` dependency group includes JupyterLab, Plotly, and the small video-rendering dependencies. Plotly provides interactive figures; Pillow and imageio-ffmpeg render actual 1D/2D MP4 files from the same captured states and frames. Use Plotly's exported interactive HTML for 3D. No Chrome/Kaleido installation is needed. The core's default dependencies stay unchanged.
 

@@ -128,8 +128,32 @@ counted predecessors.
 Placement and reindexing preserve the evidence. Changing measured values removes
 the active measurement claim while retaining the input derivation. Captured JSON
 retains the compact representation, so explanations and undo work after reopening
-without reevaluation. A generic inspector across arbitrary driver bindings remains
-future work.
+without reevaluation.
+
+## Follow a bound measurement
+
+The independent probes above can explain their placement without manually joining
+saved IDs. Inspection reads the captured inputs of the placement operation:
+
+```python
+from kaleion import Inspection, Workspace
+
+workspace = Workspace({"lifted": lifted})
+inspect = Inspection(workspace.state)
+point = inspect.find("lifted", 3, by=("value",))
+read, = inspect.bindings(point)
+receipt = inspect.measurement(read.driver, limit=8)
+assert read.key == (3,)
+assert read.value == receipt.item.value
+```
+
+The [complete example](../examples/inspection_choices.py) includes zero groups,
+reordered storage, failed keys, signed weights, and saved undo/redo. Use
+`item(ref).parents` to navigate earlier steps; measurement values changed by
+`with_values` no longer carry the original active measurement claim. The
+[exploration workflow](EXPLORATION_WORKFLOW.md) states supported query kinds and
+limits. Direct keyed reads are implemented; arbitrary recursive explanation,
+scalar extraction, positional lookup, and nested binding keys/reads remain future work.
 
 ## Why these boundaries
 

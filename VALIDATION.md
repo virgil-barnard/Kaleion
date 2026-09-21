@@ -1,5 +1,27 @@
 # Validation · 0.1.0
 
+## Captured inspection and exploration workflow · September 21, 2026
+
+- **122 tests pass** with `python3 -m unittest discover -s tests -v`; nine new
+  tests exercise read-only scoped inspection, exact weights, zero groups, ranks,
+  copied evidence, local parameter cases, failures, and reopened history without
+  operation execution.
+- `python3 examples/discovery.py --out build/example-output` retains its reference
+  results. `python3 examples/inspection_choices.py` exercises the new query with
+  a reordered target, zero count, cancelling sum, missing-key failure, and undo.
+- Lessons 04–05 execute all 21 code cells in separate fresh IPython sessions;
+  the all-one `p=2` Radon case also runs. Reopened explanations for 75 plane columns
+  and 25 pixels match independent enumeration with operation execution disabled.
+  Export and host limits are in the [notebook record](notebooks/VALIDATION.md#lessons-0405--shared-captured-inspection).
+- All five authoring-guide Python blocks execute, and affected local links and
+  cleared notebook outputs validate. No dependency, opcode, or saved-schema change.
+
+The [workflow audit](docs/EXPLORATION_WORKFLOW.md) distinguishes delivered inspection
+from proposed UI controls and future product/prefix/family/replay contracts.
+This is evidence for the constructions and query boundary, not novice usability.
+
+## Earlier validation
+
 Executed September 19, 2026 on Python 3.12.14 with NumPy 2.3.5. The tests exercise the Python implementation; prior browser-prototype checks are recorded separately in the architecture document.
 
 ## Explicit grouping, order, coverage, and placement

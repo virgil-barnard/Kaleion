@@ -26,9 +26,9 @@ investigations; the remaining briefs are plans with preliminary checks.
 The [authoring refinement](../AUTHORING.md) is delivered in lessons 07 and 10:
 grouping, strict member order and ranks, scoped coverage with guarded assignments,
 and named measurement-driven coordinates. Future lessons should reuse those
-choices. Weighted prefix sums, case families, arbitrary key-domain comparisons,
-and explanations across driver bindings remain open; add them only when a concrete
-construction establishes their contracts.
+choices. Weighted prefix sums, measured case families, and further comparison
+meanings remain open; add them only when a concrete construction establishes
+their contracts.
 
 Lessons 04–05 now share strict, read-only integer-key lookup and rectangular
 display adapters; see the [helper inventory](HELPER_INVENTORY.md#captured-integer-key-adapters-and-comparison).
@@ -39,6 +39,14 @@ Lesson 05 removes an entire reconstructed row and shows that an independently
 declared domain exposes missing zero-valued occurrences separately from nonzero
 residuals. Comparison of subsets, occurrence identities, totals, or a declared
 incidence correspondence remains future work rather than modes hidden behind `==`.
+
+Lessons 04–05 also share `Inspection` for direct keyed reads and measurement
+receipts, including weights and scoped contributors. The
+[exploration workflow](../EXPLORATION_WORKFLOW.md) consolidates the patterns across
+all eleven lessons. Before adding more abstraction, compare named product roles
+in 05/07/10, weighted prefixes in 06, case-family evidence in 08, and coordinated
+replay in 11. The inspector does not yet explain scalar/positional reads or nested
+bindings within binding keys/reads; future lessons should name these gaps explicitly.
 
 ## Next · Symmetry, orbits, and Burnside counting
 

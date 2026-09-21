@@ -5,6 +5,10 @@ Lessons [09](09_norm_fibers.md) and [10](10_hermitian_partitions.md) extend the
 proposed UI capabilities. The first four authoring choices are now implemented
 in Python; touch gestures remain undecided. See the [authoring guide](../AUTHORING.md).
 
+The [cross-lesson exploration workflow](../EXPLORATION_WORKFLOW.md) now maps all
+eleven lessons to reusable choices, proposed editor groups, and concrete UI tasks.
+Its first implementation is a shared captured inspector used by lessons 04–05.
+
 ## Two construction stories
 
 **Turn multiplication into motion:** declare coefficient arithmetic → arrange
@@ -51,6 +55,7 @@ already applies that criterion. These lessons add the following evidence:
 | Representation of field arithmetic | A local coordinate recipe today; a numerical domain only if later needed | Explicit exact formulas and domain restrictions |
 | How a declaration becomes executable nodes | Authoring recipes and operation graph | Definitions, source identities, and declared keys |
 | How measured predecessor evidence is represented | `measurements.py` | Query a retained key; expand its prefix without evaluating sources |
+| How captured scopes, keyed reads, and contributors are navigated | `inspection.py` | Item descriptions and measurement receipts; no graph execution or renderer dependency |
 | How keyed products, ranks, and reductions execute | Evaluator and indexing policy | Exact results, zero groups, failures, and contributors |
 | How states and evidence are stored | Snapshots and history | Stable captures and replay without reevaluation |
 | How a transition is sampled | Motion | Recorded correspondence and validated endpoints |
@@ -73,12 +78,14 @@ Rank evidence stores ordered rosters and prefix ranges; playback still reads cap
   named-role recipe across lessons 05, 07, and 10. Ordered ranks are implemented;
   weighted exclusive prefix sums, needed for Young layer offsets, remain a gap.
 - **Coverage and comparisons.** Current coverage checks an existing pre-mask
-  reduction domain, including zero groups. Comparing unrelated expected key
-  domains still needs explicit domain differences and witnesses. Equal totals
+  reduction domain, including zero groups. Lessons 04–05 also have a finite
+  keyed-value report with explicit expected domains and missing/unexpected keys.
+  Subset and occurrence comparisons remain distinct future contracts. Equal totals
   alone never establish a correspondence.
-- **Explanation across bindings.** The notebook can follow named intermediate
-  measurements. A general inspector still needs captured driver-alignment evidence;
-  direct snapshot parents alone do not identify every matched driver occurrence.
+- **Explanation across bindings.** `Inspection` now follows direct keyed reads
+  in captured pointwise steps and weighted sums to matched driver occurrences.
+  Lessons 04–05 use it without re-creating their joins. Scalar/positional reads,
+  nested binding keys/reads, and automatic recursive explanations remain open.
 - **Capture size.** Narrowing explicit support and compact JSON make this lesson
   portable. They do not deduplicate evaluated dependencies across states. Study
   shared capture storage separately from motion or the mathematical vocabulary.

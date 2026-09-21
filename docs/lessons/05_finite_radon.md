@@ -77,7 +77,7 @@ See the [cross-lesson inventory](HELPER_INVENTORY.md) for related recipes.
 | `heatmap(snapshot, names, maximum)` | Render that matrix with shared scales and labels. |
 | `check_reconstruction(captured)` | Check the binary source, line sizes and counts, direction coverage, exact divisibility, and finite keyed equality of recovered and source values on the declared pixel domain. |
 | `line_explorer(captured)` | Build synchronized image/measurement panels. Frames highlight captured point–line incidences and the corresponding measured count; they do not reevaluate a relation. |
-| `explain_pixel(captured, key)` | Join a pixel to incident line keys, their counts, sampling-pair contributors, and source pixels; show the arithmetic of backprojection and exact division. |
+| `explain_pixel(captured, key)` | Use `Inspection` to follow backprojection weights to line measurements, then sampling bindings to image pixels; retain the lesson's exact inverse arithmetic and format its explanation. |
 
 **Shared functions used.** [snapshot_views.py](../../notebooks/snapshot_views.py)
 provides `keyed_values` with explicit `keys=("u", "v")` or `keys=("m", "t")`, and
@@ -88,7 +88,9 @@ Zero values remain zeros, absent cells fail, and axes are sorted independently o
 storage or placement. Comparison keeps missing and unexpected keys separate on
 both sides and computes exact residuals only for shared keys. The public
 `animation_figure` presents the measured lifts; custom heatmaps and line
-exploration use Plotly directly.
+exploration use Plotly directly. Public `Inspection.find`, `measurement`,
+`bindings`, and `item` supply the saved joins. A backprojection contributor's
+weight is the line count it read, distinct from that pair occurrence's label.
 
 **Inline scaffolding.** The notebook defines the binary image, a point–line
 product domain, incidence, counts, backprojection, exact quotient/remainder, and
@@ -104,7 +106,9 @@ read-only adapter contract with 04, without hiding the incidence or reconstructi
 shared comparison report: an observed-domain pivot cannot discover an entirely
 missing row or column. The missing-row counterexample demonstrates the difference
 between an absent occurrence, a retained zero, and a nonzero residual. The
-product-domain recipe also appears in 07, 10, and 11, while `explain_pixel` makes
-the additional need for joins between captured references concrete. A future
-helper must preserve exact division checks and contributor joins; a plotting
-convenience alone would not remove that work.
+product-domain recipe also appears in 07, 10, and 11. The shared captured inspector
+now removes the manual point/line/pixel joins from `explain_pixel`; its output also
+retains read expressions and scoped driver references. The inverse formula and
+division checks remain visible mathematical choices. The
+[exploration workflow](../EXPLORATION_WORKFLOW.md) compares this with 04 and states
+the query limits; a generic automatic theorem explanation is not provided.

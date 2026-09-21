@@ -1,5 +1,47 @@
 # Notebook viewer validation
 
+## Lessons 04–05 · Shared captured inspection
+
+September 21, 2026; based on main `ac93fde`. Python 3.12.14, NumPy 2.5.3,
+Plotly 6.9.0, IPython 9.17.1, using a venv with the existing `.[notebooks]`
+dependencies. No dependency declarations changed.
+
+- The full suite passes **122 tests**, including nine new inspection-contract
+  tests. They cover changed input/output fields, reordered drivers, coordinate
+  reads, exact integers beyond 64 bits, signed/zero weights, presence versus count,
+  zero groups, ranks, repeated gathers, nested parameter scopes, missing captured
+  dependencies, explicit unsupported reads, and saved redo with operation execution
+  disabled. Both `examples/discovery.py` and `examples/inspection_choices.py` pass.
+- Fresh, separate in-process IPython sessions execute all 11 code cells in 04 and
+  all 10 in 05. An additional fresh 05 run with `p=2, image_x=1` passes all ten
+  cells: a missing row can contain only ones. The counterexample now reports
+  missing zero-valued keys when present instead of requiring every image to have
+  one in that row. The default still reports missing zeros separately from residuals.
+- A separate check extracts the actual notebook explanation functions, reopens
+  their workspace exports with `Evaluator.get` disabled, and verifies all **75
+  plane columns** (60 for `(11,7,5)`, 15 for `(6,4,5)`) against exact rational
+  largest-coordinate enumeration. It independently verifies all **25 image-pixel
+  explanations**, line keys, counts, and contributing pixel coordinates against
+  direct modular-line enumeration. The new receipts use actual captured bindings.
+- Nine self-contained HTML figures are generated. Separate data checks find the
+  78-frame lift/undo and 144-frame reconstruction/undo sequences, finite coordinates,
+  matching first/last positions, and a slider entry per frame. The plots and paths
+  are unchanged; these checks do not claim browser rendering. Neither lesson
+  creates MP4s, and no video-export path changed.
+- Source notebooks validate with cleared outputs. The five authoring-guide Python
+  blocks run in order, and changed local document links resolve.
+
+**Host limit:** ordinary `nbconvert --execute` was attempted for lesson 04 but its
+kernel died before execution because local networking was denied (`Operation not
+permitted`). Both lessons therefore used separate fresh in-process IPython
+sessions. Live JupyterLab, browser rendering, and touch interaction were not verified.
+
+**Migration:** local explanation functions retain their narrative and formula but
+delegate scoped lookup, actual keyed reads, and measurement origin/contributors to
+`Inspection`. No evaluator opcode, mathematical construction, or persistence schema
+changed. See the [query limits](../docs/EXPLORATION_WORKFLOW.md#delivered-follow-a-measurement-through-its-actual-binding),
+including unsupported read kinds and the cost of expanding contributors.
+
 ## Lessons 04–05 · Finite keyed-value comparison reports
 
 September 21, 2026; based on main `14fe393`. Python 3.12.14, NumPy 2.5.3,
@@ -17,7 +59,7 @@ dependency group; no dependency declaration changed.
   established counts, gather/roll column, spiral hits, and saved outputs.
 - Fresh, separate in-process IPython sessions execute all 11 code cells in lesson
   04 and all 10 in lesson 05. The coprime measured plane equals its independent
-  constant reference on all 24 declared keys. The `(6,4,5)` case reports the exact
+  constant reference on all 60 declared keys. The `(6,4,5)` case reports the exact
   residual `6 - 4 = 2` at `(3,2)`. The 25-pixel Radon reconstruction compares equal;
   after deleting row `u=1`, the report lists all five keys as missing on the left,
   no value residuals on the 20 common keys, and does not claim equality.
