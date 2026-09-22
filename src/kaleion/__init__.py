@@ -32,6 +32,7 @@ from .history import Workspace, State, Observation
 from .sweep import Construction, Sweep
 from .grouping import Grouping, Coverage
 from .inspection import Inspection
+from .products import Product
 
 __version__ = "0.1.0"
 __all__ = [
@@ -72,4 +73,5 @@ __all__ = [
     "Grouping",
     "Coverage",
     "Inspection",
+    "Product",
 ]

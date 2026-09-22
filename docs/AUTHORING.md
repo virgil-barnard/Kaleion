@@ -14,6 +14,56 @@ Lessons [07](../notebooks/07_additive_structure.ipynb) and
 [10](../notebooks/10_hermitian_partitions.ipynb) use the same declarations beside
 their interactive figures. Restart the notebook kernel after updating Kaleion.
 
+## Name the roles in a product
+
+```python
+from kaleion import Collection, F, Product
+
+left = Collection.literal([0, 1, 3])
+right = Collection.literal([0, 2])
+product = Product(left=left, right=right)
+pairs = (product.domain
+         .annotate(a=product.read("left"), b=product.read("right"))
+         .annotate(total=F.a + F.b, pair_key=F.key)
+         .with_values(F.total).arrange(F.a, F.b))
+assert pairs.evaluate().values.tolist() == [0, 2, 1, 3, 3, 5]
+
+bins = Collection.sequence(7, start=0)
+measurement = Product(pair=pairs, bin=bins)
+domain = measurement.domain.annotate(
+    total=measurement.read("pair", F.total), s=measurement.read("bin"))
+profile = domain.where(F.total == F.s).count(by=F.bin).arrange(F.bin, F.value)
+assert profile.evaluate().values.tolist() == [1, 1, 1, 2, 0, 1, 0]
+```
+
+`Product` names two or three factor roles, then supplies a collection and source
+reads. It does not choose a predicate, a chart, or a grouping. `read("left", F.key)`
+would copy that source's retained key; the role field `F.left` is its **current
+slot**. Duplicate labels and keys remain distinct product occurrences. The last
+factor varies fastest, and products have unit values until replaced explicitly.
+An empty input still permits zero counts for every declared bin in the other
+factor. The product does not discover absent semantic bins: declare those yourself.
+
+Reads use the role axes; copy needed fields before changing those axes or applying
+a reindexing operation. Reordering factors' items changes which source item is in
+each slot; preserving pair identity across that edit requires an explicit semantic
+correspondence. Geometry is never adopted automatically from a factor.
+
+**Migration:** replace a manually sized grid plus `source.bind(on=F.i, key=F.index)`
+with `Product(role=source, ...)`, `.domain`, and `.read("role")`. Update retained
+ordinal keys such as `by=F.j` to the corresponding role, such as `by=F.bin`.
+Keep semantic keys such as `(m,t)` unchanged. If the old binding used a canonical
+label instead of `F.index`, first establish that label's relationship to the slot;
+it is not a mechanical substitution. Lessons 05 and 07 provide two working uses.
+
+This is a lazy authoring recipe in `products.py`, not a new graph operation.
+Dense products retain their full cost and existing item bounds. Saved definitions
+use ordinary Grid/Count/Bind operations, so the capture schema is unchanged.
+
+The [touch workspace hypothesis](TOUCH_WORKSPACE.md) maps these declarations to
+controls. Try its bounded study with `python3 examples/touch_study.py` and open
+`build/touch-study.html` locally.
+
 ## Group, order, measure, place
 
 ```python

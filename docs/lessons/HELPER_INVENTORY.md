@@ -98,6 +98,24 @@ and the reconstruction formula. This extraction removes manual correspondence
 logic, not the mathematical explanation or necessarily lines of notebook code.
 The public adapter is not part of the four lesson-module function counts above.
 
+### Named product roles
+
+Public source: [products.py](../../src/kaleion/products.py). Lessons 05 and 07 use
+`Product(...).domain` and `.read(role, field)` for point–line, left–right,
+pair–bin, and pair-of-pairs domains. It composes existing definitions without
+evaluation. Slot addressing, factor order, new tuple identity, retained empty-axis
+groups, and dense product cost have explicit contracts. Semantic keys and fields
+are read separately. No local lesson function is removed; their mathematical
+construction becomes more readable. This public recipe is outside the shared
+lesson-module function counts above.
+
+The bounded [touch study exporter](../../examples/touch_study.py) has two functions:
+`investigation` constructs/checks the finite examples and captures receipts/paths;
+`main` chooses the two study cases and writes the presentation template with its
+data. The [template](../studies/touch-pairs.template.html) owns controls, drawing,
+and local preview/history. Neither is a numbered lesson helper or a general UI
+bridge. Their responsibilities are intentionally documented separately.
+
 ### Presentation helpers
 
 Source: [notebooks/lesson_views.py](../../notebooks/lesson_views.py).
@@ -152,7 +170,7 @@ Each proposal should first shorten an actual lesson while preserving its evidenc
 | Recurring work | Evidence to compare | Smallest useful boundary and required choices |
 | --- | --- | --- |
 | Keyed snapshot lookup and pivot · delivered | 04–05 now share `keyed_values`/`rectangular_values`; contrast 02–03's ordered reshapes | Explicit integer keys and x/y axes; reject duplicates and holes; ascending observed axes. This does not replace a check against an independently declared domain. |
-| Named product and measurement recipes | 05 point/line pairs; 07 `integer_pairs`/`representation_counts`; 10 `hermitian_incidence`; 11 `span`/`cross_parities`/`parity_checks` | Declare factor roles and key bindings, then compose incidence and retained reductions. Expose multiplicity, expected bins, and product size; efficient execution is a separate concern. |
+| Named products · delivered in 05/07 | Public `Product` serves point/line pairs and 07's pair, bin, and energy domains; challenge with 10 `hermitian_incidence` and 11 parity recipes next | Declare factor roles and current-slot reads; preserve semantic keys separately. Relation, retained reductions, expected bins, and dense product cost stay explicit. |
 | Guarded assignment | 10 measured owners; 11 quotient, inverse, and syndrome candidates | Reuse existing `coverage`, `on_keys`, `exactly`, `unique`, and `require`. Clarify the expected domain and failure witnesses; do not infer uniqueness from matching totals. |
 | Captured explanation · direct keyed reads delivered | 04 `explain_column`; 05 `explain_pixel` now share `Inspection`; compare inline receipts in 06–11 | Follow captured scopes and actual input keys to matched drivers, then measurement origins/contributors/weights. Scalar extraction, positional reads, nested binding keys/reads, and recursive graph explanations remain separate work. |
 | Finite comparison report · keyed values delivered | 04–05 use `compare_keyed_values`; 02–03, 08, and 11 still use specialized assertions | The delivered boundary compares exact integer values on declared keys and reports domain failures and residuals. Subsets, occurrences, totals, and declared incidence correspondences remain distinct future comparison kinds. |

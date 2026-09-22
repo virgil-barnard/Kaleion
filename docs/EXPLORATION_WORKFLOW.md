@@ -7,7 +7,9 @@ result. Any intermediate collection can begin another investigation. A new chart
 or animation is a view of that work, not a new source of mathematical truth.
 
 This is an authoring audit and a proposed UI contract. The captured inspector
-below is implemented and used in lessons 04–05; the touch interface is not.
+below is implemented and used in lessons 04–05. Named products now serve 05 and
+07; a bounded [touch interaction study](TOUCH_WORKSPACE.md) exercises the proposed
+controls. A general touch authoring interface is not implemented.
 
 ## What actually repeats
 
@@ -148,11 +150,12 @@ not erase the different identity policies of Gather, Roll, Select, and reduction
 
 ## Next experiments, in order
 
-1. **Named product roles in 05, 07, and 10.** Try a small authoring recipe returning
-   definitions and explicit source keys. Require reordered inputs, repeated labels,
-   and an empty factor to work. Do not merge occurrences or hide product cost.
-   Compare the visible declaration with today's dense index arithmetic before
-   proposing a core product operation.
+1. **Named products delivered in 05 and 07; challenge them in 10 next.** `Product`
+   owns named roles and current-slot reads using existing operations. Tests cover
+   reordered inputs, repeated labels/keys, empty factors, exact values, and captured
+   reads. The next probe must separate canonical point codes from source slots in
+   Hermitian incidence after reordering/filtering. Dense cost and new tuple identity
+   remain explicit; this extraction does not justify a core product operation.
 2. **Weighted prefix in 06.** Compare layer offsets with unit-weight ranks in 07.
    Require explicit order, zero first offset, signed weights, independent groups,
    and contributor receipts. This may justify an efficient scan primitive because
@@ -165,7 +168,8 @@ not erase the different identity policies of Gather, Roll, Select, and reduction
    chart projections without reevaluation. Keep shared presentation progress
    distinct from an atomic edit of multiple workspace roots, which is not provided.
 
-Only then test a small interface against concrete tasks: rebuild the plane lift;
+Alongside those recipes, test the [touch control hypothesis](TOUCH_WORKSPACE.md)
+against concrete tasks: rebuild the plane lift;
 select a reconstruction pixel and follow its line counts; remove an owner from a
 partition and locate uncovered points; distinguish a phase-coordinate change from
 multiplication. Record where a learner needs to understand storage details. That

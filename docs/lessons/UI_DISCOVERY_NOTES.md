@@ -3,11 +3,16 @@
 Lessons [09](09_norm_fibers.md) and [10](10_hermitian_partitions.md) extend the
 [earlier review evidence](REVIEW_NOTES.md). These are tested authoring needs and
 proposed UI capabilities. The first four authoring choices are now implemented
-in Python; touch gestures remain undecided. See the [authoring guide](../AUTHORING.md).
+in Python. The [touch workspace hypothesis](../TOUCH_WORKSPACE.md) now proposes
+concrete controls, gestures, and transaction boundaries, with a bounded working
+equal-sum study. General authoring usability remains untested. See the
+[authoring guide](../AUTHORING.md).
 
 The [cross-lesson exploration workflow](../EXPLORATION_WORKFLOW.md) now maps all
 eleven lessons to reusable choices, proposed editor groups, and concrete UI tasks.
-Its first implementation is a shared captured inspector used by lessons 04–05.
+Its implementations include the shared captured inspector in lessons 04–05 and
+named product roles in 05/07. The study connects the common choices into a canvas
+workflow: Relate → Measure → Arrange → Explain, with recorded reverse motion.
 
 ## Two construction stories
 

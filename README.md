@@ -41,6 +41,19 @@ These images come from the working notebooks. Follow a preview to its constructi
 
 The images are static previews; selected motion frames show presentation states. [Preview sources and regeneration](docs/images/lessons/README.md).
 
+## Toward a touch workspace
+
+The [interaction study and control plan](docs/TOUCH_WORKSPACE.md) explore composing
+an investigation directly on a canvas: move a relation lens, derive a count
+arrangement, stack the same occurrences using measured ranks, and inspect or undo.
+With the environment below active, run `python3 examples/touch_study.py` and open
+`build/touch-study.html`. The study contains two captured cases from lesson 07;
+it is a working interaction sketch, not a general authoring GUI.
+
+Lessons 05 and 07 now share `Product(point=pixels, line=lines)`-style named roles.
+The [authoring guide](docs/AUTHORING.md#name-the-roles-in-a-product) shows the small
+recipe, its source reads, zero bins, and explicit identity choices.
+
 ## Run it
 
 Requires Python 3.11 or newer and NumPy. Tested here with Python 3.12.14 and NumPy 2.3.5.

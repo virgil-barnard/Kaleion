@@ -1,5 +1,70 @@
 # Notebook viewer validation
 
+## Lessons 05/07 · Named products and a touch interaction study
+
+September 22, 2026; based on main `fa0dffb`. Python 3.12.14, NumPy 2.5.3,
+Plotly 6.9.0, and IPython 9.17.1 in the existing venv. Runtime and notebook
+dependency declarations are unchanged.
+
+- `python3 -m unittest discover -s tests -v`: **128 tests pass**. Six new product
+  tests independently enumerate tuples, finite lines, and sum bins. They exercise
+  repeated labels/keys, reordered factors, empty axes with retained zero groups,
+  lazy three-factor construction, scoped parameter sizes, integers beyond 64 bits,
+  invalid roles, item bounds, isolated failures, captured reads, and saved redo
+  with graph execution disabled.
+- `python3 examples/discovery.py --out build/example-output` passes with its
+  established counts, gather/roll column, spiral hits, and saved outputs.
+- Fresh, separate IPython processes execute all **10 code cells in 05** and
+  **7 in 07**. A further fresh 07 run with an empty left input executes all seven
+  cells, including the retained zero bin, receipts, motion, and export. Source
+  notebooks remain valid nbformat with cleared outputs and execution counts.
+- The finite Radon reconstruction and missing-row checks pass. Additive energy
+  remains 44 for `[0,1,2,3]` and 28 for `[0,1,3,7]`; the empty case remains zero.
+  The named recipe changes declarations, not the proofs or mathematical domains.
+- Both executed notebooks convert to HTML. Ten self-contained figure exports are
+  present. Separate data checks verify the 144-frame Radon and 84-frame additive
+  motions: finite coordinates, one slider step per frame, and exact first/last
+  positions after undo. Both default and empty-input additive MP4s fully decode:
+  **84 frames, 960×640, 24 fps**, 3.5 seconds. A representative decoded stack frame
+  was visually inspected. Existing video/Plotly adapters were not changed.
+- `python3 examples/touch_study.py --out build/touch-study.html` builds two real
+  captures. Independent `Counter` enumeration verifies their count profiles;
+  `Inspection` supplies rank/count receipts and scoped references. Six directed
+  paths per case each contain 41 samples from captured transitions and undo.
+  Reverse coordinates agree to `1e-8`, the export's geometry rounding precision.
+- The optional `node docs/studies/check-touch-study.cjs build/touch-study.html`
+  passes using Playwright with headless Chromium **153.0.8010.0**. It checks
+  preview versus commit, Escape/pointer cancellation, one-action drag undo,
+  redo and branching, empty-bin receipts, coincident occurrence selection, rank
+  contributors, placement endpoints, both cases' masks, keyboard controls, focus
+  retention, reduced motion, and emulated touch drag followed by immediate Undo.
+  A fast synthetic drag initially interfered with the following menu tap. Explicit
+  cancellation of the drawing's native touch gesture fixes that regression;
+  touch cancellation and menu taps are included in the check.
+- Browser views at **1024, 736, 360, and 320 pixels** have no horizontal overflow
+  and visible buttons are at least 44 pixels high. Light/dark screenshots were
+  inspected; compact plots reduce secondary labels. No page errors were recorded.
+  External HTTP(S) requests are blocked during the browser check. Browser tooling
+  was installed only under ignored `build/`; it is not a project dependency.
+- Both study Python declarations execute, including count profiles and measured
+  placement; all six Python blocks in the authoring guide execute in order.
+
+**Limits:** a normal `nbconvert --execute` attempt, after registering the Kaleion
+kernel, still fails before execution because local network interfaces are denied
+(`Operation not permitted`). The notebook runs above are fresh in-process IPython
+sessions, not live JupyterLab. Browser checks cover the bounded study, not new
+rendering checks of all existing Plotly exports. Emulated touch is not physical
+tablet qualification or a novice usability trial. The study selects precomputed
+cases and paths; it cannot yet author arbitrary expressions or save browser edits
+as a Kaleion workspace. Core integers remain exact; the study transports only its
+small integer cases and rounded presentation coordinates to JavaScript.
+
+**Migration:** `Product` lowers to existing Grid/Count/Scalar/Bind definitions;
+no operation version, evidence format, capture schema, or backend changes. Lesson
+07 retains the named ordinal `bin` instead of `j`; semantic `s`, point/line keys,
+and pair keys remain explicit. See [the authoring contract](../docs/AUTHORING.md#name-the-roles-in-a-product)
+and [the control plan](../docs/TOUCH_WORKSPACE.md).
+
 ## Lessons 04–05 · Shared captured inspection
 
 September 21, 2026; based on main `ac93fde`. Python 3.12.14, NumPy 2.5.3,

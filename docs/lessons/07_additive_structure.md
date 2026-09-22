@@ -88,10 +88,13 @@ functions. See the [cross-lesson inventory](HELPER_INVENTORY.md).
 
 | Local function | Responsibility and assumptions |
 | --- | --- |
-| `integer_pairs(left_values, right_values)` | Construct two literal inputs and their product domain; bind each factor by its index; name `a`, `b`, `total`, and `pair_key`; place the pairs. The sum remains a symbolic value. |
+| `integer_pairs(left_values, right_values)` | Construct two literal inputs; use `Product(left=left, right=right)` and explicit reads; name `a`, `b`, `total`, and `pair_key`; place the pairs. The sum remains a symbolic value. |
 | `representation_counts(pairs, lower, upper)` | Declare an inclusive interval of sum bins, build the pair/bin matching incidence, and count retaining the bin. Return the profile and incidence, including bins with zero matches. The caller chooses the bin coverage. |
 
-**Shared functions used.** [lesson_views.py](../../notebooks/lesson_views.py)
+**Shared functions used.** Public `Product` supplies `.domain` and `.read` for
+integer pairs, pair/bin measurements, and the independent pair-of-pairs energy
+check. Bin grouping is now `F.bin`; declared semantic fields remain explicit.
+[lesson_views.py](../../notebooks/lesson_views.py)
 provides `cell_panels`, `profiles`, `replay`, and `save_figures`, using `xy_cells`
 and `style` internally. Public `animation_figure` and `write_mp4` also present
 captured samples.
@@ -103,8 +106,10 @@ incidence as a finite check. Alternative input sets, a moving diagonal lens,
 staged edits and undo, sample labels/colors, contributor explanations, and
 HTML/MP4/workspace exports remain inline.
 
-**Abstraction evidence.** Named product factors and explicit output bins recur in
-05 and 11. A recipe could shorten their declarations while exposing multiplicity,
-key meaning, and zero-bin coverage. Grouping, strict ordering, and ranks already
+**Abstraction evidence.** Named product factors now share the `Product` recipe
+with 05. The recipe leaves multiplicity, key meaning, and zero-bin coverage visible;
+it does not interpret a product as a set or hide its dense cost. Grouping, strict ordering, and ranks already
 exist in the core; the remaining work is authoring clarity. The dense energy
 construction is an explanatory reference, not an efficient convolution algorithm.
+The [touch interaction study](../TOUCH_WORKSPACE.md) reuses this investigation to
+test a movable lens, a derived count object, measured placement, and saved receipts.

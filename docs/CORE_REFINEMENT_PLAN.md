@@ -37,7 +37,12 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   use it for their column/pixel explanations, including weights and original
   contributors. No new operation or capture schema is needed. See the cross-lesson
   [workflow and query limits](EXPLORATION_WORKFLOW.md).
-- **Next:** weighted prefix sums, named product recipes, measured case families,
+- **Named products delivered:** `Product` names factor roles and source reads in
+  lessons 05 and 07. It lowers to existing operations, preserves multiplicity and
+  empty-axis zero groups, and states the slot-identity and dense-cost limits.
+  The [touch study](TOUCH_WORKSPACE.md) tests how the shared choices might become
+  controls; it is a bounded captured demonstration, not a general editor.
+- **Next:** weighted prefix sums, measured case families,
   and comparison kinds beyond exact keyed integer values. Separate operation
   execution from session scheduling when that reduces concrete coupling. Coverage
   is scoped to an existing reduction domain, so it does not complete the general
