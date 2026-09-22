@@ -68,6 +68,14 @@ The result adds a new field while retaining expected labels, keys, occurrence
 identity, and placement. The public `Coverage` helper still uses its pre-mask
 group domain; no new primitive or saved-schema contract is implied by the UI.
 
+The studio's [linked evidence views](docs/LINKED_EVIDENCE_VIEWS.md) separate scoped
+capture lookup (`views.py`) from two-card selection/camera policy (`evidence.js`).
+Coverage and inspection supply explicit reference lists. The renderer neither
+infers correspondence from coordinates/labels nor executes definitions. Zero
+measurements retain their captured source universe; earlier drivers are resolved
+by evaluation ID, without substituting the current named root. This is a bounded
+read-only presentation adapter, not a new core or saved-history contract.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:

@@ -9,7 +9,10 @@ or animation is a view of that work, not a new source of mathematical truth.
 This is an authoring audit and a proposed UI contract. The captured inspector
 below is implemented and used in lessons 04–05. Named products now serve 05 and
 07; a bounded [touch interaction study](TOUCH_WORKSPACE.md) exercises the proposed
-controls. A general touch authoring interface is not implemented.
+controls. The experimental [construction studio](CONSTRUCTION_STUDIO.md) now authors a
+subset of these choices. Its [linked evidence views](LINKED_EVIDENCE_VIEWS.md)
+use the captured inspector for driver/contributor navigation beside coverage
+witnesses. Full-lesson touch authoring remains a goal.
 
 ## What actually repeats
 

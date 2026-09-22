@@ -209,6 +209,13 @@ ordinary binding receipts expose the weighted reduction. The same path is tested
 against quotient, modular, additive, and restricted Hermitian constructions.
 No existing notebook function inventory or core operation changes in this increment.
 
+The [linked-view instrument](../LINKED_EVIDENCE_VIEWS.md) adds `studio/views.py`
+for bounded capture descriptions and complete measurement evidence, including
+the zero-contributor source universe. `web/views.js` shares projection policy;
+`web/evidence.js` owns two-card selection and independent cameras. Coverage and
+receipt controllers supply explicit scoped links, with no lesson branching.
+These are studio adapters; no notebook helper count or core class changes.
+
 Use the Parnas guidepost in [DESIGN.md](../../DESIGN.md): isolate decisions likely
 to change, rather than turning each stage of a lesson into a module. A viewer can
 change its routing without changing incidence; an arithmetic recipe can change

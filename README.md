@@ -61,6 +61,9 @@ keys, exposes missing/multiple/outside matches, and lets a unique match supply a
 new field on each expected item. That field can drive another arrangement with
 its contributor evidence intact. The [coverage investigation](docs/COVERAGE_INSTRUMENT.md)
 walks through constructing, breaking, inspecting, and reusing an assignment.
+[Linked evidence views](docs/LINKED_EVIDENCE_VIEWS.md) keep expected items beside
+candidate matches, or a measurement beside its contributors. The same controls
+follow earlier captured drivers and retain source context for zero measurements.
 It is an experimental authoring subset; the guide maps the remaining work across
 all eleven lessons. No lesson-specific tools or new core operations are added.
 

@@ -158,9 +158,9 @@ retains its expected outputs, and the expanded gate passes in Chromium
 four-width layout checks also pass. Reports, screenshots, and saved examples
 remain under ignored `build/`. No notebook source or video export changed.
 
-The next useful UI experiment is **two linked views**: keep expected items visible
-beside candidate matches while following a key or a measurement dependency. Test
-it on coverage and Radon/quotient explanations. A missing key currently has a
-clear report and receipt but no source point to highlight; paired views can make
-that distinction spatially legible. Physical-device and novice transfer trials
-remain necessary before choosing the final layout.
+**View expected and matches** now opens [two linked views](LINKED_EVIDENCE_VIEWS.md).
+A missing expected key keeps its item visible with no candidate highlighted;
+choosing a link updates the report. The same renderer serves captured keyed
+reads and quotient contributors. Next test a Radon weight-read chain and the
+phone layout with people. Physical-device and novice transfer trials remain
+necessary before choosing the final layout.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add shared linked evidence views for coverage, keyed drivers, and measurement contributors. Keep missing expected items and zero-measurement source universes visible; resolve earlier inputs by capture ID. Selection and independent cameras remain read-only. Share bounded display records and projection policy, with exact fields, complete contributor weights, saved evidence, and no core/schema/dependency changes. Validate coverage and quotient constructions through the same browser controls.
+
 - Add a shared coverage instrument with independently chosen expected keys, captured missing/multiple/outside witnesses, and inspection/return controls. Adopt a sole match as a new field with live graph guards, retaining expected labels, identity, keys, and placement. Reuse the assigned field as a motion driver. Existing Count/Sum/Bind/Require/Annotate operations suffice; no core API or saved-schema change. Validate modular/additive browser tasks and a restricted Hermitian spread, including removal of the polar.
 
 - Add a UI design study with primary sources, a studio audit, cross-lesson review criteria, and a formative testing plan. Preserve one unfinished studio draft through object/group/contributor inspection, with its original target, grouping, and local expression undo. Keep preview feedback current beside Apply, restore keyboard focus, and preserve object-tab clicks after input blur. Draft lifetime stays outside numerical execution and captured history; validate through additive and modular browser tasks.

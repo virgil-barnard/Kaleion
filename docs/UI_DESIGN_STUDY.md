@@ -110,7 +110,7 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A6 | Preview/apply and captured history are separate; driver inspection can use saved data | Adapter/core contracts and save/reopen browser checks | Preserve; no new numerical execution in the view layer |
 | A7 | Formula, canvas, and actions can be far apart on a narrow screen | 320 px screenshots: the form is below the canvas | Medium · local feedback now; compare a mobile bottom sheet/sticky preview later |
 | A8 | Contextual actions have visible and keyboard alternatives; View pan/zoom still lack complete button alternatives | Context resolver and gesture handlers | Open · add equivalent camera controls; no WCAG conformance claim |
-| A9 | A single object canvas obscures comparisons and immutable earlier inputs | Existing studio limit and lesson coverage matrix | Open · paired views and dependency selection need a concrete cross-lesson trial |
+| A9 | A single object canvas obscures comparisons and immutable earlier inputs | Existing studio limit and lesson coverage matrix | Partly addressed · linked coverage/quotient views now follow scoped evidence; Radon chains and free pinning remain open |
 | A10 | No novice task or physical tablet trial has been conducted | Available evidence consists of code, deterministic fixtures, and emulated Chromium | Open · run the formative protocol below |
 | A11 | The first object-tab click after editing a number can disappear | Input blur triggers a render that replaces the tab before its click arrives; reproduced in the baseline probe | High · preserve unchanged controls and test one-click navigation |
 
@@ -231,8 +231,13 @@ executable task for this protocol: distinguish a zero group from a wholly absent
 candidate key, inspect witnesses, then adopt a sole value as a new field. It is
 tested through modular and additive browser constructions and a restricted
 Hermitian adapter case. The suite now has 151 passing tests; this extends the
-behavioral evidence without adding human-study results. Paired views remain the
-next experiment for audit item A9.
+behavioral evidence without adding human-study results. The subsequent
+[linked-view increment](LINKED_EVIDENCE_VIEWS.md) partially addresses A9: coverage
+and quotient tasks use one renderer for expected/matched items, keyed drivers,
+and contributors. It includes absent groups, zero sources, earlier driver
+versions, independent cameras, and phone/keyboard controls. The required suite
+now passes 156 tests and the expanded Chromium gate passes. No human-study or
+physical-device result is implied.
 
 **Formative human study, proposed:** start with 6–8 consenting adult volunteers,
 including people comfortable with school algebra but unfamiliar with the API and
@@ -289,7 +294,9 @@ Use this record for each review:
    assigned fields. Simple/additive browser tasks and a bounded Hermitian adapter
    case share the contract; complete Hermitian UI authoring remains open.
 3. **Comparison and dependency views:** keep two results visible and follow a
-   measurement to its input. Use Radon reconstruction and quotient-driven motion.
+   measurement to its input. [Delivered for coverage and quotient-driven motion](LINKED_EVIDENCE_VIEWS.md),
+   including empty evidence and earlier drivers. Next transfer to Radon weight
+   reads and evaluate the phone layout; arbitrary view pinning remains open.
 4. **Case versus replay controls:** exact parameter stepping beside scrubbable
    recorded motion, with a static and reduced-motion path. Evaluate whether
    motion helps identify a correspondence, not merely whether it is smooth.
