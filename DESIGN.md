@@ -45,6 +45,14 @@ commit retains the accepted capture without reevaluation. Gesture policy,
 declaration editing, numerical execution, and history remain separate decisions.
 No public core signature, evaluator opcode, or saved schema changes are required.
 
+Its group selector queries captured candidates and incidence separately, without
+graph evaluation. The query shares the reducer's retained-axis domain policy in
+`indexing.retained_axes_shape`: declared axis fibers survive empty input; other
+keys are observed. Captured group selection is view state, not a measurement or
+an ordering rule. Creating a lens lowers the selected native key to an existing
+predicate while preserving the original universe. Formula editing owns syntax
+and context choices separately from compilation and numerical execution.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:

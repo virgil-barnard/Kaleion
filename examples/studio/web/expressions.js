@@ -1,0 +1,136 @@
+// A structured formula editor. This module edits syntax; it never calculates it.
+const symbols={'+':'+','-':'−','*':'×','//':'div','%':'mod','=':'=','≠':'≠','<':'<','≤':'≤','>':'>','≥':'≥',and:'∧',or:'∨'};
+const clone=value=>structuredClone(value);
+const field=name=>({field:name}), number=value=>({integer:String(value)});
+const node=(tag,text,attrs={})=>{
+  const element=document.createElement(tag);if(text!==undefined)element.textContent=text;
+  for(const [key,value] of Object.entries(attrs))element.setAttribute(key,value);
+  return element;
+};
+
+export function formatExpression(spec){
+  if('field' in spec)return spec.field;
+  if('integer' in spec)return spec.integer;
+  if('op' in spec)return `(${formatExpression(spec.args[0])} ${symbols[spec.op]} ${formatExpression(spec.args[1])})`;
+  const r=spec.read;
+  return `read ${r.object}(${formatExpression(r.value)}; source ${formatExpression(r.key)} ↔ target ${formatExpression(r.on)})`;
+}
+
+function at(tree,path){return path.reduce((part,key)=>part[key],tree)}
+function replaced(tree,path,replacement){
+  if(!path.length)return clone(replacement);
+  const next=clone(tree);at(next,path.slice(0,-1))[path.at(-1)]=clone(replacement);return next;
+}
+function contextAt(tree,path,fields,sources){
+  let part=tree, context=fields;
+  for(let i=0;i<path.length;i++){
+    const key=path[i];
+    if(key==='read'&&['key','value'].includes(path[i+1])){
+      context=sources.find(source=>source.name===part.read.object)?.fields||[];
+    }
+    part=part[key];
+  }
+  return context;
+}
+
+export function expressionEditor(initial,fields,sources=[]){
+  let tree=clone(initial), selected=null, past=[];
+  const box=node('div',undefined,{class:'expression'});
+  const formula=node('div',undefined,{class:'formula','aria-label':'Structured expression'});
+  const toolbar=node('div',undefined,{class:'formula-tools'});
+  const edit=node('button','Edit whole expression',{type:'button','data-edit-root':''});
+  const undo=node('button','Undo expression edit',{type:'button','data-expression-undo':''});
+  const sheet=node('div',undefined,{class:'expression-sheet'});sheet.hidden=true;
+  toolbar.append(edit,undo);box.append(formula,toolbar,sheet);
+
+  function update(replacement){
+    if(selected===null)return;
+    const next=replaced(tree,selected,replacement);
+    if(JSON.stringify(next)!==JSON.stringify(tree)){
+      past.push(clone(tree));if(past.length>32)past.shift();tree=next;
+      box.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+    renderFormula();
+  }
+  function optionList(values,value,label){
+    const select=node('select',undefined,{'aria-label':label});
+    if(value!==undefined&&!values.includes(value))values=[value,...values];
+    for(const item of values)select.append(node('option',item,{value:item}));
+    if(value!==undefined)select.value=value;
+    return select;
+  }
+  function labeled(label,control){const wrapper=node('label',label);wrapper.append(control);sheet.append(wrapper);return control}
+  function open(path){selected=path;sheet.hidden=false;renderSheet();renderFormula()}
+  function renderFormula(){
+    formula.replaceChildren();
+    function token(text,path,label){
+      const button=node('button',text,{type:'button',class:'formula-token','data-path':path.join('/'),'aria-label':label});
+      button.setAttribute('aria-pressed',String(JSON.stringify(path)===JSON.stringify(selected)));
+      button.onclick=()=>open(path);return button;
+    }
+    function render(spec,path,parent){
+      if('field' in spec){parent.append(token(spec.field,path,`Edit field ${spec.field}`));return}
+      if('integer' in spec){parent.append(token(spec.integer,path,`Edit integer ${spec.integer}`));return}
+      if('op' in spec){
+        parent.append(node('span','('));render(spec.args[0],[...path,'args',0],parent);
+        parent.append(token(symbols[spec.op],path,`Edit operation ${symbols[spec.op]}`));
+        render(spec.args[1],[...path,'args',1],parent);parent.append(node('span',')'));return;
+      }
+      const r=spec.read;
+      parent.append(token(`read ${r.object}`,path,`Edit keyed read from ${r.object}`),node('span','('));
+      render(r.value,[...path,'read','value'],parent);parent.append(node('span','; source'));
+      render(r.key,[...path,'read','key'],parent);parent.append(node('span','↔ target'));
+      render(r.on,[...path,'read','on'],parent);parent.append(node('span',')'));
+    }
+    render(tree,[],formula);formula.setAttribute('aria-label',formatExpression(tree));
+    undo.disabled=!past.length;
+  }
+  function renderSheet(){
+    sheet.replaceChildren();const spec=at(tree,selected), available=contextAt(tree,selected,fields,sources);
+    const heading=node('div',undefined,{class:'row'}),done=node('button','Done',{type:'button','data-expression-done':''});
+    heading.append(node('strong','Edit selected part'),done);sheet.append(heading);
+    done.onclick=()=>{selected=null;sheet.hidden=true;renderFormula();edit.focus()};
+    const kind='field'in spec?'Field':'integer'in spec?'Number':'op'in spec?'Operation':'Keyed read';
+    const type=labeled('Replace with',optionList(['Field','Number','Operation','Keyed read'],kind,'Expression type'));
+    type.onchange=()=>{
+      if(selected.length>30){sheet.append(node('p','Expression nesting exceeds the editor budget.'));type.value=kind;return}
+      let replacement;
+      if(type.value==='Field')replacement=field(available[0]||'value');
+      else if(type.value==='Number')replacement=number(0);
+      else if(type.value==='Operation')replacement={op:'+',args:[clone(at(tree,selected)),number(1)]};
+      else{
+        if(!sources.length){sheet.append(node('p','Create a source or measurement to read first.'));type.value=kind;return}
+        replacement={read:{object:sources[0].name,on:field(available.includes('key')?'key':available[0]),key:field('key'),value:field('value')}};
+      }
+      update(replacement);renderSheet();
+    };
+    if(kind==='Field'){
+      const value=labeled('Field in this context',optionList(available,spec.field,'Field'));
+      if(!available.includes(spec.field))sheet.append(node('p','This field is unavailable in the selected context. Choose another field.',{class:'help'}));
+      value.onchange=()=>update(field(value.value));
+    }else if(kind==='Number'){
+      const value=node('input',undefined,{type:'text',inputmode:'numeric','aria-label':'Exact integer'});value.value=spec.integer;
+      labeled('Exact integer',value);value.oninput=()=>update(number(value.value));
+    }else if(kind==='Operation'){
+      const value=labeled('Operation',optionList(Object.keys(symbols),spec.op,'Operation'));
+      value.onchange=()=>update({...at(tree,selected),op:value.value});
+      sheet.append(node('p','Tap either operand in the formula to edit it. “div” is floor integer division; “mod” requires a positive modulus.',{class:'help'}));
+      const row=node('div',undefined,{class:'row'});
+      for(const [index,label] of [[0,'Keep left operand'],[1,'Keep right operand']]){
+        const keep=node('button',label,{type:'button'});keep.onclick=()=>{update(at(tree,selected).args[index]);renderSheet()};row.append(keep);
+      }
+      sheet.append(row);
+    }else{
+      const source=labeled('Read from',optionList(sources.map(s=>s.name),spec.read.object,'Read from'));
+      source.onchange=()=>{update({read:{...at(tree,selected).read,object:source.value}});renderSheet()};
+      sheet.append(node('p','The source key and value belong to the driver. The target key belongs to the object receiving the read. Tap each part in the formula to edit it.',{class:'help'}));
+    }
+  }
+  edit.onclick=()=>open([]);
+  box.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&selected!==null){event.stopPropagation();selected=null;sheet.hidden=true;renderFormula();edit.focus()}
+  });
+  undo.onclick=()=>{if(!past.length)return;tree=past.pop();selected=null;sheet.hidden=true;renderFormula();box.dispatchEvent(new Event('change',{bubbles:true}))};
+  renderFormula();
+  return {box,read:()=>clone(tree)};
+}

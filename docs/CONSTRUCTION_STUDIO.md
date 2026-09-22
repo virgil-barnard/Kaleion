@@ -31,7 +31,7 @@ editing. Host and origin checks refuse cross-origin edits.
 
 **Save** downloads an ordinary Kaleion schema-1 workspace, including definitions,
 captured evidence, and pending undo/redo. **Open** restores those captures without
-evaluating the graph. Camera, point selection, and unfinished drafts are view state
+evaluating the graph. Camera, point/group selection, and unfinished drafts are view state
 and are not saved. The current editor admits 60 objects, 2000 occurrences per
 evaluated operation, and 40 recorded history steps. The existing 32 MiB capture
 import budget still applies; these limits do not promise every combination fits.
@@ -42,6 +42,7 @@ import budget still applies; these limits do not promise every combination fits.
 | --- | --- | --- | --- |
 | Objects | Selected object in the canvas | Define a field, create a relation, measure, arrange, form a product; a relation instead offers measurement and explicit selection | A hold itself changes no definition |
 | Occurrences | A captured occurrence, or an entry in its accessible list | Explain its fields, measurement contributors, and direct keyed reads; follow a read to its captured driver | Equal values and coincident positions do not merge identities |
+| Groups | A group chosen by declared field keys, from a point or the group list | Choose group keys, create a group lens, measure all groups | Browsing changes neither the universe nor history; group membership does not specify member order |
 | View | Canvas | Fit; drag to pan, pinch/wheel to zoom | Camera changes do not change mathematical extent or placement |
 | Objects, empty canvas | Blank canvas | Add integers or a grid | No implicit source is inferred from a gesture |
 
@@ -54,16 +55,59 @@ its eventual position and radial/list presentation can change independently.
 
 Occurrence selection uses captured `(node, occurrence)` references. A nearby hit
 is provisional; an explicit list reaches every coincident item. An occurrence
-does not automatically mean its row, fiber, or geometric neighborhood. A future
-Group selector must first name its grouping rule. A lasso will mean a finite
+does not automatically mean its row, fiber, or geometric neighborhood. The
+Group selector first names its grouping fields. A future lasso will mean a finite
 selection unless the user separately declares and checks a predicate.
+
+### Select a group without measuring it
+
+Choose **Groups**, add one or more fields, and choose **Browse groups**. The group
+list and canvas use the same captured membership. Tap a point to choose its group;
+use the list for coincident points or a group with no members. Key chips are also
+used for retained measurement keys and Rank's ordered list of fields.
+
+The selector reports both the candidate population and the incident subset: a
+group can have **0 incident occurrences out of 3 candidates**. Outlined candidates
+remain visible even when none satisfy the relation. A plain source has every
+member incident. This is a read-only query over the current capture, not a new
+measurement arrangement or a graph evaluation.
+
+The domain follows the existing reduction contract. Direct rectangular axis
+fields retain the declared Cartesian domain, including empty fibers; other fields
+use observed keys. No fields means one whole-domain group, including on empty
+input. Listing order is not mathematical member order. An absent observed key
+does not become a zero group. Queries are bounded to 2000 groups independently of
+the occurrence budget, including when a zero-length axis leaves no candidates.
+
+**Create a group lens** explicitly adds a relation for the chosen key, intersected
+with any existing incidence. It preserves the original universe. **Measure all
+groups** retains the chosen grouping fields over the original object; highlighting
+one fiber does not silently restrict the measurement to it. To measure that
+fiber's incidence, first create its lens and then measure the lens. To change the
+universe itself, use **Keep matching occurrences** as a separate action.
+
+Selection is scoped to the capture, chosen fields, and group ordinal in that
+query. Applying a construction, undoing, or reopening clears it. The adapter
+recovers native key values from the capture; it never parses a displayed key or
+guesses membership from pixels. A derived lens saves as an ordinary construction.
 
 ## Small controls compose different investigations
 
-Expressions use four editable card types: **Field**, **Number**, **Operation**,
-and **Keyed read**. A read asks separately for the source, target key, source key,
-and field to read. Numbers travel as decimal strings; JavaScript never calculates
-incidence or measurements. Positions and view projections remain floating point.
+Expressions appear as compact, parenthesized formulas. Tap a field, number,
+operator, or keyed read to open one inspector for that part. **Edit whole
+expression** selects the root. **Done** closes the inspector; **Undo expression
+edit** reverses draft edits separately from workspace undo. For example,
+`(((j − i) mod 3) = 0)` stays visible while its modulus is edited.
+
+The same four kinds remain: **Field**, **Number**, **Operation**, and **Keyed read**.
+Replacing a part with an operation wraps its current value as the first operand.
+“Keep left/right operand” removes an operation without rebuilding the retained
+part. A read labels its source and target keys separately; its source key and
+value expressions offer the driver's fields, while its target key offers the
+receiving object's fields. Changing a driver preserves the existing expressions
+and marks unavailable fields for correction. Numbers travel as decimal strings;
+the editor manipulates syntax and never calculates incidence or measurements.
+Positions and view projections remain floating point.
 
 The examples below describe choices in the editor, not buttons named after a
 lesson. **Preview** evaluates a draft. **Apply** retains that exact capture as one
@@ -81,6 +125,14 @@ history action. **Cancel** discards it. You can revisit any earlier object.
 | 6 | Return to Sums; Arrange `x = total`, `y = Keyed read` from Ranks, matching target `key` to source `key`, reading `value` | The same six occurrences separate; one moves to height 1 |
 | 7 | Select Occurrences; choose the point with index 4; Explain → Follow keyed read | The rank receipt identifies its predecessor. Undo restores the captured placement |
 
+Now choose Groups, retain `total`, and browse `total = 3`: two occurrences are
+selected by the same declared key even after placement separates them. Create a
+group lens to retain their incidence over all six candidates. For an order
+counterexample, use **Measure all groups → Rank**, remove `index`, and add `value`:
+the equal values tie, so Preview fails without adding history. Add `key` as the
+second order field to declare a strict lexicographic order. Group listing and
+storage order supply no hidden tie breaker.
+
 For representation counts, measure Sums with Count retaining `total`. These are
 the **observed sum groups**. To include empty sums, explicitly construct bins,
 form pairs × bins, relate each total to its bin, and count retaining the bin role.
@@ -97,6 +149,14 @@ Add a `3 × 3` grid with axes `i,j` and constant value 1. Create a relation
 direction. A relation `value = 0` on this grid instead produces three retained
 zero counts; an occurrence explanation has no contributors.
 
+In Groups, choose `i` and browse: each diagonal group has one incident member
+among three candidates. The same selector also distinguishes missing/overlapping
+assignment candidates. On the original grid define `(i > 0) and (j < i)` and
+group by `i`: the counts are `[0,1,2]`, with three candidates per group. The zero
+group remains selectable, and its group lens retains all nine source occurrences
+with no hits. This is a witness fixture for future coverage controls; it does not
+establish unique coverage or recreate the full Hermitian investigation.
+
 The backend contract test goes further: a `3 × 3 × 3` domain with axes `u,v,m`,
 field `t = (v - m*u) % 3`, and relation `t = 0` uses the same commands to count
 modular lines and their point coverage. No “Radon tool” is introduced.
@@ -106,7 +166,7 @@ modular lines and their point coverage. No “Radon tool” is introduced.
 The independent adapter fixture builds a `7 × 11` grid with
 `value = 11*i + 7*j`, relates `value ≥ 77`, and counts retaining `i`. It obtains
 `[0,1,3,4,6,7,9]`. A separate seven-point source binds its `i` to the count's `i`
-and uses the read value as height. This exercises the same expression cards,
+and uses the read value as height. This exercises the same structured expressions,
 group choices, placement operation, and explanation route as the other cases.
 It is checked programmatically through semantic commands; the browser gate
 constructs the additive and modular examples through controls.
@@ -141,11 +201,21 @@ not a stable public language or a replacement for the operation graph.
 | Changeable decision | Owner | Stable boundary for this experiment |
 | --- | --- | --- |
 | Which actions apply to a selection scope | [context.js](../examples/studio/web/context.js) | Mode + target kind/status + captured selection → action names; no lesson IDs |
-| How a person edits a declaration or opens a menu | [studio.js](../examples/studio/web/studio.js), HTML/CSS | An explicit intent record; no arithmetic or Python method calls |
+| How formula parts are selected and edited | [expressions.js](../examples/studio/web/expressions.js) | Structured expression in/out; no mathematical evaluation or workspace history |
+| How a person chooses field keys and their order | [groups.js](../examples/studio/web/groups.js) | Ordered field names; no membership queries or numerical grouping |
+| How captured groups expose candidates and incidence | [groups.py](../examples/studio/groups.py) | Captured data + field keys → scoped members; no graph evaluation or rendering |
+| How gestures, editors, and the canvas work together | [studio.js](../examples/studio/web/studio.js), HTML/CSS | An explicit intent record and captured selection; no arithmetic or Python method calls |
 | How intents become existing definitions | [adapter.py](../examples/studio/adapter.py), `build` and `expression` | Source names, fields, keys, group/order choices; no gestures or pixels |
 | Which preview can commit | `Studio` in the same adapter | Revision + one-use token → exact retained state; obsolete or failed previews cannot apply |
 | How requests reach a session | [server.py](../examples/studio/server.py) | Small loopback JSON endpoints; no lesson construction logic |
 | Numerical execution, evidence, identity, and recorded paths | Existing Kaleion modules | Existing contracts in [DESIGN.md](../DESIGN.md); no new evaluator opcode |
+
+The grouping query and reducer share `indexing.retained_axes_shape` and
+`indexing.group_keys`. The axis-domain decision has one owner; the browser does
+not duplicate it. This is a small internal extraction, not a new grouping
+primitive. Existing Python declarations and saved workspaces need no migration;
+the experimental web client now also sends `group_lens` intents referencing a
+current capture.
 
 Apply uses the existing captured-state restoration boundary. It does not execute
 the preview again. Undo/redo use retained states; sampled linear motion comes
@@ -176,9 +246,9 @@ Most existing mathematics is already expressible in the Python core.
 | 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection | Three-component placements and parameter-case editing; keyed comparisons with independent expected domains |
 | 05 · Finite Radon | Modular incidence, products, sums and keyed reads | Composite-key read editor, finite-field/residue assumptions, inverse checks, reconstruction comparison |
 | 06 · Young layers | Sources can be filtered grids; count/rank/read/placement | Young constructor and conjugation controls; efficient weighted prefix remains a **backend contract gap** |
-| 07 · Additive structure | Constructed through browser controls from blank inputs, including ranks | Bin-domain convenience, composite expression readability, equal-sum quadruples and energy narration |
+| 07 · Additive structure | Constructed from blank inputs, including group selection, strict ranks, and compact expressions | Bin-domain convenience, equal-sum quadruples and energy narration |
 | 08 · Ehrhart counts | Finite sources, predicates, count and measurement-driven positions | Exact case-family editor; measured-family evidence remains a **backend contract gap** |
-| 09 · Norm fibers | Groups, explicit order, source reads, placement | Arithmetic-domain/basis recipes, lookup tables, modular power and trig cards; orbit/case controls |
+| 09 · Norm fibers | Groups, explicit order, source reads, placement | Arithmetic-domain/basis recipes, lookup tables, modular power and trig expressions; orbit/case controls |
 | 10 · Hermitian partitions | Product/read/group/rank mechanisms | Projective representative recipes, explicit unique-coverage adoption and witnesses, canonical-code versus slot selection |
 | 11 · Cyclic code/plane | Integer arithmetic, incidence, measurement and explanations | Polynomial/binary-field recipes, coordinate dictionaries, distinct comparison contracts, coordinated replay across charts |
 
@@ -193,27 +263,30 @@ The study has one focused canvas and a rail of objects, not a free multi-view ar
 workspace. Geometry editing is 2D; 3D imported placements receive an explicitly
 labeled XY projection. Values remain exact; table projections and geometry do not.
 Huge labels may be shortened on the canvas but stay complete in the inspector.
-The current occurrence picker and whole-object scope cannot yet express a fiber
-selection, a lasso, or a viewport-independent spatial query.
+Group selection uses named fields, including composite keys. To group by an
+expression, define a field first. Lasso and viewport-independent spatial queries
+remain future work.
 
-Count and Sum support multiple retained field keys. Rank's sheet currently offers
-one member-order field and one item key. Keyed-read cards offer an expression for
-the target key and a single source key/read field; the core supports more. Nested
-cards become long even for modest formulas. The declaration drawer shows the
-structured intent, not yet the readable Euclid-like mathematical notation we want.
+Count and Sum support multiple retained field keys. Rank offers multiple member
+order fields in chosen order and one unique item key. Keyed reads accept structured
+expressions in target-key, source-key, and value contexts; vector/composite read
+keys still need an editor. Long formulas wrap rather than introduce a new row of
+controls at every nesting level, but named subexpressions and reusable formulas
+are still absent. The declaration drawer retains the exact transport record.
 No user trial or physical tablet test has established novice usability.
 
-**Next useful experiment:** add a declared Group selector and a compact readable
-expression surface. Recreate both sum fibers and modular-line fibers with the
-same selection control, including a zero group and tied order. Then add coverage
-witnesses from the Hermitian lesson: removing an owner must expose missing groups,
-not silently change the universe. This should establish the next UI contract
-before adding a new lesson preset or broadening the evaluator vocabulary.
+**Next useful experiment:** expose explicit coverage requirements and their
+witnesses with the same group selector. Use the `[0,1,2]` fixture first, then remove
+an owner from the Hermitian construction. The expected point domain must remain
+independent of the surviving assignments; accepting a unique owner must be
+guarded by exactly-one coverage. Test that control against another assignment
+relation before introducing a lesson-specific abstraction or a core primitive.
 
 ## Validation and reproduction
 
 ```sh
 python3 -m unittest discover -s tests -p test_studio.py -v
+python3 -m unittest discover -s tests -p test_studio_groups.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -222,8 +295,12 @@ The nine adapter tests use independent finite enumerations for quotient counts,
 modular incidence, additive multiplicities, and energy. They cover empty groups,
 signed cancelling weights, integers beyond 64 bits, ambiguous keys, failed/stale
 previews, exact capture commitment, and saved undo/redo/inspection with graph
-execution disabled. Finite fixtures are not universal proofs.
-The complete required suite passes **137 tests**, and the discovery example
+execution disabled. Seven additional group tests cover additive/modular fibers,
+empty declared versus observed domains, zero incidence, composite and native
+typed keys, ties, stale captures, query budgets, scoped incidence composition,
+and undo/reopen. Group browsing succeeds with graph execution disabled and
+leaves workspace JSON unchanged. Finite fixtures are not universal proofs.
+The complete required suite passes **144 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -240,9 +317,12 @@ Screenshots and the report go to ignored `build/studio-check/`.
 
 On September 22, 2026, Chromium 153 passed the two constructions through actual
 controls, preview cancellation/failure, keyed rank placement and contributor
-inspection, zero groups, undo/redo, save/open, exact-integer transport, hold/drag/
-cancel/multi-touch, keyboard/context menus, same-origin rejection, and layouts
-at 1250/736/360/320 pixels. Touch was emulated; physical Safari/tablet testing
+inspection, sum/modular/zero group selection, tied-order rejection and an explicit
+tie breaker, formula-part editing and local undo, undo/redo, save/open,
+exact-integer transport, hold/drag/cancel/multi-touch, keyboard/context menus,
+same-origin rejection, and layouts at 1250/736/360/320 pixels. The 320-pixel check
+also edits a compound formula and selects a group by a canvas tap. Touch was
+emulated; physical Safari/tablet testing
 remains open. The browser host and browser run in one local process tree because
 this execution environment isolates loopback across separate shell calls.
 No notebook source or core API changes are included, and no video export is added.

@@ -18,13 +18,28 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.equal((await state()).objects.length,0,'Start a fresh studio server for this check');
  const idle=()=>page.waitForFunction(()=>!document.getElementById('options').disabled);
  async function tool(action,add=false){await page.locator(add?'#add':'#options').click();await page.locator(`[data-action="${action}"]`).click()}
- async function expression(card,spec){
-   const select=card.locator(':scope > select');
-   if('field'in spec){await select.selectOption('Field');await card.locator(':scope > .children > select').selectOption(spec.field)}
-   else if('integer'in spec){await select.selectOption('Number');await card.locator(':scope > .children > input').fill(String(spec.integer))}
-   else if(spec.op){await select.selectOption('Operation');await card.locator(':scope > .children > select').selectOption(spec.op);const children=card.locator(':scope > .children > .expression');await expression(children.nth(0),spec.args[0]);await expression(children.nth(1),spec.args[1])}
-   else{await select.selectOption('Keyed read');const labels=card.locator(':scope > .children > label > select');await labels.nth(0).selectOption(spec.read.object);await expression(card.locator(':scope > .children > .expression'),spec.read.on);await labels.nth(1).selectOption(spec.read.key.field);await labels.nth(2).selectOption(spec.read.value.field)}
+ async function expression(card,spec,path=[]){
+   if(path.length)await card.locator(`[data-path="${path.join('/')}"]`).click();
+   else await card.locator('[data-edit-root]').click();
+   const sheet=card.locator('.expression-sheet'),type=sheet.getByLabel('Expression type');
+   const desired='field'in spec?'Field':'integer'in spec?'Number':spec.op?'Operation':'Keyed read';
+   if(await type.inputValue()!==desired)await type.selectOption(desired);
+   if(desired==='Field')await sheet.getByLabel('Field',{exact:true}).selectOption(spec.field);
+   else if(desired==='Number')await sheet.getByLabel('Exact integer',{exact:true}).fill(String(spec.integer));
+   else if(desired==='Operation'){
+     await sheet.getByLabel('Operation',{exact:true}).selectOption(spec.op);
+     await expression(card,spec.args[0],[...path,'args',0]);
+     await expression(card,spec.args[1],[...path,'args',1]);
+   }else{
+     await sheet.getByLabel('Read from',{exact:true}).selectOption(spec.read.object);
+     await expression(card,spec.read.on,[...path,'read','on']);
+     await expression(card,spec.read.key,[...path,'read','key']);
+     await expression(card,spec.read.value,[...path,'read','value']);
+   }
+   if(!path.length)await card.locator('[data-expression-done]').click();
  }
+ async function retain(field){await page.locator('#panel fieldset > .field-keys').first().locator('[data-group-add]').selectOption(field)}
+
  const f=field=>({field}),n=integer=>({integer:String(integer)}),op=(op,a,b)=>({op,args:[a,b]});
  const cards=()=>page.locator('#panel fieldset > .expression');
  async function apply(){await page.locator('#preview').click();await idle();assert.equal(await page.locator('#apply').isEnabled(),true,await page.locator('#status').textContent());await page.locator('#apply').click();await idle()}
@@ -38,7 +53,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.deepEqual((await state()).objects.find(o=>o.name==='Sums').rows.map(r=>r.fields.total),['0','2','1','3','3','5']);
  await tool('place');await expression(cards().nth(0),f('total'));await expression(cards().nth(1),n(0));await apply();
  const coincident=(await state()).objects.find(o=>o.name==='Sums').rows;assert.equal(new Set(coincident.map(r=>JSON.stringify(r.position))).size,5);
- await tool('measure');await page.locator('#result-name').fill('Ranks');await page.locator('#reducer').selectOption('rank');await page.locator('[data-group="total"]').check();await apply();
+ await tool('measure');await page.locator('#result-name').fill('Ranks');await page.locator('#reducer').selectOption('rank');await retain('total');await apply();
  assert.deepEqual(await values('Ranks'),['0','0','0','0','1','0']);
  await select('Sums');await tool('place');await expression(cards().nth(0),f('total'));await expression(cards().nth(1),{read:{object:'Ranks',on:f('key'),key:f('key'),value:f('value')}});
  const before=(await state()).revision;await page.locator('#preview').click();await idle();assert.equal((await state()).revision,before);
@@ -52,13 +67,50 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.locator('#labels').selectOption('total');
  await page.screenshot({path:path.join(output,'sum-stacks.png'),fullPage:true});
 
+ // The same group selector browses sum fibers, keeping selection outside history.
+ await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('total');
+ const groupRevision=(await state()).revision;
+ await page.locator('#browse-groups').click();await idle();await page.locator('#group-choice').selectOption('3');
+ assert.match(await page.locator('#group-summary').textContent(),/2 incident occurrences · 2 occurrences/);
+ assert.equal(await page.locator('[data-group-member="true"]').count(),2);assert.equal((await state()).revision,groupRevision);
+ await page.screenshot({path:path.join(output,'sum-group.png'),fullPage:true});
+ await tool('measure');assert.deepEqual(await page.locator('#panel fieldset > .field-keys').first().locator('.key-chips button').allTextContents(),['total ×']);
+ await page.locator('#result-name').fill('Fiber ranks');await page.locator('#reducer').selectOption('rank');
+ await page.locator('#rank-order').getByRole('button',{name:'Remove key index'}).click();await page.locator('#rank-order [data-group-add]').selectOption('value');
+ await page.locator('#preview').click();await idle();assert.match(await page.locator('#status').textContent(),/ties/);assert.equal((await state()).revision,groupRevision);
+ await page.locator('#rank-order [data-group-add]').selectOption('key');await apply();assert.deepEqual(await values('Fiber ranks'),['0','0','0','0','1','0']);
+ await select('Sums');await page.locator('#panel > .field-keys [data-group-add]').selectOption('total');await page.locator('#browse-groups').click();await idle();await page.locator('#group-choice').selectOption('3');
+ await tool('group_lens');await page.locator('#result-name').fill('Sum three');await apply();
+ const sumLens=(await state()).objects.find(o=>o.name==='Sum three');assert.equal(sumLens.rows.length,6);assert.equal(sumLens.rows.filter(r=>r.match).length,2);
+
  // Same mode + target, different mathematics. Build a modular diagonal from blank inputs.
  await page.locator('[data-mode="objects"]').click();await tool('grid',true);await page.locator('#result-name').fill('Square');await page.locator('#grid-shape').fill('3, 3');await apply();
- await tool('lens');await page.locator('#result-name').fill('Diagonal');await expression(cards().nth(0),op('=',op('%',op('-',f('j'),f('i')),n(3)),n(0)));await apply();
- await tool('measure');await page.locator('#result-name').fill('Row counts');await page.locator('[data-group="i"]').check();await apply();assert.deepEqual(await values('Row counts'),['1','1','1']);
+ await tool('lens');await page.locator('#result-name').fill('Diagonal');const rule=op('=',op('%',op('-',f('j'),f('i')),n(3)),n(0));await expression(cards().nth(0),rule);
+ assert.equal(await cards().nth(0).locator('.formula').getAttribute('aria-label'),'(((j − i) mod 3) = 0)');
+ assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()).args.rule,rule);
+ assert.ok((await cards().nth(0).boundingBox()).height<220,'Collapsed compound expression should stay compact');
+ await cards().nth(0).locator('[data-path="args/0/args/1"]').click();await cards().nth(0).getByLabel('Exact integer',{exact:true}).fill('5');
+ await cards().nth(0).locator('[data-expression-undo]').click();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()).args.rule,rule);
+ await page.screenshot({path:path.join(output,'compact-expression.png'),fullPage:true});await apply();
+ await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();
+ assert.match(await page.locator('#group-summary').textContent(),/1 incident occurrences · 3 occurrences/);assert.equal(await page.locator('[data-group-member="true"]').count(),3);
+ await page.screenshot({path:path.join(output,'modular-group.png'),fullPage:true});
+ await page.locator('[data-mode="objects"]').click();
+ await tool('measure');await page.locator('#result-name').fill('Row counts');await retain('i');await apply();assert.deepEqual(await values('Row counts'),['1','1','1']);
  await select('Square');await tool('lens');await page.locator('#result-name').fill('Empty relation');await expression(cards().nth(0),op('=',f('value'),n(0)));await apply();
- await tool('measure');await page.locator('#result-name').fill('Zero counts');await page.locator('[data-group="i"]').check();await apply();assert.deepEqual(await values('Zero counts'),['0','0','0']);
+ await tool('measure');await page.locator('#result-name').fill('Zero counts');await retain('i');await apply();assert.deepEqual(await values('Zero counts'),['0','0','0']);
  await page.locator('[data-mode="points"]').click();const zero=(await state()).objects.find(o=>o.name==='Zero counts').rows[0];await page.locator('#occurrence').selectOption(zero.ref[1]);await idle();assert.match(await page.locator('#panel').textContent(),/0 contributors/);
+
+ // Coverage witnesses use the same selector: zero, one, or two incident candidates.
+ await page.locator('[data-mode="objects"]').click();await select('Square');await tool('lens');await page.locator('#result-name').fill('Assignment candidates');
+ await expression(cards().nth(0),op('and',op('>',f('i'),n(0)),op('<',f('j'),f('i'))));await apply();
+ await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();
+ assert.deepEqual(await page.locator('#group-choice option').allTextContents(),['i = 0 · 0 of 3 incident','i = 1 · 1 of 3 incident','i = 2 · 2 of 3 incident']);
+ assert.match(await page.locator('#group-summary').textContent(),/0 incident occurrences · 3 occurrences/);
+ assert.equal(await page.locator('[data-group-member="true"]').count(),3);
+ await tool('group_lens');await page.locator('#result-name').fill('Uncovered group');await apply();
+ const uncovered=(await state()).objects.find(o=>o.name==='Uncovered group');assert.equal(uncovered.rows.length,9);assert.equal(uncovered.rows.filter(r=>r.match).length,0);
+ await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();assert.equal(await page.locator('#group-choice option').count(),3);
 
  // Failure is a failed draft; it must not relabel the previous picture as a success.
  await page.locator('[data-mode="objects"]').click();await select('Square');await tool('lens');await page.locator('#result-name').fill('Bad');await expression(cards().nth(0),op('=',op('%',f('i'),n(0)),n(0)));const revision=(await state()).revision;await page.locator('#preview').click();await idle();assert.equal(await page.locator('#apply').isEnabled(),false);assert.equal((await state()).revision,revision);assert.equal(await page.locator('#status').getAttribute('class'),'error');await page.locator('#cancel').click();await idle();
@@ -84,7 +136,24 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  for(const width of [1250,736,360,320]){await page.setViewportSize({width,height:950});await page.emulateMedia({colorScheme:width===320?'dark':'light'});await select('Sums');await page.locator('#labels').selectOption('total');const size=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert.ok(size.scroll<=size.width,JSON.stringify(size));layouts.push(size);await page.screenshot({path:path.join(output,`width-${width}.png`),fullPage:true})}
  // SVG letterboxing on phones must not change the occurrence selected by a tap.
  await page.locator('[data-mode="points"]').click();const mark=await page.locator('#marks circle').nth(4).boundingBox();await page.touchscreen.tap(mark.x+mark.width/2,mark.y+mark.height/2);await idle();assert.equal(await page.locator('#occurrence').inputValue(),stacked[4].ref[1]);await page.locator('#options').click();assert.deepEqual(await page.locator('#menu-actions button').allTextContents(),['Explain this occurrence']);await page.locator('#close-menu').click();
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,objects:(await state()).objects.length,checks:['two constructions through controls','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+ // At phone width, author a compound formula and wrap the latest edited value.
+ await page.locator('[data-mode="objects"]').tap();await select('Square');await tool('lens');await expression(cards().nth(0),rule);
+ await cards().nth(0).locator('[data-path="args/0/args/1"]').tap();await cards().nth(0).getByLabel('Exact integer',{exact:true}).fill('5');
+ await cards().nth(0).getByLabel('Expression type',{exact:true}).selectOption('Operation');
+ assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()).args.rule.args[0].args[1],op('+',n(5),n(1)),'Wrapping must retain the latest edit, not the initial subtree');
+ await cards().nth(0).locator('[data-expression-undo]').tap();await cards().nth(0).locator('[data-expression-undo]').tap();
+ assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()).args.rule,rule);
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Formula controls must fit phone width');
+ await page.screenshot({path:path.join(output,'phone-expression.png'),fullPage:true});await page.locator('#cancel').tap();await idle();
+ // Group taps use captured membership even when the SVG is letterboxed.
+ await select('Diagonal');await page.locator('[data-mode="groups"]').tap();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').tap();await idle();
+ const phoneRevision=(await state()).revision;await page.locator('#canvas').scrollIntoViewIfNeeded();const member=await page.locator('#marks circle').nth(8).boundingBox();
+ await page.touchscreen.tap(member.x+member.width/2,member.y+member.height/2);
+ assert.equal(await page.locator('#group-choice').inputValue(),'2');assert.equal(await page.locator('[data-group-member="true"]').count(),3);
+ await page.locator('#options').tap();assert.deepEqual(await page.locator('#menu-actions button').allTextContents(),['Choose group keys','Create a group lens','Measure all groups']);await page.locator('#close-menu').tap();
+ assert.equal((await state()).revision,phoneRevision);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ await page.screenshot({path:path.join(output,'phone-group.png'),fullPage:true});
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

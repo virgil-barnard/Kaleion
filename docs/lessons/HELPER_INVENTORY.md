@@ -192,9 +192,14 @@ agree with the remaining work in the
 The experimental [construction studio](../CONSTRUCTION_STUDIO.md) adds an authoring
 client, not another notebook helper or a lesson superclass. Its scaffolding is
 partitioned by changeable decisions: `context.js` selects semantic actions;
-`studio.js` owns gesture recognition, expression-card editing, and snapshot/frame
-drawing; `adapter.py` owns explicit intent lowering, decimal-integer transport,
-revisioned previews, and captured inspection; `server.py` owns the local transport.
+`expressions.js` owns compact syntax editing and keyed-read field contexts;
+`groups.js` supplies one ordered field-key control for selection, retained keys,
+and member order. `groups.py` queries captured membership and lowers a chosen
+group key to an ordinary lens. It shares axis-domain policy and key grouping
+with `indexing.py`; it performs no graph execution. `studio.js` composes these
+controls with gesture recognition and snapshot/frame drawing. `adapter.py` owns
+explicit intent lowering, decimal-integer transport, revisioned previews, and
+captured inspection; `server.py` owns the local transport.
 The same path is tested against quotient, modular, and additive constructions.
 No existing notebook function inventory or core operation changes in this increment.
 

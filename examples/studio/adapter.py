@@ -14,6 +14,7 @@ from kaleion import Collection, F, Inspection, Product, Workspace
 from kaleion.history import Observation, State
 from kaleion.ir import expression as constant
 from kaleion.model import IncidenceSnapshot, Ref
+from .groups import captured_groups
 
 
 OPERATORS = {
@@ -29,6 +30,7 @@ ARGUMENTS = {
     "lens": {"source", "rule"}, "select": {"source"},
     "measure": {"source", "by", "reducer", "weight", "order", "key"},
     "place": {"source", "coordinates"},
+    "group_lens": {"source", "capture", "by", "group"},
 }
 
 
@@ -58,7 +60,7 @@ def exact_wire(value):
 
 def expression(spec, roots, depth=0):
     if depth > 20 or not isinstance(spec, dict):
-        raise ValueError("Expression needs a bounded expression card")
+        raise ValueError("Expression needs a bounded structured formula")
     if set(spec) == {"integer"}:
         return constant(integer(spec["integer"]))
     if set(spec) == {"field"} and isinstance(spec["field"], str):
@@ -75,10 +77,10 @@ def expression(spec, roots, depth=0):
         return roots[read["object"]].bind(
             **{name: expression(read[source], roots, depth + 1)
                for name, source in (("on", "on"), ("key", "key"), ("read", "value"))})
-    raise ValueError("Unsupported expression card; Python source is not accepted")
+    raise ValueError("Unsupported expression form; Python source is not accepted")
 
 
-def build(command, roots):
+def build(command, roots, *, captured=None):
     """Lower explicit authoring choices into existing public builders only."""
     if not isinstance(command, dict) or set(command) != {"action", "name", "args"}:
         raise ValueError("A command needs action, name, and args")
@@ -145,6 +147,13 @@ def build(command, roots):
             # Placement edits one view root. Existing derived roots keep their
             # immutable input definitions; this study does not rewrite a DAG.
             result = source.arrange(*(ex(c) for c in args["coordinates"]))
+        elif action == "group_lens":
+            if captured is None or args["source"] not in captured.results:
+                raise ValueError("Choose a ready captured source for this group")
+            groups = captured_groups(captured.results[args["source"]], args["by"])
+            if args["capture"] != groups.capture:
+                raise ValueError("The group selection belongs to an earlier capture")
+            result = groups.lens(source, args["group"])
         else:
             raise ValueError(f"Unsupported authoring action: {action}")
     return name, result
@@ -203,7 +212,7 @@ class Studio:
     def preview(self, command, revision):
         self.check(revision)
         self.pending = None
-        name, definition = build(command, self.workspace.state.roots)
+        name, definition = build(command, self.workspace.state.roots, captured=self.workspace.state)
         state = State.evaluate({**self.workspace.state.roots, name: definition}, {}, max_items=2000)
         if name in state.errors:
             raise ValueError(state.errors[name])
@@ -253,6 +262,23 @@ class Studio:
         if len(ref) != 2 or ref[0] != source.node or ref[1] not in source.ids:
             raise ValueError("Select an occurrence in this captured object")
         return self.inspect_ref(ref, revision)
+
+    def groups(self, name, by, revision):
+        """Return a revision-scoped selection report, not a new measurement root."""
+        self.check(revision)
+        report = captured_groups(self.workspace.state.results[name], by)
+
+        def refs(indices):
+            return [[report.source.node, report.source.ids[i]] for i in indices]
+
+        return dict(revision=revision, name=name, capture=report.capture, by=list(report.by),
+                    domain=report.domain, groups=[
+                        dict(key=exact_wire(key), key_types=["boolean" if isinstance(v, bool) else
+                             "integer" if isinstance(v, int) else "number" if isinstance(v, float)
+                             else "text" for v in key],
+                             population=str(len(members)), count=str(len(matches)),
+                             members=refs(members), matches=refs(matches))
+                        for key, members, matches in zip(report.keys, report.members, report.matches)])
 
     def inspect_ref(self, ref, revision):
         """Follow a receipt to its captured driver, including an earlier version."""

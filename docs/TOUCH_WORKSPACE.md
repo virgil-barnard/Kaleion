@@ -232,8 +232,11 @@ The current two-case study cannot establish this general authoring usability.
 
 The [construction studio](CONSTRUCTION_STUDIO.md) now connects a bounded real
 declaration editor to Kaleion, with save/reopen, cancellation, failure recovery,
-and two constructions through the same controls. Next test a declared Group
-selector across sum fibers and modular-line fibers, with a more compact readable
-expression surface. Separately, weighted
+and two constructions through the same controls. Its shared Group selector now
+browses sum and modular-line fibers, retaining zero groups and separating
+candidate membership from incidence. Compact formulas open one selected part for
+editing; grouping, measurement, and member order reuse a field-key control.
+Next test explicit coverage requirements and guarded owner adoption against both
+simple assignment witnesses and the Hermitian construction. Separately, weighted
 prefixes in lesson 06 should establish the missing ordered-measurement contract.
 A future prefix control should follow that evidence, not lead the core design.

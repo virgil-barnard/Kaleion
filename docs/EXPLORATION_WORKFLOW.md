@@ -170,9 +170,13 @@ not erase the different identity policies of Gather, Roll, Select, and reduction
 
 The [blank-canvas studio](CONSTRUCTION_STUDIO.md) now implements a first command
 adapter and contextual hold controls across additive and modular constructions.
-Its coverage matrix keeps all eleven lessons as the acceptance target. Next test
-group selection and a compact expression editor across unrelated fibers; do not
-turn the first successful investigation into the UI's organizing structure.
+Its coverage matrix keeps all eleven lessons as the acceptance target. Shared
+group selection and compact formula editing now serve sum and modular fibers.
+Selecting a group is a captured-data query; deriving a lens or measuring all
+groups is an explicit construction. Next test coverage requirements and unique
+owner adoption across unrelated assignment relations, retaining an independent
+expected domain. The first successful investigation must not become the UI's
+organizing structure.
 
 Alongside those recipes, test the [touch control hypothesis](TOUCH_WORKSPACE.md)
 against concrete tasks: rebuild the plane lift;

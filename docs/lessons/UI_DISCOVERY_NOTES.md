@@ -4,8 +4,11 @@ The new [construction studio](../CONSTRUCTION_STUDIO.md) tests these choices wit
 real authoring from a blank canvas. Hold options depend on selector scope and
 target capabilities. The same declaration controls construct additive stacks
 and modular incidences through a separate Python adapter. Its all-lesson matrix
-keeps the general goal explicit; grouped selection, compact expressions, and
-physical touch usability are the next experiments.
+keeps the general goal explicit. Groups now select by declared keys and report
+candidate and incident populations separately; compact formulas open an editor
+for one selected part. The same field-key control serves group selection,
+measurement, and explicit member order. Next test coverage requirements and
+guarded owner adoption; physical touch usability remains untested.
 
 Lessons [09](09_norm_fibers.md) and [10](10_hermitian_partitions.md) extend the
 [earlier review evidence](REVIEW_NOTES.md). These are tested authoring needs and
