@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a UI design study with primary sources, a studio audit, cross-lesson review criteria, and a formative testing plan. Preserve one unfinished studio draft through object/group/contributor inspection, with its original target, grouping, and local expression undo. Keep preview feedback current beside Apply, restore keyboard focus, and preserve object-tab clicks after input blur. Draft lifetime stays outside numerical execution and captured history; validate through additive and modular browser tasks.
+
 - Add shared captured group selection and compact formula editing to the construction studio. Browse declared keys without graph execution or history changes; retain zero groups and distinguish candidates from incident members. Create a group lens explicitly, preserving its universe. One field-key control serves selection, reductions, and lexicographic Rank order. Tap formula parts to edit structured expressions, with local undo and separate keyed-read contexts. Share the existing retained-axis policy rather than add a core primitive; validate additive, modular, empty, tied, stale, and phone-width cases.
 
 - Add an experimental construction studio that starts from a blank canvas: contextual hold menus, four expression-card types, explicit grouped measurements and keyed placement, exact preview/apply, inspection, save/open, and captured undo/redo. One semantic command adapter serves additive and modular constructions without lesson-specific actions, Python source evaluation, new core APIs, or dependencies. Document all-lesson coverage gaps and independent adapter/browser validation.

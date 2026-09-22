@@ -8,6 +8,9 @@ The shared `Product` recipe is implemented in lessons 05 and 07. The study uses
 real captured Kaleion results and paths; it is not a general editor or a browser
 implementation of the evaluator. Its two source choices are deliberately finite.
 See the [cross-lesson audit](EXPLORATION_WORKFLOW.md) for the mathematical basis.
+The [UI design study](UI_DESIGN_STUDY.md) adds research, an audit rubric, and a
+formative testing protocol. Its first delivered experiment keeps a studio draft
+available through an inspection detour; human touch trials remain to be conducted.
 
 ## The experience to aim for
 

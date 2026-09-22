@@ -132,6 +132,49 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.locator('#undo').click();await idle();assert.equal((await state()).objects.some(o=>o.name==='Exact'),false);
  await page.locator('#file').setInputFiles(saved);await idle();assert.deepEqual(await values('Exact'),['1152921504606846977']);
  assert.equal((await page.request.post(origin+'/api/cancel',{headers:{Origin:'https://example.invalid'},data:{revision:(await state()).revision}})).status(),403);
+ // A formula draft survives an unrelated inspection; its target and undo stay local.
+ const committedBeforeDraft=await(await page.request.get(origin+'/api/export')).text();
+ await select('Square');await tool('lens');await page.locator('#result-name').fill('Recovered diagonal');await expression(cards().nth(0),rule);
+ const modulus=cards().nth(0).locator('[data-path="args/0/args/1"]');await modulus.focus();await page.keyboard.press('Enter');
+ assert.equal(await page.getByLabel('Exact integer',{exact:true}).evaluate(n=>n===document.activeElement),true,'Opening a formula token must focus its editor');
+ await page.getByLabel('Exact integer',{exact:true}).fill('0');await page.keyboard.press('Escape');
+ assert.equal(await modulus.evaluate(n=>n===document.activeElement),true,'Closing an inspector returns to its initiating token');
+ assert.equal(await page.locator('#panel form').count(),1,'Escape in an expression must not discard the construction');
+ await page.locator('#preview').click();await idle();assert.equal(await page.locator('#draft-status').getAttribute('data-phase'),'failed');assert.match(await page.locator('#draft-status').textContent(),/Preview failed/);
+ await modulus.click();await page.getByLabel('Exact integer',{exact:true}).fill('5');await page.locator('#preview').click();await idle();assert.equal(await page.locator('#draft-status').getAttribute('data-phase'),'ready');
+ await page.getByLabel('Exact integer',{exact:true}).fill('3');assert.equal(await page.locator('#draft-status').getAttribute('data-phase'),'editing');assert.equal(await page.locator('#apply').isEnabled(),false);assert.doesNotMatch(await page.locator('#status').textContent(),/preview ready/i);
+ // A single click immediately after input blur must select the requested object.
+ await page.locator('[data-object="Sums"]').click();assert.equal(await page.locator('[data-object="Sums"]').getAttribute('aria-pressed'),'true');
+ assert.equal(await page.locator('#panel form').count(),0);assert.equal(await page.locator('#resume-draft').isVisible(),true);
+ for(const id of ['add','open','undo'])assert.equal(await page.locator('#'+id).isEnabled(),false,'Workspace changes wait for the draft: '+id);
+ await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('total');await page.locator('#browse-groups').click();await idle();
+ await page.locator('#group-choice').selectOption('3');assert.match(await page.locator('#group-summary').textContent(),/2 incident occurrences/);
+ await page.locator('#options').click();assert.equal(await page.locator('[data-action="measure"]').isEnabled(),false);await page.locator('#close-menu').click();
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),committedBeforeDraft,'Draft edits and inspection must not change captured workspace data');
+ await page.screenshot({path:path.join(output,'parked-draft.png'),fullPage:true});
+ await page.locator('#resume-draft').click();assert.equal(await page.locator('#result-name').inputValue(),'Recovered diagonal');assert.equal(JSON.parse(await page.locator('#declaration').textContent()).args.source,'Square');
+ assert.equal(await page.locator('#draft-status').getAttribute('data-phase'),'editing');
+ await cards().nth(0).locator('[data-expression-undo]').click();assert.equal(JSON.parse(await page.locator('#declaration').textContent()).args.rule.args[0].args[1].integer,'5','Local expression undo survives parking');
+ await expression(cards().nth(0),rule);await page.locator('#preview').click();await idle();
+ await select('A');await page.locator('#resume-draft').click();assert.equal(await page.locator('#apply').isEnabled(),false,'Parking invalidates even a successful preview');
+ await apply();const recovered=(await state()).objects.find(o=>o.name==='Recovered diagonal');assert.equal(recovered.rows.length,9);assert.equal(recovered.rows.filter(r=>r.match).length,3);
+ // Transfer the same detour to a grouped measurement and a captured rank receipt.
+ await page.setViewportSize({width:320,height:950});await select('Sums');await tool('measure');await page.locator('#result-name').fill('Recovered counts');await retain('total');
+ const chip=page.locator('#panel fieldset > .field-keys').first().getByRole('button',{name:'Remove key total'});await chip.focus();await page.keyboard.press('Enter');
+ assert.equal(await page.locator('#panel fieldset > .field-keys').first().locator('[data-group-add]').evaluate(n=>n===document.activeElement),true,'Removing the last key preserves a useful focus target');
+ await retain('total');const countDraft=JSON.parse(await page.locator('#declaration').textContent());
+ await select('Ranks');await page.locator('[data-mode="points"]').tap();const ranked=(await state()).objects.find(o=>o.name==='Ranks').rows;
+ await page.locator('#occurrence').selectOption(ranked[4].ref[1]);await idle();assert.match(await page.locator('#panel').textContent(),/1 contributors/);
+ await page.locator('#resume-draft').tap();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()),countDraft);
+ await page.locator('#preview').tap();await idle();assert.equal(await page.locator('#draft-status').getAttribute('role'),'status');
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Draft tray and feedback must fit phone width');
+ await page.locator('#draft-status').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'phone-draft-feedback.png'),fullPage:true});
+ await page.locator('#apply').tap();await idle();assert.deepEqual(await values('Recovered counts'),['1','1','1','2','1']);
+ // Escape from the form parks an idea; only explicit Cancel/Discard drops it.
+ await select('Square');await tool('lens');await page.locator('#result-name').fill('Keep this idea');await page.locator('#result-name').press('Escape');
+ assert.equal(await page.locator('#panel form').count(),0);await page.locator('#resume-draft').tap();assert.equal(await page.locator('#result-name').inputValue(),'Keep this idea');
+ await page.locator('#discard-draft').tap();await idle();assert.equal(await page.locator('#draft-tray').isVisible(),false);assert.equal(await page.locator('#add').isEnabled(),true);
+ const authoring={retainedFormula:true,retainedGrouping:true,retainedLocalUndo:true,originalTarget:true,inspectionLeavesCaptureUnchanged:true,localStatus:true,focusRecovery:true,firstClickNavigation:true};
  const layouts=[];
  for(const width of [1250,736,360,320]){await page.setViewportSize({width,height:950});await page.emulateMedia({colorScheme:width===320?'dark':'light'});await select('Sums');await page.locator('#labels').selectOption('total');const size=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert.ok(size.scroll<=size.width,JSON.stringify(size));layouts.push(size);await page.screenshot({path:path.join(output,`width-${width}.png`),fullPage:true})}
  // SVG letterboxing on phones must not change the occurrence selected by a tap.
@@ -153,7 +196,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.locator('#options').tap();assert.deepEqual(await page.locator('#menu-actions button').allTextContents(),['Choose group keys','Create a group lens','Measure all groups']);await page.locator('#close-menu').tap();
  assert.equal((await state()).revision,phoneRevision);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.screenshot({path:path.join(output,'phone-group.png'),fullPage:true});
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

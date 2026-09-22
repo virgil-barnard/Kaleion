@@ -12,6 +12,12 @@ field evaluation, and removes repeated contributor grouping and motion preparati
 The plan's delivery status distinguishes these changes from the remaining recipes
 and explanation tools below.
 
+The [UI design study](../UI_DESIGN_STUDY.md) adds a separate evidence layer:
+primary HCI sources, a concrete studio audit, cross-lesson acceptance tasks, and
+a proposed human-observation protocol. Its first delivered changes retain drafts
+through inspection and repair stale feedback, disappearing focus, and swallowed
+navigation clicks. These are browser-verified behaviors, not learner-study results.
+
 ## Delivered: explicit discovery choices
 
 Lessons 07 and 10 now declare grouping, strict member order, coverage, and named

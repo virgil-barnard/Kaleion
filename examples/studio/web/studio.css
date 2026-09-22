@@ -329,3 +329,34 @@ pre {
   margin-top:18px;
   border-top:1px solid var(--line);
 }
+#draft-tray {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:12px;
+  border:1px solid var(--line);
+  border-left:4px solid var(--green);
+  border-radius:12px;
+  padding:12px 16px;
+  margin-top:10px;
+  background:var(--paper);
+}
+#draft-tray>div:first-child {
+  flex:1 1 280px;
+  min-width:0;
+}
+#draft-tray .help {
+  margin:5px 0 0;
+}
+#draft-status {
+  padding:10px;
+  border-left:3px solid var(--green);
+  background:#719e751a;
+  font-size:13px;
+}
+#draft-status[data-phase=failed] {
+  border-color:var(--amber);
+}
+.formula-token {
+  min-width:44px;
+}

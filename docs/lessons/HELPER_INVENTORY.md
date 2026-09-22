@@ -194,8 +194,10 @@ client, not another notebook helper or a lesson superclass. Its scaffolding is
 partitioned by changeable decisions: `context.js` selects semantic actions;
 `expressions.js` owns compact syntax editing and keyed-read field contexts;
 `groups.js` supplies one ordered field-key control for selection, retained keys,
-and member order. `groups.py` queries captured membership and lowers a chosen
-group key to an ordinary lens. It shares axis-domain policy and key grouping
+and member order. `drafts.js` owns one unfinished editor's lifetime and original
+context across browsing; it retains actual controls and their local undo without
+joining mathematical history. `groups.py` queries captured membership and lowers
+a chosen group key to an ordinary lens. It shares axis-domain policy and key grouping
 with `indexing.py`; it performs no graph execution. `studio.js` composes these
 controls with gesture recognition and snapshot/frame drawing. `adapter.py` owns
 explicit intent lowering, decimal-integer transport, revisioned previews, and

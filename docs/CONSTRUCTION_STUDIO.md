@@ -10,6 +10,11 @@ The design hypothesis is that a person chooses **what they are acting on**, then
 determine the available tools. A count, a rank, and an ordinary integer source can
 all be used as inputs to another construction.
 
+The [UI design study](UI_DESIGN_STUDY.md) connects this hypothesis to HCI research,
+audits the current controls, and defines cross-lesson and human-observation tasks.
+Its first improvement preserves an unfinished idea while its author inspects
+something else.
+
 ## Run the study
 
 From the repository root, use the existing environment:
@@ -113,6 +118,27 @@ The examples below describe choices in the editor, not buttons named after a
 lesson. **Preview** evaluates a draft. **Apply** retains that exact capture as one
 history action. **Cancel** discards it. You can revisit any earlier object.
 
+### Inspect without losing an unfinished idea
+
+Selecting another object or selector mode parks the current draft. Inspect a
+group or follow an occurrence's contributors, then choose **Resume draft**. Its
+original target, name, fields, grouping choices, and local expression undo return.
+Parking invalidates its preview; use **Preview** again before applying. Feedback
+beside the actions reports editing, checking, ready, or failed, and changes as
+soon as an input changes.
+
+There is one draft per tab. While it exists, new constructions, workspace
+undo/redo, and Open are unavailable; the draft tray explains how to resume or
+discard it. Save still exports applied work. Reloading loses the draft. This
+first design supports browsing a dependency mid-edit, but not constructing a
+new dependency without first finishing or discarding the draft.
+
+Enter on a formula token focuses its editor; **Done** or Escape returns focus
+to that token. Escape outside the formula inspector parks the construction.
+**Cancel** or **Discard draft** explicitly removes it. Removing a group-key chip
+focuses the next chip or the field picker. These keyboard behaviors supplement
+the visible touch controls.
+
 ### Equal sums and measured stacks
 
 | Step | Control and choices | Observation |
@@ -201,6 +227,7 @@ not a stable public language or a replacement for the operation graph.
 | Changeable decision | Owner | Stable boundary for this experiment |
 | --- | --- | --- |
 | Which actions apply to a selection scope | [context.js](../examples/studio/web/context.js) | Mode + target kind/status + captured selection → action names; no lesson IDs |
+| How an unfinished editor survives navigation | [drafts.js](../examples/studio/web/drafts.js) | One tab-local draft, original context, park/resume/discard; no evaluation, network, or saved-schema policy |
 | How formula parts are selected and edited | [expressions.js](../examples/studio/web/expressions.js) | Structured expression in/out; no mathematical evaluation or workspace history |
 | How a person chooses field keys and their order | [groups.js](../examples/studio/web/groups.js) | Ordered field names; no membership queries or numerical grouping |
 | How captured groups expose candidates and incidence | [groups.py](../examples/studio/groups.py) | Captured data + field keys → scoped members; no graph evaluation or rendering |
@@ -229,10 +256,11 @@ This is not a reactive source editor that silently rewrites downstream definitio
 That larger edit contract needs revisioned dependencies, explicit failure handling,
 and atomic capture decisions before it becomes a UI promise.
 
-Failed previews report an error above the **committed** canvas. They do not add
-zero results or pretend that the preceding picture is the failed result. Inspection
-is a separate read-only request. A receipt can follow an earlier captured driver
-even if a current root with the same name has a different placement.
+Failed previews report an error beside Preview/Apply and above the **committed**
+canvas. They do not add zero results or pretend that the preceding picture is
+the failed result. Inspection is a separate read-only request. A receipt can
+follow an earlier captured driver even if a current root with the same name has
+a different placement.
 
 ## All lessons are the target: remaining composition coverage
 
@@ -322,7 +350,11 @@ tie breaker, formula-part editing and local undo, undo/redo, save/open,
 exact-integer transport, hold/drag/cancel/multi-touch, keyboard/context menus,
 same-origin rejection, and layouts at 1250/736/360/320 pixels. The 320-pixel check
 also edits a compound formula and selects a group by a canvas tap. Touch was
-emulated; physical Safari/tablet testing
+emulated. The expanded gate parks relation and measurement drafts, inspects a
+different object, resumes the original declaration and local undo, and verifies
+that browsing leaves saved data unchanged. It checks local failed/ready/edited
+status, keyboard focus recovery, and the first object click after input blur.
+Physical Safari/tablet and screen-reader testing
 remains open. The browser host and browser run in one local process tree because
 this execution environment isolates loopback across separate shell calls.
 No notebook source or core API changes are included, and no video export is added.
