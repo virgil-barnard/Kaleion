@@ -43,8 +43,11 @@ incidence correspondence remains future work rather than modes hidden behind `==
 Lessons 04–05 also share `Inspection` for direct keyed reads and measurement
 receipts, including weights and scoped contributors. The
 [exploration workflow](../EXPLORATION_WORKFLOW.md) consolidates the patterns across
-all eleven lessons. Before adding more abstraction, compare named product roles
-in 05/07/10, weighted prefixes in 06, case-family evidence in 08, and coordinated
+all eleven lessons. Named product roles now share a small recipe in 05/07. Test it
+against reordered canonical representatives in 10 before extending it. The bounded
+[touch study and control plan](../TOUCH_WORKSPACE.md) starts with the equal-sum
+construction; a real declaration editor and new-user trials remain future work.
+Before adding more abstraction, compare weighted prefixes in 06, case-family evidence in 08, and coordinated
 replay in 11. The inspector does not yet explain scalar/positional reads or nested
 bindings within binding keys/reads; future lessons should name these gaps explicitly.
 

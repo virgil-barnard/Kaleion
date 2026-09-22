@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add a lazy `Product` authoring recipe with named factor roles and explicit source-field reads. Lessons 05 and 07 use it without new evaluator operations or schema changes. Repeated labels, empty factors, exact integers, captured reads, and reverse motion have independent contract tests.
+- Add a bounded touch interaction study using captured additive examples: move a lens, derive counts with zero bins, gather/stack by measured ranks, inspect contributors, and undo/redo. Document the common controls, gesture/semantic-edit boundary, and remaining work toward a general touch workspace.
+
 - Extract strict, read-only integer-key snapshot adapters from lessons 04–05. Named keys and display axes replace four duplicated local helpers; duplicate keys, noninteger keys, and missing rectangular cells fail explicitly, while zeros and exact integers are preserved. Mathematical definitions, captured evidence, motion, and core APIs are unchanged.
 - Add seven adversarial adapter tests and update lesson/helper inventories with the distinction between observed-axis completeness and an independently declared key domain.
 - Add a finite keyed-value comparison report for captured snapshots. It aligns distinct declared fields, preserves exact integers, and separates missing and unexpected keys from exact left-minus-right residuals. Lessons 04–05 use it for measured equality and reconstruction; a deleted-row counterexample exposes absent zero-valued occurrences.

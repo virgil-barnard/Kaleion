@@ -1,0 +1,215 @@
+<div id="kaleion-touch-study">
+  <style>
+    #kaleion-touch-study{--paper:light-dark(#fcfbf7,#232623);--ink:light-dark(#242d29,#edf0e8);--sub:light-dark(#61685f,#b0baad);--edge:light-dark(#dce0d6,#424a40);--wash:light-dark(#f0f2eb,#30362e);--focus:light-dark(#a34a25,#efa976);--teal:light-dark(#245c51,#97cbbc);color-scheme:light dark;background:var(--paper);color:var(--ink);border:1px solid var(--edge);border-radius:18px;overflow:hidden;font:15px/1.5 system-ui,sans-serif;max-width:1100px;margin:auto}
+    #kaleion-touch-study *{box-sizing:border-box}
+    #kaleion-touch-study header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:18px 22px;border-bottom:1px solid var(--edge)}
+    #kaleion-touch-study .brand{font:500 25px/1.2 Georgia,serif;letter-spacing:-.5px;margin-right:auto}
+    #kaleion-touch-study .subtle{color:var(--sub);font-size:13px}
+    #kaleion-touch-study button,#kaleion-touch-study select{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--edge);border-radius:9px;min-height:44px;padding:8px 13px}
+    #kaleion-touch-study button:disabled{opacity:.45}
+    #kaleion-touch-study button{touch-action:manipulation}
+    #kaleion-touch-study button[aria-pressed=true],#kaleion-touch-study button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+    #kaleion-touch-study button:hover:not(:disabled){box-shadow:inset 0 0 0 1px var(--sub)}
+    #kaleion-touch-study nav{display:flex;flex-wrap:wrap;gap:7px;padding:14px 20px 0}
+    #kaleion-touch-study .studio{display:grid;grid-template-columns:minmax(0,1fr) 255px;padding:20px;gap:22px}
+    #kaleion-touch-study .scene{min-width:0}
+    #kaleion-touch-study .scene-label{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:3px 0 8px;flex-wrap:wrap}
+    #kaleion-touch-study h2{font:500 19px/1.3 Georgia,serif;margin:0}
+    #kaleion-touch-study h3{font-weight:500;font-size:15px;margin:0 0 12px}
+    #kaleion-touch-study .drawing{display:block;width:100%;touch-action:none;background:var(--paper)}
+    #kaleion-touch-study .drawing text{fill:var(--sub);font:12px system-ui,sans-serif}
+    #kaleion-touch-study .drawing .dot-label{fill:var(--ink);font-size:13px;font-weight:500;pointer-events:none}
+    #kaleion-touch-study .drawing .dot{fill:var(--edge);stroke:var(--paper);stroke-width:2}
+    #kaleion-touch-study .drawing .match{fill:var(--focus)}
+    #kaleion-touch-study .drawing .picked{stroke:var(--ink);stroke-width:3}
+    #kaleion-touch-study aside{border-left:1px solid var(--edge);padding-left:22px;min-width:0}
+    #kaleion-touch-study .panel[hidden]{display:none}
+    #kaleion-touch-study .panel p{margin:10px 0;font-size:14px}
+    #kaleion-touch-study label{display:block;margin:12px 0 6px}
+    #kaleion-touch-study select{width:100%;font-size:16px}
+    #kaleion-touch-study input[type=range]{width:100%;accent-color:var(--teal);min-height:44px;margin:0}
+    #kaleion-touch-study .equation{font:500 24px/1.4 Georgia,serif;margin:16px 0}
+    #kaleion-touch-study .pill{display:inline-block;background:var(--wash);padding:5px 9px;border-radius:7px;margin:3px 3px 3px 0;font-size:13px}
+    #kaleion-touch-study .choices{display:grid;gap:8px}
+    #kaleion-touch-study .choices button{text-align:left}
+    #kaleion-touch-study .counts{border-top:1px solid var(--edge);padding:16px 0 0;margin-top:10px}
+    #kaleion-touch-study .counts[hidden]{display:none}
+    #kaleion-touch-study .bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(44px,1fr));gap:4px;margin-top:12px}
+    #kaleion-touch-study .bin{min-width:0;padding:6px 2px;border-color:transparent;background:var(--wash);font-size:12px;display:grid;justify-items:center;gap:2px}
+    #kaleion-touch-study .bar-space{height:52px;display:flex;align-items:end}
+    #kaleion-touch-study .bar{width:14px;background:var(--teal);border-radius:3px 3px 0 0;min-height:1px}
+    #kaleion-touch-study .bin[aria-pressed=true] .bar{background:var(--paper)}
+    #kaleion-touch-study .receipt{font-size:14px;padding:12px;background:var(--wash);border-radius:8px;margin:12px 0;overflow-wrap:anywhere}
+    #kaleion-touch-study .status{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;border-top:1px solid var(--edge);padding:12px 20px;font-size:13px;color:var(--sub)}
+    #kaleion-touch-study details{border-top:1px solid var(--edge);padding:12px 20px}
+    #kaleion-touch-study summary{min-height:30px;font-size:13px}
+    #kaleion-touch-study pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.65 ui-monospace,monospace;margin:12px 0 0}
+    @media(max-width:700px){#kaleion-touch-study .studio{grid-template-columns:1fr;gap:16px;padding:16px}#kaleion-touch-study aside{border-left:0;border-top:1px solid var(--edge);padding:16px 0 0}#kaleion-touch-study header{padding:14px 16px}#kaleion-touch-study nav{padding:12px 16px 0}#kaleion-touch-study .brand{font-size:23px}#kaleion-touch-study header .subtle{display:none}}
+  </style>
+  <header><span class="brand">Kaleion</span><span class="subtle">Pair studio · interaction study</span><button type="button" id="ks-undo" disabled>Undo</button><button type="button" id="ks-redo" disabled>Redo</button></header>
+  <nav aria-label="Construction tools">
+    <button type="button" data-tool="source" aria-pressed="false">Sources</button>
+    <button type="button" data-tool="relate" aria-pressed="true">Relate</button>
+    <button type="button" data-tool="measure" aria-pressed="false">Measure</button>
+    <button type="button" data-tool="arrange" aria-pressed="false">Arrange</button>
+    <button type="button" data-tool="inspect" aria-pressed="false">Inspect</button>
+  </nav>
+  <div class="studio">
+    <div class="scene">
+      <div class="scene-label"><h2 id="ks-scene-title">Every left–right pair</h2><span class="subtle">16 distinct occurrences</span></div>
+      <svg class="drawing" id="ks-canvas" role="img" aria-label="Integer pairs; highlighted points satisfy the selected sum"><g id="ks-marks"></g><rect id="ks-hit" width="100%" height="100%" fill="transparent"/></svg>
+      <div class="subtle" id="ks-canvas-hint">Drag across the canvas to move the sum lens.</div>
+      <section class="counts" id="ks-counts" hidden aria-label="Derived count arrangement">
+        <div class="scene-label"><h2>Counts by sum</h2><span class="subtle">Tap a key to inspect its fiber</span></div>
+        <div class="bins" id="ks-bins"></div>
+      </section>
+    </div>
+    <aside aria-label="Selected tool controls">
+      <section class="panel" data-panel="source" hidden>
+        <h3>Two arrangements, two roles</h3>
+        <label for="ks-source">Source values</label><select id="ks-source"><option value="0">0, 1, 2, 3</option><option value="1">0, 1, 3, 7</option></select>
+        <p><span class="pill">left · 4 items</span><span class="pill">right · 4 items</span></p>
+        <p>Pair every left occurrence with every right occurrence.</p>
+        <p class="subtle">Two captured source choices are available in this study.</p>
+      </section>
+      <section class="panel" data-panel="relate">
+        <h3>A movable relation</h3><div class="equation">left + right = <span id="ks-sum-big">3</span></div>
+        <label for="ks-sum">Sum key <output id="ks-sum-value">3</output></label>
+        <input id="ks-sum" type="range" min="0" max="8" value="3" step="1">
+        <p id="ks-membership"></p><p class="subtle">Each stop selects an exact integer case. You can also drag the lens across the picture.</p>
+      </section>
+      <section class="panel" data-panel="measure" hidden>
+        <h3>Make an object from a question</h3>
+        <p>Count all pairs at each sum key.</p><p><span class="pill">Group · sum</span><span class="pill">Measure · count</span></p>
+        <button type="button" class="primary" id="ks-derive">Derive count arrangement</button>
+        <p class="subtle">Empty keys stay present with count zero.</p>
+        <div class="receipt" id="ks-count-receipt"></div>
+      </section>
+      <section class="panel" data-panel="arrange" hidden>
+        <h3>Shape the same occurrences</h3>
+        <div class="choices"><button type="button" data-layout="grid" aria-pressed="true">By left and right values</button><button type="button" data-layout="gather" aria-pressed="false">Gather by sum</button><button type="button" data-layout="stack" aria-pressed="false">Stack by measured rank</button></div>
+        <p class="subtle">Stacks use x = sum, y = the number of earlier pairs in that sum. Member order follows the original pair key.</p>
+      </section>
+      <section class="panel" data-panel="inspect" hidden>
+        <h3>Why is this point here?</h3>
+        <label for="ks-point">Occurrence</label><select id="ks-point"></select>
+        <div class="receipt" id="ks-point-receipt"></div>
+        <p class="subtle">Tap a point to choose it. Coincident points stay separate entries.</p>
+      </section>
+    </aside>
+  </div>
+  <div class="status"><span id="ks-status" role="status" aria-live="polite">Exact case · sum 3</span><span id="ks-action">Captured inputs · reversible placement</span></div>
+  <details><summary>Read the construction</summary><pre id="ks-code"></pre></details>
+  <script type="application/json" id="ks-data">__KALEION_STUDY_DATA__</script>
+  <script>
+  (()=>{
+    const root=document.getElementById('kaleion-touch-study');
+    const data=JSON.parse(root.querySelector('#ks-data').textContent);
+    const $=id=>root.querySelector('#ks-'+id), svg=$('canvas'), marks=$('marks');
+    const ns='http://www.w3.org/2000/svg';
+    let state={preset:0,sum:3,layout:'grid',measured:false}, draft=null;
+    let tool='relate', selected=3, past=[], future=[], playing=false, ticket=0, view=null, shown=null;
+    let drag=null;
+    const current=()=>draft||state;
+    const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+    function element(tag,attrs={},text){const e=document.createElementNS(ns,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e;}
+    function draw(positions){
+      const s=current(), d=data[s.preset], pts=positions||d.layouts[s.layout];shown=pts;
+      const width=Math.max(240,svg.getBoundingClientRect().width), height=Math.max(265,Math.min(390,width*.64));
+      svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.style.height=height+'px';marks.replaceChildren();
+      const xmax=Math.max(...d.points.map(p=>p.sum)), ymax=Math.max(...d.values, ...d.points.map(p=>p.rank));
+      const x=v=>45+(v+.45)/(xmax+.9)*(width-70),y=v=>height-42-(v+.45)/(ymax+.9)*(height-65);
+      view={x,y,xmax,ymax,width,height,points:pts};
+      marks.append(element('title',{},'Sixteen pairs; highlights follow an exact sum relation'));
+      for(let v=0;v<=xmax;v++){
+        marks.append(element('line',{x1:x(v),x2:x(v),y1:20,y2:height-40,stroke:'var(--edge)','stroke-width':.6}));
+        if(v%Math.max(1,Math.ceil((xmax+1)/7))===0)marks.append(element('text',{x:x(v),y:height-23,'text-anchor':'middle'},v));
+      }
+      for(let v=0;v<=ymax;v++){
+        marks.append(element('line',{x1:30,x2:width-20,y1:y(v),y2:y(v),stroke:'var(--edge)','stroke-width':.6}));
+        if(v%Math.max(1,Math.ceil((ymax+1)/5))===0)marks.append(element('text',{x:22,y:y(v)+4,'text-anchor':'end'},v));
+      }
+      marks.append(element('text',{x:width-20,y:height-3,'text-anchor':'end'},s.layout==='grid'?'left value':'sum'));
+      marks.append(element('text',{x:30,y:14},s.layout==='grid'?'right value':s.layout==='stack'?'predecessor count':'coincident pairs'));
+      if(s.layout==='grid'&&!playing){
+        const lo=Math.max(0,s.sum-ymax), hi=Math.min(xmax,s.sum);
+        if(lo<=hi)marks.append(element('line',{x1:x(lo),y1:y(s.sum-lo),x2:x(hi),y2:y(s.sum-hi),stroke:'var(--focus)','stroke-width':2,opacity:.5}));
+      }
+      const compact=width<420;
+      pts.forEach((p,i)=>{
+        const matched=d.masks[s.sum][i], picked=tool==='inspect'&&i===selected;
+        marks.append(element('circle',{cx:x(p[0]),cy:y(p[1]),r:picked?9:compact?5.5:9,class:'dot'+(matched?' match':'')+(picked?' picked':'')}));
+        const labelVisible=!compact||(matched&&(s.layout!=='stack'||d.points[i].rank===d.counts[d.points[i].sum].value-1));
+        if(s.layout!=='gather'&&labelVisible)marks.append(element('text',{x:x(p[0]),y:y(p[1])-15,'text-anchor':'middle',class:'dot-label'},d.points[i].sum));
+      });
+    }
+    function refresh(positions){
+      const s=current(),d=data[s.preset],m=d.counts[s.sum],p=d.points[selected];
+      root.querySelectorAll('[data-tool]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.tool===tool);b.disabled=playing});
+      root.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==tool);
+      root.querySelectorAll('[data-layout]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.layout===s.layout);b.disabled=playing});
+      $('source').value=s.preset;$('source').disabled=playing;
+      $('sum').max=d.counts.length-1;$('sum').value=s.sum;$('sum').disabled=playing;
+      $('sum-big').textContent=s.sum;$('sum-value').textContent=s.sum;
+      $('membership').textContent=`${m.value} of ${d.points.length} pairs satisfy this relation.`;
+      $('counts').hidden=!s.measured;
+      $('derive').disabled=s.measured||playing;$('derive').textContent=s.measured?'Count arrangement added':'Derive count arrangement';
+      const members=m.contributors.map(k=>`(${d.points[k].a}, ${d.points[k].b})`).join(', ')||'none';
+      $('count-receipt').textContent=`At sum ${s.sum}: ${m.value} contributors from a population of ${m.population}. Pairs: ${members}.`;
+      if($('point').dataset.preset!==String(s.preset)){
+        $('point').replaceChildren(...d.points.map((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${p.a} + ${p.b} · pair ${p.key}`;return o}));$('point').dataset.preset=s.preset;
+      }
+      $('point').value=selected;$('point').disabled=playing;
+      const earlier=p.predecessors.map(k=>`${d.points[k].a}+${d.points[k].b}`).join(', ')||'none';
+      $('point-receipt').textContent=`${p.a} + ${p.b} = ${p.sum}. Position: (${d.layouts[s.layout][selected].join(', ')}). Its stack height is ${p.rank}: earlier contributors are ${earlier}.`;
+      $('canvas-hint').textContent=playing?'Replaying a captured path.':tool==='relate'?'Drag across the canvas to move the sum lens.':tool==='inspect'?'Tap a point; use the list to distinguish coincident occurrences.':'Choose a tool to act on this arrangement.';
+      $('scene-title').textContent={grid:'Every left–right pair',gather:'Many pairs, one sum',stack:'Multiplicity becomes height'}[s.layout];
+      $('undo').disabled=!past.length||playing;$('redo').disabled=!future.length||playing;
+      if($('bins').dataset.preset!==String(s.preset)){
+      $('bins').replaceChildren(...d.counts.map(m=>{
+        const b=document.createElement('button');b.type='button';b.className='bin';b.dataset.bin=m.key;b.setAttribute('aria-pressed',m.key===s.sum);b.setAttribute('aria-label',`Sum ${m.key}, count ${m.value}`);b.disabled=playing;
+        const space=document.createElement('span');space.className='bar-space';const bar=document.createElement('span');bar.className='bar';bar.style.height=(m.value*12)+'px';space.append(bar);
+        const value=document.createElement('span');value.textContent=m.value;const key=document.createElement('span');key.textContent='s '+m.key;b.append(value,space,key);
+        b.addEventListener('click',()=>{commit({...state,sum:m.key});tool='measure';refresh()});return b;
+      }));
+      $('bins').dataset.preset=s.preset;
+      }
+      root.querySelectorAll('[data-bin]').forEach(b=>{b.setAttribute('aria-pressed',Number(b.dataset.bin)===s.sum);b.disabled=playing});
+      $('code').textContent=`from kaleion import Collection, F, Product\n\nleft = Collection.literal(${JSON.stringify(d.values)})\nright = Collection.literal(${JSON.stringify(d.values)})\nproduct = Product(left=left, right=right)\npairs = (product.domain.annotate(\n    a=product.read("left"), b=product.read("right"))\n    .annotate(total=F.a + F.b, pair_key=F.key)\n    .with_values(F.total).arrange(F.a, F.b))\nlens = pairs.where(F.total == ${s.sum})\n\nbins = Collection.sequence(${d.counts.length}, start=0)\nmeasure = Product(pair=pairs, bin=bins)\ndomain = measure.domain.annotate(\n    pair_key=measure.read("pair", F.pair_key),\n    total=measure.read("pair", F.total), s=measure.read("bin"))\ncounts = domain.where(F.total == F.s).count(by=F.bin).arrange(F.bin, F.value)\n\nranks = pairs.group_by(F.total).order_by(F.pair_key).ranks(key=F.pair_key)\nstacked = pairs.arrange(F.total, ranks.bind(on=F.pair_key))`;
+      draw(positions);
+    }
+    function announce(){const s=state; $('status').textContent=`Exact case · sum ${s.sum} · ${data[s.preset].counts[s.sum].value} matches`;}
+    function animate(before,after,reverseFrames){
+      const path=reverseFrames||(before.preset===after.preset&&before.layout!==after.layout?data[after.preset].paths[before.layout+':'+after.layout]:null);
+      const motionOK=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(!path||!motionOK){refresh();announce();return}
+      playing=true;const my=++ticket;let start;refresh(path[0]);
+      $('action').textContent='Recorded placement path · presentation only';
+      function tick(t){if(my!==ticket)return;if(start===undefined)start=t;const fraction=Math.min(1,(t-start)/650),index=Math.min(path.length-1,Math.floor(fraction*(path.length-1)));if(fraction===1){playing=false;refresh();announce();$('action').textContent='Captured inputs · reversible placement'}else{draw(path[index]);requestAnimationFrame(tick)}}
+      requestAnimationFrame(tick);
+    }
+    function commit(next){if(playing)return;draft=null;if(same(state,next)){refresh();return}const before=state;past.push({before,after:next});future=[];state=next;selected=Math.min(selected,data[state.preset].points.length-1);animate(before,next);}
+    $('undo').addEventListener('click',()=>{if(playing||!past.length)return;draft=null;const action=past.pop();future.push(action);state=action.before;const path=action.before.preset===action.after.preset&&action.before.layout!==action.after.layout?data[action.before.preset].paths[action.before.layout+':'+action.after.layout].slice().reverse():null;animate(action.after,action.before,path)});
+    $('redo').addEventListener('click',()=>{if(playing||!future.length)return;const action=future.pop();past.push(action);state=action.after;animate(action.before,action.after)});
+    root.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>{if(playing)return;draft=null;tool=b.dataset.tool;refresh()}));
+    root.querySelectorAll('[data-layout]').forEach(b=>b.addEventListener('click',()=>commit({...state,layout:b.dataset.layout})));
+    $('source').addEventListener('change',e=>commit({preset:Number(e.target.value),sum:3,layout:'grid',measured:false}));
+    $('sum').addEventListener('input',e=>{draft={...state,sum:Number(e.target.value)};refresh()});
+    $('sum').addEventListener('change',e=>commit({...state,sum:Number(e.target.value)}));
+    $('sum').addEventListener('pointercancel',()=>{draft=null;refresh()});
+    $('derive').addEventListener('click',()=>commit({...state,measured:true}));
+    $('point').addEventListener('change',e=>{selected=Number(e.target.value);refresh()});
+    function near(event){const box=svg.getBoundingClientRect();return {x:(event.clientX-box.left)*view.width/box.width,y:(event.clientY-box.top)*view.height/box.height}}
+    function lensAt(event){const c=near(event),s=current(),d=data[s.preset];const worldX=(c.x-45)/(view.width-70)*(view.xmax+.9)-.45,worldY=(view.height-42-c.y)/(view.height-65)*(view.ymax+.9)-.45;return Math.max(0,Math.min(d.counts.length-1,Math.round(s.layout==='grid'?worldX+worldY:worldX)))}
+    // The drawing owns this touch gesture; keep native scrolling/taps outside it.
+    svg.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
+    svg.addEventListener('pointerdown',e=>{if(playing||e.isPrimary===false||e.button!==0)return;e.preventDefault();$('hit').setPointerCapture(e.pointerId);drag={id:e.pointerId};if(tool==='relate'){draft={...state,sum:lensAt(e)};refresh()}else if(tool==='inspect'){const c=near(e);const distances=view.points.map(p=>(view.x(p[0])-c.x)**2+(view.y(p[1])-c.y)**2);const nearest=Math.min(...distances);if(nearest<32**2){selected=distances.indexOf(nearest);refresh()}}});
+    svg.addEventListener('pointermove',e=>{if(drag&&drag.id===e.pointerId&&tool==='relate'&&!playing){draft={...state,sum:lensAt(e)};refresh()}});
+    svg.addEventListener('pointerup',e=>{if(!drag||drag.id!==e.pointerId)return;drag=null;if(draft){const released=draft;requestAnimationFrame(()=>{if(draft===released)commit(released)})}});
+    svg.addEventListener('pointercancel',e=>{if(drag&&drag.id===e.pointerId){drag=null;draft=null;refresh()}});
+    root.addEventListener('keydown',e=>{if(e.key==='Escape'&&draft){drag=null;draft=null;refresh()}});
+    new ResizeObserver(()=>draw(playing?shown:undefined)).observe(svg.parentElement);
+    refresh();announce();
+  })();
+  </script>
+</div>

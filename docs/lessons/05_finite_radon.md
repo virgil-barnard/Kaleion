@@ -93,7 +93,8 @@ exploration use Plotly directly. Public `Inspection.find`, `measurement`,
 weight is the line count it read, distinct from that pair occurrence's label.
 
 **Inline scaffolding.** The notebook defines the binary image, a point–line
-product domain, incidence, counts, backprojection, exact quotient/remainder, and
+product domain using `Product(point=pixels, line=lines)` and its source-field
+reads, incidence, counts, backprojection, exact quotient/remainder, and
 residual. Direction-by-direction displacement, captures, reverse sampling,
 source edits, deliberately corrupted counts, a deliberately deleted recovered row,
 and exports are assembled in cells.
@@ -106,7 +107,9 @@ read-only adapter contract with 04, without hiding the incidence or reconstructi
 shared comparison report: an observed-domain pivot cannot discover an entirely
 missing row or column. The missing-row counterexample demonstrates the difference
 between an absent occurrence, a retained zero, and a nonzero residual. The
-product-domain recipe also appears in 07, 10, and 11. The shared captured inspector
+product-domain recipe is now shared with 07 through `Product`; 10 and 11 remain
+candidate consumers. It hides ordinal grid/binding assembly while exposing source
+roles, multiplicity, and cost. Pixel and line keys stay explicit attributes. The shared captured inspector
 now removes the manual point/line/pixel joins from `explain_pixel`; its output also
 retains read expressions and scoped driver references. The inverse formula and
 division checks remain visible mathematical choices. The

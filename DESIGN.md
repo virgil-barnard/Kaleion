@@ -9,6 +9,7 @@ The module boundary is chosen around a hidden decision: expression representatio
 | `ir.py` | Immutable expression/operation definitions, definition identity, graph encoding | Versioned definitions with explicit dependencies; no rendering or numerical execution |
 | `api.py` | Typed construction vocabulary and operator syntax | Pure builders returning new definitions |
 | `grouping.py` | Grouping, member-order, and coverage declarations | Small immutable records; recipes build definitions without evaluation |
+| `products.py` | Named factors and current-slot addressing for finite products | Lazy Grid/Count/Bind recipe; explicit source reads, multiplicity, and new tuple occurrences |
 | `expressions.py` | Scalar/field interpretation, including explicit driver reads | Context, parameters, and an injected resolver produce a value or an error; no graph scheduling |
 | `tensor.py` | Exact integer rules, array validation, elementary numerical kernels | Checked arithmetic, broadcasting, gathering, and segment reduction |
 | `indexing.py` | Key representation, alignment, group domains, member ordering, rectangular address maps | Checked keys and addresses; no occurrence identity or placement policy |
@@ -32,6 +33,9 @@ coverage guards, and named placement shorten lessons 07 and 10. Operation-handle
 separation, weighted prefix sums, and case families remain planned. The
 [exploration workflow](docs/EXPLORATION_WORKFLOW.md) audits all eleven lessons;
 captured measurement and keyed-read inspection now serves lessons 04–05.
+Named products now serve 05 and 07. The [touch workspace study](docs/TOUCH_WORKSPACE.md)
+maps these choices to proposed controls, separating input gestures, semantic edits,
+exact previews, captured history, and rendering.
 
 ## Four different things an arrangement contains
 
@@ -49,6 +53,34 @@ For an evaluated arrangement with N items:
 Independent source constructors receive independent namespaces. Deriving placements or labels preserves item identity when appropriate. Gather/Tile/Concat can create new occurrence IDs while preserving source identities. Source identities must not be inferred from equal labels or coincident coordinates.
 
 Rectangular logical indices are destination slots after an axis gather or roll. To retain an original index as data, annotate it under a separate name before the operation. `F.index` is the current flat ordinal, not a persistent identity. Keyed bindings use explicit source/target keys rather than physical order.
+
+## Named products are authoring recipes
+
+`Product(point=points, line=lines)` supplies `.domain` and `.read(role, field)`.
+It composes existing Grid, total Count, Scalar, and Bind expressions. No evaluator
+operation or saved schema is added. Graph serialization retains the lowered
+definitions, names, and dependencies; the Python wrapper is not serialized.
+
+Factors are two or three collections/arrangements in declared order. The last
+role varies fastest. The domain has a new occurrence for each tuple of **current
+source slots**, unit values, named logical axes, and no inherited placement.
+Role names cannot shadow built-in fields. Reads align a role axis with source
+`F.index`; repeated labels and retained keys do not merge occurrences. Retain
+semantic keys/fields explicitly with `annotate` before reindexing or overwriting
+role axes. Reordering a factor changes the values read at each slot; it does not
+promise continuity of source-pair identity across that edit. An application needing
+that continuity must declare and preserve a different correspondence.
+
+An empty factor gives an empty rectangular product; the other role's declared
+axis still supplies zero groups for a reduction. Factors are not implicitly
+filtered incidences: call `select()` deliberately. Geometry, predicates, weights,
+retained measurement keys, and expected bins remain separate choices.
+
+Product cost remains the product of factor sizes, bounded by the existing
+evaluator item limit. Source total counts establish symbolic extents and retain
+ordinary evidence; this is not a sparse join or a faster tensor kernel. A future
+size/shape query or product execution strategy needs its own demonstrated contract.
+The [authoring guide](docs/AUTHORING.md) records migration and examples.
 
 ## Snapshot ownership
 

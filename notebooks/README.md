@@ -41,6 +41,12 @@ kernel so `from kaleion import Inspection` uses the new module.
 
 ## Install and launch
 
+Lessons 05 and 07 now use `Product` to name their source roles and read source
+fields. Restart the kernel after updating so the new public import is available.
+The [authoring guide](../docs/AUTHORING.md#name-the-roles-in-a-product) explains
+slot versus semantic keys. The [touch study](../docs/TOUCH_WORKSPACE.md) uses the
+same sum/rank construction to test possible controls outside a notebook.
+
 From the repository root on WSL/Linux/macOS:
 
 ```sh

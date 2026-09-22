@@ -110,8 +110,9 @@ general identity in these lessons has a separate argument with stated assumption
 
 ## Remaining experiments
 
-1. Extend the comparison to layer packing with a weighted prefix recipe, then
-   shorten pair-domain construction. The strict-rank recipe is already exercised
+1. Extend the comparison to layer packing with a weighted prefix recipe. Named
+   `Product` roles now shorten pair-domain declarations in 05 and 07; next test
+   reordered canonical representatives in 10. The strict-rank recipe is already exercised
    in sum stacking and Hermitian partitions. Preserve their keys and evidence.
 2. Apply the delivered captured inspector to further contributor examples. The
    tests already include zero groups, signed weights, ranks, copied measurements,
@@ -126,6 +127,12 @@ general identity in these lessons has a separate argument with stated assumption
 
 These are candidates for review, not missing prerequisites for continuing lessons.
 A convenience operation should first make at least two real constructions clearer.
+
+The [touch workspace study](../TOUCH_WORKSPACE.md) makes the proposed UI choices
+reviewable using captured equal-sum examples. It separates preview/commit, case
+selection/replay, zeros/missing keys, and overlapping/distinct occurrences. Its
+two-case menus do not establish general novice authoring: the next UI experiment
+must let someone compose a new relation and save/reopen that declaration.
 
 The core audit sharpens the explanation requirement: definition dependencies are
 already recorded, but a driven snapshot's direct parents currently name the target
