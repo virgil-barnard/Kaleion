@@ -53,6 +53,13 @@ an ordering rule. Creating a lens lowers the selected native key to an existing
 predicate while preserving the original universe. Formula editing owns syntax
 and context choices separately from compilation and numerical execution.
 
+The client now isolates unfinished-editor lifetime in `drafts.js`: browsing can
+park and resume the same controls without changing their source or losing local
+undo. A draft is tab-local view state; only the existing revisioned preview/apply
+boundary changes captured history. The [UI design study](docs/UI_DESIGN_STUDY.md)
+provides evidence-based review questions and testable interaction hypotheses;
+these presentation decisions introduce no core primitive or saved-format change.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:

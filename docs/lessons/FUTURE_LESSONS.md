@@ -54,6 +54,9 @@ explicit tie breakers. Next expose coverage requirements and guarded owner
 adoption, using the shared `[0,1,2]` candidate-count fixture before the Hermitian
 construction. Full-lesson UI coverage and new-user trials remain
 future work; its coverage matrix distinguishes editor gaps from backend gaps.
+The [UI design study](../UI_DESIGN_STUDY.md) now supplies the quality rubric and
+transfer tasks. Its first iteration preserves drafts through inspection; use
+that same loop for coverage witnesses before adding another interaction pattern.
 Before adding more abstraction, compare weighted prefixes in 06, case-family evidence in 08, and coordinated
 replay in 11. The inspector does not yet explain scalar/positional reads or nested
 bindings within binding keys/reads; future lessons should name these gaps explicitly.

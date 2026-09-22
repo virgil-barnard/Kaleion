@@ -10,6 +10,12 @@ for one selected part. The same field-key control serves group selection,
 measurement, and explicit member order. Next test coverage requirements and
 guarded owner adoption; physical touch usability remains untested.
 
+The [UI design study](../UI_DESIGN_STUDY.md) evaluates these controls through
+direct manipulation, reusable instruments, notation tradeoffs, and accessibility
+guidance. It supplies cross-lesson acceptance tasks and a human-observation plan.
+Its first changes preserve drafts through inspection and repair local feedback
+and keyboard focus; passing browser checks does not establish novice usability.
+
 Lessons [09](09_norm_fibers.md) and [10](10_hermitian_partitions.md) extend the
 [earlier review evidence](REVIEW_NOTES.md). These are tested authoring needs and
 proposed UI capabilities. The first four authoring choices are now implemented

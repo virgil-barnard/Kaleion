@@ -52,6 +52,10 @@ Tap part of a compact formula to edit it. The same expressions, grouping choices
 and keyed reads construct additive stacks and modular incidences, with exact
 previews, save/open, and captured undo/redo. Group browsing is read-only; creating
 a lens or measuring its groups is an explicit construction.
+An unfinished draft now survives a detour to inspect another object: resume its
+original formula and grouping choices, then preview again. The
+[UI design study](docs/UI_DESIGN_STUDY.md) provides research, a practical review
+rubric, and cross-lesson testing plans for the evolving interface.
 It is an experimental authoring subset; the guide maps the remaining work across
 all eleven lessons. No lesson-specific tools or new core operations are added.
 

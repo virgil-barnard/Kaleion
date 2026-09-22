@@ -21,7 +21,10 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   using existing captured history. Shared group selection now distinguishes
   candidates from incident members; compact formulas edit one part at a time.
   One internal axis-domain helper is shared by captured queries and reductions;
-  no evaluator primitive or public API change is needed. Explicit coverage
+  no evaluator primitive or public API change is needed. The
+  [UI design study](UI_DESIGN_STUDY.md) adds a research-backed review rubric and
+  a tested edit–inspect–return loop: tab-local drafts retain their source and
+  local undo, with current feedback and focus recovery. Explicit coverage
   adoption, full-lesson coverage, and reactive source edits remain next experiments.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
