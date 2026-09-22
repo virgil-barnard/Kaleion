@@ -11,6 +11,7 @@ const node=(tag,text,attrs={})=>{
 export function formatExpression(spec){
   if('field' in spec)return spec.field;
   if('integer' in spec)return spec.integer;
+  if('tuple' in spec)return `(${spec.tuple.map(formatExpression).join(', ')})`;
   if('op' in spec)return `(${formatExpression(spec.args[0])} ${symbols[spec.op]} ${formatExpression(spec.args[1])})`;
   const r=spec.read;
   return `read ${r.object}(${formatExpression(r.value)}; source ${formatExpression(r.key)} ↔ target ${formatExpression(r.on)})`;
@@ -85,6 +86,11 @@ export function expressionEditor(initial,fields,sources=[]){
         parent.append(token(symbols[spec.op],path,`Edit operation ${symbols[spec.op]}`));
         render(spec.args[1],[...path,'args',1],parent);parent.append(node('span',')'));return;
       }
+      if('tuple' in spec){
+        parent.append(token('(',path,'Edit key tuple'));
+        spec.tuple.forEach((part,i)=>{if(i)parent.append(node('span',','));render(part,[...path,'tuple',i],parent)});
+        parent.append(node('span',')'));return;
+      }
       const r=spec.read;
       parent.append(token(`read ${r.object}`,path,`Edit keyed read from ${r.object}`),node('span','('));
       render(r.value,[...path,'read','value'],parent);parent.append(node('span','; source'));
@@ -99,14 +105,15 @@ export function expressionEditor(initial,fields,sources=[]){
     const heading=node('div',undefined,{class:'row'}),done=node('button','Done',{type:'button','data-expression-done':''});
     heading.append(node('strong','Edit selected part'),done);sheet.append(heading);
     done.onclick=close;
-    const kind='field'in spec?'Field':'integer'in spec?'Number':'op'in spec?'Operation':'Keyed read';
-    const type=labeled('Replace with',optionList(['Field','Number','Operation','Keyed read'],kind,'Expression type'));
+    const kind='field'in spec?'Field':'integer'in spec?'Number':'op'in spec?'Operation':'tuple'in spec?'Key tuple':'Keyed read';
+    const type=labeled('Replace with',optionList(['Field','Number','Operation','Key tuple','Keyed read'],kind,'Expression type'));
     type.onchange=()=>{
       if(selected.length>30){sheet.append(node('p','Expression nesting exceeds the editor budget.'));type.value=kind;return}
       let replacement;
       if(type.value==='Field')replacement=field(available[0]||'value');
       else if(type.value==='Number')replacement=number(0);
       else if(type.value==='Operation')replacement={op:'+',args:[clone(at(tree,selected)),number(1)]};
+      else if(type.value==='Key tuple')replacement={tuple:[clone(at(tree,selected)),field(available[0]||'value')]};
       else{
         if(!sources.length){sheet.append(node('p','Create a source or measurement to read first.'));type.value=kind;return}
         replacement={read:{object:sources[0].name,on:field(available.includes('key')?'key':available[0]),key:field('key'),value:field('value')}};
@@ -129,6 +136,13 @@ export function expressionEditor(initial,fields,sources=[]){
         const keep=node('button',label,{type:'button'});keep.onclick=()=>{update(at(tree,selected).args[index]);renderSheet();focusEditor()};row.append(keep);
       }
       sheet.append(row);
+    }else if(kind==='Key tuple'){
+      sheet.append(node('p','Match components in the same order on both sides of a read. Each component is a scalar field or expression; tap it to edit.',{class:'help'}));
+      const row=node('div',undefined,{class:'row'}),add=node('button','Add component',{type:'button'}),remove=node('button','Remove last component',{type:'button'});
+      add.disabled=spec.tuple.length>=8;remove.disabled=spec.tuple.length<=2;
+      add.onclick=()=>{update({tuple:[...at(tree,selected).tuple,field(available[0]||'value')]});renderSheet();focusEditor('Expression type')};
+      remove.onclick=()=>{update({tuple:at(tree,selected).tuple.slice(0,-1)});renderSheet();focusEditor('Expression type')};
+      row.append(add,remove);sheet.append(row);
     }else{
       const source=labeled('Read from',optionList(sources.map(s=>s.name),spec.read.object,'Read from'));
       source.onchange=()=>{update({read:{...at(tree,selected).read,object:source.value}});renderSheet();focusEditor('Read from')};

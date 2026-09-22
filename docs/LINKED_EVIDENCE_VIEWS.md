@@ -146,10 +146,12 @@ not arbitrary pinned canvases or synchronized multi-root replay. Contributor
 selection currently explains one measurement at a time; it does not create a
 new lens. Unlinked context points never invent a correspondence.
 
-**Next experiment:** use the same views for a Radon reconstruction pixel, its
-line-count weights, and those counts' source pixels. Expose the existing weight
-read receipts before inventing another graph-navigation object. Composite keyed
-read editing is the remaining authoring gap for that transfer. In parallel,
-use the design study's human tasks to compare stacked cards with a compact sheet
-that keeps the selected result visible while inspecting its evidence. Exact
-parameter-case controls must remain distinct from motion replay in later work.
+The [weighted-evidence follow-up](WEIGHTED_EVIDENCE.md) now implements the Radon
+transfer: ordered key tuples, contribution-specific weight reads, source-field
+reads, and return navigation preserving selections and cameras. One shared
+receipt module replaces the previous inline controller. The compact/complete
+receipt distinction and read-only capture contract above remain unchanged.
+
+**Next experiment:** exact parameter-case controls, kept distinct from motion
+replay. Continue comparing stacked cards with a compact sheet using the design
+study's human tasks; phone navigation remains an open usability question.

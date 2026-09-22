@@ -215,6 +215,12 @@ the zero-contributor source universe. `web/views.js` shares projection policy;
 `web/evidence.js` owns two-card selection and independent cameras. Coverage and
 receipt controllers supply explicit scoped links, with no lesson branching.
 These are studio adapters; no notebook helper count or core class changes.
+The [weighted-evidence follow-up](../WEIGHTED_EVIDENCE.md) extracts receipt
+presentation/navigation into `web/receipts.js`, keeping contribution weights,
+weight-expression reads, and source-field reads distinct. `evidence.js` adds
+view-state recall and forwards opaque selection context; `expressions.js` edits
+ordered tuples lowered to existing vector expressions. Radon reconstruction and
+signed sums share these controls; notebook function counts remain unchanged.
 
 Use the Parnas guidepost in [DESIGN.md](../../DESIGN.md): isolate decisions likely
 to change, rather than turning each stage of a lesson into a module. A viewer can

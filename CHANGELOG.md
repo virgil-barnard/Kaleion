@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add ordered key tuples to compact expression editing and extract shared receipt navigation. Follow a contribution's weight reads and copied source-field reads, then return to the earlier receipt, selected occurrences, and cameras. Construct a weighted Radon reconstruction and signed sums through the same controls, with explicit remainders and reversible measured placement. Preserve source value, weight, and driver-read distinctions; lower tuples to existing vector expressions with no core/schema/dependency change. Add a composite-modulus counterexample where exact division can still give an incorrect reconstruction.
+
 - Add shared linked evidence views for coverage, keyed drivers, and measurement contributors. Keep missing expected items and zero-measurement source universes visible; resolve earlier inputs by capture ID. Selection and independent cameras remain read-only. Share bounded display records and projection policy, with exact fields, complete contributor weights, saved evidence, and no core/schema/dependency changes. Validate coverage and quotient constructions through the same browser controls.
 
 - Add a shared coverage instrument with independently chosen expected keys, captured missing/multiple/outside witnesses, and inspection/return controls. Adopt a sole match as a new field with live graph guards, retaining expected labels, identity, keys, and placement. Reuse the assigned field as a motion driver. Existing Count/Sum/Bind/Require/Annotate operations suffice; no core API or saved-schema change. Validate modular/additive browser tasks and a restricted Hermitian spread, including removal of the polar.

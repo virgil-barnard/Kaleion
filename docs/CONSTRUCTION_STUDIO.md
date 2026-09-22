@@ -2,7 +2,9 @@
 
 **Status:** working experimental authoring study. It composes new finite
 constructions in the Python core; it does not choose from prerecorded lessons.
-It is deliberately outside the installed core API. All eleven lessons remain
+It is deliberately outside the installed core API. The latest
+[weighted-evidence investigation](WEIGHTED_EVIDENCE.md) constructs a finite Radon
+reconstruction through the shared controls and follows its nested measurements. All eleven lessons remain
 the coverage target, not a claim about what this first editor can author.
 
 The design hypothesis is that a person chooses **what they are acting on**, then
@@ -301,7 +303,7 @@ Most existing mathematics is already expressible in the Python core.
 | 01 · Discovery workbench | Sources, relations, grouped counts, driver placement, inspect/undo | Spiral/Young/sequence constructor sheets, constructor binding, structural-field vocabulary, roll/gather/tile/pad, exact case controls |
 | 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements | Composite Boolean lenses, union/intersection/coverage comparisons, 3D editor/camera, packed placement and explanatory annotations |
 | 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection | Three-component placements and parameter-case editing; keyed comparisons with independent expected domains |
-| 05 · Finite Radon | Modular incidence, products, sums and keyed reads | Composite-key read editor, finite-field/residue assumptions, inverse checks, reconstruction comparison |
+| 05 · Finite Radon | Size-three weighted reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, and nested evidence navigation | Explicit arithmetic assumptions, independently declared comparison reports, case controls, and complete notebook parity |
 | 06 · Young layers | Sources can be filtered grids; count/rank/read/placement | Young constructor and conjugation controls; efficient weighted prefix remains a **backend contract gap** |
 | 07 · Additive structure | Constructed from blank inputs, including group selection, strict ranks, and compact expressions | Bin-domain convenience, equal-sum quadruples and energy narration |
 | 08 · Ehrhart counts | Finite sources, predicates, count and measurement-driven positions | Exact case-family editor; measured-family evidence remains a **backend contract gap** |
@@ -326,8 +328,8 @@ remain future work.
 
 Count and Sum support multiple retained field keys. Rank offers multiple member
 order fields in chosen order and one unique item key. Keyed reads accept structured
-expressions in target-key, source-key, and value contexts; vector/composite read
-keys still need an editor. Long formulas wrap rather than introduce a new row of
+expressions in target-key, source-key, and value contexts. **Key tuple** edits
+2–8 ordered scalar components for composite reads. Long formulas wrap rather than introduce a new row of
 controls at every nesting level, but named subexpressions and reusable formulas
 are still absent. The declaration drawer retains the exact transport record.
 No user trial or physical tablet test has established novice usability.
@@ -335,8 +337,10 @@ No user trial or physical tablet test has established novice usability.
 The [paired-view experiment](LINKED_EVIDENCE_VIEWS.md) now keeps an expected item
 visible with no candidate beside it, and a quotient measurement visible with its
 source and contributors. Captured keyed reads can refer to earlier versions.
-**Next useful experiment:** a Radon reconstruction's weight-read chain, using
-those same views and adding composite keyed-read editing where needed.
+The [Radon transfer](WEIGHTED_EVIDENCE.md) now adds weight-read and copied-field
+navigation with a return path, plus composite key editing. **Next useful
+experiment:** exact parameter-case controls, tested by changing the modulus and
+by growing a lattice arrangement; replay time must remain a separate control.
 
 ## Validation and reproduction
 
@@ -345,6 +349,7 @@ python3 -m unittest discover -s tests -p test_studio.py -v
 python3 -m unittest discover -s tests -p test_studio_groups.py -v
 python3 -m unittest discover -s tests -p test_studio_coverage.py -v
 python3 -m unittest discover -s tests -p test_studio_views.py -v
+python3 -m unittest discover -s tests -p test_studio_weighted.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -362,7 +367,7 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **156 tests**, and the discovery example
+The complete required suite passes **160 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -404,3 +409,11 @@ quotient evidence, absent candidates, zero contributors, exact weights, earlier
 driver versions, independent cameras, pan cancellation, keyboard inspection, and
 read-only history. See the [linked-view guide](LINKED_EVIDENCE_VIEWS.md) for the
 construction, module decisions, validation evidence, and remaining layout limits.
+
+Four weighted-evidence contracts now check prime Radon cases, a composite-modulus
+counterexample, exact ordered keys, transformed signed weights, and a reopened
+measurement/weight/source-field inspection chain without graph execution. The
+expanded Chromium gate constructs the size-three reconstruction through controls,
+checks division remainders, drives reversible placement, follows nested evidence,
+restores camera/selection on return, and transfers to signed weights. Ordered
+key failure, parked tuple edits, keyboard navigation, and phone layout also pass.

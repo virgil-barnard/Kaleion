@@ -5,6 +5,7 @@ import {draftSession} from './drafts.js';
 import {coverageInspector} from './coverage.js';
 import {viewPositions} from './views.js';
 import {linkedViews} from './evidence.js';
+import {receiptInspector} from './receipts.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -21,13 +22,9 @@ let camera={x:0,y:0,zoom:1}, dots=[], labelField='value', objectTabsKey='', labe
 const draft=draftSession();
 const linked=linkedViews($('linked-views'),{
   load:capture=>request('capture',{capture}),
-  inspect:ref=>run(async()=>{
-    const receipt=await request('inspect-driver',{ref});showReceipt(receipt,'Value',receiptBack);
-    $('panel').scrollIntoView({block:'nearest'});
-  }),
   onVisibility:shown=>{$('single-view').hidden=shown;$('canvas-tools').hidden=shown;$('scope').textContent=shown?'Read-only captured evidence · close to construct':'Hold for construction tools';if(shown)status('Browsing captured evidence. Selection and view changes do not alter your construction.')}
 });
-let receiptBack=null;
+const receipts=receiptInspector({panel:$('panel'),run,query:request,linked,beforeShow:parkDraft});
 const object = () => state.objects.find(o=>o.name===active);
 const displayed = () => preview?.objects.find(o=>o.name===preview.name) || object();
 const selectedGroup=()=>groupReport?.revision===state.revision&&groupReport.name===active?groupReport.groups[groupChoice]:null;
@@ -239,8 +236,9 @@ function coveragePanel(){
     clearLink:()=>linked.close(),
     chooseLink:index=>linked.choose(index,false),
     link:async(report,rows,index,onChoose)=>{
-      receiptBack=()=>{$('panel').replaceChildren(box);$('view-coverage').focus({preventScroll:true})};
+      const back=()=>{$('panel').replaceChildren(box);$('view-coverage').focus({preventScroll:true})};
       await linked.open({title:'Expected items and their matches',
+        inspect:ref=>run(async()=>showReceipt(await request('inspect-driver',{ref}),'Value',back)),
         detail:'Links follow the declared coverage keys. Faint points give context; a missing match does not create a source point.',
         left:{capture:report.expected_capture,label:'Expected items'},
         right:{capture:report.capture,label:'Candidates'},index,onChoose,
@@ -357,39 +355,7 @@ for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.curren
 function explain(){run(async()=>{
   const receipt=await request('inspect',{name:active,ref:selectedPoint});showReceipt(receipt);
 })}
-function showReceipt(receipt,heading='Value',back=null){
-  parkDraft();receiptBack=back;
-  const panel=$('panel');panel.replaceChildren(el('span','CAPTURED EVIDENCE',{class:'eyebrow'}),el('h2',`${heading} ${receipt.item.value}`));
-  if(back){const button=el('button','Back to coverage',{type:'button'});button.onclick=back;panel.append(button);button.focus({preventScroll:true})}
-  panel.append(el('pre',JSON.stringify(receipt.item.fields,null,2)));
-  const m=receipt.measurement;
-  if(m.unavailable)panel.append(el('p','No active measurement receipt at this occurrence.',{class:'quiet'}));
-  else{
-    panel.append(el('h2',`${m.reducer} · ${m.contributor_count} contributors`),el('p',m.formula));
-    const together=el('button','View measurement and contributors',{type:'button',id:'view-contributors'});
-    together.onclick=()=>run(async()=>{
-      const evidence=await request('contributors',{ref:receipt.item.ref}),full=evidence.measurement;
-      await linked.open({title:'A measurement and its contributors',
-        detail:`${full.reducer} · ${full.contributor_count} contributors in a candidate population of ${full.population}. Weights and values are distinct. Faint points are context only.`,
-        left:{capture:receipt.item.ref[0],label:'Measurement'},right:{capture:evidence.universe,label:'Contributors'},
-        links:[{label:`Key ${full.key.join(', ')} · value ${receipt.item.value}`,
-          left:[{ref:receipt.item.ref,note:`${full.contributor_count} contributors`}],
-          right:full.contributors.map(c=>({ref:c.item.ref,note:`weight ${c.weight}`})),
-          emptyRight:'Zero contributors. The captured source remains visible; its faint points did not contribute.'}]});
-    });panel.append(together);
-    for(const c of m.contributors)panel.append(el('p',`Value ${c.item.value} · weight ${c.weight}`,{class:'receipt-item'}));
-    if(m.truncated)panel.append(el('p','Showing the first 32 contributors.'));
-  }
-  if(Array.isArray(receipt.bindings))for(const b of receipt.bindings){const button=el('button',`Follow keyed read · ${b.value}`);button.onclick=()=>run(async()=>{
-    // The driver may be an earlier captured version. Request by scoped reference,
-    // never guess it from a current object's equal labels or screen location.
-    const driver=await request('inspect-driver',{ref:b.driver});showReceipt(driver,'Driver value',back);
-    await linked.open({title:'An item and its keyed driver',detail:`Key ${b.key.join(', ')} · read ${b.read} = ${b.value}. This is the captured read, including an earlier input version when needed.`,
-      left:{capture:receipt.item.ref[0],label:'Driven item'},right:{capture:b.driver[0],label:'Driver'},
-      links:[{label:`Key ${b.key.join(', ')}`,left:[{ref:receipt.item.ref,note:'Inspected output'}],right:[{ref:b.driver,note:`Read ${b.value}`}]}]});
-  });panel.append(button)}
-  const details=el('details'),summary=el('summary','Scoped references and receipt'),pre=el('pre',JSON.stringify(receipt,null,2));details.append(summary,pre);panel.append(details);
-}
+function showReceipt(receipt,heading='Value',back=null){receipts.show(receipt,{heading,back:back?{label:'Back to coverage',restore:back}:null})}
 $('save').onclick=()=>run(async()=>{
   const response=await fetch('/api/export');const text=await response.text();
   const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=el('a',undefined,{href:url,download:'kaleion-studio.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved captured definitions, evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);

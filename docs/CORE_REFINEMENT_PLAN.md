@@ -31,8 +31,11 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   the same contract. [Linked evidence views](LINKED_EVIDENCE_VIEWS.md) now keep
   coverage witnesses, keyed drivers, and measurement contributors together through
   explicit scoped references. Coverage and quotient browser tasks exercise the
-  same renderer, with zero sources and earlier inputs intact. Radon weight-read
-  navigation, full-lesson coverage, and reactive source edits remain experiments.
+  same renderer, with zero sources and earlier inputs intact. [Weighted evidence
+  navigation](WEIGHTED_EVIDENCE.md) now adds ordered key tuples and follows Radon
+  contributions through weight and source-field reads, retaining return views.
+  Exact parameter-case controls, full-lesson coverage, and reactive source edits
+  remain experiments.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
   their original scopes. `Incidence.universe` exposes the inspected collection or
