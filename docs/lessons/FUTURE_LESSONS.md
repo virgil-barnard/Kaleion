@@ -48,9 +48,11 @@ against reordered canonical representatives in 10 before extending it. The bound
 [touch study and control plan](../TOUCH_WORKSPACE.md) starts with the equal-sum
 construction. The [construction studio](../CONSTRUCTION_STUDIO.md) now authors
 new additive and modular constructions through the same controls and adapter,
-with save/reopen and captured history. Next test declared group selection and a
-compact expression surface across sum and modular-line fibers, then expose
-Hermitian coverage witnesses. Full-lesson UI coverage and new-user trials remain
+with save/reopen and captured history. Declared group selection and compact
+formula editing now serve sum and modular-line fibers, including zero groups and
+explicit tie breakers. Next expose coverage requirements and guarded owner
+adoption, using the shared `[0,1,2]` candidate-count fixture before the Hermitian
+construction. Full-lesson UI coverage and new-user trials remain
 future work; its coverage matrix distinguishes editor gaps from backend gaps.
 Before adding more abstraction, compare weighted prefixes in 06, case-family evidence in 08, and coordinated
 replay in 11. The inspector does not yet explain scalar/positional reads or nested

@@ -72,6 +72,17 @@ def group_keys(columns, length, *, retained_shape=None):
     return keys, align(keys, rows)
 
 
+def retained_axes_shape(axes, shape, fields):
+    """Declared axis fields retain their Cartesian domain, even on empty input.
+
+    A non-axis expression/field uses observed keys. Callers pass None for an
+    expression that is not a direct field read; no expression evaluation lives here.
+    """
+    if fields and shape is not None and all(field in axes for field in fields):
+        return tuple(shape[axes.index(field)] for field in fields)
+    return None
+
+
 def ordered_groups(groups, order):
     """Strict lexicographic member order and zero-based ranks, in O(N log N).
 

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add shared captured group selection and compact formula editing to the construction studio. Browse declared keys without graph execution or history changes; retain zero groups and distinguish candidates from incident members. Create a group lens explicitly, preserving its universe. One field-key control serves selection, reductions, and lexicographic Rank order. Tap formula parts to edit structured expressions, with local undo and separate keyed-read contexts. Share the existing retained-axis policy rather than add a core primitive; validate additive, modular, empty, tied, stale, and phone-width cases.
+
 - Add an experimental construction studio that starts from a blank canvas: contextual hold menus, four expression-card types, explicit grouped measurements and keyed placement, exact preview/apply, inspection, save/open, and captured undo/redo. One semantic command adapter serves additive and modular constructions without lesson-specific actions, Python source evaluation, new core APIs, or dependencies. Document all-lesson coverage gaps and independent adapter/browser validation.
 
 - Add a lazy `Product` authoring recipe with named factor roles and explicit source-field reads. Lessons 05 and 07 use it without new evaluator operations or schema changes. Repeated labels, empty factors, exact integers, captured reads, and reverse motion have independent contract tests.

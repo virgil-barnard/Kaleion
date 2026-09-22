@@ -18,9 +18,11 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
 - **UI contract experiment:** the [construction studio](CONSTRUCTION_STUDIO.md)
   constructs additive and modular investigations from blank inputs with one
   contextual action model and a language-neutral adapter. It retains exact previews
-  using existing captured history. No evaluator primitive or core refactor was
-  needed. Full-lesson coverage, grouped selection, compact expression editing,
-  and reactive source edits remain explicit next experiments.
+  using existing captured history. Shared group selection now distinguishes
+  candidates from incident members; compact formulas edit one part at a time.
+  One internal axis-domain helper is shared by captured queries and reductions;
+  no evaluator primitive or public API change is needed. Explicit coverage
+  adoption, full-lesson coverage, and reactive source edits remain next experiments.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
   their original scopes. `Incidence.universe` exposes the inspected collection or

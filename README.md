@@ -46,9 +46,12 @@ The images are static previews; selected motion frames show presentation states.
 The [construction studio](docs/CONSTRUCTION_STUDIO.md) now starts from a blank
 canvas. With the environment below active, run `python3 -m examples.studio` and
 open **http://127.0.0.1:8765**. Hold the selected object for contextual tools;
-switch to Occurrences to follow a point's measurement contributors. The same
-expression cards, grouping choices, and keyed reads construct additive stacks
-and modular incidences, with exact previews, save/open, and captured undo/redo.
+switch to Occurrences to follow a point's measurement contributors. **Groups**
+selects fibers by declared keys, including groups with zero incident members.
+Tap part of a compact formula to edit it. The same expressions, grouping choices,
+and keyed reads construct additive stacks and modular incidences, with exact
+previews, save/open, and captured undo/redo. Group browsing is read-only; creating
+a lens or measuring its groups is an explicit construction.
 It is an experimental authoring subset; the guide maps the remaining work across
 all eleven lessons. No lesson-specific tools or new core operations are added.
 

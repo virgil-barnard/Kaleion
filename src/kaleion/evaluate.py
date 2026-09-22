@@ -503,13 +503,10 @@ class Evaluator:
         a = node.attributes
         source = incidence.source
         groups = a["groups"]
-        retained_shape = None
-        if groups and source.shape is not None and all(
-            e.op == "field" and e.args[0] in source.axes for _, e in groups
-        ):
-            retained_shape = tuple(
-                source.shape[source.axes.index(e.args[0])] for _, e in groups
-            )
+        retained_shape = indexing.retained_axes_shape(
+            source.axes, source.shape,
+            [e.args[0] if e.op == "field" else None for _, e in groups],
+        )
         keys, inverse = indexing.group_keys(
             [self.expr(e, source) for _, e in groups], len(source), retained_shape=retained_shape
         )

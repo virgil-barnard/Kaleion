@@ -136,8 +136,13 @@ two-case menus do not establish general novice authoring. The new
 relations, grouped measurements, and keyed placements through one command adapter.
 Browser checks construct additive and modular examples from a blank workspace,
 then save/reopen captures. This establishes a shared mechanism, not novice
-usability or complete lesson coverage. The next experiment is explicit group
-selection and more compact expression editing across unrelated fibers.
+usability or complete lesson coverage. Shared group selection now uses captured
+membership across additive/modular fibers and zero/one/two assignment witnesses.
+It does not evaluate the graph or add measurements. Compact formulas edit one
+subexpression at a time, with separate source/target contexts for keyed reads.
+Seven group contracts and the browser gate exercise zero groups, tied order,
+native keys, stale selection, and phone-width controls. Next expose explicit
+coverage requirements with an independent expected domain and guarded adoption.
 
 The core audit sharpens the explanation requirement: definition dependencies are
 already recorded, but a driven snapshot's direct parents currently name the target

@@ -94,6 +94,7 @@ aside p {
   padding:8px 10px}
 .caption {
   display:flex;
+  flex-wrap:wrap;
   justify-content:space-between;
   align-items:baseline;
   gap:12px;
@@ -150,24 +151,12 @@ label>input,label>select {
   font-weight:400}
 select[multiple] {
   min-height:92px}
-.expression {
-  border-left:2px solid #bad0bd;
-  margin:7px 0;
-  padding-left:10px;
-  min-width:0}
 .expression .row>* {
   min-width:0;
   flex:1}
 .expression select {
   width:100%;
   font-size:13px}
-.expression .children {
-  padding-left:2px}
-.read-label {
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-top:7px}
 .form-actions {
   display:flex;
   flex-wrap:wrap;
@@ -273,6 +262,70 @@ svg text {
   fill:#dce6dc}
 pre {
   background:#142018}
+}
+/* One readable formula; only the selected subtree opens an inspector. */
 .expression {
-  border-color:#54765b}
+  min-width:0;
+  padding:0;
+  margin:10px 0 18px;
+}
+.formula {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:4px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  font-family:Georgia,serif;
+  font-size:19px;
+  line-height:1.6;
+}
+.formula-token {
+  border-color:transparent;
+  background:transparent;
+  font-family:inherit;
+  font-size:inherit;
+  padding:5px 7px;
+  overflow-wrap:anywhere;
+  min-width:32px;
+}
+.formula-token:hover {
+  background:#719e751a;
+}
+.formula-tools,.key-chips {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:6px 0;
+}
+.formula-tools button {
+  font-size:11px;
+  color:var(--muted);
+  border-color:transparent;
+  padding:6px;
+}
+.expression-sheet {
+  padding:12px;
+  margin-top:6px;
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+.expression-sheet>.row {
+  justify-content:space-between;
+}
+.expression-sheet strong {
+  font-size:12px;
+}
+.field-keys {
+  margin:12px 0;
+}
+.key-chips button {
+  border-radius:22px;
+  padding:6px 12px;
+  font-size:13px;
+}
+.group-results {
+  margin-top:18px;
+  border-top:1px solid var(--line);
 }
