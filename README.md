@@ -64,6 +64,9 @@ walks through constructing, breaking, inspecting, and reusing an assignment.
 [Linked evidence views](docs/LINKED_EVIDENCE_VIEWS.md) keep expected items beside
 candidate matches, or a measurement beside its contributors. The same controls
 follow earlier captured drivers and retain source context for zero measurements.
+[Weighted evidence navigation](docs/WEIGHTED_EVIDENCE.md) adds ordered key tuples
+and a return path from a contribution's weight to the measurements and source
+items behind it. A Radon reconstruction and signed sums use the same controls.
 It is an experimental authoring subset; the guide maps the remaining work across
 all eleven lessons. No lesson-specific tools or new core operations are added.
 

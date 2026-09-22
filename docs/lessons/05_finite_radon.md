@@ -67,6 +67,21 @@ Exports go to `build/notebooks/finite-radon/`: five offline HTML figures, constr
 motion, corrupted-measurement, and missing-domain workspaces, finite checks, and
 `pixel-explanation.json`.
 
+## Transfer to the construction studio
+
+The [weighted-evidence investigation](../WEIGHTED_EVIDENCE.md) constructs a
+size-three, integer-valued variant through the shared UI. Ordered tuple keys
+connect line sums and backprojection; recovered/remainder attributes keep exact
+checks visible. A measurement-driven placement uses those recovered values, and
+receipt navigation follows a weighted contribution through its actual line sum
+and the copied image-field read. Returning preserves selection and camera.
+
+The accompanying offline case modulo four also shows a wrong reconstructed
+value with zero division remainder. Integrality alone does not certify the
+reconstruction; the required incidence structure remains an assumption. This
+transfer does not change the notebook or claim full UI parity with its case
+editing, staged 3D animation, comparisons, and corruption investigation.
+
 ## Functions and authoring scaffolding
 
 The [notebook](../../notebooks/05_finite_radon.ipynb) defines four top-level functions.
@@ -91,6 +106,12 @@ both sides and computes exact residuals only for shared keys. The public
 exploration use Plotly directly. Public `Inspection.find`, `measurement`,
 `bindings`, and `item` supply the saved joins. A backprojection contributor's
 weight is the line count it read, distinct from that pair occurrence's label.
+
+**Studio scaffolding, separate from notebook counts.** `web/expressions.js` edits
+composite keys; the adapter lowers them to `vector`; `web/receipts.js` presents
+weight and field-read receipts; `web/evidence.js` presents/restores paired views.
+All numerical evidence comes from the existing captured inspector. The browser
+investigation needs no Radon-specific UI function or core subclass.
 
 **Inline scaffolding.** The notebook defines the binary image, a point–line
 product domain using `Product(point=pixels, line=lines)` and its source-field

@@ -22,14 +22,16 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
    if(path.length)await card.locator(`[data-path="${path.join('/')}"]`).click();
    else await card.locator('[data-edit-root]').click();
    const sheet=card.locator('.expression-sheet'),type=sheet.getByLabel('Expression type');
-   const desired='field'in spec?'Field':'integer'in spec?'Number':spec.op?'Operation':'Keyed read';
+   const desired='field'in spec?'Field':'integer'in spec?'Number':spec.op?'Operation':spec.tuple?'Key tuple':'Keyed read';
    if(await type.inputValue()!==desired)await type.selectOption(desired);
-   if(desired==='Field')await sheet.getByLabel('Field',{exact:true}).selectOption(spec.field);
+   if(desired==='Field'){assert.ok((await sheet.getByLabel('Field',{exact:true}).locator('option').allTextContents()).includes(spec.field),`Unavailable field ${spec.field} at ${path.join('/')}`);await sheet.getByLabel('Field',{exact:true}).selectOption(spec.field);}
    else if(desired==='Number')await sheet.getByLabel('Exact integer',{exact:true}).fill(String(spec.integer));
    else if(desired==='Operation'){
      await sheet.getByLabel('Operation',{exact:true}).selectOption(spec.op);
      await expression(card,spec.args[0],[...path,'args',0]);
      await expression(card,spec.args[1],[...path,'args',1]);
+   }else if(desired==='Key tuple'){
+     for(let i=0;i<spec.tuple.length;i++)await expression(card,spec.tuple[i],[...path,'tuple',i]);
    }else{
      await sheet.getByLabel('Read from',{exact:true}).selectOption(spec.read.object);
      await expression(card,spec.read.on,[...path,'read','on']);
@@ -342,7 +344,87 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeEarlier);
  await page.locator('#close-linked').click();await page.locator('#undo').click();await idle();assert.equal(await page.locator('#linked-views').isVisible(),false);await page.locator('#redo').click();await idle();
  const linkedChecks={coverageSelection:true,missingExpectedItem:true,independentCameras:true,quotientContributors:true,zeroSourceRetained:true,earlierDriver:true,keyboardInspection:true,phoneLayout:true,unchangedCapture:true};
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+
+ // Radon: compose ordered-key reads, then follow a contribution's weight to another sum.
+ await page.setViewportSize({width:1250,height:950});await page.locator('[data-mode="objects"]').click();
+ const tuple=(...fields)=>({tuple:fields.map(f)}),read=(object,on,key,value=f('value'))=>({read:{object,on,key,value}});
+ await tool('grid',true);await page.locator('#result-name').fill('Radon image');await page.locator('#grid-shape').fill('3, 3');await page.locator('#grid-axes').fill('u, v');await page.locator('#grid-axes').press('Tab');
+ await expression(cards().nth(0),op('*',f('u'),op('+',f('v'),n(1))));await apply();
+ await tool('place');await expression(cards().nth(0),f('u'));await expression(cards().nth(1),f('v'));await apply();
+ await tool('grid',true);await page.locator('#result-name').fill('Radon lines');await page.locator('#grid-shape').fill('4, 3');await page.locator('#grid-axes').fill('m, t');await page.locator('#grid-axes').press('Tab');await expression(cards().nth(0),n(0));await apply();
+ await tool('product');await page.locator('#result-name').fill('Radon pairs');
+ const roles=page.locator('#panel fieldset > label > input:not(#result-name)'),factors=page.locator('#panel fieldset > label > select'),copies=page.locator('#panel fieldset > div');
+ await roles.nth(0).fill('point');await roles.nth(1).fill('line');await factors.nth(0).selectOption('Radon image');await factors.nth(1).selectOption('Radon lines');
+ for(const field of ['u','v'])await copies.nth(0).locator(`input[value="${field}"]`).check();
+ for(const field of ['m','t'])await copies.nth(1).locator(`input[value="${field}"]`).check();await apply();
+ const onLine=op('or',op('and',op('<',f('line_m'),n(3)),op('=',op('%',op('-',op('-',f('point_v'),op('*',f('line_m'),f('point_u'))),f('line_t')),n(3)),n(0))),op('and',op('=',f('line_m'),n(3)),op('=',f('point_u'),f('line_t'))));
+ await tool('lens');await page.locator('#result-name').fill('Radon incidence');await expression(cards().nth(0),onLine);await apply();
+ await tool('measure');await page.locator('#result-name').fill('Radon counts');await page.locator('#reducer').selectOption('sum');await retain('line_m');await retain('line_t');await expression(cards().nth(0),f('point_value'));await apply();
+ assert.deepEqual(await values('Radon counts'),['3','6','9','8','5','5','7','7','4','0','6','12']);
+ await tool('place');await expression(cards().nth(0),f('line_m'));await expression(cards().nth(1),f('line_t'));await apply();
+ await select('Radon incidence');await tool('measure');await page.locator('#result-name').fill('Radon backprojection');await page.locator('#reducer').selectOption('sum');await retain('point_u');await retain('point_v');
+ const compositeRead=read('Radon counts',tuple('line_m','line_t'),tuple('line_m','line_t'));
+ await expression(cards().nth(0),compositeRead);
+ // Tuple edits preserve context, local undo, and a parked declaration.
+ await cards().nth(0).locator('[data-path="read/on"]').click();await cards().nth(0).getByRole('button',{name:'Add component',exact:true}).click();
+ assert.equal(JSON.parse(await page.locator('#declaration').textContent()).args.weight.read.on.tuple.length,3);
+ await cards().nth(0).getByRole('button',{name:'Remove last component',exact:true}).click();
+ await cards().nth(0).locator('[data-expression-done]').click();
+ const radonDraft=JSON.parse(await page.locator('#declaration').textContent());await select('Radon image');await page.locator('#resume-draft').click();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()),radonDraft);
+ // Swapping only the target key fails at the vertical family, rather than guessing.
+ await expression(cards().nth(0),tuple('line_t','line_m'),['read','on']);await cards().nth(0).locator('[data-expression-done]').click();
+ await page.locator('#preview').click();await idle();assert.equal(await page.locator('#apply').isEnabled(),false);
+ await cards().nth(0).locator('[data-expression-undo]').click();await cards().nth(0).locator('[data-expression-undo]').click();
+ assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()).args.weight,compositeRead);await apply();
+ assert.deepEqual(await values('Radon backprojection'),['18','18','18','21','24','27','24','30','36']);
+ await select('Radon counts');await tool('lens');await page.locator('#result-name').fill('Radon family');await expression(cards().nth(0),op('=',f('line_m'),n(0)));await apply();
+ await tool('measure');await page.locator('#result-name').fill('Radon total');await page.locator('#reducer').selectOption('sum');await expression(cards().nth(0),f('value'));await apply();assert.deepEqual(await values('Radon total'),['18']);
+ await select('Radon backprojection');await tool('field');await page.locator('#result-name').fill('Radon recovered');await page.locator('#field-name').fill('recovered');
+ const numerator=op('-',f('value'),read('Radon total',n(0),f('key')));
+ await expression(cards().nth(0),op('//',numerator,n(3)));await apply();
+ assert.deepEqual((await state()).objects.find(o=>o.name==='Radon recovered').rows.map(r=>r.fields.recovered),['0','0','0','1','2','3','2','4','6']);
+ await select('Radon backprojection');await tool('field');await page.locator('#result-name').fill('Radon division check');await page.locator('#field-name').fill('remainder');await expression(cards().nth(0),op('%',numerator,n(3)));await apply();
+ assert.deepEqual((await state()).objects.find(o=>o.name==='Radon division check').rows.map(r=>r.fields.remainder),Array(9).fill('0'));
+ await select('Radon image');const flatRadon=(await state()).objects.find(o=>o.name==='Radon image').rows;
+ await tool('place');await expression(cards().nth(0),f('u'));await expression(cards().nth(1),op('+',f('v'),read('Radon recovered',tuple('u','v'),tuple('point_u','point_v'),f('recovered'))));await apply();
+ const raisedRadon=(await state()).objects.find(o=>o.name==='Radon image').rows;assert.deepEqual(raisedRadon.map(r=>r.position),[[0,0],[0,1],[0,2],[1,1],[1,3],[1,5],[2,2],[2,5],[2,8]]);
+ await page.locator('#undo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Radon image').rows,flatRadon);await page.locator('#redo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Radon image').rows,raisedRadon);
+ // Traverse pixel -> line-count weight -> source pixels, preserving return views.
+ await select('Radon backprojection');await page.locator('[data-mode="points"]').click();const backPixel=(await state()).objects.find(o=>o.name==='Radon backprojection').rows[0];await page.locator('#occurrence').selectOption(backPixel.ref[1]);await idle();
+ const radonBefore=await(await page.request.get(origin+'/api/export')).text();await page.locator('#view-contributors').click();await idle();
+ await rightCard().locator('[data-linked-occurrence]').selectOption({index:3});await page.getByRole('button',{name:'Zoom in right view',exact:true}).click();
+ const selectedContribution=await rightCard().locator('[data-linked-occurrence]').inputValue(),cameraBefore=await rightCard().locator('circle').first().getAttribute('cx');
+ await rightCard().locator('[data-linked-inspect]').click();await idle();
+ assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 1 · weight 0/);
+ await page.getByRole('button',{name:'Follow weight read · 0',exact:true}).click();await idle();
+ assert.match(await page.locator('#linked-views').textContent(),/Key 3, 0/);assert.match(await page.locator('#panel').textContent(),/3 contributors/);
+ await page.locator('#view-contributors').click();await idle();assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),3);
+ assert.match(await rightCard().locator('.linked-detail').textContent(),/weight 0/);
+ await rightCard().locator('[data-linked-inspect]').click();await idle();assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 1 · weight 0/);
+ // The sum's field weight came from a copied pixel attribute; follow that distinct read.
+ await page.locator('.receipt-read[data-read-site="point_value"]').getByRole('button').click();await idle();
+ assert.equal(await rightCard().locator('circle').count(),9);assert.match(await rightCard().locator('[data-capture-label]').textContent(),/Captured dependency/);
+ assert.match(await rightCard().locator('.linked-detail').textContent(),/Value 0 · Read 0/);
+ await page.getByRole('button',{name:'Back to read origin',exact:true}).click();await idle();
+ await page.getByRole('button',{name:'Back to measurement',exact:true}).click();await idle();
+ await page.getByRole('button',{name:'Back to contribution',exact:true}).click();await idle();
+ assert.equal(await rightCard().locator('[data-linked-occurrence]').inputValue(),selectedContribution);
+ assert.equal(await rightCard().locator('circle').first().getAttribute('cx'),cameraBefore);
+ assert.match(await page.locator('#contribution-evidence').textContent(),/weight 0/);
+ await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'radon-weight-evidence.png'),fullPage:true});
+ await page.setViewportSize({width:320,height:950});await page.getByRole('button',{name:'Follow weight read · 0',exact:true}).focus();await page.keyboard.press('Enter');await idle();
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'radon-weight-phone.png'),fullPage:true});
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),radonBefore);
+ await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();
+ // A weight expression may transform its read: 2*read - 4 gives [-4,0,6].
+ await integers('Weight driver','0, 2, 5');await integers('Weighted items','99, 99, 99');await tool('measure');await page.locator('#result-name').fill('Signed total');await page.locator('#reducer').selectOption('sum');
+ await expression(cards().nth(0),op('-',op('*',n(2),read('Weight driver',f('index'),f('index'))),n(4)));await apply();assert.deepEqual(await values('Signed total'),['2']);
+ await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption((await state()).objects.find(o=>o.name==='Signed total').rows[0].ref[1]);await idle();await page.locator('#view-contributors').click();await idle();
+ await rightCard().locator('[data-linked-occurrence]').selectOption({index:1});await rightCard().locator('[data-linked-inspect]').click();await idle();
+ assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 99 · weight 0/);await page.getByRole('button',{name:'Follow weight read · 2',exact:true}).click();await idle();
+ assert.match(await leftCard().locator('.linked-detail').textContent(),/Weight 0/);assert.match(await rightCard().locator('.linked-detail').textContent(),/Read 2/);
+ const weightedChecks={compositeKeyEditing:true,tupleDraftAndUndo:true,orderedKeyFailure:true,radonReconstruction:true,exactDivision:true,measurementDrivenUndo:true,weightReadNavigation:true,zeroWeightSource:true,returnSelectionAndCamera:true,keyboardAndPhone:true,unchangedCapture:true,transformedReadWeight:true};
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,weighted:weightedChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

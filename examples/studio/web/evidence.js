@@ -4,10 +4,10 @@ import {viewPositions,projectionLabel,refKey} from './views.js';
 // Each card owns its camera. Selection, cameras, and lifetime are tab-local only.
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 const svgEl=(tag,attrs={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
-export function linkedViews(host,{load,inspect,onVisibility}){
+export function linkedViews(host,{load,onVisibility}){
   let session=null,generation=0,cleanups=[];
   function close(){generation++;for(const clean of cleanups)clean();cleanups=[];session=null;host.replaceChildren();host.hidden=true;onVisibility(false)}
-  async function open(spec){
+  async function open(spec,saved=null){
     const ticket=++generation;
     const [left,right]=await Promise.all([load(spec.left.capture),load(spec.right.capture)]);
     if(ticket!==generation)return;
@@ -25,7 +25,8 @@ export function linkedViews(host,{load,inspect,onVisibility}){
     host.append(header,help,label,cards,message);
     const controllers=[card(left,spec.left,'left'),card(right,spec.right,'right')];
     session={spec,choice,controllers};
-    choice.onchange=()=>choose(Number(choice.value));choose(spec.index||0,false);
+    choice.onchange=()=>choose(Number(choice.value));choose(saved?.index??spec.index??0,false);
+    saved?.views.forEach((view,i)=>controllers[i].restore(view));
     function card(view,descriptor,side){
       const box=el('section',undefined,{class:'linked-card','data-side':side,'aria-label':descriptor.label});
       const name=view.roots.length?`Current capture · ${view.roots.join(', ')}`:'Captured dependency · may differ from a current object';
@@ -65,7 +66,7 @@ export function linkedViews(host,{load,inspect,onVisibility}){
         if(!items.length)detail.textContent=link[side==='left'?'emptyLeft':'emptyRight']||'No linked occurrences. Faint points show context only.';
       }
       select.onchange=()=>selectItem(select.value);
-      follow.onclick=()=>inspect(context.get(selected).ref,follow);
+      follow.onclick=()=>spec.inspect(context.get(selected).ref,follow,items.find(item=>refKey(item.ref)===selected));
       fit.onclick=()=>{camera={x:0,y:0,zoom:1};draw()};minus.onclick=()=>{camera.zoom=Math.max(.2,camera.zoom/1.4);draw()};plus.onclick=()=>{camera.zoom=Math.min(12,camera.zoom*1.4);draw()};
       svg.onpointerdown=e=>{if(!e.isPrimary||e.button>0){gesture=null;return}e.preventDefault();svg.setPointerCapture(e.pointerId);const p=coordinates(e);gesture={id:e.pointerId,start:p,last:p,moved:false}};
       svg.onpointermove=e=>{if(!gesture||e.pointerId!==gesture.id)return;const p=coordinates(e);if(Math.hypot(p.x-gesture.start.x,p.y-gesture.start.y)*svg.getScreenCTM().a>9)gesture.moved=true;if(gesture.moved){camera.x+=p.x-gesture.last.x;camera.y+=p.y-gesture.last.y;draw()}gesture.last=p};
@@ -81,7 +82,7 @@ export function linkedViews(host,{load,inspect,onVisibility}){
       };
       svg.onpointercancel=()=>{gesture=null};const blur=()=>{gesture=null};window.addEventListener('blur',blur);
       const observer=new ResizeObserver(draw);observer.observe(svg);cleanups.push(()=>{observer.disconnect();window.removeEventListener('blur',blur)});
-      return {update};
+      return {update,remember:()=>({camera:{...camera},selected}),restore:saved=>{camera={...saved.camera};if(items.some(i=>refKey(i.ref)===saved.selected))selectItem(saved.selected);else draw()}};
     }
   }
   function choose(index,notify=true){
@@ -89,5 +90,6 @@ export function linkedViews(host,{load,inspect,onVisibility}){
     session.choice.value=String(index);for(const c of session.controllers)c.update(session.spec.links[index]);
     if(notify)session.spec.onChoose?.(index);
   }
-  return {open,choose,close};
+  const remember=()=>session?{spec:session.spec,index:Number(session.choice.value),views:session.controllers.map(c=>c.remember())}:null;
+  return {open,choose,close,remember};
 }

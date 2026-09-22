@@ -76,6 +76,13 @@ measurements retain their captured source universe; earlier drivers are resolved
 by evaluation ID, without substituting the current named root. This is a bounded
 read-only presentation adapter, not a new core or saved-history contract.
 
+The studio's [weighted evidence navigation](docs/WEIGHTED_EVIDENCE.md) distinguishes
+source values, contribution weights, and values read while computing those
+weights. `receipts.js` owns their explanation and return path; `evidence.js`
+retains only temporary view selections and cameras. Key-tuple syntax lowers to
+the existing vector expression. No evaluator opcode, core class, or saved-format
+change is needed for the Radon and signed-sum constructions.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:

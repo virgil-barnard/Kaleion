@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from kaleion import Collection, F, Inspection, Product, Workspace
+from kaleion import Collection, F, Inspection, Product, Workspace, vector
 from kaleion.history import Observation, State
 from kaleion.ir import expression as constant
 from kaleion.model import IncidenceSnapshot, Ref
@@ -58,6 +58,13 @@ def expression(spec, roots, depth=0):
             raise ValueError("Binary operations need two arguments")
         return OPERATORS[spec["op"]](
             *(expression(v, roots, depth + 1) for v in spec["args"]))
+    if set(spec) == {"tuple"}:
+        parts = spec["tuple"]
+        if not isinstance(parts, list) or not 2 <= len(parts) <= 8:
+            raise ValueError("A key tuple needs 2–8 ordered components")
+        if any(isinstance(part, dict) and "tuple" in part for part in parts):
+            raise ValueError("Key tuple components must be scalar expressions")
+        return vector(*(expression(part, roots, depth + 1) for part in parts))
     if set(spec) == {"read"}:
         read = spec["read"]
         if not isinstance(read, dict) or set(read) != {"object", "on", "key", "value"}:

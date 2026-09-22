@@ -55,8 +55,11 @@ checks an independently declared expected domain, exposes missing/multiple/outsi
 witnesses, and attaches a guarded assigned field. The `[0,1,2]` fixture, additive
 fibers, and restricted Hermitian ownership exercise the same contract.
 [Linked views](../LINKED_EVIDENCE_VIEWS.md) now serve coverage, quotient contributors,
-and earlier keyed drivers. Next follow a Radon reconstruction's line-count
-weights with the same controls, exposing weight receipts and composite read keys.
+and earlier keyed drivers. [Weighted evidence](../WEIGHTED_EVIDENCE.md) now follows
+a Radon reconstruction's line-count weights through source-field reads, using
+ordered key tuples and return views. Next expose exact parameter cases, using
+the prime/composite change and lattice growth as transfer tasks; keep replay
+sampling separate from mathematical inputs.
 Full-lesson UI coverage and new-user trials remain
 future work; its coverage matrix distinguishes editor gaps from backend gaps.
 The [UI design study](../UI_DESIGN_STUDY.md) now supplies the quality rubric and
