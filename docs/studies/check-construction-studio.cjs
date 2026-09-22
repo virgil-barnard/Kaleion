@@ -64,6 +64,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.locator('#redo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Sums').rows,stacked);
  await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption(stacked[4].ref[1]);await idle();
  await page.getByRole('button',{name:'Follow keyed read · 1'}).click();await idle();assert.match(await page.locator('#panel').textContent(),/"contributor_count": "1"/);
+ await page.locator('#close-linked').click();
  await page.locator('#labels').selectOption('total');
  await page.screenshot({path:path.join(output,'sum-stacks.png'),fullPage:true});
 
@@ -215,7 +216,36 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.equal(await page.getByRole('button',{name:'Inspect selected match',exact:true}).evaluate(n=>n===document.activeElement),true,'Returning to witnesses restores focus to the initiating control');
  assert.equal(await page.locator('#coverage-match').inputValue(),'1');
  assert.equal(await page.locator('#coverage-filter').inputValue(),'multiple');
- await page.locator('#coverage-filter').selectOption('missing');await page.getByRole('button',{name:'Show candidate group'}).click();await idle();
+ await page.locator('#coverage-filter').selectOption('missing');
+ await page.locator('#view-coverage').click();await idle();
+ const leftCard=()=>page.locator('.linked-card[data-side="left"]'),rightCard=()=>page.locator('.linked-card[data-side="right"]');
+ assert.equal(await leftCard().locator('[data-linked-member="true"]').count(),1);
+ assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),3);
+ assert.match(await rightCard().locator('.linked-detail').textContent(),/outside relation/);
+ // Zoom is local to a view and remains after changing the evidence link.
+ const leftBefore=await leftCard().locator('circle').first().getAttribute('cx'),rightBefore=await rightCard().locator('circle').first().getAttribute('cx');
+ await page.getByRole('button',{name:'Zoom in right view',exact:true}).click();
+ const rightZoomed=await rightCard().locator('circle').first().getAttribute('cx');
+ assert.notEqual(rightZoomed,rightBefore);assert.equal(await leftCard().locator('circle').first().getAttribute('cx'),leftBefore);
+ await page.locator('#linked-choice').selectOption('0');
+ assert.equal(await page.locator('#coverage-key').inputValue(),'0');assert.equal(await page.locator('#coverage-filter').inputValue(),'all');
+ assert.equal(await rightCard().locator('circle').first().getAttribute('cx'),rightZoomed);
+ const rightSvg=rightCard().locator('svg'),box=await rightSvg.boundingBox();
+ await page.mouse.move(box.x+80,box.y+80);await page.mouse.down();
+ await page.mouse.move(box.x+110,box.y+90);
+ assert.notEqual(await rightCard().locator('circle').first().getAttribute('cx'),rightZoomed);
+ await rightSvg.dispatchEvent('pointercancel',{pointerId:901,isPrimary:true});
+ const cancelledPosition=await rightCard().locator('circle').first().getAttribute('cx');
+ await page.mouse.move(box.x+140,box.y+100);await page.mouse.up();
+ assert.equal(await rightCard().locator('circle').first().getAttribute('cx'),cancelledPosition);
+ assert.equal(await leftCard().locator('circle').first().getAttribute('cx'),leftBefore);
+ assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),3);
+ // A tap in the independent expected domain selects its declared correspondence.
+ const expectedMark=await leftCard().locator('circle').nth(1).boundingBox();
+ await page.touchscreen.tap(expectedMark.x+expectedMark.width/2,expectedMark.y+expectedMark.height/2);
+ assert.equal(await page.locator('#coverage-key').inputValue(),'1');
+ await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'linked-coverage.png'),fullPage:true});
+ await page.getByRole('button',{name:'Show candidate group'}).click();await idle();
  assert.equal(await page.locator('[data-group-member="true"]').count(),3);
  assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeCoverage);
  await page.screenshot({path:path.join(output,'coverage-witnesses.png'),fullPage:true});
@@ -224,6 +254,17 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await coverage('Surviving candidates','i','Expected points');await page.locator('#coverage-filter').selectOption('missing');
  assert.match(await page.locator('#coverage-witness').textContent(),/No candidate group exists/);
  assert.equal(await page.getByRole('button',{name:'Show candidate group'}).count(),0);
+ await page.locator('#view-coverage').click();await idle();
+ assert.equal(await leftCard().locator('[data-linked-member="true"]').count(),1);
+ assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),0);
+ assert.equal(await rightCard().locator('[data-linked-occurrence]').isEnabled(),false);
+ assert.equal(await rightCard().locator('[data-linked-inspect]').isEnabled(),false);
+ assert.match(await rightCard().locator('.linked-detail').textContent(),/No candidate group/);
+ await leftCard().locator('[data-linked-inspect]').click();await idle();assert.match(await page.locator('#panel').textContent(),/"value": "0"/);
+ await page.getByRole('button',{name:'Back to coverage'}).click();assert.equal(await page.locator('#coverage-filter').inputValue(),'missing');
+ await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'linked-missing.png'),fullPage:true});
+ await page.locator('#close-linked').click();
+ await page.locator('#coverage-filter').selectOption('outside');assert.equal(await page.locator('#view-coverage').isEnabled(),false,'An empty filtered category cannot open a different link silently');await page.locator('#coverage-filter').selectOption('missing');
  await page.getByRole('button',{name:'Inspect expected occurrence'}).click();await idle();assert.match(await page.locator('#panel').textContent(),/"value": "0"/);await page.getByRole('button',{name:'Back to coverage'}).click();
  // A new rule supplies one value per point. Attach it without overwriting point labels.
  await coverage('Diagonal','i','Expected points');assert.equal(await page.locator('#coverage-status').getAttribute('data-phase'),'passed');
@@ -235,7 +276,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.locator('#resume-draft').click();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()),assignmentDraft);await apply();
  const assigned=(await state()).objects.find(o=>o.name==='Assigned points');assert.deepEqual(assigned.rows.map(r=>r.fields.owner),['2','0','1']);assert.deepEqual(await values('Assigned points'),['2','0','1']);
  await page.locator('#undo').click();await idle();assert.equal((await state()).objects.some(o=>o.name==='Assigned points'),false);await page.locator('#redo').click();await idle();
- await select('Assigned points');await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption(assigned.rows[1].ref[1]);await idle();await page.getByRole('button',{name:'Follow keyed read · 0'}).click();await idle();assert.match(await page.locator('#panel').textContent(),/1 contributors/);assert.match(await page.locator('#panel').textContent(),/weight 0/);
+ await select('Assigned points');await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption(assigned.rows[1].ref[1]);await idle();await page.getByRole('button',{name:'Follow keyed read · 0'}).click();await idle();assert.match(await page.locator('#panel').textContent(),/1 contributors/);assert.match(await page.locator('#panel').textContent(),/weight 0/);await page.locator('#close-linked').click();
  // Reuse that new field as a placement driver; undo restores the captured endpoints.
  await page.locator('[data-mode="objects"]').click();await select('Expected points');await tool('place');await expression(cards().nth(0),f('value'));await expression(cards().nth(1),n(0));await apply();
  const flat=(await state()).objects.find(o=>o.name==='Expected points').rows;
@@ -254,7 +295,54 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  const coverageDownload=page.waitForEvent('download');await page.locator('#save').click();const capture=await coverageDownload;const coverageSaved=path.join(output,'coverage-workspace.json');await capture.saveAs(coverageSaved);await idle();
  await page.locator('#undo').click();await idle();await page.locator('#file').setInputFiles(coverageSaved);await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Assigned sums').rows.map(r=>r.fields.partner),['2','0','2','0']);
  const coverageChecks={balancedFailure:true,absentExpectedKey:true,candidateAndMatchInspection:true,unchangedCapture:true,originalKeysRetained:true,zeroValuedOwner:true,drivenPlacementUndo:true,additiveTransfer:true,phoneLayout:true,savedAssignment:true};
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+
+ // Transfer the same captured-view instrument to quotient measurements and keyed motion.
+ await page.setViewportSize({width:1250,height:950});await page.locator('[data-mode="objects"]').click();
+ await tool('grid',true);await page.locator('#result-name').fill('Quotient cells');await page.locator('#grid-shape').fill('7, 11');
+ await expression(cards().nth(0),op('+',op('*',n(11),f('i')),op('*',n(7),f('j'))));await apply();
+ await tool('lens');await page.locator('#result-name').fill('Quotient hits');await expression(cards().nth(0),op('≥',f('value'),n(77)));await apply();
+ await tool('measure');await page.locator('#result-name').fill('Quotient counts');await retain('i');await apply();
+ assert.deepEqual(await values('Quotient counts'),['0','1','3','4','6','7','9']);
+ const quotientCounts=(await state()).objects.find(o=>o.name==='Quotient counts');
+ await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption(quotientCounts.rows[3].ref[1]);await idle();
+ const beforeLinked=await(await page.request.get(origin+'/api/export')).text();
+ await page.locator('#view-contributors').click();await idle();
+ assert.equal(await leftCard().locator('[data-linked-member="true"]').count(),1);
+ assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),4);
+ assert.equal(await rightCard().locator('circle').count(),77);
+ await rightCard().locator('[data-linked-occurrence]').selectOption({index:3});await rightCard().locator('[data-linked-inspect]').click();await idle();
+ assert.match(await page.locator('#panel').textContent(),/"i": "3"/);assert.match(await page.locator('#panel').textContent(),/"j": "10"/);
+ assert.equal(await page.locator('#linked-views').isVisible(),true,'Inspecting a contributor keeps both views');
+ await page.locator('#close-linked').click();await page.locator('#occurrence').selectOption(quotientCounts.rows[0].ref[1]);await idle();
+ await page.locator('#view-contributors').click();await idle();
+ assert.equal(await rightCard().locator('circle').count(),77);assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),0);
+ assert.match(await rightCard().locator('.linked-detail').textContent(),/Zero contributors/);
+ assert.equal(await rightCard().locator('[data-linked-inspect]').isEnabled(),false);
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeLinked);
+ await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'linked-zero.png'),fullPage:true});
+ await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();
+ // A driver is addressed by its captured version, even after its named view changes.
+ await integers('Quotient probes','6, 0, 3');await tool('place');await expression(cards().nth(0),f('value'));
+ await expression(cards().nth(1),{read:{object:'Quotient counts',on:f('value'),key:f('i'),value:f('value')}});await apply();
+ const probes=(await state()).objects.find(o=>o.name==='Quotient probes');assert.deepEqual(probes.rows.map(r=>r.position),[[6,9],[0,0],[3,4]]);
+ await select('Quotient counts');await tool('place');await expression(cards().nth(0),f('i'));await expression(cards().nth(1),n(99));await apply();
+ await select('Quotient probes');await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption(probes.rows[2].ref[1]);await idle();
+ const beforeEarlier=await(await page.request.get(origin+'/api/export')).text();
+ await page.getByRole('button',{name:'Follow keyed read · 4'}).click();await idle();
+ assert.match(await rightCard().locator('[data-capture-label]').textContent(),/Captured dependency/);
+ assert.match(await rightCard().locator('.linked-detail').textContent(),/Read 4/);
+ await page.locator('#view-contributors').click();await idle();assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),4);
+ // Phone layout and keyboard inspection do not change the evidence.
+ await page.setViewportSize({width:320,height:950});
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ await rightCard().locator('[data-linked-occurrence]').selectOption({index:1});
+ const followContributor=rightCard().locator('[data-linked-inspect]');await followContributor.focus();await page.keyboard.press('Enter');await idle();
+ assert.match(await page.locator('#panel').textContent(),/"j": "8"/);
+ await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'linked-phone.png'),fullPage:true});
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeEarlier);
+ await page.locator('#close-linked').click();await page.locator('#undo').click();await idle();assert.equal(await page.locator('#linked-views').isVisible(),false);await page.locator('#redo').click();await idle();
+ const linkedChecks={coverageSelection:true,missingExpectedItem:true,independentCameras:true,quotientContributors:true,zeroSourceRetained:true,earlierDriver:true,keyboardInspection:true,phoneLayout:true,unchangedCapture:true};
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

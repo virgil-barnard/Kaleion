@@ -3,6 +3,8 @@ import {expressionEditor} from './expressions.js';
 import {fieldKeys} from './groups.js';
 import {draftSession} from './drafts.js';
 import {coverageInspector} from './coverage.js';
+import {viewPositions} from './views.js';
+import {linkedViews} from './evidence.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -17,6 +19,15 @@ let selectedPoint=null, preview=null, busy=false, gesture=null, held=false;
 let groupReport=null, groupChoice=-1;
 let camera={x:0,y:0,zoom:1}, dots=[], labelField='value', objectTabsKey='', labelOptionsKey='';
 const draft=draftSession();
+const linked=linkedViews($('linked-views'),{
+  load:capture=>request('capture',{capture}),
+  inspect:ref=>run(async()=>{
+    const receipt=await request('inspect-driver',{ref});showReceipt(receipt,'Value',receiptBack);
+    $('panel').scrollIntoView({block:'nearest'});
+  }),
+  onVisibility:shown=>{$('single-view').hidden=shown;$('canvas-tools').hidden=shown;$('scope').textContent=shown?'Read-only captured evidence · close to construct':'Hold for construction tools';if(shown)status('Browsing captured evidence. Selection and view changes do not alter your construction.')}
+});
+let receiptBack=null;
 const object = () => state.objects.find(o=>o.name===active);
 const displayed = () => preview?.objects.find(o=>o.name===preview.name) || object();
 const selectedGroup=()=>groupReport?.revision===state.revision&&groupReport.name===active?groupReport.groups[groupChoice]:null;
@@ -50,7 +61,7 @@ async function request(path,body={}){
 }
 async function run(fn){if(busy)return;setBusy(true);try{await fn()}catch(e){status(e.message,true)}finally{setBusy(false)}}
 function adopt(next){
-  state=next;preview=null;selectedPoint=null;clearGroups();
+  linked.close();state=next;preview=null;selectedPoint=null;clearGroups();
   if(next.active)active=next.active;
   if(!state.objects.some(o=>o.name===active))active=state.objects.at(-1)?.name || null;
   camera={x:0,y:0,zoom:1};render();
@@ -63,7 +74,7 @@ function render(){
     $('objects').replaceChildren(...state.objects.map(o=>{
       const button=el('button',o.name,{'aria-pressed':String(o.name===active),'data-object':o.name});
       button.append(el('small',o.status==='ready'?o.kind:o.error));
-      button.onclick=()=>{if(busy)return;parkDraft();active=o.name;selectedPoint=null;preview=null;clearGroups();$('panel').replaceChildren(el('h2',o.name),el('p','Hold the canvas or choose Options to continue from this object.'));render();if(mode==='groups')groupPanel()};
+      button.onclick=()=>{if(busy)return;linked.close();parkDraft();active=o.name;selectedPoint=null;preview=null;clearGroups();$('panel').replaceChildren(el('h2',o.name),el('p','Hold the canvas or choose Options to continue from this object.'));render();if(mode==='groups')groupPanel()};
       return button;
     }));
     if(focused)[...$('objects').children].find(b=>b.dataset.object===focused)?.focus({preventScroll:true});
@@ -76,12 +87,6 @@ function render(){
   draw();occurrences();
 }
 $('labels').onchange=()=>{labelField=$('labels').value;draw()};
-function viewPositions(obj){
-  if(!obj?.rows)return [];
-  if(obj.placed)return obj.rows.map(r=>[r.position[0],r.position[1]||0]);
-  const [a,b]=obj.axes.length?obj.axes:['index','value'];
-  return obj.rows.map(r=>[Number(r.fields[a]),Number(r.fields[b] || 0)]);
-}
 function draw(frame=null,bounds=null){
   const obj=displayed(), rows=obj?.rows || [], positions=frame?.positions || viewPositions(obj);
   if(positions.some(p=>p.some(v=>!Number.isFinite(v)))){
@@ -134,7 +139,7 @@ function openMenu(addOnly=false){
 }
 $('add').onclick=()=>openMenu(true);$('options').onclick=()=>openMenu();$('close-menu').onclick=()=>$('menu').close();
 document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>{
-  if(busy)return;parkDraft();mode=button.dataset.mode;cancelHold();
+  if(busy)return;linked.close();parkDraft();mode=button.dataset.mode;cancelHold();
   document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render();if(mode==='groups')groupPanel();
 });
 function fit(){camera={x:0,y:0,zoom:1};draw()}
@@ -189,7 +194,7 @@ function parkDraft(){
 $('resume-draft').onclick=()=>{
   if(busy||!draft.current)return;
   try{
-    const context=draft.resume(state.revision);active=context.target;mode=context.mode;
+    linked.close();const context=draft.resume(state.revision);active=context.target;mode=context.mode;
     groupReport=context.groupReport;groupChoice=context.groupChoice;selectedPoint=null;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
     render();$('panel').scrollIntoView({block:'nearest'});$('result-name').focus({preventScroll:true});
@@ -202,7 +207,7 @@ function options(values,selected){const s=el('select');for(const v of values)s.a
 function labeled(parent,text,node){const label=el('label',text);label.append(node);parent.append(label);return node}
 function input(value){const n=el('input',undefined,{type:'text'});n.value=value;return n}
 function groupPanel(){
-  parkDraft();const source=object();
+  linked.close();parkDraft();const source=object();
   const panel=$('panel');panel.replaceChildren(el('span','SELECT BY A DECLARED KEY',{class:'eyebrow'}),el('h2','Groups'));
   if(!source||source.status!=='ready'){panel.append(el('p','Select a ready object first.'));return}
   const keys=fieldKeys(source.fields,groupReport?.by||[]);panel.append(keys.box);
@@ -227,12 +232,26 @@ function groupPanel(){
   show();
 }
 function coveragePanel(){
-  parkDraft();const source=object();
+  linked.close();parkDraft();const source=object();
   const box=coverageInspector({source,objects:state.objects,initialBy:groupReport?.name===active?groupReport.by:[],run,
     check:spec=>request('coverage',spec),canAdopt:()=>!draft.current,
     inspect:async(ref,trigger)=>{const receipt=await request('inspect-driver',{ref});showReceipt(receipt,'Value',()=>{$('panel').replaceChildren(box);trigger.focus({preventScroll:true})})},
+    clearLink:()=>linked.close(),
+    chooseLink:index=>linked.choose(index,false),
+    link:async(report,rows,index,onChoose)=>{
+      receiptBack=()=>{$('panel').replaceChildren(box);$('view-coverage').focus({preventScroll:true})};
+      await linked.open({title:'Expected items and their matches',
+        detail:'Links follow the declared coverage keys. Faint points give context; a missing match does not create a source point.',
+        left:{capture:report.expected_capture,label:'Expected items'},
+        right:{capture:report.capture,label:'Candidates'},index,onChoose,
+        links:rows.map(row=>({label:`${row.key.map((key,i)=>row.key_types[i]==='text'?JSON.stringify(key):String(key)).join(', ')} · ${row.count} matches${row.outside?' · outside':''}`,
+          left:row.expected_ref?[{ref:row.expected_ref,note:'Expected occurrence'}]:[],
+          right:row.members.map(ref=>{const match=row.matches.some(r=>r[0]===ref[0]&&r[1]===ref[1]);return {ref,emphasis:match,note:match?'Match':'Candidate · outside relation'}}),
+          emptyLeft:'No expected item for this outside key.',
+          emptyRight:'No candidate group for this expected item. No match is hidden here.'}))});
+    },
     showGroup:async(report,group)=>{
-      groupReport=await request('groups',{name:source.name,by:report.by});groupChoice=group;active=source.name;mode='groups';selectedPoint=null;
+      linked.close();groupReport=await request('groups',{name:source.name,by:report.by});groupChoice=group;active=source.name;mode='groups';selectedPoint=null;
       document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));render();
     },
     adopt:spec=>editor('assignment',spec),
@@ -243,6 +262,7 @@ function expr(initial,fields){
   return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'));
 }
 function editor(action,seed=null){
+  linked.close();
   if(draft.current){status('Resume or discard your draft before starting another construction.',true);return}
   preview=null;const editorRevision=state.revision,sourceName=seed?.source||active;render();
   const panel=$('panel');panel.replaceChildren(el('span','DECLARE / PREVIEW / APPLY',{class:'eyebrow'}),el('h2',labels[action]));
@@ -338,7 +358,7 @@ function explain(){run(async()=>{
   const receipt=await request('inspect',{name:active,ref:selectedPoint});showReceipt(receipt);
 })}
 function showReceipt(receipt,heading='Value',back=null){
-  parkDraft();
+  parkDraft();receiptBack=back;
   const panel=$('panel');panel.replaceChildren(el('span','CAPTURED EVIDENCE',{class:'eyebrow'}),el('h2',`${heading} ${receipt.item.value}`));
   if(back){const button=el('button','Back to coverage',{type:'button'});button.onclick=back;panel.append(button);button.focus({preventScroll:true})}
   panel.append(el('pre',JSON.stringify(receipt.item.fields,null,2)));
@@ -346,6 +366,17 @@ function showReceipt(receipt,heading='Value',back=null){
   if(m.unavailable)panel.append(el('p','No active measurement receipt at this occurrence.',{class:'quiet'}));
   else{
     panel.append(el('h2',`${m.reducer} · ${m.contributor_count} contributors`),el('p',m.formula));
+    const together=el('button','View measurement and contributors',{type:'button',id:'view-contributors'});
+    together.onclick=()=>run(async()=>{
+      const evidence=await request('contributors',{ref:receipt.item.ref}),full=evidence.measurement;
+      await linked.open({title:'A measurement and its contributors',
+        detail:`${full.reducer} · ${full.contributor_count} contributors in a candidate population of ${full.population}. Weights and values are distinct. Faint points are context only.`,
+        left:{capture:receipt.item.ref[0],label:'Measurement'},right:{capture:evidence.universe,label:'Contributors'},
+        links:[{label:`Key ${full.key.join(', ')} · value ${receipt.item.value}`,
+          left:[{ref:receipt.item.ref,note:`${full.contributor_count} contributors`}],
+          right:full.contributors.map(c=>({ref:c.item.ref,note:`weight ${c.weight}`})),
+          emptyRight:'Zero contributors. The captured source remains visible; its faint points did not contribute.'}]});
+    });panel.append(together);
     for(const c of m.contributors)panel.append(el('p',`Value ${c.item.value} · weight ${c.weight}`,{class:'receipt-item'}));
     if(m.truncated)panel.append(el('p','Showing the first 32 contributors.'));
   }
@@ -353,6 +384,9 @@ function showReceipt(receipt,heading='Value',back=null){
     // The driver may be an earlier captured version. Request by scoped reference,
     // never guess it from a current object's equal labels or screen location.
     const driver=await request('inspect-driver',{ref:b.driver});showReceipt(driver,'Driver value',back);
+    await linked.open({title:'An item and its keyed driver',detail:`Key ${b.key.join(', ')} · read ${b.read} = ${b.value}. This is the captured read, including an earlier input version when needed.`,
+      left:{capture:receipt.item.ref[0],label:'Driven item'},right:{capture:b.driver[0],label:'Driver'},
+      links:[{label:`Key ${b.key.join(', ')}`,left:[{ref:receipt.item.ref,note:'Inspected output'}],right:[{ref:b.driver,note:`Read ${b.value}`}]}]});
   });panel.append(button)}
   const details=el('details'),summary=el('summary','Scoped references and receipt'),pre=el('pre',JSON.stringify(receipt,null,2));details.append(summary,pre);panel.append(details);
 }

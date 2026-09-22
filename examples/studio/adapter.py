@@ -16,6 +16,7 @@ from kaleion.ir import expression as constant
 from kaleion.model import IncidenceSnapshot, Ref
 from .groups import captured_groups
 from .coverage import captured_coverage, unique_assignment
+from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
 
 OPERATORS = {
@@ -43,21 +44,6 @@ def integer(text):
     if len(text) > 1235 or int(text).bit_length() > 4096:
         raise ValueError("Integer exceeds the 4096-bit arithmetic budget")
     return int(text)
-
-
-def exact_wire(value):
-    """Receipt integers are strings; floating presentation coordinates stay floats."""
-    if isinstance(value, bool) or value is None:
-        return value
-    if isinstance(value, int):
-        return str(value)
-    if isinstance(value, dict):
-        return {k: exact_wire(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [exact_wire(v) for v in value]
-    if hasattr(value, "item"):
-        return exact_wire(value.item())
-    return value
 
 
 def expression(spec, roots, depth=0):
@@ -184,20 +170,7 @@ def describe(state):
         if name in state.errors:
             objects.append({**obj, "status": "failed", "error": state.errors[name]})
             continue
-        result = state.results[name]
-        incidence = isinstance(result, IncidenceSnapshot)
-        source = result.source if incidence else result
-        context = source.context()
-        fields = list(context)
-        rows = []
-        for i, oid in enumerate(source.ids):
-            rows.append(dict(ref=[source.node, oid],
-                             fields={k: exact_wire(v[i]) for k, v in context.items()},
-                             position=None if source.positions is None else source.positions[i].tolist(),
-                             match=True if not incidence else bool(result.mask[i])))
-        objects.append({**obj, "fields": fields, "axes": list(source.axes), "rows": rows,
-                        "placed": source.positions is not None,
-                        "dimension": None if source.positions is None else source.positions.shape[1],
+        objects.append({**obj, **snapshot_view(state.results[name]),
                         "declaration": str(definition.node.op) + " · " + name})
     return objects
 
@@ -342,6 +315,15 @@ class Studio:
             except (ValueError, KeyError, TypeError) as error:
                 receipt[query] = {"unavailable": str(error)}
         return exact_wire(receipt)
+
+    def capture(self, capture, revision):
+        """Read one retained version, without substituting a current named root."""
+        self.check(revision)
+        return dict(revision=revision, **captured_view(self.workspace.state, capture))
+
+    def contributors(self, ref, revision):
+        self.check(revision)
+        return dict(revision=revision, **measurement_evidence(self.workspace.state, ref))
 
     def reopen(self, text, revision):
         self.check(revision)

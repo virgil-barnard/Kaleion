@@ -53,8 +53,10 @@ formula editing now serve sum and modular-line fibers, including zero groups and
 explicit tie breakers. The [coverage instrument](../COVERAGE_INSTRUMENT.md) now
 checks an independently declared expected domain, exposes missing/multiple/outside
 witnesses, and attaches a guarded assigned field. The `[0,1,2]` fixture, additive
-fibers, and restricted Hermitian ownership exercise the same contract. Next test
-two linked views for missing expected items and measurement dependencies.
+fibers, and restricted Hermitian ownership exercise the same contract.
+[Linked views](../LINKED_EVIDENCE_VIEWS.md) now serve coverage, quotient contributors,
+and earlier keyed drivers. Next follow a Radon reconstruction's line-count
+weights with the same controls, exposing weight receipts and composite read keys.
 Full-lesson UI coverage and new-user trials remain
 future work; its coverage matrix distinguishes editor gaps from backend gaps.
 The [UI design study](../UI_DESIGN_STUDY.md) now supplies the quality rubric and

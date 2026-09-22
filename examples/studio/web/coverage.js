@@ -1,7 +1,7 @@
 import {fieldKeys} from './groups.js';
 
 // Chooses a claim and presents captured evidence. Counts and guards belong to Python.
-export function coverageInspector({source,objects,initialBy=[],run,check,inspect,showGroup,adopt,canAdopt}){
+export function coverageInspector({source,objects,initialBy=[],run,check,inspect,showGroup,adopt,canAdopt,link,clearLink,chooseLink}){
   const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
   const labeled=(parent,text,control)=>{const label=el('label',text);label.append(control);parent.append(label);return control};
   const box=el('div',undefined,{id:'coverage-tool'});
@@ -16,7 +16,7 @@ export function coverageInspector({source,objects,initialBy=[],run,check,inspect
   const message=el('p','Choose both key declarations, then check.',{id:'coverage-status',role:'status','aria-live':'polite','aria-atomic':'true'});
   const results=el('div',undefined,{id:'coverage-results'});box.append(test,message,results);
   const spec=()=>({name:source.name,by:by.read(),expected:expected.value,expected_by:expectedKeys?.read()||[]});
-  function invalidate(){results.replaceChildren();message.textContent='Choices changed. Check coverage again.';message.dataset.phase='editing'}
+  function invalidate(){clearLink();results.replaceChildren();message.textContent='Choices changed. Check coverage again.';message.dataset.phase='editing'}
   by.box.addEventListener('change',invalidate);
   expected.onchange=()=>{
     const target=objects.find(o=>o.name===expected.value);
@@ -25,7 +25,7 @@ export function coverageInspector({source,objects,initialBy=[],run,check,inspect
     expectedKeys?.box.addEventListener('change',invalidate);invalidate();
   };
   test.onclick=()=>run(async()=>{
-    results.replaceChildren();message.textContent='Checking captured memberships…';message.dataset.phase='checking';
+    clearLink();results.replaceChildren();message.textContent='Checking captured memberships…';message.dataset.phase='checking';
     try{
       const report=await check(spec()),s=report.summary;
       message.dataset.phase=report.passed?'passed':'failed';
@@ -34,6 +34,7 @@ export function coverageInspector({source,objects,initialBy=[],run,check,inspect
     }catch(error){message.dataset.phase='error';message.textContent=`Could not check: ${error.message}`}
   });
   function render(report){
+    const together=el('button','View expected and matches',{type:'button',id:'view-coverage'});results.append(together);
     const filter=labeled(results,'Show keys',el('select',undefined,{id:'coverage-filter'}));
     for(const [value,text] of [['all','All keys'],['missing','Missing matches'],['multiple','Multiple matches'],['outside','Outside expected domain'],['unique','Exactly one match']])filter.append(el('option',text,{value}));
     const keys=labeled(results,'Coverage key',el('select',undefined,{id:'coverage-key'}));
@@ -47,8 +48,8 @@ export function coverageInspector({source,objects,initialBy=[],run,check,inspect
       show();
     }
     function show(){
-      witness.replaceChildren();if(keys.value===''){witness.append(el('p','No keys in this category.'));return}
-      const row=rows[Number(keys.value)];
+      witness.replaceChildren();together.disabled=keys.value==='';if(keys.value===''){witness.append(el('p','No keys in this category.'));clearLink();return}
+      const row=rows[Number(keys.value)];chooseLink(Number(keys.value));
       witness.append(el('p',row.present?`${matchText(row)} among ${row.population} ${row.population==='1'?'candidate':'candidates'}.`:'No candidate group exists for this expected key. Its match count is zero.'));
       if(row.group!==null){const b=el('button','Show candidate group',{type:'button'});b.onclick=()=>run(()=>showGroup(report,row.group));witness.append(b)}
       if(row.expected_ref){const b=el('button','Inspect expected occurrence',{type:'button'});b.onclick=()=>run(()=>inspect(row.expected_ref,b));witness.append(b)}
@@ -62,6 +63,11 @@ export function coverageInspector({source,objects,initialBy=[],run,check,inspect
         b.onclick=()=>run(()=>inspect(row.matches[choice?Number(choice.value):0],b));witness.append(b);
       }
     }
+    together.disabled=!rows.length;
+    together.onclick=()=>run(()=>link(report,rows,Number(keys.value),index=>{
+      if(![...keys.options].some(o=>o.value===String(index))){filter.value='all';populate()}
+      keys.value=String(index);show();
+    }));
     filter.onchange=populate;keys.onchange=show;populate();
     const adoptButton=el('button','Use unique matches…',{type:'button',id:'coverage-adopt',class:'primary'});
     adoptButton.disabled=!report.passed||!canAdopt();

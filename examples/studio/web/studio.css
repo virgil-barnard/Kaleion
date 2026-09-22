@@ -375,3 +375,34 @@ pre {
 #coverage-adopt {
   margin-top:16px;
 }
+
+/* Evidence cards share a link selection, but never a camera or mathematical state. */
+.linked-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+.linked-cards {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:14px;
+}
+.linked-card {
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px;
+}
+.linked-card h3 {margin:0;font-weight:550;font-size:16px}
+.linked-card svg {min-height:170px;max-height:260px;overflow:hidden}
+.linked-card .help {margin:8px 0}
+.linked-detail {font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.linked-card select {min-width:0}
+@media(max-width:600px) {
+  .linked-cards {grid-template-columns:1fr}
+  .linked-card svg {height:180px;min-height:180px}
+}

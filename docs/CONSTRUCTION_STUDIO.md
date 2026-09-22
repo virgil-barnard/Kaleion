@@ -15,6 +15,10 @@ audits the current controls, and defines cross-lesson and human-observation task
 Its first improvement preserves an unfinished idea while its author inspects
 something else.
 
+[Linked evidence views](LINKED_EVIDENCE_VIEWS.md) now keep coverage domains,
+measurements, and actual driver versions visible in pairs. They use the same
+capture descriptions and scoped references across investigations.
+
 ## Run the study
 
 From the repository root, use the existing environment:
@@ -312,8 +316,8 @@ whose contract cannot be expressed clearly or efficiently with existing ones.
 
 ## Limits and next experiment
 
-The study has one focused canvas and a rail of objects, not a free multi-view art
-workspace. Geometry editing is 2D; 3D imported placements receive an explicitly
+The study has one construction canvas, a rail of objects, and a temporary pair
+of linked evidence views. It is not yet a free multi-view art workspace. Geometry editing is 2D; 3D imported placements receive an explicitly
 labeled XY projection. Values remain exact; table projections and geometry do not.
 Huge labels may be shortened on the canvas but stay complete in the inspector.
 Group selection uses named fields, including composite keys. To group by an
@@ -328,11 +332,11 @@ controls at every nesting level, but named subexpressions and reusable formulas
 are still absent. The declaration drawer retains the exact transport record.
 No user trial or physical tablet test has established novice usability.
 
-**Next useful experiment:** two linked views for expected items and candidate
-matches, also tested while following quotient or Radon measurement dependencies.
-Coverage now exposes absent keys in a report; paired views should let a person
-see the expected item even when there is no matching source point. Preserve
-independent view state and explicit mathematical correspondences.
+The [paired-view experiment](LINKED_EVIDENCE_VIEWS.md) now keeps an expected item
+visible with no candidate beside it, and a quotient measurement visible with its
+source and contributors. Captured keyed reads can refer to earlier versions.
+**Next useful experiment:** a Radon reconstruction's weight-read chain, using
+those same views and adding composite keyed-read editing where needed.
 
 ## Validation and reproduction
 
@@ -340,6 +344,7 @@ independent view state and explicit mathematical correspondences.
 python3 -m unittest discover -s tests -p test_studio.py -v
 python3 -m unittest discover -s tests -p test_studio_groups.py -v
 python3 -m unittest discover -s tests -p test_studio_coverage.py -v
+python3 -m unittest discover -s tests -p test_studio_views.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -357,7 +362,7 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **151 tests**, and the discovery example
+The complete required suite passes **156 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -393,3 +398,9 @@ an absent group after selection, per-match receipts and return focus, a parked
 assignment draft, a zero-valued owner, keyed placement with undo, an additive
 transfer with outside matches, and save/reopen. Its choices/witnesses fit the
 320-pixel layout without horizontal overflow; vertical scrolling remains necessary.
+
+Five view-query tests and the same browser gate now cover linked coverage and
+quotient evidence, absent candidates, zero contributors, exact weights, earlier
+driver versions, independent cameras, pan cancellation, keyboard inspection, and
+read-only history. See the [linked-view guide](LINKED_EVIDENCE_VIEWS.md) for the
+construction, module decisions, validation evidence, and remaining layout limits.

@@ -13,12 +13,15 @@
   </section>
   <section class="workbench">
     <div class="picture">
-      <div class="canvasbar"><div class="modes" aria-label="Selector mode"><button data-mode="objects" aria-pressed="true">Objects</button><button data-mode="points" aria-pressed="false">Occurrences</button><button data-mode="groups" aria-pressed="false">Groups</button><button data-mode="view" aria-pressed="false">View</button></div><button id="options">Options ⋯</button></div>
+      <div class="canvasbar" id="canvas-tools"><div class="modes" aria-label="Selector mode"><button data-mode="objects" aria-pressed="true">Objects</button><button data-mode="points" aria-pressed="false">Occurrences</button><button data-mode="groups" aria-pressed="false">Groups</button><button data-mode="view" aria-pressed="false">View</button></div><button id="options">Options ⋯</button></div>
       <div class="caption"><h2 id="title">Your blank canvas</h2><span id="scope">Hold the canvas or choose Add</span></div>
+      <section id="linked-views" aria-label="Linked captured evidence" hidden></section>
+      <div id="single-view">
       <svg id="canvas" viewBox="0 0 700 450" tabindex="0" role="img" aria-label="Construction canvas. Options are also available with Shift F10."><g id="marks"></g><rect id="hit" width="700" height="450" fill="transparent"/></svg>
       <div class="viewbar"><span id="projection">View projection only; use Arrange to declare positions.</span><button id="fit">Fit</button></div>
       <label class="label-control">Label points with <select id="labels"></select></label>
       <label id="occurrence-label" hidden>Occurrence <select id="occurrence"></select></label>
+      </div>
       <p id="status" role="status" aria-live="polite">No construction yet. Every action starts with your choices.</p>
     </div>
     <aside id="panel"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>One vocabulary, many investigations.</h2><p>Hold an object for construction tools. Switch to Occurrences to inspect a point, or Groups to select by declared keys.</p><p>Tap part of a formula to edit a field, number, operation, or keyed read. Build relations and measurements directly on your canvas.</p><p class="quiet">This is an early authoring study. It tests a shared interaction grammar, not the complete future interface.</p></aside>

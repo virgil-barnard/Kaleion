@@ -28,8 +28,11 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   [coverage instrument](COVERAGE_INSTRUMENT.md) now adds independent expected keys,
   captured witnesses, and guarded assignment as a field using existing primitives.
   Simple/additive browser tasks and a restricted Hermitian adapter case exercise
-  the same contract. Paired views, full-lesson coverage, and reactive source edits
-  remain next experiments.
+  the same contract. [Linked evidence views](LINKED_EVIDENCE_VIEWS.md) now keep
+  coverage witnesses, keyed drivers, and measurement contributors together through
+  explicit scoped references. Coverage and quotient browser tasks exercise the
+  same renderer, with zero sources and earlier inputs intact. Radon weight-read
+  navigation, full-lesson coverage, and reactive source edits remain experiments.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
   their original scopes. `Incidence.universe` exposes the inspected collection or
