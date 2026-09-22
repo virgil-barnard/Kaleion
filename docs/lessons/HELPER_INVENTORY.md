@@ -202,7 +202,11 @@ with `indexing.py`; it performs no graph execution. `studio.js` composes these
 controls with gesture recognition and snapshot/frame drawing. `adapter.py` owns
 explicit intent lowering, decimal-integer transport, revisioned previews, and
 captured inspection; `server.py` owns the local transport.
-The same path is tested against quotient, modular, and additive constructions.
+`coverage.py` adds a captured expected-key report and a separate Count/Sum/Bind/
+Require/Annotate assignment recipe. `web/coverage.js` owns its choices and witness
+display, reusing `groups.js`. Assigned fields preserve expected labels and keys;
+ordinary binding receipts expose the weighted reduction. The same path is tested
+against quotient, modular, additive, and restricted Hermitian constructions.
 No existing notebook function inventory or core operation changes in this increment.
 
 Use the Parnas guidepost in [DESIGN.md](../../DESIGN.md): isolate decisions likely

@@ -56,6 +56,11 @@ An unfinished draft now survives a detour to inspect another object: resume its
 original formula and grouping choices, then preview again. The
 [UI design study](docs/UI_DESIGN_STUDY.md) provides research, a practical review
 rubric, and cross-lesson testing plans for the evolving interface.
+**Check coverage** now compares a relation against separately chosen expected
+keys, exposes missing/multiple/outside matches, and lets a unique match supply a
+new field on each expected item. That field can drive another arrangement with
+its contributor evidence intact. The [coverage investigation](docs/COVERAGE_INSTRUMENT.md)
+walks through constructing, breaking, inspecting, and reusing an assignment.
 It is an experimental authoring subset; the guide maps the remaining work across
 all eleven lessons. No lesson-specific tools or new core operations are added.
 

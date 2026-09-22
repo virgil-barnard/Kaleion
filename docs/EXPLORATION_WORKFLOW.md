@@ -173,10 +173,12 @@ adapter and contextual hold controls across additive and modular constructions.
 Its coverage matrix keeps all eleven lessons as the acceptance target. Shared
 group selection and compact formula editing now serve sum and modular fibers.
 Selecting a group is a captured-data query; deriving a lens or measuring all
-groups is an explicit construction. Next test coverage requirements and unique
-owner adoption across unrelated assignment relations, retaining an independent
-expected domain. The first successful investigation must not become the UI's
-organizing structure.
+groups is an explicit construction. The [coverage instrument](COVERAGE_INSTRUMENT.md)
+now checks an independent expected domain and adopts a sole match as a new field,
+with graph guards and inspectable contributors. It is tested across simple and
+additive browser constructions and bounded Hermitian ownership. Next compare
+two linked views for missing items and measurement dependencies. The first
+successful investigation must not become the UI's organizing structure.
 
 Alongside those recipes, test the [touch control hypothesis](TOUCH_WORKSPACE.md)
 against concrete tasks: rebuild the plane lift;

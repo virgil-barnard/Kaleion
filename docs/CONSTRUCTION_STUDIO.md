@@ -45,9 +45,9 @@ import budget still applies; these limits do not promise every combination fits.
 
 | Selector | Tap or hold target | Contextual actions | What stays unchanged |
 | --- | --- | --- | --- |
-| Objects | Selected object in the canvas | Define a field, create a relation, measure, arrange, form a product; a relation instead offers measurement and explicit selection | A hold itself changes no definition |
+| Objects | Selected object in the canvas | Define a field, create a relation, measure, check coverage, arrange, form a product; a relation offers measurement, coverage, and explicit selection | A hold itself changes no definition |
 | Occurrences | A captured occurrence, or an entry in its accessible list | Explain its fields, measurement contributors, and direct keyed reads; follow a read to its captured driver | Equal values and coincident positions do not merge identities |
-| Groups | A group chosen by declared field keys, from a point or the group list | Choose group keys, create a group lens, measure all groups | Browsing changes neither the universe nor history; group membership does not specify member order |
+| Groups | A group chosen by declared field keys, from a point or the group list | Choose group keys, create a group lens, measure all groups, check coverage | Browsing changes neither the universe nor history; group membership does not specify member order |
 | View | Canvas | Fit; drag to pan, pinch/wheel to zoom | Camera changes do not change mathematical extent or placement |
 | Objects, empty canvas | Blank canvas | Add integers or a grid | No implicit source is inferred from a gesture |
 
@@ -180,12 +180,35 @@ among three candidates. The same selector also distinguishes missing/overlapping
 assignment candidates. On the original grid define `(i > 0) and (j < i)` and
 group by `i`: the counts are `[0,1,2]`, with three candidates per group. The zero
 group remains selectable, and its group lens retains all nine source occurrences
-with no hits. This is a witness fixture for future coverage controls; it does not
-establish unique coverage or recreate the full Hermitian investigation.
+with no hits. **Check coverage** now tests this fixture against independently
+declared keys and preserves the missing obligation after selecting the survivors.
+Its [walkthrough](COVERAGE_INSTRUMENT.md) continues to a valid assignment and
+measurement-driven motion; the complete Hermitian source-constructor UI remains open.
 
 The backend contract test goes further: a `3 × 3 × 3` domain with axes `u,v,m`,
 field `t = (v - m*u) % 3`, and relation `t = 0` uses the same commands to count
 modular lines and their point coverage. No “Radon tool” is introduced.
+
+### Check a relation before using it as an assignment
+
+Choose **Check coverage**, declare source group keys, select an expected domain,
+and choose equally many expected key fields in matching order. The expected keys
+must identify its occurrences uniquely. The check requires one incident match
+per expected key and no incident keys outside that domain. Browsing and checking
+use captures only; neither creates an object or changes history.
+
+Filter to missing, multiple, or outside keys. Show a candidate group or inspect
+an expected occurrence/match, then return with **Back to coverage**. An absent
+source key has no source point to highlight, but its expected occurrence remains
+inspectable. Another draft can stay parked during these queries.
+
+**Use unique matches…** is available after a passing check when no other draft
+is active. Choose the supplied integer expression and a fresh field name.
+Preview/Apply adds that field to a derived copy of the expected items, preserving
+their labels, keys, identities, and placement. Graph requirements check the
+claim again and remain active during future evaluation. The value's keyed-read
+receipt leads to its weighted reduction and contributors. Even an assigned zero
+has one contributor; it is not a missing assignment.
 
 ### Quotient counts become placement on another source
 
@@ -231,6 +254,8 @@ not a stable public language or a replacement for the operation graph.
 | How formula parts are selected and edited | [expressions.js](../examples/studio/web/expressions.js) | Structured expression in/out; no mathematical evaluation or workspace history |
 | How a person chooses field keys and their order | [groups.js](../examples/studio/web/groups.js) | Ordered field names; no membership queries or numerical grouping |
 | How captured groups expose candidates and incidence | [groups.py](../examples/studio/groups.py) | Captured data + field keys → scoped members; no graph evaluation or rendering |
+| How expected keys expose coverage failures | [coverage.py](../examples/studio/coverage.py) | Captured alignment and witnesses; a separate recipe builds ordinary live guards and assigned fields |
+| How to choose and inspect a coverage claim | [coverage.js](../examples/studio/web/coverage.js) | Shared key selectors and semantic callbacks; no arithmetic or history |
 | How gestures, editors, and the canvas work together | [studio.js](../examples/studio/web/studio.js), HTML/CSS | An explicit intent record and captured selection; no arithmetic or Python method calls |
 | How intents become existing definitions | [adapter.py](../examples/studio/adapter.py), `build` and `expression` | Source names, fields, keys, group/order choices; no gestures or pixels |
 | Which preview can commit | `Studio` in the same adapter | Revision + one-use token → exact retained state; obsolete or failed previews cannot apply |
@@ -277,7 +302,7 @@ Most existing mathematics is already expressible in the Python core.
 | 07 · Additive structure | Constructed from blank inputs, including group selection, strict ranks, and compact expressions | Bin-domain convenience, equal-sum quadruples and energy narration |
 | 08 · Ehrhart counts | Finite sources, predicates, count and measurement-driven positions | Exact case-family editor; measured-family evidence remains a **backend contract gap** |
 | 09 · Norm fibers | Groups, explicit order, source reads, placement | Arithmetic-domain/basis recipes, lookup tables, modular power and trig expressions; orbit/case controls |
-| 10 · Hermitian partitions | Product/read/group/rank mechanisms | Projective representative recipes, explicit unique-coverage adoption and witnesses, canonical-code versus slot selection |
+| 10 · Hermitian partitions | Product/read/group/rank and guarded coverage; adapter tested on a restricted seven-block family with canonical keys | Projective/field constructor controls, full support beyond the study budget, and complete lesson composition |
 | 11 · Cyclic code/plane | Integer arithmetic, incidence, measurement and explanations | Polynomial/binary-field recipes, coordinate dictionaries, distinct comparison contracts, coordinated replay across charts |
 
 No lesson-specific menu, source subclass, or evaluator primitive was necessary
@@ -303,18 +328,18 @@ controls at every nesting level, but named subexpressions and reusable formulas
 are still absent. The declaration drawer retains the exact transport record.
 No user trial or physical tablet test has established novice usability.
 
-**Next useful experiment:** expose explicit coverage requirements and their
-witnesses with the same group selector. Use the `[0,1,2]` fixture first, then remove
-an owner from the Hermitian construction. The expected point domain must remain
-independent of the surviving assignments; accepting a unique owner must be
-guarded by exactly-one coverage. Test that control against another assignment
-relation before introducing a lesson-specific abstraction or a core primitive.
+**Next useful experiment:** two linked views for expected items and candidate
+matches, also tested while following quotient or Radon measurement dependencies.
+Coverage now exposes absent keys in a report; paired views should let a person
+see the expected item even when there is no matching source point. Preserve
+independent view state and explicit mathematical correspondences.
 
 ## Validation and reproduction
 
 ```sh
 python3 -m unittest discover -s tests -p test_studio.py -v
 python3 -m unittest discover -s tests -p test_studio_groups.py -v
+python3 -m unittest discover -s tests -p test_studio_coverage.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -328,7 +353,11 @@ empty declared versus observed domains, zero incidence, composite and native
 typed keys, ties, stale captures, query budgets, scoped incidence composition,
 and undo/reopen. Group browsing succeeds with graph execution disabled and
 leaves workspace JSON unchanged. Finite fixtures are not universal proofs.
-The complete required suite passes **144 tests**, and the discovery example
+Seven coverage tests add independent expected domains, zero/absent/multiple/outside
+witnesses, live assignment guards, exact/composite keys, expected identity,
+keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
+receipts work with graph execution disabled.
+The complete required suite passes **151 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -358,3 +387,9 @@ Physical Safari/tablet and screen-reader testing
 remains open. The browser host and browser run in one local process tree because
 this execution environment isolates loopback across separate shell calls.
 No notebook source or core API changes are included, and no video export is added.
+
+The coverage extension passes actual controls for the balanced `[0,1,2]` failure,
+an absent group after selection, per-match receipts and return focus, a parked
+assignment draft, a zero-valued owner, keyed placement with undo, an additive
+transfer with outside matches, and save/reopen. Its choices/witnesses fit the
+320-pixel layout without horizontal overflow; vertical scrolling remains necessary.

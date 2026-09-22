@@ -24,8 +24,12 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   no evaluator primitive or public API change is needed. The
   [UI design study](UI_DESIGN_STUDY.md) adds a research-backed review rubric and
   a tested edit–inspect–return loop: tab-local drafts retain their source and
-  local undo, with current feedback and focus recovery. Explicit coverage
-  adoption, full-lesson coverage, and reactive source edits remain next experiments.
+  local undo, with current feedback and focus recovery. The
+  [coverage instrument](COVERAGE_INSTRUMENT.md) now adds independent expected keys,
+  captured witnesses, and guarded assignment as a field using existing primitives.
+  Simple/additive browser tasks and a restricted Hermitian adapter case exercise
+  the same contract. Paired views, full-lesson coverage, and reactive source edits
+  remain next experiments.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
   their original scopes. `Incidence.universe` exposes the inspected collection or
@@ -56,8 +60,8 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   controls; it is a bounded captured demonstration, not a general editor.
 - **Next:** weighted prefix sums, measured case families,
   and comparison kinds beyond exact keyed integer values. Separate operation
-  execution from session scheduling when that reduces concrete coupling. Coverage
-  is scoped to an existing reduction domain, so it does not complete the general
+  execution from session scheduling when that reduces concrete coupling. The public
+  `Coverage` helper is scoped to an existing reduction domain, so it does not complete the general
   comparison work.
 
 A contained lesson-support extraction now shares strict integer-key lookup,

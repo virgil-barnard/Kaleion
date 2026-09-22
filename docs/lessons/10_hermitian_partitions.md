@@ -73,6 +73,13 @@ ordered groups, and a distinction between quotienting and moving points together
 A sum of owner keys is meaningful only after coverage is one; zero alone is
 ambiguous. The [UI notes](UI_DISCOVERY_NOTES.md) make these choices concrete.
 
+The later [coverage instrument](../COVERAGE_INSTRUMENT.md) tests the same contract
+on a restricted seven-block family through the studio adapter, using named product
+roles and reversed canonical point storage. An independently chosen 28-point
+domain still exposes four missing keys after the polar is removed and survivors
+are selected. This adds a separate adapter fixture, not new notebook helpers;
+the complete lesson's source-constructor UI and larger support remain future work.
+
 Pair domains also expose a practical limit. Incidence still uses the declared
 91×28 support. Ranks now sort within groups and store compact predecessor prefixes,
 removing the old `28×28` rank domain. With all definitions, evaluated dependencies,

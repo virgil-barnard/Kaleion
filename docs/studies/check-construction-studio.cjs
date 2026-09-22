@@ -193,10 +193,68 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  const phoneRevision=(await state()).revision;await page.locator('#canvas').scrollIntoViewIfNeeded();const member=await page.locator('#marks circle').nth(8).boundingBox();
  await page.touchscreen.tap(member.x+member.width/2,member.y+member.height/2);
  assert.equal(await page.locator('#group-choice').inputValue(),'2');assert.equal(await page.locator('[data-group-member="true"]').count(),3);
- await page.locator('#options').tap();assert.deepEqual(await page.locator('#menu-actions button').allTextContents(),['Choose group keys','Create a group lens','Measure all groups']);await page.locator('#close-menu').tap();
+ await page.locator('#options').tap();assert.deepEqual(await page.locator('#menu-actions button').allTextContents(),['Choose group keys','Create a group lens','Measure all groups','Check coverage']);await page.locator('#close-menu').tap();
  assert.equal((await state()).revision,phoneRevision);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.screenshot({path:path.join(output,'phone-group.png'),fullPage:true});
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+ // The same coverage instrument checks assignments and additive fibers against chosen keys.
+ await page.setViewportSize({width:1250,height:950});await page.emulateMedia({colorScheme:'light'});
+ await page.locator('[data-mode="objects"]').click();await integers('Expected points','2, 0, 1');
+ async function coverage(source,by,expected,expectedBy='value'){
+   await select(source);await tool('coverage');
+   await page.locator('#coverage-tool > .field-keys [data-group-add]').selectOption(by);
+   await page.locator('#coverage-expected').selectOption(expected);
+   await page.locator('#coverage-expected-keys [data-group-add]').selectOption(expectedBy);
+   await page.locator('#check-coverage').click();await idle();
+ }
+ const beforeCoverage=await(await page.request.get(origin+'/api/export')).text();
+ await coverage('Assignment candidates','i','Expected points');
+ assert.match(await page.locator('#coverage-status').textContent(),/1 of 3.*1 missing, 1 multiple, 0 outside/);
+ assert.equal(await page.locator('#coverage-adopt').isEnabled(),false);
+ await page.locator('#coverage-filter').selectOption('multiple');await page.locator('#coverage-match').selectOption('1');await page.getByRole('button',{name:'Inspect selected match',exact:true}).click();await idle();
+ assert.match(await page.locator('#panel').textContent(),/"i": "2"/);await page.getByRole('button',{name:'Back to coverage'}).click();
+ assert.equal(await page.getByRole('button',{name:'Inspect selected match',exact:true}).evaluate(n=>n===document.activeElement),true,'Returning to witnesses restores focus to the initiating control');
+ assert.equal(await page.locator('#coverage-match').inputValue(),'1');
+ assert.equal(await page.locator('#coverage-filter').inputValue(),'multiple');
+ await page.locator('#coverage-filter').selectOption('missing');await page.getByRole('button',{name:'Show candidate group'}).click();await idle();
+ assert.equal(await page.locator('[data-group-member="true"]').count(),3);
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeCoverage);
+ await page.screenshot({path:path.join(output,'coverage-witnesses.png'),fullPage:true});
+ // Selecting the surviving occurrences removes a candidate group, not an expected key.
+ await page.locator('[data-mode="objects"]').click();await select('Assignment candidates');await tool('select');await page.locator('#result-name').fill('Surviving candidates');await apply();
+ await coverage('Surviving candidates','i','Expected points');await page.locator('#coverage-filter').selectOption('missing');
+ assert.match(await page.locator('#coverage-witness').textContent(),/No candidate group exists/);
+ assert.equal(await page.getByRole('button',{name:'Show candidate group'}).count(),0);
+ await page.getByRole('button',{name:'Inspect expected occurrence'}).click();await idle();assert.match(await page.locator('#panel').textContent(),/"value": "0"/);await page.getByRole('button',{name:'Back to coverage'}).click();
+ // A new rule supplies one value per point. Attach it without overwriting point labels.
+ await coverage('Diagonal','i','Expected points');assert.equal(await page.locator('#coverage-status').getAttribute('data-phase'),'passed');
+ await page.locator('#coverage-expected-keys').getByRole('button',{name:'Remove key value'}).click();assert.equal(await page.locator('#coverage-adopt').count(),0);
+ await page.locator('#coverage-expected-keys [data-group-add]').selectOption('value');await page.locator('#check-coverage').click();await idle();
+ await page.locator('#coverage-adopt').click();await page.locator('#result-name').fill('Assigned points');await page.locator('#assigned-field').fill('owner');await expression(cards().nth(0),f('j'));
+ const assignmentDraft=JSON.parse(await page.locator('#declaration').textContent());await coverage('Diagonal','i','Expected points');
+ assert.equal(await page.locator('#coverage-status').getAttribute('data-phase'),'passed');assert.equal(await page.locator('#coverage-adopt').isEnabled(),false,'A read-only coverage check cannot replace the parked draft');
+ await page.locator('#resume-draft').click();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()),assignmentDraft);await apply();
+ const assigned=(await state()).objects.find(o=>o.name==='Assigned points');assert.deepEqual(assigned.rows.map(r=>r.fields.owner),['2','0','1']);assert.deepEqual(await values('Assigned points'),['2','0','1']);
+ await page.locator('#undo').click();await idle();assert.equal((await state()).objects.some(o=>o.name==='Assigned points'),false);await page.locator('#redo').click();await idle();
+ await select('Assigned points');await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption(assigned.rows[1].ref[1]);await idle();await page.getByRole('button',{name:'Follow keyed read · 0'}).click();await idle();assert.match(await page.locator('#panel').textContent(),/1 contributors/);assert.match(await page.locator('#panel').textContent(),/weight 0/);
+ // Reuse that new field as a placement driver; undo restores the captured endpoints.
+ await page.locator('[data-mode="objects"]').click();await select('Expected points');await tool('place');await expression(cards().nth(0),f('value'));await expression(cards().nth(1),n(0));await apply();
+ const flat=(await state()).objects.find(o=>o.name==='Expected points').rows;
+ await tool('place');await expression(cards().nth(0),f('value'));await expression(cards().nth(1),{read:{object:'Assigned points',on:f('value'),key:f('value'),value:f('owner')}});await apply();
+ assert.deepEqual((await state()).objects.find(o=>o.name==='Expected points').rows.map(r=>r.position),[[2,2],[0,0],[1,1]]);
+ await page.locator('#undo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Expected points').rows,flat);await page.locator('#redo').click();await idle();
+ // Transfer: additive fibers, including outside matches even when every expected key is unique.
+ await integers('Sum targets','5, 0, 2, 1');await coverage('Sums','total','Sum targets');
+ assert.match(await page.locator('#coverage-status').textContent(),/4 of 4.*0 missing, 0 multiple, 1 outside/);assert.equal(await page.locator('#coverage-adopt').isEnabled(),false);
+ await page.locator('#coverage-filter').selectOption('outside');assert.match(await page.locator('#coverage-key').textContent(),/3 · 2 matches · outside/);
+ await select('Sums');await tool('lens');await page.locator('#result-name').fill('Unique sums');await expression(cards().nth(0),op('≠',f('total'),n(3)));await apply();
+ await page.setViewportSize({width:320,height:950});await coverage('Unique sums','total','Sum targets');assert.equal(await page.locator('#coverage-status').getAttribute('data-phase'),'passed');
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Coverage choices and witnesses fit a phone');await page.locator('#coverage-status').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'coverage-phone.png'),fullPage:true});
+ await page.locator('#coverage-adopt').tap();await page.locator('#result-name').fill('Assigned sums');await page.locator('#assigned-field').fill('partner');await expression(cards().nth(0),f('right_value'));await apply();
+ assert.deepEqual((await state()).objects.find(o=>o.name==='Assigned sums').rows.map(r=>r.fields.partner),['2','0','2','0']);
+ const coverageDownload=page.waitForEvent('download');await page.locator('#save').click();const capture=await coverageDownload;const coverageSaved=path.join(output,'coverage-workspace.json');await capture.saveAs(coverageSaved);await idle();
+ await page.locator('#undo').click();await idle();await page.locator('#file').setInputFiles(coverageSaved);await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Assigned sums').rows.map(r=>r.fields.partner),['2','0','2','0']);
+ const coverageChecks={balancedFailure:true,absentExpectedKey:true,candidateAndMatchInspection:true,unchangedCapture:true,originalKeysRetained:true,zeroValuedOwner:true,drivenPlacementUndo:true,additiveTransfer:true,phoneLayout:true,savedAssignment:true};
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

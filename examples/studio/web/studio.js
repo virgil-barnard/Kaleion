@@ -2,6 +2,7 @@ import {actions, labels} from './context.js';
 import {expressionEditor} from './expressions.js';
 import {fieldKeys} from './groups.js';
 import {draftSession} from './drafts.js';
+import {coverageInspector} from './coverage.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -126,8 +127,8 @@ function openMenu(addOnly=false){
   $('menu-title').textContent=addOnly?'Add to the canvas':mode==='points'?'Occurrence options':mode==='groups'?'Group options':mode==='view'?'View options':active||'Canvas options';
   $('menu-actions').replaceChildren(...(options.length?options.map(action=>{
     const button=el('button',action==='measure'&&mode==='groups'?'Measure all groups':labels[action],{'data-action':action});
-    if(draft.current&&!['explain','fit','group_options'].includes(action)){button.disabled=true;button.title='Resume or discard your draft before starting another construction.'}
-    button.onclick=()=>{$('menu').close();if(action==='explain')explain();else if(action==='fit')fit();else if(action==='group_options')groupPanel();else editor(action)};return button;
+    if(draft.current&&!['explain','fit','group_options','coverage'].includes(action)){button.disabled=true;button.title='Resume or discard your draft before starting another construction.'}
+    button.onclick=()=>{$('menu').close();if(action==='explain')explain();else if(action==='fit')fit();else if(action==='group_options')groupPanel();else if(action==='coverage')coveragePanel();else editor(action)};return button;
   }):[el('p','Select an occurrence first. The list also reaches coincident points.')]));
   $('menu').showModal();
 }
@@ -225,15 +226,28 @@ function groupPanel(){
   }
   show();
 }
+function coveragePanel(){
+  parkDraft();const source=object();
+  const box=coverageInspector({source,objects:state.objects,initialBy:groupReport?.name===active?groupReport.by:[],run,
+    check:spec=>request('coverage',spec),canAdopt:()=>!draft.current,
+    inspect:async(ref,trigger)=>{const receipt=await request('inspect-driver',{ref});showReceipt(receipt,'Value',()=>{$('panel').replaceChildren(box);trigger.focus({preventScroll:true})})},
+    showGroup:async(report,group)=>{
+      groupReport=await request('groups',{name:source.name,by:report.by});groupChoice=group;active=source.name;mode='groups';selectedPoint=null;
+      document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));render();
+    },
+    adopt:spec=>editor('assignment',spec),
+  });
+  $('panel').replaceChildren(box);
+}
 function expr(initial,fields){
   return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'));
 }
-function editor(action){
+function editor(action,seed=null){
   if(draft.current){status('Resume or discard your draft before starting another construction.',true);return}
-  preview=null;const editorRevision=state.revision,sourceName=active;render();
+  preview=null;const editorRevision=state.revision,sourceName=seed?.source||active;render();
   const panel=$('panel');panel.replaceChildren(el('span','DECLARE / PREVIEW / APPLY',{class:'eyebrow'}),el('h2',labels[action]));
   const form=el('form'), controls=el('fieldset');controls.style.cssText='border:0;padding:0;margin:0;min-width:0';form.append(controls);panel.append(form);
-  const source=object(), fields=source?.fields||['i','j','value','index','key'];
+  const source=state.objects.find(o=>o.name===sourceName), fields=source?.fields||['i','j','value','index','key'];
   const name=labeled(controls,'Result name',input(action==='place'?active:`${labels[action]} ${state.objects.length+1}`));
   name.id='result-name';if(action==='place')name.readOnly=true;
   let args;
@@ -273,6 +287,11 @@ function editor(action){
     function measurementFields(){weight.box.hidden=weight.box.previousElementSibling.hidden=reducer.value!=='sum';order.box.hidden=key.parentElement.hidden=reducer.value!=='rank'}
     reducer.onchange=measurementFields;measurementFields();
     args=()=>({source:sourceName,reducer:reducer.value,by:groups.read(),weight:weight.read(),order:order.read(),key:key.value});
+  }else if(action==='assignment'){
+    controls.append(el('p',`Assign onto ${seed.expected}, matching ${seed.expected_by.join(', ')} to ${seed.by.join(', ')} in ${seed.source}. Its identities, positions, and labels are retained. Coverage is checked again before adoption.`,{class:'help'}));
+    const assigned=labeled(controls,'New field name',input('assigned'));assigned.id='assigned-field';
+    const value=expressionControl('Value supplied by the unique match',field('value'));
+    args=()=>({...seed,value:value.read(),field:assigned.value});
   }else if(action==='place'){
     controls.append(el('p','Change this object’s placement. Use a Keyed read to let a measurement supply a coordinate. Existing derived objects keep their earlier input definitions.',{class:'help'}));
     const x=expressionControl('x coordinate',field(fields.includes('i')?'i':'key'));
@@ -287,7 +306,7 @@ function editor(action){
     args=()=>selection;
   }
   const feedback=el('p',undefined,{id:'draft-status',role:'status','aria-live':'polite','aria-atomic':'true'});form.append(feedback);
-  const effect=action==='place'?`Change placement of ${sourceName}`:action==='product'?'Create a new object from the chosen factors':`Create a new object${sourceName&&!['integers','grid'].includes(action)?` from ${sourceName}`:''}`;
+  const effect=action==='place'?`Change placement of ${sourceName}`:action==='assignment'?`Create a new field on a copy of ${seed.expected}`:action==='product'?'Create a new object from the chosen factors':`Create a new object${sourceName&&!['integers','grid'].includes(action)?` from ${sourceName}`:''}`;
   form.append(el('p',effect,{class:'help',id:'draft-effect'}));
   const bar=el('div',undefined,{class:'form-actions'}), test=el('button','Preview',{type:'submit',class:'primary',id:'preview'}), apply=el('button','Apply',{type:'button',id:'apply'}),cancel=el('button','Cancel',{type:'button',id:'cancel'});apply.disabled=true;bar.append(test,apply,cancel);form.append(bar);
   const detail=el('details'), summary=el('summary','Read the declaration'),code=el('pre',undefined,{id:'declaration'});detail.append(summary,code);panel.append(detail);
@@ -318,9 +337,10 @@ for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.curren
 function explain(){run(async()=>{
   const receipt=await request('inspect',{name:active,ref:selectedPoint});showReceipt(receipt);
 })}
-function showReceipt(receipt,heading='Value'){
+function showReceipt(receipt,heading='Value',back=null){
   parkDraft();
   const panel=$('panel');panel.replaceChildren(el('span','CAPTURED EVIDENCE',{class:'eyebrow'}),el('h2',`${heading} ${receipt.item.value}`));
+  if(back){const button=el('button','Back to coverage',{type:'button'});button.onclick=back;panel.append(button);button.focus({preventScroll:true})}
   panel.append(el('pre',JSON.stringify(receipt.item.fields,null,2)));
   const m=receipt.measurement;
   if(m.unavailable)panel.append(el('p','No active measurement receipt at this occurrence.',{class:'quiet'}));
@@ -332,7 +352,7 @@ function showReceipt(receipt,heading='Value'){
   if(Array.isArray(receipt.bindings))for(const b of receipt.bindings){const button=el('button',`Follow keyed read · ${b.value}`);button.onclick=()=>run(async()=>{
     // The driver may be an earlier captured version. Request by scoped reference,
     // never guess it from a current object's equal labels or screen location.
-    const driver=await request('inspect-driver',{ref:b.driver});showReceipt(driver,'Driver value');
+    const driver=await request('inspect-driver',{ref:b.driver});showReceipt(driver,'Driver value',back);
   });panel.append(button)}
   const details=el('details'),summary=el('summary','Scoped references and receipt'),pre=el('pre',JSON.stringify(receipt,null,2));details.append(summary,pre);panel.append(details);
 }

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a shared coverage instrument with independently chosen expected keys, captured missing/multiple/outside witnesses, and inspection/return controls. Adopt a sole match as a new field with live graph guards, retaining expected labels, identity, keys, and placement. Reuse the assigned field as a motion driver. Existing Count/Sum/Bind/Require/Annotate operations suffice; no core API or saved-schema change. Validate modular/additive browser tasks and a restricted Hermitian spread, including removal of the polar.
+
 - Add a UI design study with primary sources, a studio audit, cross-lesson review criteria, and a formative testing plan. Preserve one unfinished studio draft through object/group/contributor inspection, with its original target, grouping, and local expression undo. Keep preview feedback current beside Apply, restore keyboard focus, and preserve object-tab clicks after input blur. Draft lifetime stays outside numerical execution and captured history; validate through additive and modular browser tasks.
 
 - Add shared captured group selection and compact formula editing to the construction studio. Browse declared keys without graph execution or history changes; retain zero groups and distinguish candidates from incident members. Create a group lens explicitly, preserving its universe. One field-key control serves selection, reductions, and lexicographic Rank order. Tap formula parts to edit structured expressions, with local undo and separate keyed-read contexts. Share the existing retained-axis policy rather than add a core primitive; validate additive, modular, empty, tied, stale, and phone-width cases.

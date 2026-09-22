@@ -15,6 +15,7 @@ from kaleion.history import Observation, State
 from kaleion.ir import expression as constant
 from kaleion.model import IncidenceSnapshot, Ref
 from .groups import captured_groups
+from .coverage import captured_coverage, unique_assignment
 
 
 OPERATORS = {
@@ -31,6 +32,7 @@ ARGUMENTS = {
     "measure": {"source", "by", "reducer", "weight", "order", "key"},
     "place": {"source", "coordinates"},
     "group_lens": {"source", "capture", "by", "group"},
+    "assignment": {"source", "by", "expected", "expected_by", "capture", "expected_capture", "value", "field"},
 }
 
 
@@ -154,6 +156,21 @@ def build(command, roots, *, captured=None):
             if args["capture"] != groups.capture:
                 raise ValueError("The group selection belongs to an earlier capture")
             result = groups.lens(source, args["group"])
+        elif action == "assignment":
+            if captured is None:
+                raise ValueError("Check coverage on captured inputs before assigning values")
+            expected = roots[args["expected"]]
+            report = captured_coverage(captured.results[args["source"]], args["by"],
+                                       captured.results[args["expected"]], args["expected_by"])
+            if (report.groups.capture != args["capture"]
+                    or report.expected.node != args["expected_capture"]):
+                raise ValueError("Coverage belongs to an earlier capture; check again")
+            if not report.passed:
+                raise ValueError("Assignment requires exactly one match per expected key and no outside matches")
+            field = args["field"]
+            if not isinstance(field, str) or not field.isidentifier() or field in report.expected.context():
+                raise ValueError("Choose a new field name; expected labels and key fields are retained")
+            result = unique_assignment(source, args["by"], expected, args["expected_by"], ex(args["value"]), field)
         else:
             raise ValueError(f"Unsupported authoring action: {action}")
     return name, result
@@ -279,6 +296,36 @@ class Studio:
                              population=str(len(members)), count=str(len(matches)),
                              members=refs(members), matches=refs(matches))
                         for key, members, matches in zip(report.keys, report.members, report.matches)])
+
+    def coverage(self, name, by, expected, expected_by, revision):
+        """A captured coverage report over a separately chosen expected domain."""
+        self.check(revision)
+        report = captured_coverage(self.workspace.state.results[name], by,
+                                   self.workspace.state.results[expected], expected_by)
+        groups = report.groups
+
+        def row(key, group, index=None):
+            members = () if group is None else groups.members[group]
+            matches = () if group is None else groups.matches[group]
+            refs = lambda items: [[groups.source.node, groups.source.ids[i]] for i in items]
+            return dict(key=exact_wire(key), key_types=["boolean" if isinstance(v, bool) else
+                        "integer" if isinstance(v, int) else "number" if isinstance(v, float)
+                        else "text" for v in key],
+                        group=group, present=group is not None,
+                        population=str(len(members)), count=str(len(matches)),
+                        members=refs(members), matches=refs(matches),
+                        expected_ref=None if index is None else [report.expected.node, report.expected.ids[index]],
+                        status="missing" if not matches else "unique" if len(matches) == 1 else "multiple")
+
+        return dict(revision=revision, name=name, by=list(by), expected=expected,
+                    expected_by=list(expected_by), capture=groups.capture,
+                    expected_capture=report.expected.node, passed=report.passed,
+                    empty=not report.keys,
+                    summary=dict(expected=str(len(report.keys)), unique=str(report.counts.count(1)),
+                                 missing=str(report.counts.count(0)), multiple=str(sum(n > 1 for n in report.counts)),
+                                 outside=str(len(report.unexpected))),
+                    rows=[row(key, group, i) for i, (key, group) in enumerate(zip(report.keys, report.indices))],
+                    unexpected=[row(groups.keys[i], i) for i in report.unexpected])
 
     def inspect_ref(self, ref, revision):
         """Follow a receipt to its captured driver, including an earlier version."""

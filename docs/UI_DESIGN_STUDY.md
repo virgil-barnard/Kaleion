@@ -148,9 +148,9 @@ This increment implements one recoverable draft in the current browser tab:
 - Escape closes a formula-part inspector first. Outside that inspector it parks
   the construction; Cancel or Discard is the explicit destructive choice.
 
-This takes precedence over adding coverage controls because A1–A3 obstruct the
-basic edit–inspect–return loop every future instrument will use. Coverage remains
-next; it has not been replaced by visual polish.
+This took precedence over adding coverage controls because A1–A3 obstructed the
+basic edit–inspect–return loop every future instrument uses. The subsequent
+[coverage experiment](COVERAGE_INSTRUMENT.md) now reuses that loop.
 
 ### Information hiding
 
@@ -226,6 +226,14 @@ whole interface is accessible or intuitive.
 
 ### Proposed human observation
 
+The subsequent [coverage instrument](COVERAGE_INSTRUMENT.md) provides another
+executable task for this protocol: distinguish a zero group from a wholly absent
+candidate key, inspect witnesses, then adopt a sole value as a new field. It is
+tested through modular and additive browser constructions and a restricted
+Hermitian adapter case. The suite now has 151 passing tests; this extends the
+behavioral evidence without adding human-study results. Paired views remain the
+next experiment for audit item A9.
+
 **Formative human study, proposed:** start with 6–8 consenting adult volunteers,
 including people comfortable with school algebra but unfamiliar with the API and
 some experienced mathematical/programmatic users. Report each group's experience;
@@ -276,8 +284,10 @@ Use this record for each review:
    recovery. Delivered and tested against additive/modular controls in this increment;
    evaluate its one-draft constraint during human observation.
 2. **Coverage as an explicit claim:** retain an independent expected domain; show
-   zero/one/multiple witnesses; guard unique-owner adoption. Challenge it with
-   simple assignments before the Hermitian investigation.
+   zero/one/multiple witnesses; guard unique-owner adoption. Delivered as the
+   [coverage instrument](COVERAGE_INSTRUMENT.md), with outside-key witnesses and
+   assigned fields. Simple/additive browser tasks and a bounded Hermitian adapter
+   case share the contract; complete Hermitian UI authoring remains open.
 3. **Comparison and dependency views:** keep two results visible and follow a
    measurement to its input. Use Radon reconstruction and quotient-driven motion.
 4. **Case versus replay controls:** exact parameter stepping beside scrubbable

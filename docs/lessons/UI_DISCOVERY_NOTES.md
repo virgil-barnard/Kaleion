@@ -7,8 +7,10 @@ and modular incidences through a separate Python adapter. Its all-lesson matrix
 keeps the general goal explicit. Groups now select by declared keys and report
 candidate and incident populations separately; compact formulas open an editor
 for one selected part. The same field-key control serves group selection,
-measurement, and explicit member order. Next test coverage requirements and
-guarded owner adoption; physical touch usability remains untested.
+measurement, and explicit member order. The [coverage instrument](../COVERAGE_INSTRUMENT.md)
+adds independent expected keys, failure witnesses, and guarded assigned fields.
+Next test linked views of those keys and their matches; physical touch usability
+remains untested.
 
 The [UI design study](../UI_DESIGN_STUDY.md) evaluates these controls through
 direct manipulation, reusable instruments, notation tradeoffs, and accessibility
@@ -98,9 +100,11 @@ Rank evidence stores ordered rosters and prefix ranges; playback still reads cap
 - **Products and prefixes.** Pair-domain definitions remain verbose. Compare a
   named-role recipe across lessons 05, 07, and 10. Ordered ranks are implemented;
   weighted exclusive prefix sums, needed for Young layer offsets, remain a gap.
-- **Coverage and comparisons.** Current coverage checks an existing pre-mask
+- **Coverage and comparisons.** The public `Coverage` helper checks an existing pre-mask
   reduction domain, including zero groups. Lessons 04–05 also have a finite
   keyed-value report with explicit expected domains and missing/unexpected keys.
+  The studio now composes existing guards and bindings to check an independent
+  expected domain before attaching a unique match's value as a field.
   Subset and occurrence comparisons remain distinct future contracts. Equal totals
   alone never establish a correspondence.
 - **Explanation across bindings.** `Inspection` now follows direct keyed reads
