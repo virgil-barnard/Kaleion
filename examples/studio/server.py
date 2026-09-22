@@ -33,7 +33,7 @@ def serve(port=8765):
                 self.reply(studio.state())
             elif self.path == "/api/export":
                 self.reply(studio.workspace.to_json().encode())
-            elif self.path in ("/", "/studio.js", "/context.js", "/studio.css", "/expressions.js", "/groups.js", "/drafts.js"):
+            elif self.path in ("/", "/studio.js", "/context.js", "/studio.css", "/expressions.js", "/groups.js", "/drafts.js", "/coverage.js"):
                 name = "studio.html" if self.path == "/" else self.path[1:]
                 mime = {".html": "text/html", ".js": "text/javascript", ".css": "text/css"}[Path(name).suffix]
                 self.reply((ASSETS / name).read_bytes(), mime=mime)
@@ -71,6 +71,8 @@ def serve(port=8765):
                     result = studio.inspect_ref(body["ref"], revision)
                 elif self.path == "/api/groups":
                     result = studio.groups(body["name"], body["by"], revision)
+                elif self.path == "/api/coverage":
+                    result = studio.coverage(body["name"], body["by"], body["expected"], body["expected_by"], revision)
                 elif self.path == "/api/import":
                     result = studio.reopen(body["capture"], revision)
                 else:

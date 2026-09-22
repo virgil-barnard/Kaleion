@@ -171,7 +171,9 @@ coverage of every expected curve point. “Use unique owner” is available only
 checking exactly one match per key. Removing a candidate owner leaves uncovered
 points available to inspect while the owner-dependent packing fails explicitly.
 
-This is also the next adversarial test of `Product`. Lesson 10's canonical point
+The [coverage adapter test](COVERAGE_INSTRUMENT.md) now challenges `Product` with
+a restricted seven-block family and reversed canonical point storage. The full
+lesson's `Product` migration remains separate work. Lesson 10's canonical point
 codes currently align with a particular storage convention. A named role is a
 **current source slot**, not automatically the project's canonical code. Reorder
 and filter representatives, retain both quantities under separate fields, and
@@ -239,7 +241,9 @@ and two constructions through the same controls. Its shared Group selector now
 browses sum and modular-line fibers, retaining zero groups and separating
 candidate membership from incidence. Compact formulas open one selected part for
 editing; grouping, measurement, and member order reuse a field-key control.
-Next test explicit coverage requirements and guarded owner adoption against both
-simple assignment witnesses and the Hermitian construction. Separately, weighted
+The [coverage instrument](COVERAGE_INSTRUMENT.md) now checks independent expected
+keys and attaches guarded assigned fields. Simple/additive browser tasks and a
+restricted Hermitian adapter test cover its witnesses and keyed reuse. Next test
+paired views while inspecting absent items and measured dependencies. Separately, weighted
 prefixes in lesson 06 should establish the missing ordered-measurement contract.
 A future prefix control should follow that evidence, not lead the core design.

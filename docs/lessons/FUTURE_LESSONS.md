@@ -50,13 +50,16 @@ construction. The [construction studio](../CONSTRUCTION_STUDIO.md) now authors
 new additive and modular constructions through the same controls and adapter,
 with save/reopen and captured history. Declared group selection and compact
 formula editing now serve sum and modular-line fibers, including zero groups and
-explicit tie breakers. Next expose coverage requirements and guarded owner
-adoption, using the shared `[0,1,2]` candidate-count fixture before the Hermitian
-construction. Full-lesson UI coverage and new-user trials remain
+explicit tie breakers. The [coverage instrument](../COVERAGE_INSTRUMENT.md) now
+checks an independently declared expected domain, exposes missing/multiple/outside
+witnesses, and attaches a guarded assigned field. The `[0,1,2]` fixture, additive
+fibers, and restricted Hermitian ownership exercise the same contract. Next test
+two linked views for missing expected items and measurement dependencies.
+Full-lesson UI coverage and new-user trials remain
 future work; its coverage matrix distinguishes editor gaps from backend gaps.
 The [UI design study](../UI_DESIGN_STUDY.md) now supplies the quality rubric and
-transfer tasks. Its first iteration preserves drafts through inspection; use
-that same loop for coverage witnesses before adding another interaction pattern.
+transfer tasks. Its first iteration preserves drafts through inspection; coverage
+now reuses that loop for witnesses and an assignment's value expression.
 Before adding more abstraction, compare weighted prefixes in 06, case-family evidence in 08, and coordinated
 replay in 11. The inspector does not yet explain scalar/positional reads or nested
 bindings within binding keys/reads; future lessons should name these gaps explicitly.

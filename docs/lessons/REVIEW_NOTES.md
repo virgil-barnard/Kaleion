@@ -18,6 +18,14 @@ a proposed human-observation protocol. Its first delivered changes retain drafts
 through inspection and repair stale feedback, disappearing focus, and swallowed
 navigation clicks. These are browser-verified behaviors, not learner-study results.
 
+The subsequent [coverage instrument](../COVERAGE_INSTRUMENT.md) declares expected
+keys independently and distinguishes zero, absent, multiple, and outside matches.
+A passing claim can attach the sole match's value as a new field, retaining labels
+and keys for reuse. Saved graph requirements guard adoption; an inspection report
+never becomes an unverified proof input. Browser checks transfer between modular
+and additive examples; adapter tests also remove the Hermitian polar and reverse
+canonical-key storage. Paired views are the next UI experiment.
+
 ## Delivered: explicit discovery choices
 
 Lessons 07 and 10 now declare grouping, strict member order, coverage, and named

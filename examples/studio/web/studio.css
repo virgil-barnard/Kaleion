@@ -360,3 +360,18 @@ pre {
 .formula-token {
   min-width:44px;
 }
+#coverage-status {
+  padding:10px;
+  border-left:3px solid var(--green);
+  background:#719e751a;
+}
+#coverage-status[data-phase=failed],#coverage-status[data-phase=error] {
+  border-color:var(--amber);
+}
+#coverage-witness button {
+  display:block;
+  margin:8px 0;
+}
+#coverage-adopt {
+  margin-top:16px;
+}

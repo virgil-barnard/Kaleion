@@ -60,6 +60,14 @@ boundary changes captured history. The [UI design study](docs/UI_DESIGN_STUDY.md
 provides evidence-based review questions and testable interaction hypotheses;
 these presentation decisions introduce no core primitive or saved-format change.
 
+The studio's [coverage instrument](docs/COVERAGE_INSTRUMENT.md) makes an expected
+key domain a separate input. Its captured report owns witness alignment; its
+assignment recipe composes Count/Sum/Bind/Require/Annotate. Live requirements
+check unique expected keys, exactly one match each, and no outside matches.
+The result adds a new field while retaining expected labels, keys, occurrence
+identity, and placement. The public `Coverage` helper still uses its pre-mask
+group domain; no new primitive or saved-schema contract is implied by the UI.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:
