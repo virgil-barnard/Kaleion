@@ -46,7 +46,12 @@ receipts, including weights and scoped contributors. The
 all eleven lessons. Named product roles now share a small recipe in 05/07. Test it
 against reordered canonical representatives in 10 before extending it. The bounded
 [touch study and control plan](../TOUCH_WORKSPACE.md) starts with the equal-sum
-construction; a real declaration editor and new-user trials remain future work.
+construction. The [construction studio](../CONSTRUCTION_STUDIO.md) now authors
+new additive and modular constructions through the same controls and adapter,
+with save/reopen and captured history. Next test declared group selection and a
+compact expression surface across sum and modular-line fibers, then expose
+Hermitian coverage witnesses. Full-lesson UI coverage and new-user trials remain
+future work; its coverage matrix distinguishes editor gaps from backend gaps.
 Before adding more abstraction, compare weighted prefixes in 06, case-family evidence in 08, and coordinated
 replay in 11. The inspector does not yet explain scalar/positional reads or nested
 bindings within binding keys/reads; future lessons should name these gaps explicitly.

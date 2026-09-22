@@ -1,5 +1,12 @@
 # Discovery choices the interface should make legible
 
+The new [construction studio](../CONSTRUCTION_STUDIO.md) tests these choices with
+real authoring from a blank canvas. Hold options depend on selector scope and
+target capabilities. The same declaration controls construct additive stacks
+and modular incidences through a separate Python adapter. Its all-lesson matrix
+keeps the general goal explicit; grouped selection, compact expressions, and
+physical touch usability are the next experiments.
+
 Lessons [09](09_norm_fibers.md) and [10](10_hermitian_partitions.md) extend the
 [earlier review evidence](REVIEW_NOTES.md). These are tested authoring needs and
 proposed UI capabilities. The first four authoring choices are now implemented

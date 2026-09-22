@@ -1,6 +1,9 @@
 # A touch workspace for composing investigations
 
-**Status:** interface hypothesis, with a bounded working interaction study.
+**Status:** interface hypothesis, with a bounded working interaction study and a
+new [blank-canvas construction studio](CONSTRUCTION_STUDIO.md). The studio adds
+real authoring through a separate semantic-command adapter and context-sensitive
+hold menus. Its guide states the implemented subset and all-lesson coverage gaps.
 The shared `Product` recipe is implemented in lessons 05 and 07. The study uses
 real captured Kaleion results and paths; it is not a general editor or a browser
 implementation of the evaluator. Its two source choices are deliberately finite.
@@ -72,10 +75,11 @@ memorizing a gesture, or accurate selection of a single dense marker.
 | Lasso / paint occurrences | Create a finite selection by scoped identity | It is not automatically a general predicate. A separate “Describe with a rule” action must expose and check any proposed generalization. |
 | Release a preview; Cancel/Escape | Commit one semantic edit; or restore the starting state | Do not add a history action per pointer sample. An abandoned preview leaves no construction change. |
 
-The first version should favor a labeled tool shelf over gesture-only radial menus.
-A radial menu may eventually reduce travel, but novice discoverability and dense
-scene selection need testing first. Double-tap and long-press must not be the only
-way to reach any command. Start with roughly 44-pixel control targets and test on
+The studio now uses hold-to-open options selected by object/occurrence/view scope,
+with the same actions on a visible Options button and a keyboard route. Menu
+placement and radial versus list presentation can change independently of the
+commands. Long-press is a first-class shortcut, not the only way to reach a tool.
+Start with roughly 44-pixel control targets and test on
 actual tablets; dense points also need the occurrence chooser and an accessible list.
 
 Zooming out fits the **declared domain**. Panning beyond it may offer “Extend to…”
@@ -226,8 +230,10 @@ lose track of source identity, or cannot find a zero/coincident occurrence. Then
 have them make a new relation rather than repeat a scripted demonstration.
 The current two-case study cannot establish this general authoring usability.
 
-The next implementation experiment should connect one real declaration editor to
-Kaleion and save/reopen it, with cancellation and failure recovery. Test the same
-controls on point–line incidence before expanding the menu. Separately, weighted
+The [construction studio](CONSTRUCTION_STUDIO.md) now connects a bounded real
+declaration editor to Kaleion, with save/reopen, cancellation, failure recovery,
+and two constructions through the same controls. Next test a declared Group
+selector across sum fibers and modular-line fibers, with a more compact readable
+expression surface. Separately, weighted
 prefixes in lesson 06 should establish the missing ordered-measurement contract.
 A future prefix control should follow that evidence, not lead the core design.

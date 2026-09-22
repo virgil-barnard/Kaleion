@@ -168,6 +168,12 @@ not erase the different identity policies of Gather, Roll, Select, and reduction
    chart projections without reevaluation. Keep shared presentation progress
    distinct from an atomic edit of multiple workspace roots, which is not provided.
 
+The [blank-canvas studio](CONSTRUCTION_STUDIO.md) now implements a first command
+adapter and contextual hold controls across additive and modular constructions.
+Its coverage matrix keeps all eleven lessons as the acceptance target. Next test
+group selection and a compact expression editor across unrelated fibers; do not
+turn the first successful investigation into the UI's organizing structure.
+
 Alongside those recipes, test the [touch control hypothesis](TOUCH_WORKSPACE.md)
 against concrete tasks: rebuild the plane lift;
 select a reconstruction pixel and follow its line counts; remove an owner from a
