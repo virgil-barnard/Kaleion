@@ -131,8 +131,13 @@ A convenience operation should first make at least two real constructions cleare
 The [touch workspace study](../TOUCH_WORKSPACE.md) makes the proposed UI choices
 reviewable using captured equal-sum examples. It separates preview/commit, case
 selection/replay, zeros/missing keys, and overlapping/distinct occurrences. Its
-two-case menus do not establish general novice authoring: the next UI experiment
-must let someone compose a new relation and save/reopen that declaration.
+two-case menus do not establish general novice authoring. The new
+[construction studio](../CONSTRUCTION_STUDIO.md) now composes fresh sources,
+relations, grouped measurements, and keyed placements through one command adapter.
+Browser checks construct additive and modular examples from a blank workspace,
+then save/reopen captures. This establishes a shared mechanism, not novice
+usability or complete lesson coverage. The next experiment is explicit group
+selection and more compact expression editing across unrelated fibers.
 
 The core audit sharpens the explanation requirement: definition dependencies are
 already recorded, but a driven snapshot's direct parents currently name the target

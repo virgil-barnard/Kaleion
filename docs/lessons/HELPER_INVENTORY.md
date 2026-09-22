@@ -189,6 +189,15 @@ agree with the remaining work in the
 
 ## Modules, objects, and inheritance
 
+The experimental [construction studio](../CONSTRUCTION_STUDIO.md) adds an authoring
+client, not another notebook helper or a lesson superclass. Its scaffolding is
+partitioned by changeable decisions: `context.js` selects semantic actions;
+`studio.js` owns gesture recognition, expression-card editing, and snapshot/frame
+drawing; `adapter.py` owns explicit intent lowering, decimal-integer transport,
+revisioned previews, and captured inspection; `server.py` owns the local transport.
+The same path is tested against quotient, modular, and additive constructions.
+No existing notebook function inventory or core operation changes in this increment.
+
 Use the Parnas guidepost in [DESIGN.md](../../DESIGN.md): isolate decisions likely
 to change, rather than turning each stage of a lesson into a module. A viewer can
 change its routing without changing incidence; an arithmetic recipe can change

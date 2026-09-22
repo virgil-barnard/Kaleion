@@ -37,6 +37,14 @@ Named products now serve 05 and 07. The [touch workspace study](docs/TOUCH_WORKS
 maps these choices to proposed controls, separating input gestures, semantic edits,
 exact previews, captured history, and rendering.
 
+The experimental [construction studio](docs/CONSTRUCTION_STUDIO.md) now tests a
+language-neutral command boundary outside the installed core. Its action resolver
+depends on selector scope and target capabilities; its adapter lowers explicit
+declarations to existing builders. Preview tokens refer to captured states, and
+commit retains the accepted capture without reevaluation. Gesture policy,
+declaration editing, numerical execution, and history remain separate decisions.
+No public core signature, evaluator opcode, or saved schema changes are required.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:
