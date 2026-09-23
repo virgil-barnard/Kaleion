@@ -45,15 +45,21 @@ The images are static previews; selected motion frames show presentation states.
 
 The [next canvas design](docs/UNIFIED_CANVAS_DESIGN.md) compares Icarus's direct
 grid and reusable relations with Kaleion's construction and evidence model. It
-proposes a readable construction inspector, shared cell/point/3D views, explicit
-rule bindings, and labeled case/generation/replay tracks. The concept drawing and
-staged PR plan are proposals; the working interface is described below.
+now has its first increment: [readable construction on selection](docs/CONSTRUCTION_INSPECTION.md).
+Shared cell/point/3D views, explicit rule bindings, and labeled case/generation/replay
+tracks remain planned. The working interface is described below.
 
 The [shared workspace](docs/SPATIAL_WORKSPACE.md) displays named objects together.
 Move their views, reveal definition connections, and drag a source to a destination
 to propose a product or keyed placement. **Focus** retains exact inspection,
 lesson tools and captured replay. The design brief also separates planned
 recurrence steps, ordered parameter cases and presentation time.
+
+Select an object to see **How this is made**: its constructor, expressions,
+ordered inputs, keys and parameter case. Follow an input to its actual definition
+and captured result; **Back** restores selection and camera. Earlier definitions
+and local cases stay distinct from current named objects. Occurrence inspection
+continues from the same captured evidence without evaluating the graph.
 
 **Prefer to start with an example?** [Open a worked canvas](examples/canvases/README.md)
 in the studio with **Open**. Four saved investigations contain editable sources,

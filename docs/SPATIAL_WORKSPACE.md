@@ -10,10 +10,12 @@ view for exact inspection and authoring.
 **After PR #29:** the maintainer still found object construction unclear and
 requested a closer review of Icarus's direct canvas interactions. The
 [unified canvas proposal](UNIFIED_CANVAS_DESIGN.md) records that review and the
-next implementation prompt. This page documents the merged preview-panel
-experiment; the proposal describes the intended shared scene and construction
-inspector. Its track contract distinguishes acquisition from seeking: evaluating
-new samples is explicit, while scrubbing retained samples is read-only.
+implementation sequence. [Construction inspection](CONSTRUCTION_INSPECTION.md)
+now reveals the selected object's declaration and lets inputs be followed with
+a return path. This page documents the preview-panel experiment; the shared
+cell/point/3D scene remains planned. The track contract distinguishes acquisition
+from seeking: evaluating new samples is explicit, while scrubbing retained
+samples is read-only.
 
 ## Try this increment
 

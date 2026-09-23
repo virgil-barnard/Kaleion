@@ -7,10 +7,11 @@ Keep an object's construction visible beside it, let rules be picked up and reus
 and give every scrubber a declared subject. Carry Icarus's direct, spatial actions
 into Kaleion's exact definitions, captured evidence, and reversible history.
 
-This is a design proposal, not an implemented interface or a request to rewrite
-the application. The immediate next implementation is **construction inspection**.
-The larger direction is one spatial canvas with several representations, not an
-ever-growing collection of independently scaled preview panels.
+This records the design proposal and its implementation sequence. Its first
+step, [construction inspection](CONSTRUCTION_INSPECTION.md), is now implemented.
+The next step is a common scene with local object frames and cell/point/3D views.
+The larger direction is one spatial canvas with several representations; the
+remaining proposal does not describe already implemented capabilities.
 
 ![Proposed shared canvas with cell and point views, construction details, input connections, and a labeled replay track](images/unified-canvas-concept.png)
 
@@ -368,7 +369,7 @@ they are not a commitment to one large redesign PR.
 
 | Order | Deliverable | Completion evidence |
 | --- | --- | --- |
-| 1 | **Readable construction on selection** in today's workspace | Sequence, product expansion, incidence, measurement, and keyed placement show real arguments and inputs; earlier/local inputs stay honest; inspection makes no evaluation request; Back restores context |
+| 1 · implemented | **[Readable construction on selection](CONSTRUCTION_INSPECTION.md)** in today's workspace | Sequence, product expansion, incidence, measurement, and keyed placement show real arguments and inputs; earlier/local inputs stay honest; inspection makes no evaluation request; Back restores context. 203 Python tests and four browser gates pass; human interpretation remains untested. |
 | 2 | **Direct canvas foundation**: common scene, local frames, cells/points, source creation and explicit combination targets | Two sources and their product remain individually selectable; mark changes preserve identity; 3D snapshot orbit/slices work on lesson 03; camera/view movement changes no mathematics; versioned view persistence |
 | 3 | **Visible transport and captured case tracks** | Replay available on Open without Undo/Redo; retained-case scrubbing makes no evaluations/history edits; source-derived order and failures stay visible; Radon and lattice cases transfer |
 | 4 | **Reusable rules and incidence combinations** | Copy/detach/apply with explicit bindings; symbolic rule versus saved support survives save/load; union/intersection on common universes; replay uses captured membership evidence |
@@ -383,7 +384,14 @@ arithmetic contracts are covered; concatenation and simple declared elementwise
 recipes can precede dot/cross operations. Extend 3D authoring beyond the shared
 viewer through the same declared Arrange/lens controls, not a second tool system.
 
-### The next implementation prompt
+### Construction inspection prompt (implemented)
+
+The bounded prompt below is now implemented; its walkthrough and validation are
+in [Construction inspection](CONSTRUCTION_INSPECTION.md). The next development
+priority is step 2: a common scene with local object frames and interchangeable
+cell/point representations, retaining this inspector and the lesson contracts.
+Step 3 should then make retained replay and case tracks visible on Open. Neither
+depends on implementing general recurrence or live recipe wiring first.
 
 > Implement construction inspection in the current Kaleion studio. Begin with
 > the current UI study, touch-workspace contracts, and this brief. When an object

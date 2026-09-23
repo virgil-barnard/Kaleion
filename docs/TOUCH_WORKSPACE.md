@@ -19,7 +19,7 @@ gesture study. Human touch trials remain to be conducted.
 | Proposed experience | Current studio evidence | Still open |
 | --- | --- | --- |
 | Compose tools on objects | A shared spatial overview, definition paths, reviewed drag/tap Product and keyed Arrange; contextual relations, measurements including prefixes, comparison and one recoverable draft | Recurrences, coordinate manipulators, richer composition, editable dependencies, novice transfer |
-| Inspect how a result was made | All named roots visible in Workspace; Focus retains paired captured views, contributor/weight/source navigation and restored cameras/selection | Arbitrary capture pinning, density/occlusion trials, physical touch |
+| Inspect how a result was made | Readable construction on selection; scoped input navigation and Back; captured results connect to contributor/weight/source evidence and restored cameras/selection | Human interpretation, arbitrary capture pinning, density/occlusion trials, physical touch |
 | Change assumptions | Exact integer cases preview/apply a new evaluation; replay uses recorded motion separately | Saved-case browsing and measured case families |
 | Declare a comparison | Selected integer fields, ordered keys and an independent expected domain; missing-both and outside witnesses | Distinct support, totals and structural-correspondence contracts |
 | Reach tools without a gesture requirement | Visible menus, occurrence lists, shared Fit/zoom/pan buttons; phone links move between canvas and controls | Physical-device reach, screen-reader review, simultaneous picture/control visibility |
@@ -45,7 +45,12 @@ first, then a shared cell/point/3D scene, visible captured tracks, reusable rule
 and explicit editable dependencies. It sharpens the time contract: creating new
 case or recurrence samples can evaluate; seeking retained samples cannot. The
 brief preserves this document's input, identity, coverage, and history boundaries.
-It is a proposal, not an additional implemented feature set.
+Its first step, [construction inspection](CONSTRUCTION_INSPECTION.md), is now
+implemented without core or saved-format changes. The shared scene, tracks and
+remaining steps are still proposals. Construction stays in a collapsible section
+beside the current task; on phones it remains below the picture. The new
+320/360-pixel checks establish fitting controls and preserved context, not
+comfortable reach or simultaneous visibility on a physical device.
 
 ## The experience to aim for
 

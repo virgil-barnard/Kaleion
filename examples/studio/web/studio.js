@@ -11,6 +11,7 @@ import {replayControls} from './replay.js';
 import {comparisonInspector} from './comparison.js';
 import {cameraControls} from './camera.js';
 import {spatialWorkspace} from './workspace.js';
+import {constructionInspector} from './construction.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -31,7 +32,7 @@ const linked=linkedViews($('linked-views'),{
   load:capture=>request('capture',{capture}),
   onVisibility:shown=>{$('single-view').hidden=shown||surface!=='focus';$('workspace-view').hidden=shown||surface!=='workspace';$('canvas-tools').hidden=shown||surface!=='focus';$('surface-tools').hidden=shown;$('scope').textContent=shown?'Read-only captured evidence · close to construct':resultScope();if(shown)status('Browsing captured evidence. Selection and view changes do not alter your construction.')}
 });
-const receipts=receiptInspector({panel:$('panel'),run,query:request,linked,beforeShow:parkDraft});
+const receipts=receiptInspector({panel:$('activity'),run,query:request,linked,beforeShow:()=>{parkDraft();construction.collapse()}});
 const replay=replayControls($('replay'),{draw,restore:()=>draw(),onPresentation:shown=>{
   if(shown)$('scope').textContent='Replay · presentation only · applied case unchanged';
   else $('scope').textContent=resultScope();
@@ -41,6 +42,36 @@ const board=spatialWorkspace($('workspace-view'),{
   options:name=>{selectObject(name);mode='objects';syncMode();openMenu()},
   combine:combinePanel,locked:()=>busy||!!preview,status
 });
+const construction=constructionInspector($('construction'),{
+  state:()=>state,query:target=>request('construction',{name:target.root,path:target.path}),beforeNavigate:parkDraft,locked:()=>busy,
+  remember:()=>({active,mode,surface,selectedPoint,groupReport,groupChoice,labelField,camera:{...camera},board:board.remember(),linked:linked.remember(),activity:[...$('activity').childNodes]}),
+  restore:async (saved,current)=>{
+    linked.close();active=saved.active;mode=saved.mode;selectedPoint=saved.selectedPoint;
+    groupReport=saved.groupReport;groupChoice=saved.groupChoice;labelField=saved.labelField;camera={...saved.camera};
+    setSurface(saved.surface);mode=saved.mode;syncMode();render();board.restore(saved.board);
+    $('activity').replaceChildren(...saved.activity);
+    if(saved.linked)await linked.open(saved.linked.spec,saved.linked);
+    if(current())status('Returned to the same selection and camera. The construction is unchanged.');
+  },
+  navigate:async data=>{
+    linked.close();replay.reset();
+    if(data.names.length){
+      active=data.names.includes(active)?active:data.names[0];selectedPoint=null;clearGroups();
+      $('activity').replaceChildren();render();
+    }else if(data.capture)await viewConstruction(data);
+    else status(`Reading ${data.label}. No result was captured here; the canvas still shows ${active}.`);
+  },
+  view:data=>run(()=>viewConstruction(data))
+});
+async function viewConstruction(data){
+  parkDraft();replay.reset();
+  $('activity').replaceChildren(el('h3','Why this value?'),el('p','Choose an occurrence in the captured result, then Inspect selected occurrence.'));
+  await linked.open({title:`Captured result · ${data.label}`,
+    detail:`${data.context}. This picture is the saved result of the inspected definition. No construction is evaluated.`,
+    left:{capture:data.capture,label:data.label,contextLabel:`${data.context} · captured result`},
+    inspect:ref=>run(async()=>showReceipt(await request('inspect-driver',{ref})))
+  });
+}
 function syncMode(){document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)))}
 function setSurface(value){
   board.cancel();linked.close();surface=value;
@@ -52,7 +83,8 @@ function setSurface(value){
 document.querySelectorAll('[data-surface]').forEach(b=>b.onclick=()=>{if(!busy){parkDraft();setSurface(b.dataset.surface)}});
 function selectObject(name){
   if(busy)return;linked.close();parkDraft();active=name;selectedPoint=null;preview=null;clearGroups();
-  $('panel').replaceChildren(el('h2',name),el('p','Options opens construction tools. Focus shows occurrences, groups, and captured evidence.'));
+  construction.select(name);
+  $('activity').replaceChildren(el('p','Follow an input above to see its construction. View captured result or Focus → Occurrences explains individual values.',{class:'help'}));
   render();if(mode==='groups')groupPanel();
 }
 const object = () => state.objects.find(o=>o.name===active);
@@ -93,6 +125,7 @@ function adopt(next){
   linked.close();replay.clear();state=next;preview=null;selectedPoint=null;clearGroups();
   if(next.active)active=next.active;
   if(!state.objects.some(o=>o.name===active))active=state.objects.at(-1)?.name || null;
+  construction.select(active);
   camera={x:0,y:0,zoom:1};render();
 }
 function render(){
@@ -229,16 +262,17 @@ $('canvas').onkeydown=e=>{if((e.shiftKey&&e.key==='F10')||e.key==='ContextMenu')
 function parkDraft(){
   if(!draft.current||draft.current.parked)return;
   draft.park();preview=null;
-  $('panel').replaceChildren(el('h2','Your draft is parked'),el('p','Inspect another object, then choose Resume draft to continue.'));
+  $('activity').replaceChildren(el('h2','Your draft is parked'),el('p','Inspect another object, then choose Resume draft to continue.'));
   workspaceControls();status('Draft retained. Browsing does not apply it.');
 }
 $('resume-draft').onclick=()=>{
   if(busy||!draft.current)return;
   try{
     setSurface('focus');const context=draft.resume(state.revision);active=context.target;mode=context.mode;
+    construction.select(active);construction.collapse();
     groupReport=context.groupReport;groupChoice=context.groupChoice;selectedPoint=null;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
-    render();$('panel').scrollIntoView({block:'nearest'});($('result-name')||$('panel').querySelector('input,button'))?.focus({preventScroll:true});
+    render();$('activity').scrollIntoView({block:'nearest'});($('result-name')||$('activity').querySelector('input,button'))?.focus({preventScroll:true});
     status(preview?'Exact preview ready to apply.':'Draft restored on its original target. Preview to check it.');
   }catch(error){status(error.message,true)}
 };
@@ -251,7 +285,8 @@ function combinePanel(from,to){
   if(busy)return;
   if(draft.current){status('Resume or discard your draft before proposing another construction.',true);return}
   linked.close();replay.reset();preview=null;
-  const panel=$('panel');panel.replaceChildren(el('span','CONNECT / REVIEW / PREVIEW',{class:'eyebrow'}),el('h2','Combine objects'));
+  construction.collapse();
+  const panel=$('activity');panel.replaceChildren(el('span','CONNECT / REVIEW / PREVIEW',{class:'eyebrow'}),el('h2','Combine objects'));
   const source=labeled(panel,'Source object',options(state.objects.map(o=>o.name),from));source.id='combine-source';
   const target=labeled(panel,'Destination object',options(state.objects.map(o=>o.name),to||state.objects.find(o=>o.name!==from)?.name||from));target.id='combine-target';
   const product=el('button','Make every pair',{id:'combine-product',type:'button'}),place=el('button','Use source values as destination height',{id:'combine-place',type:'button'});
@@ -273,8 +308,9 @@ function combinePanel(from,to){
   panel.focus({preventScroll:true});panel.scrollIntoView({block:'nearest'});
 }
 function groupPanel(){
+  construction.collapse();
   linked.close();parkDraft();const source=object();
-  const panel=$('panel');panel.replaceChildren(el('span','SELECT BY A DECLARED KEY',{class:'eyebrow'}),el('h2','Groups'));
+  const panel=$('activity');panel.replaceChildren(el('span','SELECT BY A DECLARED KEY',{class:'eyebrow'}),el('h2','Groups'));
   if(!source||source.status!=='ready'){panel.append(el('p','Select a ready object first.'));return}
   const keys=fieldKeys(source.fields,groupReport?.by||[]);panel.append(keys.box);
   const browse=el('button','Browse groups',{type:'button',id:'browse-groups',class:'primary'});panel.append(browse);
@@ -298,14 +334,15 @@ function groupPanel(){
   show();
 }
 function coveragePanel(){
+  construction.collapse();
   linked.close();parkDraft();const source=object();
   const box=coverageInspector({source,objects:state.objects,initialBy:groupReport?.name===active?groupReport.by:[],run,
     check:spec=>request('coverage',spec),canAdopt:()=>!draft.current,
-    inspect:async(ref,trigger)=>{const receipt=await request('inspect-driver',{ref});showReceipt(receipt,'Value',()=>{$('panel').replaceChildren(box);trigger.focus({preventScroll:true})})},
+    inspect:async(ref,trigger)=>{const receipt=await request('inspect-driver',{ref});showReceipt(receipt,'Value',()=>{$('activity').replaceChildren(box);trigger.focus({preventScroll:true})})},
     clearLink:()=>linked.close(),
     chooseLink:index=>linked.choose(index,false),
     link:async(report,rows,index,onChoose)=>{
-      const back=()=>{$('panel').replaceChildren(box);$('view-coverage').focus({preventScroll:true})};
+      const back=()=>{$('activity').replaceChildren(box);$('view-coverage').focus({preventScroll:true})};
       await linked.open({title:'Expected items and their matches',
         inspect:ref=>run(async()=>showReceipt(await request('inspect-driver',{ref}),'Value',back)),
         detail:'Links follow the declared coverage keys. Faint points give context; a missing match does not create a source point.',
@@ -323,20 +360,21 @@ function coveragePanel(){
     },
     adopt:spec=>editor('assignment',spec),
   });
-  $('panel').replaceChildren(box);
+  $('activity').replaceChildren(box);
 }
 function expr(initial,fields){
   return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'),Object.keys(state.parameters||{}));
 }
 function comparisonPanel(){
+  construction.collapse();
   linked.close();replay.clear();parkDraft();const source=object();
   async function inspect(ref,trigger,note){
     const saved=linked.remember(),receipt=await request('inspect-driver',{ref});
     receipts.show(receipt,{heading:'Source value',back:{label:'Back to comparison',restore:async()=>{
       if(saved)await linked.open(saved.spec,saved);else linked.close();
-      $('panel').replaceChildren(box);(trigger.isConnected?trigger:$('view-comparison')).focus({preventScroll:true});
+      $('activity').replaceChildren(box);(trigger.isConnected?trigger:$('view-comparison')).focus({preventScroll:true});
     }}});
-    if(note)$('panel').insertBefore(el('p',note,{class:'comparison-context'}),$('panel').querySelector('pre'));
+    if(note)$('activity').insertBefore(el('p',note,{class:'comparison-context'}),$('activity').querySelector('pre'));
   }
   const box=comparisonInspector({source,objects:state.objects,initial:comparisonChoices,
     remember:spec=>{comparisonChoices=spec},run,check:spec=>request('compare',spec),inspect,
@@ -356,15 +394,16 @@ function comparisonPanel(){
       });
     },
   });
-  $('panel').replaceChildren(box);
+  $('activity').replaceChildren(box);
 }
 function editor(action,seed=null){
   linked.close();
   if(draft.current){status('Resume or discard your draft before starting another construction.',true);return}
   setSurface('focus');
+  construction.select(active);construction.collapse();
   replay.clear();
   preview=null;const editorRevision=state.revision,sourceName=seed?.source||active;render();
-  const panel=$('panel');panel.replaceChildren(el('span','DECLARE / PREVIEW / APPLY',{class:'eyebrow'}),el('h2',labels[action]));
+  const panel=$('activity');panel.replaceChildren(el('span','DECLARE / PREVIEW / APPLY',{class:'eyebrow'}),el('h2',labels[action]));
   const form=el('form'), controls=el('fieldset');controls.style.cssText='border:0;padding:0;margin:0;min-width:0';form.append(controls);panel.append(form);
   const source=state.objects.find(o=>o.name===sourceName), fields=source?.fields||['i','j','value','index','key'];
   const name=labeled(controls,'Result name',input(action==='place'?sourceName:`${labels[action]} ${state.objects.length+1}`));
@@ -465,12 +504,13 @@ function editor(action,seed=null){
   apply.onclick=()=>run(async()=>{if(!preview)return;try{const next=await request('commit',{token:preview.token});draft.clear();adopt(next);panel.replaceChildren(el('h2','Construction applied'),el('p','Choose any object and continue composing. Hold the canvas or use Options.'));await animate(next.motion);status('Applied one construction. Undo restores its captured predecessor.')}catch(error){invalidate();message('failed',`Apply failed: ${error.message} Preview again to check the draft.`);render();throw error}});
   cancel.onclick=cancelPreview;
 }
-function cancelPreview(){run(async()=>{await request('cancel');draft.clear();preview=null;render();$('panel').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
+function cancelPreview(){run(async()=>{await request('cancel');draft.clear();preview=null;render();$('activity').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
 function caseEditor(){
   if(busy||draft.current)return;
   setSurface('focus');
+  construction.collapse();
   linked.close();replay.clear();preview=null;
-  const panel=$('panel'),editorRevision=state.revision;
+  const panel=$('activity'),editorRevision=state.revision;
   panel.replaceChildren(el('span','DECLARE / EVALUATE / APPLY',{class:'eyebrow'}),el('h2','Explore parameter cases'));
   const form=el('form'),fields=caseFields(state.parameters),report=el('div');
   const feedback=el('p',undefined,{id:'draft-status',role:'status','aria-live':'polite'});
@@ -507,7 +547,7 @@ async function animate(frames){
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches)await replay.play();
 }
 $('play-replay').onclick=()=>run(()=>replay.play());
-for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.current)return;run(async()=>{const next=await request(direction,{active});adopt(next);$('panel').replaceChildren(el('h2',direction==='undo'?'Earlier capture restored':'Capture restored again'),el('p',next.change==='case'?`Exact case · ${caseLabel(next.parameters)}. No construction was evaluated; no intermediate cases were created.`:'Playback uses recorded endpoints. No construction was evaluated.'));await animate(next.motion);status(direction==='undo'?'Undone.':'Redone.')})};
+for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.current)return;run(async()=>{const next=await request(direction,{active});adopt(next);$('activity').replaceChildren(el('h2',direction==='undo'?'Earlier capture restored':'Capture restored again'),el('p',next.change==='case'?`Exact case · ${caseLabel(next.parameters)}. No construction was evaluated; no intermediate cases were created.`:'Playback uses recorded endpoints. No construction was evaluated.'));await animate(next.motion);status(direction==='undo'?'Undone.':'Redone.')})};
 function explain(){run(async()=>{
   const receipt=await request('inspect',{name:active,ref:selectedPoint});showReceipt(receipt);
 })}
@@ -516,7 +556,7 @@ $('save').onclick=()=>run(async()=>{
   const response=await fetch('/api/export');const text=await response.text();
   const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=el('a',undefined,{href:url,download:'kaleion-studio.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved captured definitions, evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
 });
-$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const next=await request('import',{capture:await file.text()});comparisonChoices=null;board.reset();adopt(next);$('panel').replaceChildren(el('h2','Saved workspace opened'),el('p','Its captures and history are available without reevaluating definitions. Choose Workspace to see objects together; Focus opens the selected object.'));status('Reopened captured workspace.');$('file').value=''})};
+$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const next=await request('import',{capture:await file.text()});comparisonChoices=null;board.reset();adopt(next);$('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Its captures and history are available without reevaluating definitions. Choose Workspace to see objects together; Focus opens the selected object.'));status('Reopened captured workspace.');$('file').value=''})};
 window.addEventListener('blur',()=>{cancelHold();pointers.clear()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){cancelHold();if(!e.defaultPrevented&&e.target.tagName!=='SELECT'&&!$('menu').open&&draft.current&&!busy){parkDraft();render()}}});
 new ResizeObserver(()=>{if(!busy)draw()}).observe($('canvas'));

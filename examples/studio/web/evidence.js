@@ -10,10 +10,13 @@ export function linkedViews(host,{load,onVisibility}){
   function close(){generation++;for(const clean of cleanups)clean();cleanups=[];session=null;host.replaceChildren();host.hidden=true;onVisibility(false)}
   async function open(spec,saved=null){
     const ticket=++generation;
-    const [left,right]=await Promise.all([load(spec.left.capture),load(spec.right.capture)]);
+    const sides=['left','right'].filter(side=>spec[side]);
+    const views=await Promise.all(sides.map(side=>load(spec[side].capture)));
     if(ticket!==generation)return;
+    if(!spec.links)spec={...spec,links:[{label:'Captured result',...Object.fromEntries(sides.map((side,i)=>[side,views[i].rows.map(row=>({ref:row.ref,emphasis:row.match,note:row.match?'':'Outside relation'}))]))}]};
     // Validate before replacing the visible pair; an unavailable link is not empty evidence.
-    for(const [side,view] of [['left',left],['right',right]]){
+    for(const [i,side] of sides.entries()){
+      const view=views[i];
       const refs=new Set(view.rows.map(r=>refKey(r.ref)));
       for(const link of spec.links)for(const item of link[side])if(!refs.has(refKey(item.ref)))throw Error('A linked occurrence is absent from its captured view.');
     }
@@ -22,15 +25,17 @@ export function linkedViews(host,{load,onVisibility}){
     done.onclick=()=>{close();document.getElementById('options').focus({preventScroll:true})};header.append(title,done);
     const help=el('p',spec.detail,{class:'help'}),label=el('label','Evidence link'),choice=el('select',undefined,{id:'linked-choice'});
     spec.links.forEach((link,i)=>choice.append(el('option',link.label,{value:String(i)})));label.append(choice);
+    label.hidden=sides.length===1;
     const cards=el('div',undefined,{class:'linked-cards'}),message=el('p','Tap a linked item or use its occurrence list. Drag to pan; each view has its own zoom.',{class:'help',role:'status',id:'linked-status'});
+    cards.classList.toggle('single-capture',sides.length===1);
     host.append(header,help,label,cards,message);
-    const controllers=[card(left,spec.left,'left'),card(right,spec.right,'right')];
+    const controllers=sides.map((side,i)=>card(views[i],spec[side],side));
     session={spec,choice,controllers};
     choice.onchange=()=>choose(Number(choice.value));choose(saved?.index??spec.index??0,false);
     saved?.views.forEach((view,i)=>controllers[i].restore(view));
     function card(view,descriptor,side){
       const box=el('section',undefined,{class:'linked-card','data-side':side,'aria-label':descriptor.label});
-      const name=view.roots.length?`Current capture · ${view.roots.join(', ')}`:'Captured dependency · may differ from a current object';
+      const name=descriptor.contextLabel||(view.roots.length?`Current capture · ${view.roots.join(', ')}`:'Captured dependency · may differ from a current object');
       box.append(el('h3',descriptor.label),el('p',name,{class:'help','data-capture-label':''}));
       const svg=svgEl('svg',{viewBox:'0 0 420 260',role:'img','aria-label':descriptor.label}),marks=svgEl('g');svg.append(marks);
       const projection=el('p',projectionLabel(view),{class:'help'});

@@ -451,3 +451,34 @@ svg .workspace-welcome {font-size:20px}
   .linked-cards {grid-template-columns:1fr}
   .linked-card svg {height:180px;min-height:180px}
 }
+
+/* A readable definition stays beside the current task and captured evidence. */
+#construction { border-bottom:1px solid var(--line); padding-bottom:18px; margin-bottom:18px; overflow-wrap:anywhere }
+#construction[hidden] { display:none }
+.construction-heading h2 { margin:6px 0; font-size:23px }
+.construction-summary { margin:5px 0; color:var(--green); font-weight:600 }
+.construction-status { font-size:12px; color:var(--muted); margin:6px 0 14px }
+.construction-status[data-definition-status=failed] { color:#9b3524 }
+#construction-details > summary { min-height:44px; padding:10px 0; cursor:pointer; font-weight:600; color:var(--green) }
+.construction-arguments { margin:8px 0 16px }
+.construction-arguments dt { font-size:12px; font-weight:650; margin-top:12px; color:var(--muted) }
+.construction-arguments dd { margin:5px 0 0; padding:9px 10px; border-left:3px solid #b9cbbc; background:#f1f4ed; font-family:ui-monospace,monospace; font-size:13px; white-space:pre-wrap }
+.construction-inputs { list-style:none; padding:0; display:grid; gap:10px }
+.construction-inputs li { padding:0; border:1px solid var(--line); border-radius:10px; overflow:hidden }
+.construction-inputs button { display:grid; gap:4px; width:100%; border:0; border-radius:0; text-align:left; padding:12px }
+.construction-inputs button span { font-size:12px; color:var(--green) }
+.construction-inputs button small { font-size:11px; color:var(--muted) }
+.construction-read { display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:12px; row-gap:5px; margin:0; border-top:1px solid var(--line); padding:10px 12px; font-size:12px; background:#f5f5ef }
+.construction-read dt { color:var(--muted) }
+.construction-read dd { margin:0; font-family:ui-monospace,monospace; overflow-wrap:anywhere }
+.construction-canonical { margin-top:16px; font-size:12px }
+.construction-canonical summary { cursor:pointer; min-height:44px; padding:10px 0 }
+.construction-canonical pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:360px; overflow:auto }
+#activity:empty { display:none }
+.linked-cards.single-capture { grid-template-columns:minmax(0,1fr) }
+@media(prefers-color-scheme:dark) {
+  .construction-arguments dd {background:#243b30;border-color:#799e82}
+  .construction-read {background:#22382c}
+  .construction-summary,#construction-details > summary,.construction-inputs button span {color:#b8d7c0}
+  .construction-status[data-definition-status=failed] {color:#f7b09f}
+}

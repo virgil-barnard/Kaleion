@@ -90,7 +90,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.screenshot({path:path.join(output,'sum-stacks.png'),fullPage:true});
 
  // The same group selector browses sum fibers, keeping selection outside history.
- await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('total');
+ await page.locator('[data-mode="groups"]').click();await page.locator('#activity > .field-keys [data-group-add]').selectOption('total');
  const groupRevision=(await state()).revision;
  await page.locator('#browse-groups').click();await idle();await page.locator('#group-choice').selectOption('3');
  assert.match(await page.locator('#group-summary').textContent(),/2 incident occurrences · 2 occurrences/);
@@ -101,7 +101,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.locator('#rank-order').getByRole('button',{name:'Remove key index'}).click();await page.locator('#rank-order [data-group-add]').selectOption('value');
  await page.locator('#preview').click();await idle();assert.match(await page.locator('#status').textContent(),/ties/);assert.equal((await state()).revision,groupRevision);
  await page.locator('#rank-order [data-group-add]').selectOption('key');await apply();assert.deepEqual(await values('Fiber ranks'),['0','0','0','0','1','0']);
- await select('Sums');await page.locator('#panel > .field-keys [data-group-add]').selectOption('total');await page.locator('#browse-groups').click();await idle();await page.locator('#group-choice').selectOption('3');
+ await select('Sums');await page.locator('#activity > .field-keys [data-group-add]').selectOption('total');await page.locator('#browse-groups').click();await idle();await page.locator('#group-choice').selectOption('3');
  await tool('group_lens');await page.locator('#result-name').fill('Sum three');await apply();
  const sumLens=(await state()).objects.find(o=>o.name==='Sum three');assert.equal(sumLens.rows.length,6);assert.equal(sumLens.rows.filter(r=>r.match).length,2);
 
@@ -114,7 +114,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await cards().nth(0).locator('[data-path="args/0/args/1"]').click();await cards().nth(0).getByLabel('Exact integer',{exact:true}).fill('5');
  await cards().nth(0).locator('[data-expression-undo]').click();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()).args.rule,rule);
  await page.screenshot({path:path.join(output,'compact-expression.png'),fullPage:true});await apply();
- await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();
+ await page.locator('[data-mode="groups"]').click();await page.locator('#activity > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();
  assert.match(await page.locator('#group-summary').textContent(),/1 incident occurrences · 3 occurrences/);assert.equal(await page.locator('[data-group-member="true"]').count(),3);
  await page.screenshot({path:path.join(output,'modular-group.png'),fullPage:true});
  await page.locator('[data-mode="objects"]').click();
@@ -126,13 +126,13 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  // Coverage witnesses use the same selector: zero, one, or two incident candidates.
  await page.locator('[data-mode="objects"]').click();await select('Square');await tool('lens');await page.locator('#result-name').fill('Assignment candidates');
  await expression(cards().nth(0),op('and',op('>',f('i'),n(0)),op('<',f('j'),f('i'))));await apply();
- await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();
+ await page.locator('[data-mode="groups"]').click();await page.locator('#activity > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();
  assert.deepEqual(await page.locator('#group-choice option').allTextContents(),['i = 0 · 0 of 3 incident','i = 1 · 1 of 3 incident','i = 2 · 2 of 3 incident']);
  assert.match(await page.locator('#group-summary').textContent(),/0 incident occurrences · 3 occurrences/);
  assert.equal(await page.locator('[data-group-member="true"]').count(),3);
  await tool('group_lens');await page.locator('#result-name').fill('Uncovered group');await apply();
  const uncovered=(await state()).objects.find(o=>o.name==='Uncovered group');assert.equal(uncovered.rows.length,9);assert.equal(uncovered.rows.filter(r=>r.match).length,0);
- await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();assert.equal(await page.locator('#group-choice option').count(),3);
+ await page.locator('[data-mode="groups"]').click();await page.locator('#activity > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').click();await idle();assert.equal(await page.locator('#group-choice option').count(),3);
 
  // Failure is a failed draft; it must not relabel the previous picture as a success.
  await page.locator('[data-mode="objects"]').click();await select('Square');await tool('lens');await page.locator('#result-name').fill('Bad');await expression(cards().nth(0),op('=',op('%',f('i'),n(0)),n(0)));const revision=(await state()).revision;await page.locator('#preview').click();await idle();assert.equal(await page.locator('#apply').isEnabled(),false);assert.equal((await state()).revision,revision);assert.equal(await page.locator('#status').getAttribute('class'),'error');await page.locator('#cancel').click();await idle();
@@ -169,7 +169,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.locator('[data-object="Sums"]').click();assert.equal(await page.locator('[data-object="Sums"]').getAttribute('aria-pressed'),'true');
  assert.equal(await page.locator('#panel form').count(),0);assert.equal(await page.locator('#resume-draft').isVisible(),true);
  for(const id of ['add','open','undo'])assert.equal(await page.locator('#'+id).isEnabled(),false,'Workspace changes wait for the draft: '+id);
- await page.locator('[data-mode="groups"]').click();await page.locator('#panel > .field-keys [data-group-add]').selectOption('total');await page.locator('#browse-groups').click();await idle();
+ await page.locator('[data-mode="groups"]').click();await page.locator('#activity > .field-keys [data-group-add]').selectOption('total');await page.locator('#browse-groups').click();await idle();
  await page.locator('#group-choice').selectOption('3');assert.match(await page.locator('#group-summary').textContent(),/2 incident occurrences/);
  await page.locator('#options').click();assert.equal(await page.locator('[data-action="measure"]').isEnabled(),false);await page.locator('#close-menu').click();
  assert.equal(await(await page.request.get(origin+'/api/export')).text(),committedBeforeDraft,'Draft edits and inspection must not change captured workspace data');
@@ -211,8 +211,13 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Formula controls must fit phone width');
  await page.screenshot({path:path.join(output,'phone-expression.png'),fullPage:true});await page.locator('#cancel').tap();await idle();
  // Group taps use captured membership even when the SVG is letterboxed.
- await select('Diagonal');await page.locator('[data-mode="groups"]').tap();await page.locator('#panel > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').tap();await idle();
- const phoneRevision=(await state()).revision;await page.locator('#canvas').scrollIntoViewIfNeeded();const member=await page.locator('#marks circle').nth(8).boundingBox();
+ await select('Diagonal');await page.locator('[data-mode="groups"]').tap();await page.locator('#activity > .field-keys [data-group-add]').selectOption('i');await page.locator('#browse-groups').tap();await idle();
+ const phoneRevision=(await state()).revision;
+ // Use the phone's Canvas jump so the sticky navigation does not cover the tap.
+ await page.locator('[data-workspace-jump="scene"]').tap();
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'scene');
+ const member=await page.locator('#marks circle').nth(8).boundingBox();
+ assert.ok(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.closest('#canvas'),{x:member.x+member.width/2,y:member.y+member.height/2}),'Group member must be reachable below the sticky navigation');
  await page.touchscreen.tap(member.x+member.width/2,member.y+member.height/2);
  assert.equal(await page.locator('#group-choice').inputValue(),'2');assert.equal(await page.locator('[data-group-member="true"]').count(),3);
  await page.locator('#options').tap();assert.deepEqual(await page.locator('#menu-actions button').allTextContents(),['Choose group keys','Create a group lens','Measure all groups','Check coverage']);await page.locator('#close-menu').tap();

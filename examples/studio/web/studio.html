@@ -12,7 +12,7 @@
     <div><strong id="draft-title"></strong><p class="help">One draft at a time. Browse and inspect freely; finish or discard it before changing the workspace. Save includes applied work only. Drafts last until this tab reloads.</p></div>
     <div class="row"><button id="resume-draft">Resume draft</button><button id="discard-draft">Discard draft</button></div>
   </section>
-  <nav class="workspace-jumps" aria-label="Move around the workspace"><a href="#scene" data-workspace-jump="scene">Canvas</a><a href="#panel" data-workspace-jump="panel">Controls and evidence</a></nav>
+  <nav class="workspace-jumps" aria-label="Move around the workspace"><a href="#scene" data-workspace-jump="scene">Canvas</a><a href="#panel" data-workspace-jump="panel">Construction and evidence</a></nav>
   <section class="workbench">
     <div class="picture" id="scene" tabindex="-1">
       <div class="canvasbar" id="surface-tools"><div class="modes" aria-label="Canvas surface"><button data-surface="workspace" aria-pressed="true">Workspace</button><button data-surface="focus" aria-pressed="false">Focus</button></div><button id="options">Options ⋯</button></div>
@@ -40,7 +40,7 @@
       </div>
       <p id="status" role="status" aria-live="polite">No construction yet. Every action starts with your choices.</p>
     </div>
-    <aside id="panel" tabindex="-1"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>Start with something you can move.</h2><p>Choose <strong>+ Add → Integers</strong>, or Open a saved canvas. Select any object for Options; double-click it or choose Focus to inspect its occurrences.</p><p>Move objects organizes the workspace. Switch to Connections and drag one object to another to propose a product or a keyed placement. Combine… offers the same choices without dragging.</p><p class="quiet">Preview checks a construction; Apply records it. Cases evaluates exact parameter values. Replay scrubs a captured movement.</p></aside>
+    <aside id="panel" tabindex="-1"><section id="construction" aria-labelledby="construction-title" hidden></section><section id="activity" tabindex="-1"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>Start with something you can move.</h2><p>Choose <strong>+ Add → Integers</strong>, or Open a saved canvas. Select any object for Options; double-click it or choose Focus to inspect its occurrences.</p><p>Move objects organizes the workspace. Switch to Connections and drag one object to another to propose a product or a keyed placement. Combine… offers the same choices without dragging.</p><p class="quiet">Preview checks a construction; Apply records it. Cases evaluates exact parameter values. Replay scrubs a captured movement.</p></section></aside>
   </section>
   <dialog id="menu"><div class="menuhead"><strong id="menu-title">Object options</strong><button id="close-menu" aria-label="Close options">Close</button></div><div id="menu-actions"></div></dialog>
 </main><script type="module" src="/studio.js"></script></body></html>
