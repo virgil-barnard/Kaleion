@@ -18,8 +18,8 @@ gesture study. Human touch trials remain to be conducted.
 
 | Proposed experience | Current studio evidence | Still open |
 | --- | --- | --- |
-| Compose tools on objects | Contextual relations, measurements including ordered prefixes, keyed placement and comparison; one recoverable draft | Full lesson vocabulary, reusable recipes, novice transfer |
-| Inspect how a result was made | Paired captured views; contributor, weight and source navigation; return restores cameras/selection | Free pinning and a usable layout for many simultaneous views |
+| Compose tools on objects | A shared spatial overview, definition paths, reviewed drag/tap Product and keyed Arrange; contextual relations, measurements including prefixes, comparison and one recoverable draft | Recurrences, coordinate manipulators, richer composition, editable dependencies, novice transfer |
+| Inspect how a result was made | All named roots visible in Workspace; Focus retains paired captured views, contributor/weight/source navigation and restored cameras/selection | Arbitrary capture pinning, density/occlusion trials, physical touch |
 | Change assumptions | Exact integer cases preview/apply a new evaluation; replay uses recorded motion separately | Saved-case browsing and measured case families |
 | Declare a comparison | Selected integer fields, ordered keys and an independent expected domain; missing-both and outside witnesses | Distinct support, totals and structural-correspondence contracts |
 | Reach tools without a gesture requirement | Visible menus, occurrence lists, shared Fit/zoom/pan buttons; phone links move between canvas and controls | Physical-device reach, screen-reader review, simultaneous picture/control visibility |
@@ -28,6 +28,15 @@ The [updated UI study](UI_DESIGN_STUDY.md#4-initial-audit-and-current-dispositio
 records which findings these changes address. Deterministic browser transfer
 between Radon and lattice comparisons does not establish human discovery or
 comfortable touch use.
+
+The maintainer's subsequent use of the saved canvases motivated the
+[spatial workspace increment](SPATIAL_WORKSPACE.md). It implements a small part
+of the object-composition proposal below: dragging organizes the view; the
+Connections tool proposes a semantic operation between two roots. A drop opens
+explicit roles or key/read choices before Preview/Apply. The same brief separates
+planned recurrence steps, ordered exact parameter cases, and captured replay.
+It also records the immutable-definition boundary that an eventual cable editor
+must respect. This progress does not establish that the interface is intuitive.
 
 ## The experience to aim for
 

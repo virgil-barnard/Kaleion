@@ -419,6 +419,27 @@ pre {
   #scene,#panel {scroll-margin-top:72px}
 }
 .casebar {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:16px 0;padding:12px 16px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+.workspace-toolbar {display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:16px}
+#workspace-canvas {min-height:300px;aspect-ratio:3/2;background:radial-gradient(circle,#8da48a33 1px,transparent 1px);background-size:18px 18px;border-radius:12px}
+.workspace-object {cursor:grab;outline:none}
+.workspace-outline {fill:var(--paper);stroke:var(--line);stroke-width:1.4}
+.workspace-object:hover .workspace-outline,.workspace-object:focus .workspace-outline {stroke:var(--green);stroke-width:3}
+.workspace-object.selected .workspace-outline {stroke:var(--green);stroke-width:3;fill:color-mix(in srgb,var(--paper) 94%,var(--green))}
+.workspace-object.drop-target .workspace-outline {stroke:var(--amber);stroke-width:5;stroke-dasharray:7 4}
+.workspace-point {fill:var(--amber)}
+.workspace-point.outside {fill:var(--muted);opacity:.25}
+svg .workspace-name {font-size:16px;font-weight:600}
+svg .workspace-meta {font-size:11px;fill:var(--muted)}
+svg .workspace-welcome {font-size:20px}
+.workspace-wire {fill:none;stroke:var(--muted);stroke-width:1.7;opacity:.4}
+.workspace-wire.read {stroke-dasharray:6 4}
+.workspace-wire.related {stroke:var(--green);stroke-width:2.8;opacity:1}
+.workspace-proposal {fill:none;stroke:var(--amber);stroke-width:3;stroke-dasharray:5 4}
+#workspace-arrow path {fill:var(--green)}
+[data-connection-list] button {display:block;margin:8px 0;text-align:left;overflow-wrap:anywhere}
+.combine-choices {display:grid;gap:10px;margin-top:18px}
+.combine-choices button {text-align:left}
+#canvas-tools {margin-top:12px}
 .casebar>div {min-width:0}
 #case-summary {margin:5px 0 0;overflow-wrap:anywhere}
 .parameter-row {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Add a shared spatial workspace with movable object previews, named definition
+  paths and reviewed drag/tap composition into the existing Product and Arrange
+  editors. Preserve Focus tools, saved lesson canvases and captured replay;
+  distinguish earlier/unnamed inputs and local parameter scopes. Update the UI
+  study with maintainer feedback and a plan for recurrence, coordinates and
+  ordered parameter tracks. No core operations or saved schema changes.
+
 - Add four ordinary saved canvases adapted from lessons 02, 05, 06 and 07, with
   sources, measurements, evidence, recorded motion and an Open/Undo/Redo walkthrough.
   No UI controls or core operations change.

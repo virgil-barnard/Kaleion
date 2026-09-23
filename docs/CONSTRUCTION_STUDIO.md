@@ -17,6 +17,11 @@ the same evidence views; zero and absence remain distinct.
 to Measure. Explicit groups, order, unique item keys and weights derive offsets
 from measured sizes without constructing every predecessor pair.
 
+The [spatial workspace](SPATIAL_WORKSPACE.md) now opens with all named objects
+visible together. Move their view panels, inspect definition connections, or
+drag a source to a destination in Connections to propose a product or keyed
+placement. Focus preserves the existing single-object tools and captured evidence.
+
 The design hypothesis is that a person chooses **what they are acting on**, then
 **what quantity or relationship they want to change**. Lesson names should never
 determine the available tools. A count, a rank, and an ordinary integer source can
@@ -35,7 +40,8 @@ capture descriptions and scoped references across investigations.
 
 For an example to inspect before building, use the four
 [saved canvases and first-five-minutes guide](../examples/canvases/README.md).
-They open through the existing **Open** button. No new UI options are introduced.
+They open through **Open**. Choose Workspace for the overview or Focus for the
+selected object's occurrences and construction tools.
 
 From the repository root, use the existing environment:
 
@@ -56,12 +62,20 @@ editing. Host and origin checks refuse cross-origin edits.
 
 **Save** downloads an ordinary Kaleion schema-1 workspace, including definitions,
 captured evidence, and pending undo/redo. **Open** restores those captures without
-evaluating the graph. Camera, point/group selection, and unfinished drafts are view state
+evaluating the graph. Spatial layout, camera, point/group selection, and unfinished drafts are view state
 and are not saved. The current editor admits 60 objects, 2000 occurrences per
 evaluated operation, and 40 recorded history steps. The existing 32 MiB capture
 import budget still applies; these limits do not promise every combination fits.
 
 ## Selection scope comes before the tool
+
+Workspace selects whole objects. **Move objects** changes their temporary view
+layout; **Connections** shows named input/read paths and proposes composition.
+**Combine…** offers source/destination selectors as a tap and keyboard alternative.
+Double-click an object, press Enter on it, or choose **Focus** for the selectors
+below. Arrow keys move a focused workspace panel; camera buttons pan/zoom the
+overview. Touch hold opens object options, and releasing that hold does not
+activate a tool underneath the finger.
 
 | Selector | Tap or hold target | Contextual actions | What stays unchanged |
 | --- | --- | --- | --- |

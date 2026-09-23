@@ -17,6 +17,7 @@ from kaleion.model import IncidenceSnapshot, Ref
 from .groups import captured_groups
 from .coverage import captured_coverage, unique_assignment
 from .comparison import captured_comparison
+from .connections import definition_connections
 from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
 
@@ -234,6 +235,7 @@ class Studio:
 
     def state(self):
         return dict(revision=self.revision, objects=describe(self.workspace.state),
+                    connections=definition_connections(self.workspace.state.roots),
                     parameters=exact_wire(dict(self.workspace.state.parameters)),
                     undo=self.workspace.can_undo, redo=self.workspace.can_redo)
 

@@ -5,7 +5,7 @@
   <header><div><span class="eyebrow">KALEION / INTERACTION STUDY</span><h1>A place to make a pattern.</h1></div>
     <nav aria-label="Workspace"><button id="add">+ Add</button><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="save">Save</button><button id="open">Open</button><input id="file" type="file" accept=".json" hidden></nav>
   </header>
-  <p class="intro">Start with integers or a grid. Compose a relation, draw out a measurement, then let that measurement place something else.</p>
+  <p class="intro">Make an arrangement, give it a rule, then connect what you discover. Open a saved canvas to explore an existing investigation.</p>
   <section class="casebar" aria-label="Mathematical case"><div><span class="eyebrow">EXACT CASE</span><p id="case-summary">No declared parameters</p></div><button id="cases">Cases…</button></section>
   <nav id="objects" aria-label="Objects"></nav>
   <section id="draft-tray" aria-label="Unfinished construction" hidden>
@@ -15,10 +15,18 @@
   <nav class="workspace-jumps" aria-label="Move around the workspace"><a href="#scene" data-workspace-jump="scene">Canvas</a><a href="#panel" data-workspace-jump="panel">Controls and evidence</a></nav>
   <section class="workbench">
     <div class="picture" id="scene" tabindex="-1">
-      <div class="canvasbar" id="canvas-tools"><div class="modes" aria-label="Selector mode"><button data-mode="objects" aria-pressed="true">Objects</button><button data-mode="points" aria-pressed="false">Occurrences</button><button data-mode="groups" aria-pressed="false">Groups</button><button data-mode="view" aria-pressed="false">View</button></div><button id="options">Options ⋯</button></div>
+      <div class="canvasbar" id="surface-tools"><div class="modes" aria-label="Canvas surface"><button data-surface="workspace" aria-pressed="true">Workspace</button><button data-surface="focus" aria-pressed="false">Focus</button></div><button id="options">Options ⋯</button></div>
+      <div class="canvasbar" id="canvas-tools" hidden><div class="modes" aria-label="Selector mode"><button data-mode="objects" aria-pressed="true">Objects</button><button data-mode="points" aria-pressed="false">Occurrences</button><button data-mode="groups" aria-pressed="false">Groups</button><button data-mode="view" aria-pressed="false">View</button></div></div>
       <div class="caption"><h2 id="title">Your blank canvas</h2><span id="scope">Hold the canvas or choose Add</span></div>
       <section id="linked-views" aria-label="Linked captured evidence" hidden></section>
-      <div id="single-view">
+      <section id="workspace-view" aria-label="Spatial workspace">
+        <div class="workspace-toolbar"><div class="modes" aria-label="Workspace tool"><button data-workspace-tool="move" aria-pressed="true">Move objects</button><button data-workspace-tool="connect" aria-pressed="false">Connections</button></div><button data-combine>Combine…</button></div>
+        <p class="help" data-spatial-help></p>
+        <svg id="workspace-canvas" viewBox="0 0 900 600" tabindex="0" role="group" aria-label="Shared canvas. Select an object; Enter to focus; Shift F10 for options."><defs><marker id="workspace-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs></svg>
+        <div class="viewbar"><span>View layout only · each preview has its own scale · XY projection</span><div data-spatial-camera></div></div>
+        <details data-connection-list hidden></details>
+      </section>
+      <div id="single-view" hidden>
       <svg id="canvas" viewBox="0 0 700 450" tabindex="0" role="img" aria-label="Construction canvas. Options are also available with Shift F10."><g id="marks"></g><rect id="hit" width="700" height="450" fill="transparent"/></svg>
       <div class="viewbar"><span id="projection">View projection only; use Arrange to declare positions.</span><div id="view-controls"></div></div>
       <section id="replay" aria-label="Captured transformation replay" hidden>
@@ -32,7 +40,7 @@
       </div>
       <p id="status" role="status" aria-live="polite">No construction yet. Every action starts with your choices.</p>
     </div>
-    <aside id="panel" tabindex="-1"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>One vocabulary, many investigations.</h2><p>Hold an object for construction tools. Switch to Occurrences to inspect a point, or Groups to select by declared keys.</p><p>Tap part of a formula to edit a field, number, operation, or keyed read. Build relations and measurements directly on your canvas.</p><p class="quiet">This is an early authoring study. It tests a shared interaction grammar, not the complete future interface.</p></aside>
+    <aside id="panel" tabindex="-1"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>Start with something you can move.</h2><p>Choose <strong>+ Add → Integers</strong>, or Open a saved canvas. Select any object for Options; double-click it or choose Focus to inspect its occurrences.</p><p>Move objects organizes the workspace. Switch to Connections and drag one object to another to propose a product or a keyed placement. Combine… offers the same choices without dragging.</p><p class="quiet">Preview checks a construction; Apply records it. Cases evaluates exact parameter values. Replay scrubs a captured movement.</p></aside>
   </section>
   <dialog id="menu"><div class="menuhead"><strong id="menu-title">Object options</strong><button id="close-menu" aria-label="Close options">Close</button></div><div id="menu-actions"></div></dialog>
 </main><script type="module" src="/studio.js"></script></body></html>

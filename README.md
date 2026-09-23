@@ -43,6 +43,12 @@ The images are static previews; selected motion frames show presentation states.
 
 ## Toward a touch workspace
 
+The [shared workspace](docs/SPATIAL_WORKSPACE.md) displays named objects together.
+Move their views, reveal definition connections, and drag a source to a destination
+to propose a product or keyed placement. **Focus** retains exact inspection,
+lesson tools and captured replay. The design brief also separates planned
+recurrence steps, ordered parameter cases and presentation time.
+
 **Prefer to start with an example?** [Open a worked canvas](examples/canvases/README.md)
 in the studio with **Open**. Four saved investigations contain editable sources,
 measurements, evidence and recorded motion. Start with equal-sum stacks; the guide

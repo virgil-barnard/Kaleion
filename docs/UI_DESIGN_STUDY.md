@@ -170,8 +170,16 @@ workflow. It treats zero, absence, ambiguity, and unavailable input separately,
 as required by the touch-workspace proposal. Totals, support, and structure
 isomorphism remain different questions.
 
-The next design work should test the present grammar with people before adding a
-free-form graph editor or a larger permanent tool shelf. A compact bottom sheet
+The next design work should test the present grammar with people. The maintainer's
+subsequent desktop use of the saved canvases supplied specific feedback: the
+constructions and Undo/Redo animations were useful, but getting started remained
+unclear and the single-object canvas concealed the intended spatial building
+experience. This is one person's formative feedback, not the proposed novice
+study. It justifies the bounded [spatial workspace experiment](SPATIAL_WORKSPACE.md):
+simultaneous object previews, selection/movement, visible definition inputs, and
+drag-to-propose Product or keyed Arrange through the existing declaration editor.
+It does not yet justify arbitrary graph rewrites or a larger permanent tool shelf.
+A compact bottom sheet
 or contextual palette is a candidate to compare with this layout, not an already
 validated replacement. Persistent comparison recipes, named subexpressions, and
 a saved-case browser are useful development candidates once their reuse and
@@ -295,7 +303,9 @@ These are historical gate totals, not participant counts or usability scores.
 | [Weighted evidence](WEIGHTED_EVIDENCE.md) | Radon contribution → weight read → source field, signed sums, restored selection/camera | 160 |
 | [Parameter cases](PARAMETER_CASES.md), merged `bba8b19` | Prime/composite Radon, lattice growth, isolated failures, case undo, request-free replay | 166 |
 | [Keyed comparison](KEYED_COMPARISON.md), merged `91a6e33` | Exact selected fields and independent domain; residual receipts, lattice transfer, missing-both keys; shared camera buttons and phone navigation | 173 |
-| [Ordered accumulation](ORDERED_PREFIX.md), this increment | Young layers and quotient columns use the same prefix/placement controls; nested measured contributors, tied-order recovery, zero/signed weights | 184 |
+| [Ordered accumulation](ORDERED_PREFIX.md), merged PR #27 | Young layers and quotient columns use the same prefix/placement controls; nested measured contributors, tied-order recovery, zero/signed weights | 184 |
+| [Saved canvases](../examples/canvases/README.md), merged PR #28 | Four editable investigations open with captured evidence and reversible movement | 190 |
+| [Spatial workspace](SPATIAL_WORKSPACE.md), this increment | Named objects visible together; definition paths distinguish earlier and local inputs; reviewed drag/tap composition preserves declaration and history boundaries | 195 |
 
 The current required suite and discovery example pass. The expanded Chromium 153
 gate uses actual controls for prime/composite reconstruction and lattice equality,
@@ -318,7 +328,27 @@ evidence with its selected contributor and camera preserved. This supports the
 instrument-reuse and continuity criteria; whether users understand the distinction
 between Rank and Prefix sum remains a formative-study question.
 
+The spatial browser gate additionally opens all four saved canvases in the
+shared view, creates a product with a real pointer drag, checks keyed placement
+and a missing-key rejection, and retains a parked proposal's operands. View
+movement, camera changes, cancellation and option opening leave exported work
+unchanged. Emulated touch exposed and now guards a release-after-hold bug that
+could choose a newly opened menu item under the finger. Desktop and narrow-screen
+images were inspected. The saved-canvas and full construction browser gates also
+pass, preserving replay, comparison and nested evidence; this does not establish
+physical-device ergonomics or whether users understand the new overview.
+
 ### Proposed human observation
+
+Add three tasks motivated by the maintainer's feedback: construct every pair by
+bringing two objects together; use a count as another object's height; explain
+why an earlier consumer does not retarget when a named source is rearranged.
+Record whether people identify the active source/destination, review the keys,
+and predict what Apply changes. Ask them to distinguish moving a view panel,
+changing x/y/z, selecting an exact parameter case, and scrubbing recorded motion.
+The workspace previews have independent scales; test whether apparent geometric
+comparisons are mistakenly treated as mathematical equality. Dense scenes,
+crossing/occluded paths and the Focus detour are explicit unresolved design costs.
 
 **Formative human study, proposed:** start with 6–8 consenting adult volunteers,
 including people comfortable with school algebra but unfamiliar with the API and
@@ -388,12 +418,17 @@ Use this record for each review:
    now adds ordered tuples, explicit weight/source roles, and return views, tested
    against signed sums too. [Keyed comparison](KEYED_COMPARISON.md) now reuses these
    views for exact residuals and missing/outside keys over an independent domain.
-   Arbitrary view pinning and human layout trials remain open.
+   The [spatial workspace](SPATIAL_WORKSPACE.md) now shows all named roots and
+   bounded definition paths. Local scopes and earlier unnamed reads stay explicit
+   boundaries; they are not relabeled as current roots. Arbitrary captured-view
+   pinning, editable live wiring and human layout trials remain open.
 4. **Case versus replay controls:** [delivered explicit integer cases](PARAMETER_CASES.md)
    use named parameters in expressions and extents, with evaluate/apply and exact
    restored endpoints. Separate scrubbable replay has a static/reduced-motion path.
    Radon prime/composite and lattice growth transfer tasks exercise the controls. Evaluate whether
    motion helps identify a correspondence, not merely whether it is smooth.
+   Ordered parameter tracks and recurrence steps are specified in the spatial
+   brief as separate meanings of time; no new slider is delivered in this increment.
 5. **Reusable instruments and notation:** composite read keys are now editable; named expressions,
    source constructors, and reusable lens/placement recipes. Measure the effort
    to transfer them across lessons before proposing a generic graph editor.

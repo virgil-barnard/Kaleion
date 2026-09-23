@@ -18,7 +18,9 @@ it cannot open these files.
 
 ## Your first five minutes
 
-1. Open **07_equal_sums.json**. The selected object is **Moving pairs**.
+1. Open **07_equal_sums.json**. The selected object is **Moving pairs**. Workspace
+   shows its sources and measurements together; Connections exposes their named
+   definition paths. Choose Focus to inspect the selected object alone.
 2. Click **Undo** once: equal sums collapse onto seven positions, retaining all
    sixteen pairs. Click **Redo**: ranks separate them into the stacks again.
 3. Below the canvas, drag **Replay captured transformation** slowly from left to
@@ -36,6 +38,9 @@ then **Options → Create a relation**. Name it `My sum four`. In the initial
 `value = 0` formula, click `0` and change it to `4`, then finish that formula edit.
 Choose **Preview**, then **Apply**. Three pairs should be highlighted. **Save**
 downloads your extended workspace; the source file in this folder is unchanged.
+
+To compose by connecting objects, see the [shared workspace walkthrough](../../docs/SPATIAL_WORKSPACE.md#try-this-increment).
+View-panel layout is temporary; Save retains the mathematical workspace and its history.
 
 ## Four starting points
 

@@ -10,6 +10,7 @@ import {caseFields,caseLabel,caseReport} from './cases.js';
 import {replayControls} from './replay.js';
 import {comparisonInspector} from './comparison.js';
 import {cameraControls} from './camera.js';
+import {spatialWorkspace} from './workspace.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -23,23 +24,43 @@ let state={revision:0,objects:[],undo:false,redo:false}, active=null, mode='obje
 let selectedPoint=null, preview=null, busy=false, gesture=null, held=false;
 let groupReport=null, groupChoice=-1;
 let comparisonChoices=null;
+let surface='workspace';
 let camera={x:0,y:0,zoom:1}, dots=[], labelField='value', objectTabsKey='', labelOptionsKey='';
 const draft=draftSession();
 const linked=linkedViews($('linked-views'),{
   load:capture=>request('capture',{capture}),
-  onVisibility:shown=>{$('single-view').hidden=shown;$('canvas-tools').hidden=shown;$('scope').textContent=shown?'Read-only captured evidence · close to construct':'Hold for construction tools';if(shown)status('Browsing captured evidence. Selection and view changes do not alter your construction.')}
+  onVisibility:shown=>{$('single-view').hidden=shown||surface!=='focus';$('workspace-view').hidden=shown||surface!=='workspace';$('canvas-tools').hidden=shown||surface!=='focus';$('surface-tools').hidden=shown;$('scope').textContent=shown?'Read-only captured evidence · close to construct':resultScope();if(shown)status('Browsing captured evidence. Selection and view changes do not alter your construction.')}
 });
 const receipts=receiptInspector({panel:$('panel'),run,query:request,linked,beforeShow:parkDraft});
 const replay=replayControls($('replay'),{draw,restore:()=>draw(),onPresentation:shown=>{
   if(shown)$('scope').textContent='Replay · presentation only · applied case unchanged';
   else $('scope').textContent=resultScope();
 }});
+const board=spatialWorkspace($('workspace-view'),{
+  select:selectObject,focus:name=>{selectObject(name);setSurface('focus')},
+  options:name=>{selectObject(name);mode='objects';syncMode();openMenu()},
+  combine:combinePanel,locked:()=>busy||!!preview,status
+});
+function syncMode(){document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)))}
+function setSurface(value){
+  board.cancel();linked.close();surface=value;
+  $('single-view').hidden=surface!=='focus';$('workspace-view').hidden=surface!=='workspace';$('canvas-tools').hidden=surface!=='focus';
+  document.querySelectorAll('[data-surface]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.surface===surface)));
+  if(surface==='workspace'){mode='objects';syncMode();replay.reset(false)}
+  render();
+}
+document.querySelectorAll('[data-surface]').forEach(b=>b.onclick=()=>{if(!busy){parkDraft();setSurface(b.dataset.surface)}});
+function selectObject(name){
+  if(busy)return;linked.close();parkDraft();active=name;selectedPoint=null;preview=null;clearGroups();
+  $('panel').replaceChildren(el('h2',name),el('p','Options opens construction tools. Focus shows occurrences, groups, and captured evidence.'));
+  render();if(mode==='groups')groupPanel();
+}
 const object = () => state.objects.find(o=>o.name===active);
 const displayed = () => preview?.objects.find(o=>o.name===preview.name) || object();
 const selectedGroup=()=>groupReport?.revision===state.revision&&groupReport.name===active?groupReport.groups[groupChoice]:null;
 const groupLabel=(report,group)=>report.by.map((field,i)=>`${field} = ${group.key_types[i]==='text'?JSON.stringify(group.key[i]):group.key[i]}`).join(', ')||'Whole domain';
 function clearGroups(){groupReport=null;groupChoice=-1}
-function resultScope(){return preview?(preview.kind==='case'?`Preview case · ${caseLabel(preview.parameters)} · not applied`:'Preview · not yet applied'):mode==='points'?'Choose an occurrence to explain':mode==='groups'?'Select by declared group keys':mode==='view'?'Drag to pan · pinch or wheel to zoom':'Hold for construction tools'}
+function resultScope(){return preview?(preview.kind==='case'?`Preview case · ${caseLabel(preview.parameters)} · not applied`:'Preview · not yet applied'):surface==='workspace'?`${state.objects.length} objects · temporary view layout`:mode==='points'?'Choose an occurrence to explain':mode==='groups'?'Select by declared group keys':mode==='view'?'Drag to pan · pinch or wheel to zoom':'Hold for construction tools'}
 function status(text, error=false){$('status').textContent=text;$('status').classList.toggle('error',error)}
 const busyControls=new Map();
 let busyFocus=null;
@@ -47,6 +68,7 @@ function workspaceControls(){
   const drafting=!!draft.current;
   $('undo').disabled=busy||drafting||!state.undo;$('redo').disabled=busy||drafting||!state.redo;
   $('add').disabled=$('open').disabled=$('file').disabled=$('cases').disabled=busy||drafting;
+  $('workspace-view').querySelector('[data-combine]').disabled=busy||drafting||!active;
   $('draft-tray').hidden=!drafting;
   if(drafting){
     const context=draft.current.context;
@@ -83,7 +105,7 @@ function render(){
     $('objects').replaceChildren(...state.objects.map(o=>{
       const button=el('button',o.name,{'aria-pressed':String(o.name===active),'data-object':o.name});
       button.append(el('small',o.status==='ready'?o.kind:o.error));
-      button.onclick=()=>{if(busy)return;linked.close();parkDraft();active=o.name;selectedPoint=null;preview=null;clearGroups();$('panel').replaceChildren(el('h2',o.name),el('p','Hold the canvas or choose Options to continue from this object.'));render();if(mode==='groups')groupPanel()};
+      button.onclick=()=>selectObject(o.name);
       return button;
     }));
     if(focused)[...$('objects').children].find(b=>b.dataset.object===focused)?.focus({preventScroll:true});
@@ -94,6 +116,7 @@ function render(){
   const fields=displayed()?.fields||[];if(!fields.includes(labelField))labelField='value';
   const fieldKey=JSON.stringify(fields);if(fieldKey!==labelOptionsKey){labelOptionsKey=fieldKey;$('labels').replaceChildren(...fields.map(f=>el('option',f,{value:f})))}$('labels').value=labelField;
   draw();occurrences();
+  board.update(state,active);
 }
 $('labels').onchange=()=>{labelField=$('labels').value;draw()};
 function draw(frame=null,bounds=null){
@@ -146,11 +169,15 @@ function openMenu(addOnly=false){
     if(draft.current&&!['explain','fit','group_options','coverage','compare'].includes(action)){button.disabled=true;button.title='Resume or discard your draft before starting another construction.'}
     button.onclick=()=>{$('menu').close();if(action==='explain')explain();else if(action==='fit')fit();else if(action==='group_options')groupPanel();else if(action==='coverage')coveragePanel();else if(action==='compare')comparisonPanel();else editor(action)};return button;
   }):[el('p','Select an occurrence first. The list also reaches coincident points.')]));
+  if(!addOnly&&mode==='objects'&&active){
+    const combine=el('button','Combine with…',{'data-action':'combine'});combine.disabled=!!draft.current;
+    combine.onclick=()=>{$('menu').close();combinePanel(active,null)};$('menu-actions').prepend(combine);
+  }
   $('menu').showModal();
 }
 $('add').onclick=()=>openMenu(true);$('options').onclick=()=>openMenu();$('close-menu').onclick=()=>$('menu').close();
 document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>{
-  if(busy)return;linked.close();parkDraft();mode=button.dataset.mode;cancelHold();
+  if(busy)return;linked.close();parkDraft();surface='focus';mode=button.dataset.mode;cancelHold();
   document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render();if(mode==='groups')groupPanel();
 });
 function fit(){camera={x:0,y:0,zoom:1};draw()}
@@ -208,7 +235,7 @@ function parkDraft(){
 $('resume-draft').onclick=()=>{
   if(busy||!draft.current)return;
   try{
-    linked.close();const context=draft.resume(state.revision);active=context.target;mode=context.mode;
+    setSurface('focus');const context=draft.resume(state.revision);active=context.target;mode=context.mode;
     groupReport=context.groupReport;groupChoice=context.groupChoice;selectedPoint=null;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
     render();$('panel').scrollIntoView({block:'nearest'});($('result-name')||$('panel').querySelector('input,button'))?.focus({preventScroll:true});
@@ -220,6 +247,31 @@ $('discard-draft').onclick=()=>cancelPreview();
 function options(values,selected){const s=el('select');for(const v of values)s.append(el('option',v,{value:v}));if(selected!==undefined)s.value=selected;return s}
 function labeled(parent,text,node){const label=el('label',text);label.append(node);parent.append(label);return node}
 function input(value){const n=el('input',undefined,{type:'text'});n.value=value;return n}
+function combinePanel(from,to){
+  if(busy)return;
+  if(draft.current){status('Resume or discard your draft before proposing another construction.',true);return}
+  linked.close();replay.reset();preview=null;
+  const panel=$('panel');panel.replaceChildren(el('span','CONNECT / REVIEW / PREVIEW',{class:'eyebrow'}),el('h2','Combine objects'));
+  const source=labeled(panel,'Source object',options(state.objects.map(o=>o.name),from));source.id='combine-source';
+  const target=labeled(panel,'Destination object',options(state.objects.map(o=>o.name),to||state.objects.find(o=>o.name!==from)?.name||from));target.id='combine-target';
+  const product=el('button','Make every pair',{id:'combine-product',type:'button'}),place=el('button','Use source values as destination height',{id:'combine-place',type:'button'});
+  const choices=el('div',undefined,{class:'combine-choices'}),reason=el('p',undefined,{class:'help',id:'combine-reason'});choices.append(product,place);panel.append(choices,reason);
+  panel.append(el('p','Choose an operation, review its roles or matching keys, then Preview and Apply. Connecting never applies a change by itself.',{class:'help'}));
+  function eligibility(){
+    const a=state.objects.find(o=>o.name===source.value),b=state.objects.find(o=>o.name===target.value);
+    const ready=a?.status==='ready'&&b?.status==='ready',collections=a?.kind!=='incidence'&&b?.kind!=='incidence';
+    product.disabled=place.disabled=!ready||!collections;
+    reason.textContent=!ready?'Both objects need a successful captured result.':!collections?'For a relation, first use Keep matches or Measure to create a source with values.':`Every pair creates ${a.rows.length} × ${b.rows.length} occurrence tuples. Height reads need a unique source key for each destination key; the next editor shows both. Views use independent scales.`;
+  }
+  source.onchange=target.onchange=eligibility;eligibility();
+  product.onclick=()=>editor('product',{factors:{left:source.value,right:target.value}});
+  place.onclick=()=>{
+    const destination=state.objects.find(o=>o.name===target.value);active=target.value;
+    editor('place',{source:target.value,coordinates:[field(destination.fields.includes('i')?'i':'key'),{read:{object:source.value,on:field('key'),key:field('key'),value:field('value')}}]});
+  };
+  status(`Proposing a connection from ${from}${to?` to ${to}`:''}. Applied work is unchanged.`);
+  panel.focus({preventScroll:true});panel.scrollIntoView({block:'nearest'});
+}
 function groupPanel(){
   linked.close();parkDraft();const source=object();
   const panel=$('panel');panel.replaceChildren(el('span','SELECT BY A DECLARED KEY',{class:'eyebrow'}),el('h2','Groups'));
@@ -309,12 +361,13 @@ function comparisonPanel(){
 function editor(action,seed=null){
   linked.close();
   if(draft.current){status('Resume or discard your draft before starting another construction.',true);return}
+  setSurface('focus');
   replay.clear();
   preview=null;const editorRevision=state.revision,sourceName=seed?.source||active;render();
   const panel=$('panel');panel.replaceChildren(el('span','DECLARE / PREVIEW / APPLY',{class:'eyebrow'}),el('h2',labels[action]));
   const form=el('form'), controls=el('fieldset');controls.style.cssText='border:0;padding:0;margin:0;min-width:0';form.append(controls);panel.append(form);
   const source=state.objects.find(o=>o.name===sourceName), fields=source?.fields||['i','j','value','index','key'];
-  const name=labeled(controls,'Result name',input(action==='place'?active:`${labels[action]} ${state.objects.length+1}`));
+  const name=labeled(controls,'Result name',input(action==='place'?sourceName:`${labels[action]} ${state.objects.length+1}`));
   name.id='result-name';if(action==='place')name.readOnly=true;
   let args;
   function expressionControl(label,spec,fs=fields){const card=expr(spec,fs);card.box.setAttribute('role','group');card.box.setAttribute('aria-label',label);controls.append(el('label',label),card.box);return card}
@@ -343,7 +396,7 @@ function editor(action,seed=null){
   }else if(action==='product'){
     const sources=state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'), choices=[];
     for(const role of ['left','right']){
-      const r=labeled(controls,'Role name',input(role)),s=labeled(controls,'Source for this role',options(sources.map(o=>o.name),active));
+      const r=labeled(controls,'Role name',input(role)),s=labeled(controls,'Source for this role',options(sources.map(o=>o.name),seed?.factors?.[role]||active));
       const copies=el('div');controls.append(copies);let checks=[];
       const rebuild=()=>{copies.replaceChildren(el('label','Fields to copy into this role'));checks=sources.find(o=>o.name===s.value).fields.map(f=>{const l=el('label',f),c=el('input',undefined,{type:'checkbox',value:f});c.checked=f==='value';c.style.cssText='width:auto;display:inline;margin-right:8px;vertical-align:middle';l.prepend(c);copies.append(l);return c})};s.onchange=rebuild;rebuild();choices.push(()=>[r.value,{source:s.value,fields:checks.filter(c=>c.checked).map(c=>c.value)}]);
     }
@@ -379,8 +432,8 @@ function editor(action,seed=null){
     args=()=>({...seed,value:value.read(),field:assigned.value});
   }else if(action==='place'){
     controls.append(el('p','Change this object’s placement. Use a Keyed read to let a measurement supply a coordinate. Existing derived objects keep their earlier input definitions.',{class:'help'}));
-    const x=expressionControl('x coordinate',field(fields.includes('i')?'i':'key'));
-    const y=expressionControl('y coordinate',field(fields.includes('j')?'j':'value'));
+    const x=expressionControl('x coordinate',seed?.coordinates?.[0]||field(fields.includes('i')?'i':'key'));
+    const y=expressionControl('y coordinate',seed?.coordinates?.[1]||field(fields.includes('j')?'j':'value'));
     args=()=>({source:sourceName,coordinates:[x.read(),y.read()]});
   }else if(action==='select'){
     controls.append(el('p','Keep matching occurrences as a new finite universe. Its later groups may differ from the original relation’s zero groups.',{class:'help'}));args=()=>({source:sourceName});
@@ -415,6 +468,7 @@ function editor(action,seed=null){
 function cancelPreview(){run(async()=>{await request('cancel');draft.clear();preview=null;render();$('panel').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
 function caseEditor(){
   if(busy||draft.current)return;
+  setSurface('focus');
   linked.close();replay.clear();preview=null;
   const panel=$('panel'),editorRevision=state.revision;
   panel.replaceChildren(el('span','DECLARE / EVALUATE / APPLY',{class:'eyebrow'}),el('h2','Explore parameter cases'));
@@ -448,6 +502,7 @@ function caseEditor(){
 }
 $('cases').onclick=caseEditor;
 async function animate(frames){
+  if(frames?.length)setSurface('focus');
   replay.record(frames,active);
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches)await replay.play();
 }
@@ -461,7 +516,7 @@ $('save').onclick=()=>run(async()=>{
   const response=await fetch('/api/export');const text=await response.text();
   const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=el('a',undefined,{href:url,download:'kaleion-studio.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved captured definitions, evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
 });
-$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const next=await request('import',{capture:await file.text()});comparisonChoices=null;adopt(next);$('panel').replaceChildren(el('h2','Saved workspace opened'),el('p','Its captures and history are available without reevaluating definitions.'));status('Reopened captured workspace.');$('file').value=''})};
+$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const next=await request('import',{capture:await file.text()});comparisonChoices=null;board.reset();adopt(next);$('panel').replaceChildren(el('h2','Saved workspace opened'),el('p','Its captures and history are available without reevaluating definitions. Choose Workspace to see objects together; Focus opens the selected object.'));status('Reopened captured workspace.');$('file').value=''})};
 window.addEventListener('blur',()=>{cancelHold();pointers.clear()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){cancelHold();if(!e.defaultPrevented&&e.target.tagName!=='SELECT'&&!$('menu').open&&draft.current&&!busy){parkDraft();render()}}});
 new ResizeObserver(()=>{if(!busy)draw()}).observe($('canvas'));
