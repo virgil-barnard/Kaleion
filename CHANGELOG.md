@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add four ordinary saved canvases adapted from lessons 02, 05, 06 and 07, with
+  sources, measurements, evidence, recorded motion and an Open/Undo/Redo walkthrough.
+  No UI controls or core operations change.
+
 - Add exact exclusive prefix sums through `group_by(...).order_by(...).prefix_sums(key=..., value=...)` and the studio's shared Measure control. The new version-1 `prefix_sum` operation shares strict order planning and compact contributor ranges with Rank, with signed/zero weights, explicit unique keys and captured weight-read inspection. Schema 1 and old captures remain supported; executing new definitions requires the updated evaluator.
 - Replace Young-layer packing's dense prefix driver with the ordered operation, retain the small dense recipe as an independent check, and export nested layer/offset receipts. Exercise the same controls with quotient-column packing, ambiguous order, zero contributors and weights, saved evidence, case changes, and reversible placement. Record the implementation brief, remaining development sequence and UI evidence.
 

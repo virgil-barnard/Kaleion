@@ -33,6 +33,10 @@ capture descriptions and scoped references across investigations.
 
 ## Run the study
 
+For an example to inspect before building, use the four
+[saved canvases and first-five-minutes guide](../examples/canvases/README.md).
+They open through the existing **Open** button. No new UI options are introduced.
+
 From the repository root, use the existing environment:
 
 ```sh

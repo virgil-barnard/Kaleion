@@ -84,6 +84,12 @@ editing, staged 3D animation, comparisons, and corruption investigation.
 
 ## Functions and authoring scaffolding
 
+The [saved studio prototype](../../examples/canvases/README.md) uses `radon` in
+[save_canvases.py](../../examples/save_canvases.py): a size-three weighted image,
+line sums, backprojection, recovered/remainder fields and a 2D height-profile
+movement. Its captured definitions support the composite case and nested evidence.
+It does not reproduce the notebook's staged 3D reconstruction.
+
 The [notebook](../../notebooks/05_finite_radon.ipynb) defines four top-level functions.
 See the [cross-lesson inventory](HELPER_INVENTORY.md) for related recipes.
 

@@ -122,6 +122,7 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A10 | No novice task or physical tablet trial has been conducted | Available evidence consists of code, deterministic fixtures, and emulated Chromium | Open · run the formative protocol below |
 | A11 | The first object-tab click after editing a number can disappear | Input blur triggers a render that replaces the tab before its click arrives; reproduced in the baseline probe | Addressed · unchanged controls survive render; one-click navigation regression |
 | A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
+| A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the current studio hides replay until a recent movement | Open · four saved canvases and an existing-controls walkthrough provide material for feedback; no UI redesign in this increment |
 
 The baseline probe uses actual controls and records the browser version, focused
 element, message, Apply availability, and presence of a draft-return control.
@@ -131,6 +132,17 @@ swallowed (A11); clicking again navigates and loses the draft (A1). The JSON tra
 is a local build artifact, not a fabricated participant observation.
 
 ### Reevaluation: what the interface now supports
+
+**September 23 follow-up from the project owner:** after trying the desktop
+interaction study, the user could not readily find a starting point or a scrub
+control, and asked for saved canvases before further UI options. This is direct
+project feedback, not a formal novice study or evidence of which study page was
+open. The response is four [ordinary saved canvases](../examples/canvases/README.md)
+and a short exploration guide, using the existing Open and Undo/Redo controls.
+No lesson picker, new menu, or playback redesign is included. The current studio
+scrubber needs a recent action and is not restored directly on file open; the
+guide explicitly uses Undo then Redo to expose it. Examples can help us observe
+inspection and editing, but do not resolve blank-canvas discoverability by themselves.
 
 The strongest progress is continuity across instruments: an idea survives an
 inspection detour, a measured quantity leads to its captured inputs, and returning

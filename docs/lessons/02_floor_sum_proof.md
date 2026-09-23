@@ -55,6 +55,11 @@ of the marker glyphs. Its extension is [three incidences in a box](03_three_inci
 
 ## Functions and authoring scaffolding
 
+The [saved studio prototype](../../examples/canvases/README.md) uses `floor_sums`
+in [save_canvases.py](../../examples/save_canvases.py) to retain the two incidences,
+their measurements and a 2D reassembly path. It is an ordinary editable capture;
+the notebook's functions below are unchanged.
+
 The [notebook](../../notebooks/02_floor_sum_proof.ipynb) defines two top-level
 functions and one nested function. See the [cross-lesson inventory](HELPER_INVENTORY.md)
 for related responsibilities elsewhere.

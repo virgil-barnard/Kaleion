@@ -71,6 +71,11 @@ for established conjugation terminology and alternative diagram conventions.
 
 ## Functions and authoring scaffolding
 
+The [saved studio prototype](../../examples/canvases/README.md) uses `young_layers`
+in [save_canvases.py](../../examples/save_canvases.py) to capture the layer counts,
+ordered offsets and original cells. Two recorded 2D moves turn and pack the cells;
+the notebook retains its separate 3D presentation and conjugation investigation.
+
 This [notebook](../../notebooks/06_young_layers.ipynb) defines **no local functions**.
 Its mathematical recipes and playback orchestration are inline. See the
 [cross-lesson inventory](HELPER_INVENTORY.md) for their recurring responsibilities.
