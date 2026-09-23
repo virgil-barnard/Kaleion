@@ -57,7 +57,7 @@ class Sweep:
                 if matched and ids[i] not in seen:
                     seen[ids[i]] = {
                         "identity": ids[i],
-                        "value": int(result.source.values[i]),
+                        "value": None if result.source.values is None else int(result.source.values[i]),
                         "case": self.cases[index],
                         "case_index": index,
                     }

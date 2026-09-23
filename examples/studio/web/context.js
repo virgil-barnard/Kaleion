@@ -1,23 +1,17 @@
-// Availability depends on selection scope and capabilities, never lesson names.
-export function actions({mode, object, point, group}) {
-  if (mode === 'view') return ['fit'];
-  if (mode === 'points') return object?.status === 'ready' && point ? ['explain'] : [];
-  if (mode === 'groups') return object?.status === 'ready'
-    ? group ? ['group_options', 'group_lens', 'measure', 'coverage'] : ['group_options', 'coverage'] : [];
-  const add = ['integers', 'sequence', 'grid'];
-  if (!object) return add;
-  if (object.status !== 'ready') return add;
-  return object.kind === 'incidence'
-    ? ['measure', 'coverage', 'select', ...add]
-    : ['field', 'lens', 'measure', 'coverage', 'compare', 'place', 'product', ...add];
+// One owner per intent: background creates; an object exposes its details and
+// a short tool shelf; specialist operations live in one secondary disclosure.
+export const creationActions=['vector','grid','cube'];
+export function advancedActions(object){
+  if(object?.status!=='ready')return [];
+  return object.kind==='incidence'
+    ? ['select','measure','group_options','coverage']
+    : ['values','field','place','measure','group_options','coverage','compare'];
 }
-
-export const labels = {
-  integers: 'Add integers', sequence: 'Add a sequence', grid: 'Add a grid', field: 'Define a field',
-  lens: 'Create a relation', measure: 'Measure', place: 'Arrange',
-  product: 'Form a product', select: 'Keep matching occurrences',
-  explain: 'Explain this occurrence', fit: 'Fit view',
-  group_options: 'Choose group keys', group_lens: 'Create a group lens',
-  coverage: 'Check coverage', assignment: 'Use unique matches',
-  compare: 'Compare integer fields',
+export const labels={
+  vector:'Vector',grid:'Grid',cube:'Cube',shape:'Create a shape',
+  integers:'Type values',sequence:'Arithmetic sequence',field:'Add a named field',values:'Set values from a formula',
+  lens:'Make a relation',measure:'Measure with keys and order',place:'Set coordinates',
+  reuse_lens:'Reuse this rule',total:'Sum or count',product:'Make every pair',select:'Keep matches',
+  explain:'Explain this item',fit:'Fit view',group_options:'Browse groups',group_lens:'Make a group relation',
+  coverage:'Check coverage',assignment:'Use unique matches',compare:'Compare exact fields',
 };

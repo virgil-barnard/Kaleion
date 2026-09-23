@@ -41,74 +41,32 @@ These images come from the working notebooks. Follow a preview to its constructi
 
 The images are static previews; selected motion frames show presentation states. [Preview sources and regeneration](docs/images/lessons/README.md).
 
-## Toward a touch workspace
+## Build on a canvas
 
-The [next canvas design](docs/UNIFIED_CANVAS_DESIGN.md) compares Icarus's direct
-grid and reusable relations with Kaleion's construction and evidence model. It
-now includes [readable construction on selection](docs/CONSTRUCTION_INSPECTION.md)
-and a [shared cell/point/3D scene](docs/SHARED_SCENE.md). Explicit reusable rule
-bindings and labeled case/generation/replay tracks remain planned.
+Run `python3 -m examples.studio` and open **http://127.0.0.1:8765**.
+Choose **Vector**, **Grid**, or **Cube**, set its size, then **Create**. Keep tuples
+without numeric contents, or fill locations with an index formula such as
+`10*i + j`. A Vector also accepts a list of exact integers.
 
-The [shared scene](docs/SHARED_SCENE.md) draws objects at one coordinate scale.
-Switch **Cells / Points**, choose **Logical axes / Placement**, and orbit or slice
-3D relations. Drag names to move view offsets; **Connections** proposes a product
-or keyed placement. **+ Sequence** creates a finite source with explicit length,
-start and step. **Focus** retains lesson tools and the existing XY replay.
-**Save → Canvas and view** preserves scene choices; **Mathematics only** exports
-the ordinary workspace for Python.
+Select an object; **Details**, right-click or long-hold opens its construction
+beside the canvas. There is one working scene. **Relation**, **Sum / count** and
+**Combine** create further objects while retaining their inputs. Specialist tools
+remain under **More tools**; Cells/Points, charts and slices live in **Appearance**.
+Orbit and Connect stay available on the board. Replay shows a saved movement on
+that board; **Parameters** explicitly calculates new results.
 
-Select an object to see **How this is made**: its constructor, expressions,
-ordered inputs, keys and parameter case. Follow an input to its actual definition
-and captured result; **Back** restores selection and camera. Earlier definitions
-and local cases stay distinct from current named objects. Occurrence inspection
-continues from the same captured evidence without evaluating the graph.
+[Open a worked canvas](examples/canvases/README.md) to explore the lesson
+constructions. Follow an input or contributor to its saved source, then return
+without losing the camera. Save retains exact mathematics, evidence and history;
+**Canvas and view** also preserves appearance and layout. New tuple-only captures
+use workspace schema 2; existing integer captures remain compatible with schema 1.
 
-**Prefer to start with an example?** [Open a worked canvas](examples/canvases/README.md)
-in the studio with **Open**. Five saved investigations contain editable sources,
-measurements and evidence. Start with equal-sum stacks, or try the new 3D incidence
-box. Four examples retain recorded motion; the guide shows how **Undo → Redo**
-exposes the existing replay scrubber.
-
-The [construction studio](docs/CONSTRUCTION_STUDIO.md) now starts from a blank
-canvas. With the environment below active, run `python3 -m examples.studio` and
-open **http://127.0.0.1:8765**. Hold the selected object for contextual tools;
-switch to Occurrences to follow a point's measurement contributors. **Groups**
-selects fibers by declared keys, including groups with zero incident members.
-Tap part of a compact formula to edit it. The same expressions, grouping choices,
-and keyed reads construct additive stacks and modular incidences, with exact
-previews, save/open, and captured undo/redo. Group browsing is read-only; creating
-a lens or measuring its groups is an explicit construction.
-An unfinished draft now survives a detour to inspect another object: resume its
-original formula and grouping choices, then preview again. The
-[UI design study](docs/UI_DESIGN_STUDY.md) provides research, a practical review
-rubric, and cross-lesson testing plans for the evolving interface.
-**Check coverage** now compares a relation against separately chosen expected
-keys, exposes missing/multiple/outside matches, and lets a unique match supply a
-new field on each expected item. That field can drive another arrangement with
-its contributor evidence intact. The [coverage investigation](docs/COVERAGE_INSTRUMENT.md)
-walks through constructing, breaking, inspecting, and reusing an assignment.
-[Linked evidence views](docs/LINKED_EVIDENCE_VIEWS.md) keep expected items beside
-candidate matches, or a measurement beside its contributors. The same controls
-follow earlier captured drivers and retain source context for zero measurements.
-[Weighted evidence navigation](docs/WEIGHTED_EVIDENCE.md) adds ordered key tuples
-and a return path from a contribution's weight to the measurements and source
-items behind it. A Radon reconstruction and signed sums use the same controls.
-It is an experimental authoring subset; the guide maps the remaining work across
-all eleven lessons. No lesson-specific tools or new core operations are added.
-[Parameter cases](docs/PARAMETER_CASES.md) now declare an integer once and reuse
-it in formulas and grid lengths. Evaluate/Apply explicitly changes the case;
-Undo restores its captured predecessor. Separate replay controls sample a recorded
-construction transition. Radon modulus changes and lattice growth share the controls.
-[Keyed comparison](docs/KEYED_COMPARISON.md) checks selected integer fields under
-ordered keys and an independent expected domain. Inspect exact residuals, missing
-keys, and outside keys, then follow their captured evidence and return. The same
-controls test Radon reconstruction and lattice counts. Camera buttons and phone
-links provide tap/keyboard routes between the picture and its controls; the
-updated design study records remaining physical-device and novice testing.
-**Measure → Prefix sum · before each item** now accumulates earlier weights under
-declared groups and order. Use measured layer sizes or quotient counts to derive
-packing offsets, then inspect each offset's contributors. The
-[implementation brief and next steps](docs/ORDERED_PREFIX.md) explain the contract.
+The [continuous-canvas guide](docs/CONTINUOUS_CANVAS.md) explains the interaction
+reset prompted by maintainer feedback. The [UI design study](docs/UI_DESIGN_STUDY.md)
+records its research, rejected assumptions and remaining human usability questions.
+The [studio capability matrix](docs/CONSTRUCTION_STUDIO.md#all-lessons-are-the-target-remaining-composition-coverage)
+tracks the deeper lesson capabilities and remaining work. Child and physical-touch
+usability have not been established by the automated checks.
 
 The [interaction study and control plan](docs/TOUCH_WORKSPACE.md) explore composing
 an investigation directly on a canvas: move a relation lens, derive a count
@@ -442,7 +400,7 @@ restored = Workspace.from_json(Path("investigation.json").read_text())
 
 Saved results and history reopen without rerunning their constructions. The format is versioned JSON with data-only expressions. The Python format is distinct from the browser prototype's format; no automatic migration is included. Provenance explains a finite result; it is not a proof certificate.
 
-New Python exports identify themselves as `kaleion-python`, schema 1. `Workspace.from_json(...)` also accepts the previous `icarus-python`, schema 1, preserving captured results, identities, undo/redo, and observations. Saving an imported Python workspace writes the Kaleion name. This compatibility does not apply to the separate HTML prototype's format.
+New Python exports identify themselves as `kaleion-python`: schema 1 for integer-only captures, schema 2 when any retained state contains tuple-only domains. `Workspace.from_json(...)` also accepts the previous `icarus-python`, schema 1, preserving captured results, identities, undo/redo, and observations. Saving an imported Python workspace writes the Kaleion name. This compatibility does not apply to the separate HTML prototype's format.
 
 ## Current implementation boundaries
 

@@ -23,7 +23,7 @@ shared group selection and compact formula editing. The new review starts from
 changes below. [TOUCH_WORKSPACE.md](TOUCH_WORKSPACE.md) supplies the complementary
 design constraints: nearby object tools, readable declarations, explicit domains,
 and camera state separate from mathematics. Findings about the code and
-browser are observations; proposed effects on learners are hypotheses. No human
+browser are observations; proposed effects on learners are hypotheses. No formal human-study
 participants were recruited and no accessibility conformance audit was performed.
 The existing [all-lesson coverage matrix](CONSTRUCTION_STUDIO.md#all-lessons-are-the-target-remaining-composition-coverage)
 remains the capability inventory. This document supplies the evaluation criteria.
@@ -36,6 +36,53 @@ It records design decisions and an implementation sequence. The first step,
 declarations and scoped input navigation on top of merged PR #30 (`dfa8cb1`).
 The [shared scene](SHARED_SCENE.md) now implements the next step on merged
 PR #31 (`5740d63`). Captured transport, reusable rules and later steps remain proposals.
+
+## Interaction reset after maintainer feedback
+
+September 23, 2026 · Supersedes the shell recommendations and “addressed” UI
+judgments below where they conflict. Earlier sections record historical stages.
+
+The maintainer's direct desktop feedback is negative evidence: the background
+menu was redundant and overwhelming; “cases” and “occurrences” introduced an
+unfamiliar vocabulary; Focus disrupted orientation; creating simple vectors,
+grids and cubes was harder to discover than it should be. The previous audits
+mostly confirmed that capabilities were reachable through scripted paths. That
+does not answer whether the author recognizes an action or feels in control.
+Our feature-progress language overstated the interaction progress.
+
+The [continuous-canvas refactor](CONTINUOUS_CANVAS.md) applies R1/R2/R3/R6 as
+constraints on the whole authoring loop, not as justifications for extra buttons:
+
+| Observed failure | Applied decision | What would falsify the improvement |
+| --- | --- | --- |
+| Background inherits the active object's menu | Background creates Vector, Grid or Cube only; the command router has no selected-object fallback | A new author still cannot start without directions |
+| Source actions and object actions appear in several permanent rows | One header Create command, one selected-object strip, one contextual drawer; specialist tools under More tools | Authors repeatedly search the wrong place or cannot find a frequent tool |
+| Focus replaces the scene during construction/evidence work | Remove the alternate working surface; details/evidence open beside the unchanged board; replay uses the same scene | Authors lose track of the target, or the drawer hides too much to reason with |
+| Internal vocabulary comes before the mathematical task | Shape, location/item, value formula, Parameters, Replay; exact scope/identity remain in inspectable declarations | Plain labels hide a meaningful distinction or still require explanation |
+| Every grid implicitly contains integers | Explicit tuples without contents, separately assignable integer formulas and sizes | Authors mistake tuple coordinates for values or absence for zero |
+| Automated checks treated as evidence of intuitiveness | Separate executable contracts, maintainer reports, and untested child/novice hypotheses | Another increment is judged successful solely by passing scripted tests |
+
+The concrete split uses task judgments; the sources do not prescribe a three-item
+menu or prove this interface is good for children. R1 motivates persistent visible
+objects and reversible action; R2 asks us to design reusable instruments and their
+targets; R3 exposes the tradeoff between reduced diffuseness and hidden dependencies;
+R6 requires an obvious, meaningful path to specialist controls. Formula, declared
+domain and scope cannot disappear merely to make a screenshot cleaner.
+
+A7/A9/A13/A14/A15 are reopened as **human usability findings**. Implemented paths
+and restoration checks remain valid engineering evidence. The new gate verifies
+creation without a mode switch, unchanged scene/camera during inspection,
+preview cancellation, exact formula failure, tuple evidence, reductions, save/
+restore, and shared replay. It does not establish discoverability or enjoyment.
+The planned replay-track feature queue is paused behind this interaction reset.
+
+The next observation is a short, uncoached task: “Make a grid, give its locations
+values from a pattern, highlight some, and make an object containing their counts.”
+Record first action, hesitations, wrong targets, recovery and the author's own
+explanation. Then ask them to find how a value was made and return, and to explain
+what differs between playback and changing a parameter. Repeat on a physical touch
+device. Do not demonstrate the route first. No new feature is justified merely
+because a control could be added to More tools.
 
 ## 1. What the research contributes
 
@@ -137,8 +184,8 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
 | A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the current studio hides replay until a recent movement | Open · four saved canvases and an existing-controls walkthrough provide material for feedback; no UI redesign in this increment |
 | A14 | Selecting an object does not adequately reveal how it was constructed | Maintainer feedback after PR #29; now checked through all four saved canvases plus earlier/local/failed inputs | Implemented · selection reveals actual constructor, arguments, scoped inputs and result status; Back restores context and captured results lead to occurrence evidence. Human interpretation remains untested |
-| A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 used independent XY previews; the shared-scene gate now exercises cells/points, direct mark inspection, 3D slices and saved views | Partly implemented · common scale/local frames, explicit charts, name-handle movement, Sequence creation and reviewed combination targets. Direct mathematical manipulators, reusable rules and human evaluation remain open |
-| A16 | Reusable rules and live dependencies lack a complete visible authoring contract | Core Lens is reusable; current connections describe immutable definitions, while Icarus exposes movable relation tokens | Open · separate rule, application, and captured incidence; add explicit recipe ports before promising propagation through editable cables |
+| A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 used independent XY previews; shared-scene and relation-workbench gates exercise marks, 3D, canvas-side pattern previews and derived objects | Partly implemented · common scale/local frames, explicit charts, Sequence/pattern construction and reviewed combinations. Direct mathematical manipulators and human ease remain open |
+| A16 | Reusable rules and live dependencies lack a complete visible authoring contract | The relation workbench copies saved scalar predicates with explicit field mappings and captured constants; Connections remains an immutable definition map | Partly implemented · predicate transfer retains source/destination and survives core save/undo. Standalone rule tokens, support, dependency bindings and editable recipe ports remain open |
 
 The baseline probe uses actual controls and records the browser version, focused
 element, message, Apply availability, and presence of a draft-return control.
@@ -290,6 +337,34 @@ camera movement into mathematical undo. Focus, linked evidence and replay still
 use their labeled XY views; the UI must not imply that a 3D scene means every
 instrument has already gained 3D rendering.
 
+### Quick patterns and totals: a short path with deeper controls
+
+The maintainer now explicitly asks for an interface that children can enjoy while
+retaining mathematical research depth. The [relation workbench](RELATION_WORKBENCH.md)
+responds with nearby Lens/Reuse lens/Total actions, one/two/three-field pattern
+starters, an expandable full formula editor, and exact previews in the shared
+canvas. Input mappings stay visible; reusing a rule copies its actual predicate
+and captured parameter constants onto another object's universe. No finite mask
+is promoted to a general rule.
+
+Total chooses directions to reduce and shows which keys remain. Count and Sum
+preserve the core's zero-fiber policy. A new result displays its retained keys
+as coordinates and can be reduced again or used as another object's input.
+The actual measurement, placement and contributors remain inspectable. A view
+slice does not limit the reduction's mathematical input.
+
+These choices aim to reduce initial configuration while preserving exact meaning.
+The first layout put three input selectors in a vertical stack; screenshot review
+showed too much scrolling, so they now share one row. Full formulas and long field
+names still need room. While editing beside the canvas, a compact source button
+replaces the full construction sheet; it parks the draft and opens that source's
+construction. On a phone the form remains below the picture, with jump
+links; simultaneous visibility and comfortable reach are unresolved. A labeled
+preview, a match count and easy reversal are implemented. Whether this feels fun,
+legible or intuitive to children is an untested hypothesis, not a behavioral-test
+result. Begin the next observation with an unscripted new pattern, reuse on a
+different domain, and a predicted reduction including a zero.
+
 ## 5. First design experiment: an idea survives a detour
 
 **Hypothesis:** retaining an unfinished construction while someone inspects a
@@ -416,6 +491,7 @@ These are historical gate totals, not participant counts or usability scores.
 | [Spatial workspace](SPATIAL_WORKSPACE.md), merged PR #29 | Named objects visible together; definition paths distinguish earlier and local inputs; reviewed drag/tap composition preserves declaration and history boundaries | 195 |
 | [Construction inspection](CONSTRUCTION_INSPECTION.md), after merged design PR #30 | Readable constructors and exact expressions; scoped input navigation, failed/unfamiliar declarations, captured-result evidence and restored context | 203 |
 | [Shared scene](SHARED_SCENE.md), after merged PR #31 | Common-scale cells/points, 3D orbit/slices, source creation, exact saved view documents and direct occurrence inspection | 206 |
+| [Relation workbench](RELATION_WORKBENCH.md), after merged PR #32 | One/two/three-field starters, explicit predicate transfer and captured constants, canvas previews, repeated axis/key reductions, exact zeros/weights and retained evidence | 212 |
 
 PR #29 reported the required suite and discovery example passing; the subsequent
 Icarus/design review does not rerun or change those executable gates. The expanded Chromium 153
@@ -473,6 +549,14 @@ failed/empty captures and phone widths. The existing inspector, spatial,
 saved-canvas and full-studio gates pass as regressions. Required tests total
 **206**, and discovery outputs are unchanged. These are automated and visual
 inspection results; no participant or physical-device evidence has been added.
+
+The relation-workbench gate adds actual one/two/three-input construction, a lens
+drag and explicit remapping, cube/plane/line/scalar reductions, a view slice that
+does not change the total, zero fibers, and draft/save/undo isolation. Six semantic
+tests cover independent finite results, nested captured cases, rejected bindings
+and dependency reads, large weights, contributors and read-only restoration.
+The required suite now passes **212 tests**. Discovery and the six browser gates
+pass. These results add no child/novice or physical-touch observation.
 
 ### Proposed human observation
 
@@ -544,8 +628,10 @@ Use this record for each review:
 The list below records the original sequence and delivered increments. Following
 the Icarus review, the [next PR sequence](UNIFIED_CANVAS_DESIGN.md#a-sequence-of-small-reviewable-pull-requests)
 started with construction inspection and shared representations, now implemented.
-Visible captured tracks follow. Reusable rules and editable recipes retain
-explicit scope and compatibility contracts; those later steps remain planned.
+The latest maintainer priority brings quick relation work and a bounded part of
+predicate reuse forward. Visible captured tracks follow. Standalone rules and
+editable recipes retain explicit scope and compatibility contracts; those parts
+remain planned.
 
 1. **Stable authoring loop:** draft retention, accurate local feedback, and focus
    recovery. Delivered and tested against additive/modular controls;

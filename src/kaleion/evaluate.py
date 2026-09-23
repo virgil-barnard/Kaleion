@@ -23,6 +23,7 @@ _PRIMITIVES = {
     "sequence": ("arange", "broadcast", "multiply", "add"),
     "literal": ("constant",),
     "grid": ("cartesian_indices", "elementwise"),
+    "tuples": ("cartesian_indices",),
     "young": ("ragged_indices", "elementwise"),
     "spiral": ("bounded_scan", "concatenate", "elementwise"),
     "place": ("elementwise", "stack"),
@@ -137,8 +138,9 @@ class Evaluator:
 
     def _new(self, node, values, fields, *, positions=None, axes=(), shape=None):
         origin = node.attributes["origin"]
-        ids = tuple(f"{origin}:{i}" for i in range(len(values)))
-        fields = {"key": np.arange(len(values), dtype=object), **fields}
+        count = prod(shape) if values is None else len(values)
+        ids = tuple(f"{origin}:{i}" for i in range(count))
+        fields = {"key": np.arange(count, dtype=object), **fields}
         meta = {
             "name": node.attributes.get("name", node.op),
             "complete": True,
@@ -181,7 +183,7 @@ class Evaluator:
         addresses = np.asarray(addresses, dtype=np.int64)
         if len(addresses) > self.max_items:
             raise ValueError("Gather exceeds item budget")
-        values = T.take(source.values, addresses)
+        values = None if source.values is None else T.take(source.values, addresses)
         ids = tuple(
             source.ids[j] if preserve_ids else f"{node.id}:{i}"
             for i, j in enumerate(addresses)
@@ -235,13 +237,13 @@ class Evaluator:
             return self._new(
                 node, a["values"], fields, axes=("s",), shape=(len(a["values"]),)
             )
-        if op == "grid":
+        if op in ("grid", "tuples"):
             shape = tuple(
                 T.size(self.expr(v), "Axis size", self.max_items) for v in a["shape"]
             )
             fields = indexing.grid_fields(shape, a["axes"], max_items=self.max_items)
             ctx = {**fields, "index": np.arange(prod(shape), dtype=object)}
-            values = T.broadcast(self.expr(a["values"], context=ctx), prod(shape))
+            values = None if op == "tuples" else T.broadcast(self.expr(a["values"], context=ctx), prod(shape))
             return self._new(node, values, fields, axes=a["axes"], shape=shape)
         if op == "young":
             partition = tuple(
@@ -423,6 +425,8 @@ class Evaluator:
                     if isinstance(given, Node)
                     else self.expr(given)
                 )
+                if indices is None:
+                    raise ValueError("Gather indices need integer values; this domain has tuples only")
                 indices = indexing.checked_indices(indices, bound, bijective=a.get("bijective", False))
             if dim is None:
                 return self._index(node, source, indices)
@@ -633,6 +637,8 @@ class Evaluator:
     def _concat(self, node, left, right):
         if len(left) + len(right) > self.max_items:
             raise ValueError("Concatenation exceeds item budget")
+        if (left.values is None) != (right.values is None):
+            raise ValueError("Assign values before joining a valued object with tuples only")
         if set(left.fields) != set(right.fields):
             raise ValueError(
                 "Concatenation needs matching attribute names; annotate missing attributes explicitly"
@@ -658,7 +664,7 @@ class Evaluator:
         sources = left.sources + right.sources
         return Snapshot(
             node.id,
-            np.concatenate((left.values, right.values))[address],
+            None if left.values is None else np.concatenate((left.values, right.values))[address],
             tuple(f"{node.id}:{i}" for i in range(len(address))),
             tuple(sources[i] for i in address),
             fields,
@@ -670,6 +676,8 @@ class Evaluator:
         )
 
     def _pad(self, node, source):
+        if source.values is None:
+            raise ValueError("Padding with a numeric fill requires values; assign them first")
         a = node.attributes
         before = T.size(self.expr(a["before"]), "Before padding", self.max_items)
         after = T.size(self.expr(a["after"]), "After padding", self.max_items)

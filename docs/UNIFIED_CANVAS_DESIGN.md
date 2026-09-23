@@ -7,10 +7,18 @@ Keep an object's construction visible beside it, let rules be picked up and reus
 and give every scrubber a declared subject. Carry Icarus's direct, spatial actions
 into Kaleion's exact definitions, captured evidence, and reversible history.
 
+**Latest priority:** maintainer feedback on crowding and disorientation pauses the
+feature sequence below. The [continuous-canvas reset](CONTINUOUS_CANVAS.md) removes
+Focus, replaces source menus with Vector/Grid/Cube, and keeps inspection and replay
+in the shared scene. A general timeline remains future work; the next acceptance
+question is whether an uncoached author can make and inspect a construction.
+
 This records the design proposal and its implementation sequence. Its first two
 steps, [construction inspection](CONSTRUCTION_INSPECTION.md) and the
-[shared scene](SHARED_SCENE.md), are now implemented. The next step makes
-captured replay and case tracks visible on Open.
+[shared scene](SHARED_SCENE.md), are now implemented. The maintainer's subsequent
+request prioritizes quick relation construction, transfer and reduced sums. The
+[relation workbench](RELATION_WORKBENCH.md) brings that bounded part of step 4
+forward. A library of captured tracks remains planned after the interaction reset.
 The larger direction is one spatial canvas with several representations; the
 remaining proposal does not describe already implemented capabilities.
 
@@ -376,7 +384,7 @@ they are not a commitment to one large redesign PR.
 | 1 · implemented | **[Readable construction on selection](CONSTRUCTION_INSPECTION.md)** in today's workspace | Sequence, product expansion, incidence, measurement, and keyed placement show real arguments and inputs; earlier/local inputs stay honest; inspection makes no evaluation request; Back restores context. 203 Python tests and four browser gates pass; human interpretation remains untested. |
 | 2 · implemented | **[Direct canvas foundation](SHARED_SCENE.md)**: common scene, local frames, cells/points, source creation and explicit combination targets | Retained sources/product, mark identity, lesson-03 orbit/slices, view-only camera/offset changes, exact Sequence creation and versioned canvas persistence; 206 Python tests plus geometry/browser checks. Focus/replay still use their labeled XY renderer. |
 | 3 | **Visible transport and captured case tracks** | Replay available on Open without Undo/Redo; retained-case scrubbing makes no evaluations/history edits; source-derived order and failures stay visible; Radon and lattice cases transfer |
-| 4 | **Reusable rules and incidence combinations** | Copy/detach/apply with explicit bindings; symbolic rule versus saved support survives save/load; union/intersection on common universes; replay uses captured membership evidence |
+| 4 · partly implemented early | **[Reusable lens predicates and axis totals](RELATION_WORKBENCH.md)**; fuller rule objects and incidence combinations follow | One/two/three-field starters, explicit field transfer and captured constants, repeated Count/Sum over axes/keys, canvas previews and preserved evidence; 212 tests plus browser checks. Standalone rules, detach, support transfer, dependency-read bindings and general incidence combinations remain open |
 | 5 | **Authored recipes and editable input ports** | Changing one declared source rebuilds only intended dependents; pinned inputs stay pinned; cycles and stale replies fail clearly; old workspaces retain their meaning |
 | 6 | **Bounded recurrence generation** | Exact seed/update/bound declarations, term provenance, large integers, cancellation/failure, saved generation track; a different recurrence uses the same editor |
 | 7 | **Composition witnesses and case measurements** as separate increments | Boolean composition versus witness count, empty-middle coverage, keyed reordering, seekable explanations; Ehrhart produces an inspectable measured family |
@@ -392,7 +400,8 @@ viewer through the same declared Arrange/lens controls, not a second tool system
 
 The bounded prompt below is now implemented; its walkthrough and validation are
 in [Construction inspection](CONSTRUCTION_INSPECTION.md). The next development
-priority is now step 3: make retained replay and case tracks visible on Open.
+priority after the relation-workbench increment is step 3: make retained replay
+and case tracks visible on Open.
 The shared scene retains this inspector and the lesson contracts. Transport
 must label its subject, separate acquiring evaluations from seeking captures,
 and preserve a static/reduced-motion path. It need not wait for general recurrence

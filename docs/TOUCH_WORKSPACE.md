@@ -14,11 +14,29 @@ parameter cases, and [keyed comparison](KEYED_COMPARISON.md) now compose in the
 studio. The older two-source demonstration described below remains a bounded
 gesture study. Human touch trials remain to be conducted.
 
+### Current direction: one continuous canvas
+
+The maintainer's later desktop feedback rejects the accumulated control density
+and abrupt Focus view. The [continuous-canvas reset](CONTINUOUS_CANVAS.md) now
+supersedes the shell described in earlier progress notes: background creates only
+Vector/Grid/Cube, right-click or hold opens object details in context, and visible
+Details/Enter/Shift-F10 remain alternatives. Appearance and specialist tools are
+disclosed in the same drawer. It is a bottom sheet at phone widths, not a second
+canvas below the work. The working camera stays fixed while it opens or closes.
+
+Creation separates finite shape, tuple locations and optional integer contents.
+Index formulas and exact parameters remain inspectable. The shared 3D scene also
+shows captured replay; parameter evaluation remains a separate action. Touch
+cancellation and narrow layouts are engineering checks, not physical-device or
+child-usability results. The next gate is observation of an uncoached construction
+and return from provenance inspection, before adding another tool family.
+
 ### Progress against this proposal · September 23, 2026
 
 | Proposed experience | Current studio evidence | Still open |
 | --- | --- | --- |
 | Compose tools on objects | Shared-scale cells/points with local frames and 3D orbit/slices; exact Sequence creation, definition paths, reviewed drag/tap Product and keyed Arrange; existing measurements, comparison and recoverable drafts | Recurrences, mathematical coordinate manipulators, richer composition, editable dependencies, novice transfer |
+| Make and reuse relations; pull out totals | One/two/three-field pattern starters, explicit predicate copy to another domain, captured parameter constants, canvas previews, multi-axis/key Count/Sum and repeated reductions | Standalone rules, typed structured arguments, dependency-read bindings, child/novice ease and transfer |
 | Inspect how a result was made | Readable construction on selection; scoped input navigation and Back; captured results connect to contributor/weight/source evidence and restored cameras/selection | Human interpretation, arbitrary capture pinning, density/occlusion trials, physical touch |
 | Change assumptions | Exact integer cases preview/apply a new evaluation; replay uses recorded motion separately | Saved-case browsing and measured case families |
 | Declare a comparison | Selected integer fields, ordered keys and an independent expected domain; missing-both and outside witnesses | Distinct support, totals and structural-correspondence contracts |
@@ -48,7 +66,14 @@ brief preserves this document's input, identity, coverage, and history boundarie
 Its first two steps, [construction inspection](CONSTRUCTION_INSPECTION.md) and
 the [shared scene](SHARED_SCENE.md), are implemented. Scene choices now save in
 a versioned studio document; ordinary mathematical export remains schema 1.
-Tracks and the remaining steps are still proposals. Construction stays in a collapsible section
+The [relation workbench](RELATION_WORKBENCH.md) brings a bounded part of rule reuse
+forward after the maintainer's request for easy, playful construction with deep
+mathematical access. Lens and Total actions stay beside the selected object;
+three input choices fit in one row, with the full formula editor expandable.
+Parameters freeze from the copied rule's captured scope; the destination keeps
+its own case. Reduced objects retain keyed zero fibers and contributor evidence.
+Standalone rules, dependency bindings and captured tracks remain proposals.
+Construction stays in a collapsible section
 beside the current task; on phones it remains below the picture. The new
 320/360-pixel checks establish fitting controls and preserved context, not
 comfortable reach or simultaneous visibility on a physical device.

@@ -5,7 +5,7 @@ const measurementName=reducer=>reducer==='prefix_sum'?'prefix sum':reducer;
 export function receiptInspector({panel,run,query,linked,beforeShow}){
   function show(receipt,{heading='Value',back=null,contribution=null}={}){
     beforeShow();
-    panel.replaceChildren(el('span','CAPTURED EVIDENCE',{class:'eyebrow'}),el('h2',`${heading} ${receipt.item.value}`));
+    panel.replaceChildren(el('span','CAPTURED EVIDENCE',{class:'eyebrow'}),el('h2',receipt.item.value===null?'Tuple · no value':`${heading} ${receipt.item.value}`));
     if(back){const button=el('button',back.label,{type:'button',id:'receipt-back'});button.onclick=()=>run(back.restore);panel.append(button);button.focus({preventScroll:true})}
     panel.append(el('pre',JSON.stringify(receipt.item.fields,null,2)));
     function returnHere(label){
@@ -35,7 +35,7 @@ export function receiptInspector({panel,run,query,linked,beforeShow}){
       const {item,measurement}=contribution;
       const section=el('section',undefined,{id:'contribution-evidence'});
       section.append(el('h2',`Contribution to ${measurementName(measurement.reducer)}`),
-        el('p',`Source value ${item.item.value} · weight ${item.weight}`),
+        el('p',`${item.item.value===null?'Tuple without a value':`Source value ${item.item.value}`} · weight ${item.weight}`),
         el('p',`Measured result ${measurement.item.value} · retained key (${measurement.key.join(', ')})`),
         el('p',measurement.formula,{class:'help'}));
       for(const read of item.reads)section.append(readButton(read,{weight:true}));
@@ -43,7 +43,7 @@ export function receiptInspector({panel,run,query,linked,beforeShow}){
       panel.append(section);
     }
     const m=receipt.measurement;
-    if(m.unavailable)panel.append(el('p','No active measurement receipt at this occurrence.',{class:'quiet'}));
+    if(m.unavailable)panel.append(el('p','No active measurement receipt at this item.',{class:'quiet'}));
     else{
       panel.append(el('h2',`${measurementName(m.reducer)} · ${m.contributor_count} contributors`),el('p',m.formula));
       const together=el('button','View measurement and contributors',{type:'button',id:'view-contributors'});
@@ -62,7 +62,7 @@ export function receiptInspector({panel,run,query,linked,beforeShow}){
               contribution:selected.contribution?{item:selected.contribution,measurement:full}:null});
           })});
       });panel.append(together);
-      for(const c of m.contributors)panel.append(el('p',`Value ${c.item.value} · weight ${c.weight}`,{class:'receipt-item'}));
+      for(const c of m.contributors)panel.append(el('p',`${c.item.value===null?'Tuple':`Value ${c.item.value}`} · weight ${c.weight}`,{class:'receipt-item'}));
       if(m.truncated)panel.append(el('p','Showing the first 32 contributors. Open the paired view for complete evidence within the studio budget.'));
     }
     if(Array.isArray(receipt.bindings))for(const b of receipt.bindings)panel.append(readButton(b));

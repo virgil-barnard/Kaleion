@@ -14,6 +14,15 @@ from .model import plain, snapshot_dict, snapshot_from_dict
 from .motion import Motion, Transition
 
 
+def _needs_tuple_schema(value):
+    """Detect optional contents in every retained state, including redo/evidence."""
+    if isinstance(value, dict):
+        return (value.get("op") == "tuples"
+                or ("ids" in value and "values" in value and value["values"] is None)
+                or any(_needs_tuple_schema(v) for v in value.values()))
+    return isinstance(value, list) and any(_needs_tuple_schema(v) for v in value)
+
+
 @dataclass(frozen=True, eq=False)
 class State:
     roots: object
@@ -185,7 +194,7 @@ class Workspace:
         return json.dumps(
             {
                 "format": "kaleion-python",
-                "schema": 1,
+                "schema": 2 if _needs_tuple_schema(states) else 1,
                 "max_items": self.max_items,
                 "max_history": self.max_history,
                 "states": states,
@@ -206,11 +215,13 @@ class Workspace:
         # The v0.1 rename changes the envelope name, not the stored schema.
         if (
             doc.get("format") not in ("kaleion-python", "icarus-python")
-            or doc.get("schema") != 1
+            or doc.get("schema") not in (1, 2)
         ):
             raise ValueError("Unsupported workspace")
         if len(doc["states"]) > 1000:
             raise ValueError("Too many saved states")
+        if doc["schema"] == 1 and _needs_tuple_schema(doc["states"]):
+            raise ValueError("Tuple-only domains require workspace schema 2")
         states = [State.from_dict(s) for s in doc["states"]]
         from .ir import Expr
 

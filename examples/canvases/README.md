@@ -18,33 +18,31 @@ it cannot open these files.
 
 ## Your first five minutes
 
-1. Open **07_equal_sums.json**. The selected object is **Moving pairs**. Workspace
-   shows its sources and measurements together; Connections exposes their named
-   definition paths. **How this is made** shows the coordinates and keyed read
-   from Ranks. Follow **Ranks** to inspect its construction, then choose **Back to
-   Moving pairs**. Choose Focus to inspect the selected object alone.
-2. Click **Undo** once: equal sums collapse onto seven positions, retaining all
-   sixteen pairs. Click **Redo**: ranks separate them into the stacks again.
-3. Below the canvas, drag **Replay captured transformation** slowly from left to
-   right and back. **Play replay** runs it; **Return to result** restores the
-   applied picture. Scrubbing changes the presentation, not the mathematics.
-4. Choose **Occurrences**, then the occurrence-list entry **12 · value 3**. Follow
-   its keyed read of **3** to the measured rank. Choose **View measurement and
-   contributors** to see the three earlier pairs in that sum. Close the paired
-   view when finished.
-5. Select **Counts**, then choose occurrence **8 · value 0**. Its count is zero
-   with no contributors. The declared bin exists even though no pair sums to 8.
+1. Open **07_equal_sums.json**. Select **Moving pairs → Details**. Its source
+   objects stay visible. **How this is made** shows the coordinates and keyed
+   read from Ranks. Follow that input, then **Back to Moving pairs**.
+2. Close Details. Click **Undo**, then **Redo**. Ranks separate the sixteen pairs
+   into stacks. Scrub **Replay saved movement** below the canvas; **Show result**
+   returns to the saved picture. Other objects stay on the board.
+3. Tap a cell to inspect its value. To reach a coincident or hidden item, use
+   **Appearance → Choose an item**. Follow a keyed read, then **View measurement
+   and contributors**. The evidence opens beside the working canvas.
+4. Select **Counts** and inspect item **8 · value 0**. The declared bin exists
+   even though no pair sums to 8, and its receipt has no contributors.
+5. Try **Details → Relation**. Choose one input `value`, Even numbers, Preview,
+   then Apply. Or open **03_incidence_box.json**, select **X region → Details →
+   Sum / count**, and count along `k` to make a reusable plane of counts.
 
-To make one small change yourself: choose **Objects**, select **Moving pairs**,
-then **Options → Create a relation**. Name it `My sum four`. In the initial
-`value = 0` formula, click `0` and change it to `4`, then finish that formula edit.
-Choose **Preview**, then **Apply**. Three pairs should be highlighted. **Save**
-downloads your extended workspace; the source file in this folder is unchanged.
+**Connect** exposes named definition paths and reviewed combination proposals.
+**Parameters** explicitly evaluates new mathematical results. **Create** makes a
+Vector, Grid or Cube, with tuple-only locations or values from an index formula.
+[The continuous-canvas guide](../../docs/CONTINUOUS_CANVAS.md) describes the current
+controls and the distinction between changing mathematics, appearance and replay.
 
-To compose by connecting objects, see the [shared workspace walkthrough](../../docs/SPATIAL_WORKSPACE.md#try-this-increment).
-**Save → Canvas and view** retains scene layout, chart/slice choices, selection
-and camera as well as the mathematical workspace. **Mathematics only** exports
-the ordinary workspace for Python. Unfinished drafts remain temporary.
+**Save → Canvas and view** retains appearance, selection and camera with the exact
+workspace. **Mathematics only** exports for Python. Drafts stay in the current tab.
+These five existing integer lesson files remain schema 1. Adding tuple-only
+objects will make the next mathematical export schema 2.
 
 ## Five starting points
 

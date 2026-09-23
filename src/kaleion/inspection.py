@@ -29,7 +29,7 @@ def _scalar(value):
 @dataclass(frozen=True)
 class CapturedItem:
     ref: Ref
-    value: int
+    value: int | None
     fields: object
     position: tuple | None
     source: str
@@ -160,7 +160,7 @@ class Inspection:
     def item(self, ref):
         """Return one detached, immutable item description with scoped parents."""
         snapshot, i = self._locate(ref)
-        return CapturedItem(ref, int(snapshot.values[i]),
+        return CapturedItem(ref, None if snapshot.values is None else int(snapshot.values[i]),
                             MappingProxyType({k: _scalar(v[i]) for k, v in snapshot.fields.items()}),
                             None if snapshot.positions is None else tuple(snapshot.positions[i].tolist()),
                             snapshot.sources[i], snapshot.parents[i])

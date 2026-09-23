@@ -1,3 +1,5 @@
+// HISTORICAL: targets the UI at commit 19928e6. For the current canvas run
+// node docs/studies/check-continuous-canvas.cjs. See studies/README.md.
 // Optional browser gate. Starts a fresh Python host unless a URL is supplied.
 // Uses real controls and the Python adapter; no prerecorded lesson results.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');

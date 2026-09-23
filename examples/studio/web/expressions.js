@@ -115,7 +115,7 @@ export function expressionEditor(initial,fields,sources=[],parameters=[]){
       if(type.value==='Field')replacement=field(available[0]||'value');
       else if(type.value==='Number')replacement=number(0);
       else if(type.value==='Parameter'){
-        if(!parameters.length){sheet.append(node('p','Declare a parameter in Cases before starting this construction.'));type.value=kind;return}
+        if(!parameters.length){sheet.append(node('p','Declare a parameter in Parameters before starting this construction.'));type.value=kind;return}
         replacement={parameter:parameters[0]};
       }
       else if(type.value==='Operation')replacement={op:'+',args:[clone(at(tree,selected)),number(1)]};
@@ -136,7 +136,7 @@ export function expressionEditor(initial,fields,sources=[],parameters=[]){
     }else if(kind==='Parameter'){
       const value=labeled('Declared parameter',optionList(parameters,spec.parameter,'Parameter'));
       value.onchange=()=>update({parameter:value.value});
-      sheet.append(node('p','This name reads the evaluated case. Use Cases to change its exact value across the construction.',{class:'help'}));
+      sheet.append(node('p','This name reads the saved parameter value. Use Parameters to change its exact value across the construction.',{class:'help'}));
     }else if(kind==='Operation'){
       const value=labeled('Operation',optionList(Object.keys(symbols),spec.op,'Operation'));
       value.onchange=()=>update({...at(tree,selected),op:value.value});

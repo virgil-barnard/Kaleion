@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Refactor the studio around one continuous canvas: three background constructors,
+  contextual details, progressive disclosure, and shared-scene replay. Remove the
+  Focus surface and its duplicate gesture/renderer controls. Create vectors,
+  grids and cubes with optional index formulas, and retain relation reuse,
+  reductions, captured evidence, specialist lesson tools and exact history.
+- Add finite `Collection.tuples(...)` domains with no numeric contents. Assignment,
+  reindexing, counts, evidence and motion preserve the distinction between an
+  absent value and zero. Captures containing tuple-only domains use workspace
+  schema 2; readers accept schemas 1 and 2 and old integer exports remain schema 1.
+  Document maintainer feedback as negative UI evidence and require human task
+  observation before claiming that the new interface is intuitive.
+
 - Add a shared spatial workspace with movable object previews, named definition
   paths and reviewed drag/tap composition into the existing Product and Arrange
   editors. Preserve Focus tools, saved lesson canvases and captured replay;

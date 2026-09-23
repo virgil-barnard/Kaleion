@@ -1,3 +1,5 @@
+// HISTORICAL: targets the UI at commit 19928e6. For the current canvas run
+// node docs/studies/check-continuous-canvas.cjs. See studies/README.md.
 // Real-control acceptance gate for the common scene; core tests remain offline.
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {spawn,execFileSync}=require('node:child_process');

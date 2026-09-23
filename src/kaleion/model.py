@@ -72,7 +72,7 @@ class Ref:
 @dataclass(frozen=True, eq=False, slots=True)
 class Snapshot:
     node: str
-    values: np.ndarray
+    values: np.ndarray | None
     ids: tuple[str, ...]
     sources: tuple[str, ...]
     fields: Mapping[str, np.ndarray] = field(default_factory=dict)
@@ -97,12 +97,12 @@ class Snapshot:
         if not isinstance(self.node, str):
             raise ValueError("Snapshot node identity must be a string")
         values = self.values
-        if not unchanged("values") or values.flags.writeable:
+        if values is not None and (not unchanged("values") or values.flags.writeable):
             values = exact(values)  # exact() returns a fresh, validated allocation.
             values.flags.writeable = False
-        if values.ndim != 1:
+        if values is not None and values.ndim != 1:
             raise ValueError("Contents are a flat tensor of scalar integers")
-        n = len(values)
+        n = len(self.ids) if values is None else len(values)
         for name in ("ids", "sources", "axes"):
             if not unchanged(name):
                 strings = tuple(getattr(self, name))
@@ -124,6 +124,8 @@ class Snapshot:
             })
         if any(not isinstance(k, str) for k in fields):
             raise ValueError("Attribute names must be strings")
+        if values is None and "value" in fields:
+            raise ValueError("Assign contents with with_values(), not a value attribute")
         if any(v.shape != (n,) for v in fields.values()):
             raise ValueError("Attributes need one scalar per occurrence")
         object.__setattr__(self, "fields", fields)
@@ -164,11 +166,13 @@ class Snapshot:
         object.__setattr__(self, "metadata", _metadata(self.metadata, previous))
 
     def __len__(self):
-        return len(self.values)
+        return len(self.ids)
 
     def context(self):
         ctx = dict(self.fields)
-        ctx.update(value=self.values, index=np.arange(len(self), dtype=object))
+        if self.values is not None:
+            ctx["value"] = self.values
+        ctx["index"] = np.arange(len(self), dtype=object)
         if self.positions is not None:
             ctx.update(
                 {
@@ -223,7 +227,7 @@ def snapshot_dict(value):
     return {
         "type": "items",
         "node": value.node,
-        "values": value.values.tolist(),
+        "values": None if value.values is None else value.values.tolist(),
         "ids": list(value.ids),
         "sources": list(value.sources),
         "fields": {k: v.tolist() for k, v in value.fields.items()},

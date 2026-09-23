@@ -151,6 +151,18 @@ class Collection(Object):
         )
 
     @staticmethod
+    def tuples(*shape, axes=None, name="Tuples"):
+        """A finite indexed domain without numeric contents.
+
+        Indices, identity, relations and counts work without values. Assign
+        integer contents explicitly with with_values(); F.value is unavailable
+        until then. Grid's existing default filling remains unchanged.
+        """
+        grid = Collection.grid(*shape, axes=axes, name=name)
+        attributes = {k: v for k, v in grid.node.attributes.items() if k != "values"}
+        return Collection(Node("tuples", "collection", (), attributes))
+
+    @staticmethod
     def young(partition, *, values=None, name="Young diagram filling"):
         return Collection(
             Node(

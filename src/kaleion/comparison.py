@@ -114,7 +114,8 @@ def _context(snapshot):
     context = {name: column for name, column in snapshot.context().items()
                if name in {"index", "key", "value"}}
     context.update(snapshot.fields)
-    context["value"] = snapshot.values
+    if snapshot.values is not None:
+        context["value"] = snapshot.values
     return context
 
 

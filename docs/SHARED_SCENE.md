@@ -1,9 +1,19 @@
 # A shared scene for cells, points and three-dimensional relations
 
+**Current interface:** see [One canvas, fewer decisions](CONTINUOUS_CANVAS.md).
+The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
+The contracts and dated implementation record below remain useful; use the new
+guide for current control names and the current browser gate.
+
+
 The workspace now draws captured objects on one coordinate scale, with local
 axes and separate view offsets. Selecting a mark leads into the existing captured
 evidence; selecting its name opens construction inspection. This implements the
 second step of the [unified canvas design](UNIFIED_CANVAS_DESIGN.md).
+
+The subsequent [relation workbench](RELATION_WORKBENCH.md) adds quick one/two/three
+input pattern starters, explicit lens reuse, and repeated axis/key totals. These
+forms preview a new object beside its inputs in this scene.
 
 ![Equal-sum constructions on the shared cell grid](images/shared-scene-cells.png)
 
@@ -69,7 +79,7 @@ can make several occurrences coincide; the chooser retains them all.
 per-object chart/mark/slice choices, selected object/occurrence, camera, and active
 scene tool. **Open** restores the scene without evaluating the graph.
 
-**Save → Mathematics only** retains the ordinary schema-1 workspace for Python
+**Save → Mathematics only** retains the ordinary workspace for Python (schema 2 when it contains tuple-only domains)
 and other Kaleion clients. The five committed examples remain ordinary workspaces
 and open in both clients. Both save choices retain captured evidence and history;
 unfinished drafts remain tab-local. Focus/evidence cameras and their navigation
@@ -116,7 +126,7 @@ extents, lossless large-integer documents, and rejected versions/cameras.
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 node docs/studies/check-scene-model.mjs
-node docs/studies/check-shared-scene.cjs
+node docs/studies/check-continuous-canvas.cjs
 ```
 
 The shared-scene browser gate exercises actual creation, mark picking, chart
