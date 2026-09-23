@@ -30,7 +30,7 @@ OPERATORS = {
 }
 
 ARGUMENTS = {
-    "integers": {"values"}, "grid": {"shape", "axes", "value"},
+    "integers": {"values"}, "sequence": {"length", "start", "step"}, "grid": {"shape", "axes", "value"},
     "product": {"factors"}, "field": {"source", "field", "value"},
     "lens": {"source", "rule"}, "select": {"source"},
     "measure": {"source", "by", "reducer", "weight", "order", "key"},
@@ -126,6 +126,9 @@ def build(command, roots, *, captured=None):
         if not isinstance(args["values"], list) or len(args["values"]) > 2000:
             raise ValueError("The study supports at most 2000 source occurrences")
         result = Collection.literal([integer(v) for v in args["values"]], name=name)
+    elif action == "sequence":
+        result = Collection.sequence(ex(args["length"]), start=ex(args["start"]),
+                                     step=ex(args["step"]), name=name)
     elif action == "grid":
         axes = args["axes"]
         if (not isinstance(axes, list) or not isinstance(args["shape"], list)

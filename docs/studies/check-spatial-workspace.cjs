@@ -27,7 +27,7 @@ const output=path.resolve(process.argv[3]||'build/spatial-check');fs.mkdirSync(o
    for(const name of ['07_equal_sums','06_young_layers','02_floor_sums','05_radon_reconstruction']){
      await open(name);await workspace();await page.getByRole('button',{name:'Fit workspace view',exact:true}).click();
      const current=await state();assert.equal(await page.locator('[data-workspace-object]').count(),current.objects.length);
-     for(const o of current.objects)assert.equal(await card(o.name).locator('circle').count(),Math.min(180,o.rows.length));
+     for(const o of current.objects)assert.equal(await page.locator(`[data-scene-owner=${JSON.stringify(o.name)}]`).count(),o.rows.length);
      await page.locator('[data-workspace-tool="connect"]').click();
      assert.equal(await page.locator('[data-connection-source]').count(),current.connections.edges.length);
      await page.locator('#scene').screenshot({path:path.join(output,name+'.png')});

@@ -4,7 +4,7 @@ export function actions({mode, object, point, group}) {
   if (mode === 'points') return object?.status === 'ready' && point ? ['explain'] : [];
   if (mode === 'groups') return object?.status === 'ready'
     ? group ? ['group_options', 'group_lens', 'measure', 'coverage'] : ['group_options', 'coverage'] : [];
-  const add = ['integers', 'grid'];
+  const add = ['integers', 'sequence', 'grid'];
   if (!object) return add;
   if (object.status !== 'ready') return add;
   return object.kind === 'incidence'
@@ -13,7 +13,7 @@ export function actions({mode, object, point, group}) {
 }
 
 export const labels = {
-  integers: 'Add integers', grid: 'Add a grid', field: 'Define a field',
+  integers: 'Add integers', sequence: 'Add a sequence', grid: 'Add a grid', field: 'Define a field',
   lens: 'Create a relation', measure: 'Measure', place: 'Arrange',
   product: 'Form a product', select: 'Keep matching occurrences',
   explain: 'Explain this occurrence', fit: 'Fit view',

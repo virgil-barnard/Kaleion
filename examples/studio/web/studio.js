@@ -12,6 +12,7 @@ import {comparisonInspector} from './comparison.js';
 import {cameraControls} from './camera.js';
 import {spatialWorkspace} from './workspace.js';
 import {constructionInspector} from './construction.js';
+import {canvasDocument,readDocument} from './document.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -40,7 +41,9 @@ const replay=replayControls($('replay'),{draw,restore:()=>draw(),onPresentation:
 const board=spatialWorkspace($('workspace-view'),{
   select:selectObject,focus:name=>{selectObject(name);setSurface('focus')},
   options:name=>{selectObject(name);mode='objects';syncMode();openMenu()},
-  combine:combinePanel,locked:()=>busy||!!preview,status
+  combine:combinePanel,locked:()=>busy||!!preview,status,
+  create:()=>{if(!draft.current)editor('sequence',{scene:true})},
+  inspect:(name,ref)=>{active=name;selectedPoint=ref;run(async()=>showReceipt(await request('inspect',{name,ref})))},
 });
 const construction=constructionInspector($('construction'),{
   state:()=>state,query:target=>request('construction',{name:target.root,path:target.path}),beforeNavigate:parkDraft,locked:()=>busy,
@@ -79,6 +82,7 @@ function setSurface(value){
   document.querySelectorAll('[data-surface]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.surface===surface)));
   if(surface==='workspace'){mode='objects';syncMode();replay.reset(false)}
   render();
+  if(surface==='workspace')board.refresh();
 }
 document.querySelectorAll('[data-surface]').forEach(b=>b.onclick=()=>{if(!busy){parkDraft();setSurface(b.dataset.surface)}});
 function selectObject(name){
@@ -92,7 +96,7 @@ const displayed = () => preview?.objects.find(o=>o.name===preview.name) || objec
 const selectedGroup=()=>groupReport?.revision===state.revision&&groupReport.name===active?groupReport.groups[groupChoice]:null;
 const groupLabel=(report,group)=>report.by.map((field,i)=>`${field} = ${group.key_types[i]==='text'?JSON.stringify(group.key[i]):group.key[i]}`).join(', ')||'Whole domain';
 function clearGroups(){groupReport=null;groupChoice=-1}
-function resultScope(){return preview?(preview.kind==='case'?`Preview case · ${caseLabel(preview.parameters)} · not applied`:'Preview · not yet applied'):surface==='workspace'?`${state.objects.length} objects · temporary view layout`:mode==='points'?'Choose an occurrence to explain':mode==='groups'?'Select by declared group keys':mode==='view'?'Drag to pan · pinch or wheel to zoom':'Hold for construction tools'}
+function resultScope(){return preview?(preview.kind==='case'?`Preview case · ${caseLabel(preview.parameters)} · not applied`:'Preview · not yet applied'):surface==='workspace'?`${state.objects.length} objects · shared scene`:mode==='points'?'Choose an occurrence to explain':mode==='groups'?'Select by declared group keys':mode==='view'?'Drag to pan · pinch or wheel to zoom':'Hold for construction tools'}
 function status(text, error=false){$('status').textContent=text;$('status').classList.toggle('error',error)}
 const busyControls=new Map();
 let busyFocus=null;
@@ -101,6 +105,7 @@ function workspaceControls(){
   $('undo').disabled=busy||drafting||!state.undo;$('redo').disabled=busy||drafting||!state.redo;
   $('add').disabled=$('open').disabled=$('file').disabled=$('cases').disabled=busy||drafting;
   $('workspace-view').querySelector('[data-combine]').disabled=busy||drafting||!active;
+  $('workspace-view').querySelector('[data-scene-source]').disabled=busy||drafting;
   $('draft-tray').hidden=!drafting;
   if(drafting){
     const context=draft.current.context;
@@ -296,10 +301,10 @@ function combinePanel(from,to){
     const a=state.objects.find(o=>o.name===source.value),b=state.objects.find(o=>o.name===target.value);
     const ready=a?.status==='ready'&&b?.status==='ready',collections=a?.kind!=='incidence'&&b?.kind!=='incidence';
     product.disabled=place.disabled=!ready||!collections;
-    reason.textContent=!ready?'Both objects need a successful captured result.':!collections?'For a relation, first use Keep matches or Measure to create a source with values.':`Every pair creates ${a.rows.length} × ${b.rows.length} occurrence tuples. Height reads need a unique source key for each destination key; the next editor shows both. Views use independent scales.`;
+    reason.textContent=!ready?'Both objects need a successful captured result.':!collections?'For a relation, first use Keep matches or Measure to create a source with values.':`Every pair creates ${a.rows.length} × ${b.rows.length} occurrence tuples. Height reads need a unique source key for each destination key; the next editor shows both. The scene uses one scale; object offsets only organize the view.`;
   }
   source.onchange=target.onchange=eligibility;eligibility();
-  product.onclick=()=>editor('product',{factors:{left:source.value,right:target.value}});
+  product.onclick=()=>editor('product',{scene:surface==='workspace',factors:{left:source.value,right:target.value}});
   place.onclick=()=>{
     const destination=state.objects.find(o=>o.name===target.value);active=target.value;
     editor('place',{source:target.value,coordinates:[field(destination.fields.includes('i')?'i':'key'),{read:{object:source.value,on:field('key'),key:field('key'),value:field('value')}}]});
@@ -397,6 +402,7 @@ function comparisonPanel(){
   $('activity').replaceChildren(box);
 }
 function editor(action,seed=null){
+  const returnToScene=!!seed?.scene;
   linked.close();
   if(draft.current){status('Resume or discard your draft before starting another construction.',true);return}
   setSurface('focus');
@@ -414,6 +420,10 @@ function editor(action,seed=null){
     const values=labeled(controls,'Integer values · separated by commas',input('0, 1, 2, 3'));values.id='integer-values';
     controls.append(el('p','Repeated values remain distinct occurrences. An empty list is an empty domain.',{class:'help'}));
     args=()=>({values:values.value.trim()?values.value.split(',').map(s=>s.trim()):[]});
+  }else if(action==='sequence'){
+    const length=expressionControl('Finite length',number(6),[]),start=expressionControl('Start',number(0),[]),step=expressionControl('Step',number(1),[]);
+    controls.append(el('p','A finite arithmetic sequence. Each term keeps a distinct occurrence; length, start and step can use declared parameters.',{class:'help'}));
+    args=()=>({length:length.read(),start:start.read(),step:step.read()});
   }else if(action==='grid'){
     const shape=labeled(controls,'Axis lengths · one to three, separated by commas',input('4, 4'));shape.id='grid-shape';
     controls.append(el('p','Use exact integers or declared parameter names. For a length such as n + 1, edit axis formulas.',{class:'help'}));
@@ -501,7 +511,7 @@ function editor(action,seed=null){
       message('ready','Exact preview ready. Apply records this result; changing a choice requires another preview.');status('Exact preview ready. Apply keeps this capture; Cancel leaves history unchanged.');
     }catch(error){invalidate();message('failed',`Preview failed: ${error.message} Your applied work is unchanged.`);render();throw error}
   })};
-  apply.onclick=()=>run(async()=>{if(!preview)return;try{const next=await request('commit',{token:preview.token});draft.clear();adopt(next);panel.replaceChildren(el('h2','Construction applied'),el('p','Choose any object and continue composing. Hold the canvas or use Options.'));await animate(next.motion);status('Applied one construction. Undo restores its captured predecessor.')}catch(error){invalidate();message('failed',`Apply failed: ${error.message} Preview again to check the draft.`);render();throw error}});
+  apply.onclick=()=>run(async()=>{if(!preview)return;try{const next=await request('commit',{token:preview.token});draft.clear();adopt(next);panel.replaceChildren(el('h2','Construction applied'),el('p','Choose any object and continue composing. Hold the canvas or use Options.'));await animate(next.motion);if(returnToScene){setSurface('workspace');board.fit()}status('Applied one construction. Undo restores its captured predecessor.')}catch(error){invalidate();message('failed',`Apply failed: ${error.message} Preview again to check the draft.`);render();throw error}});
   cancel.onclick=cancelPreview;
 }
 function cancelPreview(){run(async()=>{await request('cancel');draft.clear();preview=null;render();$('activity').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
@@ -552,11 +562,13 @@ function explain(){run(async()=>{
   const receipt=await request('inspect',{name:active,ref:selectedPoint});showReceipt(receipt);
 })}
 function showReceipt(receipt,heading='Value',back=null){receipts.show(receipt,{heading,back:back?{label:'Back to coverage',restore:back}:null})}
-$('save').onclick=()=>run(async()=>{
+$('save').onclick=()=>$('save-menu').showModal();$('close-save').onclick=()=>$('save-menu').close();
+for(const choice of ['canvas','math'])$('save-'+choice).onclick=()=>{$('save-menu').close();run(async()=>{
   const response=await fetch('/api/export');const text=await response.text();
-  const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=el('a',undefined,{href:url,download:'kaleion-studio.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved captured definitions, evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
-});
-$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const next=await request('import',{capture:await file.text()});comparisonChoices=null;board.reset();adopt(next);$('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Its captures and history are available without reevaluating definitions. Choose Workspace to see objects together; Focus opens the selected object.'));status('Reopened captured workspace.');$('file').value=''})};
+  const content=choice==='canvas'?canvasDocument(text,board.save()):text;
+  const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=el('a',undefined,{href:url,download:choice==='canvas'?'kaleion-canvas.json':'kaleion-workspace.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved ${choice==='canvas'?'canvas and view':'mathematics'}, captured evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
+})};
+$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const document=readDocument(await file.text());const next=await request('import',{capture:document.workspace});comparisonChoices=null;board.reset();adopt(next);if(document.scene){if(next.objects.some(o=>o.name===document.scene.selected?.name)){active=document.scene.selected.name;construction.select(active);render()}board.load(document.scene);selectedPoint=board.save().selected?.ref||null;setSurface('workspace')} $('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Captured definitions and history are restored. A canvas document also restores its scene view.'));status('Reopened captured workspace.');$('file').value=''})};
 window.addEventListener('blur',()=>{cancelHold();pointers.clear()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){cancelHold();if(!e.defaultPrevented&&e.target.tagName!=='SELECT'&&!$('menu').open&&draft.current&&!busy){parkDraft();render()}}});
 new ResizeObserver(()=>{if(!busy)draw()}).observe($('canvas'));

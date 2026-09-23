@@ -94,6 +94,15 @@ global captures. `construction.js` owns browsing and return context; existing
 evidence views draw the retained result. Exact syntax is transported as text,
 and unknown constructors remain inspectable. No core or saved-format change.
 
+The [shared scene](docs/SHARED_SCENE.md) separates geometry (`scene.js`), camera
+and interaction (`workspace.js`), and the versioned view document (`document.js`).
+One orthographic projection draws captured coordinates plus per-object view
+offsets. Mark style, chart selection, slices and camera changes never become
+definitions. The snapshot adapter exposes declared shape so empty domains and
+view filters do not redefine fitting bounds. A canvas document nests the original
+mathematical JSON as text to avoid JavaScript rounding; mathematical export and
+the core schema remain unchanged. Sequence controls lower to the existing builder.
+
 The studio's [parameter-case controls](docs/PARAMETER_CASES.md) lower named
 integer references and expression-valued extents to existing `param` and Grid
 definitions. Ordinary previews retain the applied parameter environment; case

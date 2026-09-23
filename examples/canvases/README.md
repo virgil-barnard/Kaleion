@@ -42,18 +42,21 @@ Choose **Preview**, then **Apply**. Three pairs should be highlighted. **Save**
 downloads your extended workspace; the source file in this folder is unchanged.
 
 To compose by connecting objects, see the [shared workspace walkthrough](../../docs/SPATIAL_WORKSPACE.md#try-this-increment).
-View-panel layout is temporary; Save retains the mathematical workspace and its history.
+**Save → Canvas and view** retains scene layout, chart/slice choices, selection
+and camera as well as the mathematical workspace. **Mathematics only** exports
+the ordinary workspace for Python. Unfinished drafts remain temporary.
 
-## Four starting points
+## Five starting points
 
 | Canvas | Loaded arrangement | What to inspect next |
 | --- | --- | --- |
 | [07 · Equal sums](07_equal_sums.json) | Sixteen pairs stacked by sum and rank | **Counts** are `[1,2,3,4,3,2,1,0,0]`; **Energy** is 44. Two saved moves gather and stack the same pairs. |
 | [06 · Young layers](06_young_layers.json) | Ten original cells packed into one row | **Layers** are `[3,3,2,1,1]`; **Offsets** are `[0,3,6,8,9]`. Inspect offset 8, then one of its three measured layer contributors, then that layer's cells. Two saved moves turn and pack the cells. |
 | [02 · Floor sums](02_floor_sums.json) | Two separated pieces reassembled into a rectangle | **Lower total** and **Upper total** are both 30; **Overlap total** is 0. Select **Overlap**, then try **Cases** with `a=12`, `b=8`: the totals become 40 and 40 with 3 overlapping cells in a 77-cell rectangle. |
+| [03 · Incidence box](03_incidence_box.json) | A 240-cell box with three 3D relation regions | Select **X region**, choose **Selected**, then **3D**. Under **Chart and slice**, choose **Slice z → 2**. Volumes are 86, 80 and 74; **Shared cells** has zero matches. This file starts with captured results and no motion edits. |
 | [05 · Radon reconstruction](05_radon_reconstruction.json) | Reconstructed image values displayed as nine heights | **Backprojection** is a weighted measurement. Inspect one value, a contributor, its weight read, and then the line sum's contributing pixels. **Recovered fields** retains both `recovered` and `remainder`. |
 
-For each file, the last object tab is the movement target: **Moving pairs**,
+For the four motion examples, the last object tab is the movement target: **Moving pairs**,
 **Cells**, **Pieces**, or **Image heights**. Select it before Undo/Redo to see its
 motion. Two Undo clicks in the sum and Young canvases reach the original layout;
 Redo walks forward again. Object tabs are named results, not chronological steps.
@@ -74,18 +77,20 @@ controls as a blank canvas. Save/Open preserves the mathematical work and histor
 
 The existing scrubber appears only after an action or Undo/Redo and is cleared
 when switching objects or opening a file. The **Undo, Redo** sequence above makes
-it available again. This increment adds no controls or playback changes. Camera,
-selection and unfinished drafts remain temporary view state.
+it available again. The [shared scene](../../docs/SHARED_SCENE.md) adds cells,
+points, 3D orbit, slices and saved scene choices; it does not change replay.
+Focus/evidence navigation and unfinished drafts remain temporary view state.
 
-These are focused prototypes of lessons 02, 05, 06 and 07, with explicit 2D
-placements for this viewer. The Young turn is planar; Radon uses a small weighted
-image and a flattened height profile. They do not reproduce all notebook stages,
-3D presentation, or all eleven lessons. The files stay within the current studio
+These are focused prototypes of lessons 02, 03, 05, 06 and 07. Lesson 03 adds an
+actual three-coordinate placement; the other four use explicit 2D placements.
+The Young turn is planar; Radon uses a small weighted image and a flattened
+height profile. They do not reproduce all notebook stages or all eleven lessons.
+The files stay within the current studio
 limits of 2000 occurrences per evaluated operation and 40 retained history edits.
 
 ## Reproduce or customize the prototypes
 
-The four small recipes and their motion edits are visible in
+The five small recipes and the four examples' motion edits are visible in
 [save_canvases.py](../save_canvases.py). No viewer-specific operation or new saved
 format is involved. To generate another copy without overwriting these examples:
 

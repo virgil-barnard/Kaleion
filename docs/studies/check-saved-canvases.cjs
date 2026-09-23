@@ -62,7 +62,7 @@ const output=path.resolve(process.argv[3]||'build/canvas-check');fs.mkdirSync(ou
  await page.locator('#preview').click();await idle();assert.equal(await page.locator('#apply').isEnabled(),true);
  await page.locator('#apply').click();await idle();
  assert.equal((await state()).objects.find(o=>o.name==='My sum four').rows.filter(r=>r.match).length,3);
- const download=page.waitForEvent('download');await page.locator('#save').click();const saved=await download;
+ const download=page.waitForEvent('download');await page.locator('#save').click();await page.locator('#save-math').click();const saved=await download;
  await saved.saveAs(path.join(output,'my-canvas.json'));await idle();
  await page.locator('#file').setInputFiles(path.join(output,'my-canvas.json'));await idle();
  assert.equal((await state()).objects.find(o=>o.name==='My sum four').rows.filter(r=>r.match).length,3);

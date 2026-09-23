@@ -420,12 +420,43 @@ pre {
 }
 .casebar {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:16px 0;padding:12px 16px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
 .workspace-toolbar {display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:16px}
-#workspace-canvas {min-height:300px;aspect-ratio:3/2;background:radial-gradient(circle,#8da48a33 1px,transparent 1px);background-size:18px 18px;border-radius:12px}
+#workspace-canvas {min-height:300px;aspect-ratio:3/2;background:var(--paper);border-radius:12px;overflow:hidden}
 .workspace-object {cursor:grab;outline:none}
 .workspace-outline {fill:var(--paper);stroke:var(--line);stroke-width:1.4}
 .workspace-object:hover .workspace-outline,.workspace-object:focus .workspace-outline {stroke:var(--green);stroke-width:3}
 .workspace-object.selected .workspace-outline {stroke:var(--green);stroke-width:3;fill:color-mix(in srgb,var(--paper) 94%,var(--green))}
 .workspace-object.drop-target .workspace-outline {stroke:var(--amber);stroke-width:5;stroke-dasharray:7 4}
+.scene-grid {stroke:var(--line);stroke-width:.65;opacity:.4;pointer-events:none}
+.scene-grid .scene-grid-axis {stroke-width:1.4}
+.scene-outline {fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:4 5;pointer-events:none}
+.scene-outline.selected {stroke:var(--green);stroke-width:2}
+.scene-handle {fill:var(--paper);stroke:var(--line);stroke-width:1}
+.workspace-object.selected .scene-handle,.workspace-object:focus .scene-handle {stroke:var(--green);stroke-width:2.5}
+.workspace-object.drop-target .scene-handle {stroke:var(--amber);stroke-width:4}
+.scene-axis {stroke-width:1.8;pointer-events:none}
+.axis-0 {stroke:#a35631}.axis-1 {stroke:#347253}.axis-2 {stroke:#526fc2}
+svg .scene-axis-label {font-size:10px;stroke:none;fill:var(--muted)}
+.scene-mark {cursor:pointer;fill:#e4b97e;stroke:var(--paper);stroke-width:.8;opacity:.65}
+.scene-mark.active {opacity:1}
+.scene-mark circle {fill:var(--amber)}
+.scene-mark .face-1 {fill:#c99053}.scene-mark .face-2 {fill:#edcea5}
+.scene-mark.outside {fill:var(--line);opacity:.12}
+.scene-mark.active.outside {opacity:.25}
+.scene-mark.outside .scene-face {fill:var(--line)}
+.scene-mark.chosen {stroke:var(--green);stroke-width:3;opacity:1}
+svg .scene-value {fill:#3c321f;stroke:none;font-size:11px;pointer-events:none}
+svg .scene-empty {font-size:12px;fill:var(--muted)}
+svg .scene-drop-label {fill:var(--green);font-size:14px;paint-order:stroke;stroke:var(--paper);stroke-width:4}
+.scene-selection {border-top:1px solid var(--line);margin:12px 0;padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.scene-selection[hidden] {display:none}
+.scene-selection>label {font-size:13px;margin:0;display:flex;align-items:center;gap:8px;flex:1;min-width:180px}
+.scene-selection>details[open] {flex-basis:100%}
+.scene-selection select {margin:0;min-width:0;max-width:100%}
+.scene-selection details summary {min-height:44px;padding:12px 0;cursor:pointer}
+.scene-axes {display:flex;gap:8px;flex-wrap:wrap}.scene-axes select {flex:1;min-width:70px}
+.scene-selection details>select {margin:6px 0}
+.scene-selection details>button {margin:8px 0}
+#save-menu {max-width:480px}#save-menu>button {display:block;margin-top:14px}
 .workspace-point {fill:var(--amber)}
 .workspace-point.outside {fill:var(--muted);opacity:.25}
 svg .workspace-name {font-size:16px;font-weight:600}

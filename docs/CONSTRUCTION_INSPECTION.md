@@ -102,6 +102,7 @@ jump and verifies the tap is not covered by the sticky navigation.
 This addresses the missing construction information in UI-study finding A14;
 whether people understand it without guidance still needs observation. The sheet
 is long, especially on phones. Physical touch, Safari, screen readers, and novice
-transfer remain untested. The canvas still uses independently scaled XY previews.
-Shared cell/point/3D geometry is the next planned increment; visible captured
-tracks, reusable rules, recurrence, and editable live connections remain separate.
+transfer remain untested. The subsequent [shared scene](SHARED_SCENE.md) replaces
+independently scaled previews with common cell/point/3D geometry while retaining
+this inspector. Visible captured tracks, reusable rules, recurrence, and editable
+live connections remain separate work.
