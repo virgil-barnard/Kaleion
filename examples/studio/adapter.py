@@ -126,13 +126,14 @@ def build(command, roots, *, captured=None):
         raise ValueError("The study supports at most 60 objects in one workspace")
     if name in roots and (action != "place" or args.get("source") != name):
         raise ValueError("Choose a new name; existing constructions are retained")
-    def ex(value, fields=()):
+    def ex(value, fields=(), *, relation=False):
         if isinstance(value, dict) and set(value) == {"formula"}:
             if captured is not None and args.get("source") in captured.results:
                 source = captured.results[args["source"]]
                 source = source.source if isinstance(source, IncidenceSnapshot) else source
                 fields = source.context()
-            value = formula(value["formula"], captured.parameters if captured is not None else (), fields)
+            value = formula(value["formula"], captured.parameters if captured is not None else (), fields,
+                            relation=relation)
         return expression(value, roots)
     if action == "integers":
         if not isinstance(args["values"], list) or len(args["values"]) > 2000:
@@ -182,7 +183,7 @@ def build(command, roots, *, captured=None):
         elif action == "values":
             result = source.with_values(ex(args["value"]))
         elif action == "lens":
-            result = source.where(ex(args["rule"]))
+            result = source.where(ex(args["rule"], relation=True))
         elif action == "select":
             result = source.select()
         elif action == "measure":
@@ -279,6 +280,16 @@ class Studio:
     def construction(self, name, path, revision):
         self.check(revision)
         return describe_construction(self.workspace.state, name, path)
+
+    def parse_relation(self, name, text, revision):
+        """Read-only syntax conversion; preview alone evaluates a proposed rule."""
+        self.check(revision)
+        source = self.workspace.state.results.get(name)
+        if source is None or isinstance(source, IncidenceSnapshot):
+            raise ValueError("Choose a ready collection or arrangement")
+        spec = formula(text, self.workspace.state.parameters, source.context(), relation=True)
+        expression(spec, self.workspace.state.roots)  # Validate protocol budgets too.
+        return dict(expression=spec)
 
     def preview(self, command, revision):
         self.check(revision)

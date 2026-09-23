@@ -86,6 +86,15 @@ because a control could be added to More tools.
 
 ## 1. What the research contributes
 
+The companion [comparison with twelve mathematical workspaces](COMPARABLE_WORKSPACES.md)
+adds a September 23 survey of primary product/project sources. It identifies
+direct grouping, visible terms, reusable blocks, separated diagram styles, and
+accessible exploration as ideas to learn from, with no claim that these are new
+in Kaleion. Its prioritized experiments preserve the interaction reset above.
+[Short relation notation](RELATION_NOTATION.md) now provides an optional view of
+the same structured expression. Automated transfer checks pass; whether it helps
+novices invent rules remains an open human question.
+
 The applications below are our design deductions, not prescriptions the cited
 papers make about Kaleion. Full-text papers were inspected where available;
 Kirsh–Maglio and Heer–Robertson are used at the scope of their publisher abstracts.

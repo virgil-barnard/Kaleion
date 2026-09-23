@@ -71,6 +71,26 @@ Before adding more abstraction, compare weighted prefixes in 06, case-family evi
 replay in 11. The inspector does not yet explain scalar/positional reads or nested
 bindings within binding keys/reads; future lessons should name these gaps explicitly.
 
+## Next UI transfer experiment · Meaning before more notation
+
+The [workspace survey](../COMPARABLE_WORKSPACES.md) compares twelve relevant tools
+and prioritizes visible expression scope and reusable measurements.
+[Compact relation notation](../RELATION_NOTATION.md) now builds modular, lattice,
+and binary projective incidences through the same controls. These are acceptance
+constructions, not new full notebooks or completion of lesson 11 in the UI.
+
+Ask an author to build and count a modular-line relation, use those counts as a
+keyed height driver, and explain a zero when the slope is not invertible modulo
+6. Transfer the same choices to a bounded lattice region and then to binary
+point–line incidence. Keep the exact domain and grouping visible. Selecting a
+term or key could highlight the locations it describes; test that this helps
+before adding more syntax. The bit-expanded Fano rule remains cumbersome and is
+a concrete candidate for a reusable authoring recipe, not a new evaluator node.
+
+Later, pin a captured case and a counterexample as an observation, then investigate
+user-defined recipes and motion choices. These remain proposed UI experiments;
+finite evidence does not prove a general identity or incidence isomorphism.
+
 ## Next · Symmetry, orbits, and Burnside counting
 
 **Question:** Why can we not count necklaces by dividing the number of strings by

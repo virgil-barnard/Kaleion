@@ -117,7 +117,7 @@ function workspaceControls(){
 }
 function setBusy(value){
   busy=value;
-  if(value){busyFocus=document.activeElement;document.querySelectorAll('button,input,select,fieldset').forEach(n=>{busyControls.set(n,n.disabled);n.disabled=true})}
+  if(value){busyFocus=document.activeElement;document.querySelectorAll('button,input,textarea,select,fieldset').forEach(n=>{busyControls.set(n,n.disabled);n.disabled=true})}
   else{for(const [n,disabled] of busyControls)n.disabled=disabled;busyControls.clear()}
   workspaceControls();
   if(!value){const a=$('apply');if(a)a.disabled=!preview&&a.textContent!=='Create';if(busyFocus?.isConnected&&!busyFocus.disabled&&document.activeElement===document.body)busyFocus.focus({preventScroll:true});busyFocus=null}
@@ -361,7 +361,7 @@ function editor(action,seed=null){
     const f=labeled(controls,'New field name',input('total'));f.id='field-name';const value=expressionControl('Field definition',operation('+',field(fields[0]),number(1)));
     args=()=>({source:sourceName,field:f.value,value:value.read()});
   }else if(action==='lens'&&seed?.quick){
-    const rule=lensControls(source,expr);controls.append(rule.box);
+    const rule=lensControls(source,expr,Object.keys(state.parameters||{}),async text=>(await request('parse-relation',{name:sourceName,text,revision:editorRevision})).expression);controls.append(rule.box);
     args=()=>({source:sourceName,rule:rule.read()});
   }else if(action==='reuse_lens'){
     const reuse=reuseControls(source,state.objects,seed?.target);controls.append(reuse.box);

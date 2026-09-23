@@ -38,6 +38,10 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   formulas and extents, preserve evaluated failures, and distinguish case endpoints
   from captured replay. Radon modulus and triangle growth exercise the same controls.
   Measured case families, full-lesson coverage, and reactive source edits remain open.
+  [Short relation notation](RELATION_NOTATION.md) now lowers comparisons and
+  Boolean combinations to the same expression protocol, with reversible syntax
+  views and exact previews. The [comparable-workspaces survey](COMPARABLE_WORKSPACES.md)
+  prioritizes visible expression scope and measurement reuse before new primitives.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
   their original scopes. `Incidence.universe` exposes the inspected collection or
