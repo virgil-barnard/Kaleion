@@ -7,6 +7,10 @@ It is deliberately outside the installed core API. The latest
 reconstruction through the shared controls and follows its nested measurements. All eleven lessons remain
 the coverage target, not a claim about what this first editor can author.
 
+[Parameter cases](PARAMETER_CASES.md) now declare exact integers once, use them
+in formulas and grid extents, and explicitly preview/apply a changed assumption.
+Case restoration and replay of a captured construction remain separate controls.
+
 The design hypothesis is that a person chooses **what they are acting on**, then
 **what quantity or relationship they want to change**. Lesson names should never
 determine the available tools. A count, a rank, and an ordinary integer source can
@@ -110,7 +114,8 @@ expression** selects the root. **Done** closes the inspector; **Undo expression
 edit** reverses draft edits separately from workspace undo. For example,
 `(((j − i) mod 3) = 0)` stays visible while its modulus is edited.
 
-The same four kinds remain: **Field**, **Number**, **Operation**, and **Keyed read**.
+The six expression kinds are **Field**, **Number**, **Parameter**, **Operation**,
+**Key tuple**, and **Keyed read**.
 Replacing a part with an operation wraps its current value as the first operand.
 “Keep left/right operand” removes an operation without rebuilding the retained
 part. A read labels its source and target keys separately; its source key and
@@ -300,13 +305,13 @@ Most existing mathematics is already expressible in the Python core.
 
 | Lessons | Shared controls exercised here | What is still needed to recreate the full investigation |
 | --- | --- | --- |
-| 01 · Discovery workbench | Sources, relations, grouped counts, driver placement, inspect/undo | Spiral/Young/sequence constructor sheets, constructor binding, structural-field vocabulary, roll/gather/tile/pad, exact case controls |
+| 01 · Discovery workbench | Sources, relations, grouped counts, driver placement, inspect/undo, exact parameter cases | Spiral/Young/sequence constructor sheets, constructor binding, structural-field vocabulary, roll/gather/tile/pad |
 | 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements | Composite Boolean lenses, union/intersection/coverage comparisons, 3D editor/camera, packed placement and explanatory annotations |
-| 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection | Three-component placements and parameter-case editing; keyed comparisons with independent expected domains |
-| 05 · Finite Radon | Size-three weighted reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, and nested evidence navigation | Explicit arithmetic assumptions, independently declared comparison reports, case controls, and complete notebook parity |
+| 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection, shared integer case editor | Three-component placements; keyed comparisons with independent expected domains |
+| 05 · Finite Radon | Parameterized prime/composite reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, and nested evidence navigation | Explicit arithmetic assumptions, independently declared comparison reports, and complete notebook parity |
 | 06 · Young layers | Sources can be filtered grids; count/rank/read/placement | Young constructor and conjugation controls; efficient weighted prefix remains a **backend contract gap** |
 | 07 · Additive structure | Constructed from blank inputs, including group selection, strict ranks, and compact expressions | Bin-domain convenience, equal-sum quadruples and energy narration |
-| 08 · Ehrhart counts | Finite sources, predicates, count and measurement-driven positions | Exact case-family editor; measured-family evidence remains a **backend contract gap** |
+| 08 · Ehrhart counts | Parameterized triangle growth and zero row counts using shared case controls | Reusable measured case families and their evidence remain a **backend contract gap**; finite differences and full lesson composition |
 | 09 · Norm fibers | Groups, explicit order, source reads, placement | Arithmetic-domain/basis recipes, lookup tables, modular power and trig expressions; orbit/case controls |
 | 10 · Hermitian partitions | Product/read/group/rank and guarded coverage; adapter tested on a restricted seven-block family with canonical keys | Projective/field constructor controls, full support beyond the study budget, and complete lesson composition |
 | 11 · Cyclic code/plane | Integer arithmetic, incidence, measurement and explanations | Polynomial/binary-field recipes, coordinate dictionaries, distinct comparison contracts, coordinated replay across charts |
@@ -338,9 +343,11 @@ The [paired-view experiment](LINKED_EVIDENCE_VIEWS.md) now keeps an expected ite
 visible with no candidate beside it, and a quotient measurement visible with its
 source and contributors. Captured keyed reads can refer to earlier versions.
 The [Radon transfer](WEIGHTED_EVIDENCE.md) now adds weight-read and copied-field
-navigation with a return path, plus composite key editing. **Next useful
-experiment:** exact parameter-case controls, tested by changing the modulus and
-by growing a lattice arrangement; replay time must remain a separate control.
+navigation with a return path, plus composite key editing. [Exact parameter cases](PARAMETER_CASES.md)
+now change the modulus and grow a lattice arrangement. Replay samples captured
+construction edits without requests. **Next useful experiment:** compare recovered
+and source values over independently declared keys, then follow a residual into
+these evidence views. Measured families and a saved-case browser remain separate work.
 
 ## Validation and reproduction
 
@@ -350,6 +357,7 @@ python3 -m unittest discover -s tests -p test_studio_groups.py -v
 python3 -m unittest discover -s tests -p test_studio_coverage.py -v
 python3 -m unittest discover -s tests -p test_studio_views.py -v
 python3 -m unittest discover -s tests -p test_studio_weighted.py -v
+python3 -m unittest discover -s tests -p test_studio_cases.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -367,7 +375,7 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **160 tests**, and the discovery example
+The complete required suite passes **166 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -417,3 +425,12 @@ expanded Chromium gate constructs the size-three reconstruction through controls
 checks division remainders, drives reversible placement, follows nested evidence,
 restores camera/selection on return, and transfers to signed weights. Ordered
 key failure, parked tuple edits, keyboard navigation, and phone layout also pass.
+
+Six parameter-case contracts add one graph evaluated at prime/composite moduli,
+lattice growth, locally bound case isolation, failed dependent branches, exact
+large parameters, preview token replacement, and saved case/evidence restoration
+with graph execution disabled. The browser gate also changes these parameters
+through controls, checks wrong recovery despite exact division, parks/resumes case
+drafts, and verifies replay makes no requests or saved-state changes. Reduced-motion
+preference, explicit playback, keyboard controls, and 320-pixel layout are exercised.
+The [case guide](PARAMETER_CASES.md) records the recipes, boundaries, and open limits.

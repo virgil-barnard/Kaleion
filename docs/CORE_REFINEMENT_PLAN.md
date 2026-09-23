@@ -34,8 +34,10 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   same renderer, with zero sources and earlier inputs intact. [Weighted evidence
   navigation](WEIGHTED_EVIDENCE.md) now adds ordered key tuples and follows Radon
   contributions through weight and source-field reads, retaining return views.
-  Exact parameter-case controls, full-lesson coverage, and reactive source edits
-  remain experiments.
+  [Explicit parameter cases](PARAMETER_CASES.md) now reuse declared integers in
+  formulas and extents, preserve evaluated failures, and distinguish case endpoints
+  from captured replay. Radon modulus and triangle growth exercise the same controls.
+  Measured case families, full-lesson coverage, and reactive source edits remain open.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
   their original scopes. `Incidence.universe` exposes the inspected collection or

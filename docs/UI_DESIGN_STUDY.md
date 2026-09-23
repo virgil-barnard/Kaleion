@@ -301,8 +301,10 @@ Use this record for each review:
    including empty evidence and earlier drivers. [Radon weight-read navigation](WEIGHTED_EVIDENCE.md)
    now adds ordered tuples, explicit weight/source roles, and return views, tested
    against signed sums too. Arbitrary view pinning and human layout trials remain open.
-4. **Case versus replay controls:** exact parameter stepping beside scrubbable
-   recorded motion, with a static and reduced-motion path. Evaluate whether
+4. **Case versus replay controls:** [delivered explicit integer cases](PARAMETER_CASES.md)
+   use named parameters in expressions and extents, with evaluate/apply and exact
+   restored endpoints. Separate scrubbable replay has a static/reduced-motion path.
+   Radon prime/composite and lattice growth transfer tasks exercise the controls. Evaluate whether
    motion helps identify a correspondence, not merely whether it is smooth.
 5. **Reusable instruments and notation:** composite read keys are now editable; named expressions,
    source constructors, and reusable lens/placement recipes. Measure the effort

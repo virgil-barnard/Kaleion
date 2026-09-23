@@ -97,6 +97,14 @@ staged edits/undo, transition sampling, and exports are assembled explicitly.
 The discrete dilation video holds exact cases; it does not treat interpolated
 membership as a new mathematical case.
 
+**Studio transfer, separate from notebook counts.** The shared
+[case controller](../PARAMETER_CASES.md) declares `n`, uses `$n + 1` as both grid
+lengths, relates `i + j < $n`, and counts retaining `i`. Inline browser construction
+checks `[2,1,0]`, `[4,3,2,1,0]`, and `[0]` across cases. `web/cases.js` owns inputs
+and reports; the adapter evaluates ordinary definitions; `web/replay.js` only
+presents captured transformation samples. No notebook function changes or
+measured-family abstraction are implied by this single-case interaction.
+
 **Abstraction evidence.** The measured family is a strong candidate for a recipe
 with explicit case keys and accessible per-case evidence. The notebook keeps
 separate case roots because concatenation does not combine their active reduction

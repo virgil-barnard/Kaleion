@@ -69,6 +69,10 @@ and a return path from a contribution's weight to the measurements and source
 items behind it. A Radon reconstruction and signed sums use the same controls.
 It is an experimental authoring subset; the guide maps the remaining work across
 all eleven lessons. No lesson-specific tools or new core operations are added.
+[Parameter cases](docs/PARAMETER_CASES.md) now declare an integer once and reuse
+it in formulas and grid lengths. Evaluate/Apply explicitly changes the case;
+Undo restores its captured predecessor. Separate replay controls sample a recorded
+construction transition. Radon modulus changes and lattice growth share the controls.
 
 The [interaction study and control plan](docs/TOUCH_WORKSPACE.md) explore composing
 an investigation directly on a canvas: move a relation lens, derive a count
