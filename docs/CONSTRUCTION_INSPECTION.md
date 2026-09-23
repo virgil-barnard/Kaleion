@@ -1,5 +1,11 @@
 # See how an object was constructed
 
+**Current interface:** see [One canvas, fewer decisions](CONTINUOUS_CANVAS.md).
+The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
+The contracts and dated implementation record below remain useful; use the new
+guide for current control names and the current browser gate.
+
+
 Selecting a workspace object now opens **How this is made** beside its picture.
 It shows the actual constructor, readable arguments, ordered inputs, evaluation
 case, and result status. This is the first implementation step in the
@@ -86,7 +92,7 @@ unknown constructors, large integers, missing captures, and stale paths.
 python3 -m unittest discover -s tests -p test_studio_construction.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
-node docs/studies/check-construction-inspector.cjs
+node docs/studies/check-continuous-canvas.cjs
 ```
 
 The optional browser gate uses the existing Playwright/Chromium environment

@@ -13,7 +13,7 @@ export function caseFields(parameters){
     entries.push({key,input});rows.append(item);add.disabled=entries.length>=16;
     if(!existing)key.focus({preventScroll:true});
   }
-  box.append(el('p','Declare an integer once, then choose Parameter in formulas or axis lengths. Editing these values proposes a new case. Apply keeps the evaluated results, including any failures.',{class:'help'}),rows,add);
+  box.append(el('p','Declare an integer once, then choose Parameter in formulas or axis lengths. Changing a parameter recalculates the construction. Preview shows the new results; Keep results saves them, including any failures.',{class:'help'}),rows,add);
   for(const [name,value] of Object.entries(parameters||{}))row(name,value,true);
   add.onclick=()=>{row();box.dispatchEvent(new Event('change',{bubbles:true}))};
   return {box,read:()=>{
@@ -29,14 +29,14 @@ export function caseFields(parameters){
 
 export function caseReport(preview,{applied=false}={}){
   const box=el('div',undefined,{id:'case-report'});
-  box.append(el('h3',applied?'Captured results':`Preview case · ${caseLabel(preview.parameters)}`));
+  box.append(el('h3',applied?'Captured results':`New results · ${caseLabel(preview.parameters)}`));
   const failures=preview.objects.filter(o=>o.status==='failed');
   const ready=preview.objects.filter(o=>o.status==='ready');
-  box.append(el('p',`${ready.length} ready · ${failures.length} failed. ${applied?'Select an object to inspect its captured evidence. Undo restores the previous capture.':'Apply to inspect this case; Cancel keeps the applied case.'}`,{class:'help'}));
+  box.append(el('p',`${ready.length} ready · ${failures.length} failed. ${applied?'Select an object to inspect its captured evidence. Undo restores the previous capture.':'Keep results to inspect them; Cancel keeps your current results.'}`,{class:'help'}));
   if(failures.length){const list=el('ul');for(const obj of failures)list.append(el('li',`${obj.name}: ${obj.error}`));box.append(list)}
   if(ready.length){
     const details=el('details'),list=el('ul');details.append(el('summary',`Ready objects · ${ready.length}`));
-    for(const obj of ready)list.append(el('li',`${obj.name}: ${obj.rows.length} occurrences`));
+    for(const obj of ready)list.append(el('li',`${obj.name}: ${obj.rows.length} items`));
     details.append(list);box.append(details);
   }
   return box;

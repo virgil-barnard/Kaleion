@@ -1,5 +1,11 @@
 # Make a lens, move its rule, pull out a total
 
+**Current interface:** see [One canvas, fewer decisions](CONTINUOUS_CANVAS.md).
+The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
+The contracts and dated implementation record below remain useful; use the new
+guide for current control names and the current browser gate.
+
+
 The shared canvas now has a short construction path beside the selected object:
 **Lens…**, **Reuse lens…**, and **Total…**. Pattern starters cover one, two or three
 scalar field inputs; the existing structured formula editor remains available
@@ -133,7 +139,7 @@ repeated reductions, draft isolation, save/reopen and 320/360-pixel layouts.
 ```sh
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
-node docs/studies/check-relation-workbench.cjs
+node docs/studies/check-continuous-canvas.cjs
 ```
 
 Use the existing [optional browser configuration](CONSTRUCTION_STUDIO.md#validation-and-reproduction).

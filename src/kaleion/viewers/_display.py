@@ -71,7 +71,8 @@ def prepare(value):
         if snap.positions is None:
             raise ValueError("This collection has no placement; call .arrange(...) first")
         positions = snap.positions
-        labels = tuple(map(str, snap.values))
+        labels = (tuple("" for _ in snap.ids) if snap.values is None
+                  else tuple(map(str, snap.values)))
         mask = incidence.mask if incidence is not None else (None,) * len(snap)
         colors = tuple(NEUTRAL if m is None else MATCH if m else MISS for m in mask)
         hover = tuple(

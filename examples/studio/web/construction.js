@@ -4,7 +4,7 @@ const key=t=>JSON.stringify([t.root,t.path]);
 
 export function constructionInspector(host,{state,query,beforeNavigate,remember,restore,navigate,view,locked}){
   let current=null,revision=null,generation=0,stack=[],cache=new Map();
-  const status=data=>data.status==='ready'?(data.capture?`Captured · ${data.extent} occurrences`:'Result capture unavailable'):data.status==='failed'?'Evaluation failed':'Not captured · definition only';
+  const status=data=>data.status==='ready'?(data.capture?`Saved result · ${data.extent} items`:'Result capture unavailable'):data.status==='failed'?'Evaluation failed':'Not captured · definition only';
   function render(data){
     current=data;host.hidden=!data;
     host.replaceChildren();if(!data)return;
@@ -25,17 +25,17 @@ export function constructionInspector(host,{state,query,beforeNavigate,remember,
         }catch(error){if(ticket===generation){stack.push(previous);render(current);host.append(el('p',error.message,{class:'error',role:'status'}))}}
       };header.append(back);
     }
-    const summary=el('p',`${data.title} · ${data.kind}`,{class:'construction-summary'});
-    const badge=el('p',`${data.context} · ${status(data)}`,{class:'construction-status','data-definition-status':data.status});
+    const summary=el('p',data.title,{class:'construction-summary'});
+    const badge=el('p',`${data.context==='Current named object'?'On this canvas':data.context} · ${status(data)}`,{class:'construction-status','data-definition-status':data.status});
     const details=el('details',undefined,{id:'construction-details',open:''});
     details.append(el('summary','How this is made'));
     const formula=el('dl',undefined,{class:'construction-arguments'});
-    for(const a of data.arguments)formula.append(el('dt',a.label),el('dd',a.text));
+    for(const a of data.arguments)formula.append(el('dt',({'Lengths (axis order)':'Size','Logical axes (in order)':'Index names'})[a.label]||a.label),el('dd',a.text));
     if(!data.arguments.length)details.append(el('p','This operation is declared by its inputs below.',{class:'help'}));
     else details.append(formula);
     if(data.error)details.append(el('p',data.error,{class:'error construction-error'}));
-    const params=data.parameters===null?'Local parameter values were not captured. Follow Back to inspect the case declaration.':Object.entries(data.parameters).map(([k,v])=>`${k} = ${v}`).join(' · ')||'No parameter bindings';
-    details.append(el('p',`${data.local_depth?'Local evaluation case':'Evaluation case'} · ${params}`,{class:'help','data-construction-case':''}));
+    const params=data.parameters===null?'Local parameter values were not captured. Follow Back to inspect the parameter declaration.':Object.entries(data.parameters).map(([k,v])=>`${k} = ${v}`).join(' · ')||'No parameter bindings';
+    details.append(el('p',`${data.local_depth?'Local parameter values':'Parameter values'} · ${params}`,{class:'help','data-construction-case':''}));
     if(data.inputs.length){
       details.append(el('h3','Inputs'));
       const inputs=el('ol',undefined,{class:'construction-inputs'});
@@ -57,7 +57,7 @@ export function constructionInspector(host,{state,query,beforeNavigate,remember,
     const show=el('button','View captured result',{type:'button',id:'construction-view'});
     show.disabled=!data.capture;
     show.onclick=()=>view(data);details.append(show);
-    details.append(el('p','Read-only declaration. Inspect an occurrence in the captured result to follow its value and contributors.',{class:'help'}));
+    details.append(el('p','Read-only declaration. Inspect an item in the captured result to follow its value and contributors.',{class:'help'}));
     const canonical=el('details',undefined,{class:'construction-canonical'});
     canonical.append(el('summary','Exact operation and scoped references'));
     canonical.append(el('p',`Definition ${data.definition}${data.capture?` · capture ${data.capture}`:''}`,{class:'help'}));

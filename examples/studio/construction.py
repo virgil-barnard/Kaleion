@@ -13,7 +13,7 @@ from .views import exact_wire
 
 
 TITLES = {
-    "sequence": "Sequence", "literal": "Integers", "grid": "Grid",
+    "sequence": "Sequence", "literal": "Integers", "grid": "Grid", "tuples": "Tuples · no values",
     "young": "Young diagram", "spiral": "Rectangular spiral",
     "place": "Arrange", "positions": "Explicit positions", "move": "Move",
     "annotate": "Define fields", "values": "Change values", "incidence": "Relation lens",

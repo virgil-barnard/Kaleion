@@ -2,7 +2,7 @@
 
 Revision 11 · September 19, 2026 · Snapshot ownership and shared indexing
 
-**Kaleion — Discover mathematics through motion.** Kaleion is the name of the project previously developed as the Icarus Python reference core. The v0.1.0 baseline uses the `kaleion` distribution and import namespace. Workspace exports use `kaleion-python`, schema 1; imports also accept legacy `icarus-python` schema 1 documents. Links to the original Icarus repository and the historical HTML prototype keep their actual names. This revision records the first accepted core refinements; [DESIGN.md](DESIGN.md) specifies the implemented contracts and operation compatibility.
+**Kaleion — Discover mathematics through motion.** Kaleion is the name of the project previously developed as the Icarus Python reference core. The v0.1.0 baseline uses the `kaleion` distribution and import namespace. Workspace exports use `kaleion-python`, schema 1 for integer-only captures and schema 2 for optional tuple contents; imports also accept legacy `icarus-python` schema 1 documents. Links to the original Icarus repository and the historical HTML prototype keep their actual names. This revision records the first accepted core refinements; [DESIGN.md](DESIGN.md) specifies the implemented contracts and operation compatibility.
 
 This document consolidates the capabilities and boundaries developed in the design discussion. It defines the intended behavior of the application and proposed initial implementation defaults. Prototype evidence is recorded in part 13; it does not establish implementation of every capability below. “Required” describes a contract to preserve; later capabilities are identified explicitly. The first implementation milestone is defined in part 12.
 
@@ -327,7 +327,7 @@ Neither GPU execution nor smooth animation implies differentiability. A future s
 
 Gather, Roll, Tile, Lookup, keyed driver reads, selection, and grouped reductions share address-map and segment-reduction mechanisms. The operation-level evaluation trace identifies relevant primitive families; it is not a record of every executed kernel or a derivative tape. The bounded spiral scan and key/lineage assembly include Python loops. No GPU adapter or general tensor compiler has been implemented. Supporting differentiable continuous contents will also require an explicit extension of the current integer value domain.
 
-**10. Initial interaction surface and persistence.** Use a canvas, object list, contextual inspector, optional sweep strip, and observation drawer. Persistent actions are Add, Select, Lens, Transform, Measure, Capture, Undo/Redo, and navigation. Advanced dependency inspection is optional.
+**10. Initial interaction surface and persistence.** The later [continuous-canvas refactor](docs/CONTINUOUS_CANVAS.md) supersedes the original persistent-toolbar proposal: command ownership and progressive disclosure take priority over adding tool buttons. Use a canvas, object list, contextual inspector, optional sweep strip, and observation drawer. Persistent actions are Add, Select, Lens, Transform, Measure, Capture, Undo/Redo, and navigation. Advanced dependency inspection is optional.
 
 | Action | Initial behavior |
 | --- | --- |

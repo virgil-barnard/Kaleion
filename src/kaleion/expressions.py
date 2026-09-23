@@ -43,6 +43,8 @@ def evaluate_expression(rule, context, params, resolve, *, length=0, depth=0):
         source = resolve(args[0])
         if not isinstance(source, Snapshot):
             raise ValueError("A driver must supply a collection or arrangement")
+        if op in ("scalar", "lookup") and source.values is None:
+            raise ValueError("This domain has tuples only; assign integer values before reading contents")
         if op == "scalar":
             if len(source) != 1:
                 raise ValueError("scalar() requires exactly one item")

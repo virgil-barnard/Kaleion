@@ -14,6 +14,23 @@ parameter cases, and [keyed comparison](KEYED_COMPARISON.md) now compose in the
 studio. The older two-source demonstration described below remains a bounded
 gesture study. Human touch trials remain to be conducted.
 
+### Current direction: one continuous canvas
+
+The maintainer's later desktop feedback rejects the accumulated control density
+and abrupt Focus view. The [continuous-canvas reset](CONTINUOUS_CANVAS.md) now
+supersedes the shell described in earlier progress notes: background creates only
+Vector/Grid/Cube, right-click or hold opens object details in context, and visible
+Details/Enter/Shift-F10 remain alternatives. Appearance and specialist tools are
+disclosed in the same drawer. It is a bottom sheet at phone widths, not a second
+canvas below the work. The working camera stays fixed while it opens or closes.
+
+Creation separates finite shape, tuple locations and optional integer contents.
+Index formulas and exact parameters remain inspectable. The shared 3D scene also
+shows captured replay; parameter evaluation remains a separate action. Touch
+cancellation and narrow layouts are engineering checks, not physical-device or
+child-usability results. The next gate is observation of an uncoached construction
+and return from provenance inspection, before adding another tool family.
+
 ### Progress against this proposal · September 23, 2026
 
 | Proposed experience | Current studio evidence | Still open |

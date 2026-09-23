@@ -146,7 +146,7 @@ For an evaluated arrangement with N items:
 
 | Quantity | Representation | Meaning |
 | --- | --- | --- |
-| Contents | `values[N]` | Exact integer labels |
+| Contents | `values[N]` or `None` | Exact integer labels, or explicitly no contents |
 | Occurrences | `ids[N]` | Distinct appearances, including repeated copies |
 | Logical addressing | Named fields and optional rectangular `shape` | An explicitly declared indexed domain |
 | Placement | `positions[N, d]`, 1 ≤ d ≤ 3 | Coordinates independent of storage and labels |
@@ -184,6 +184,30 @@ evaluator item limit. Source total counts establish symbolic extents and retain
 ordinary evidence; this is not a sparse join or a faster tensor kernel. A future
 size/shape query or product execution strategy needs its own demonstrated contract.
 The [authoring guide](docs/AUTHORING.md) records migration and examples.
+
+## Tuple domains and the continuous canvas
+
+`Collection.tuples(*shape, axes=...)` builds a `tuples` node with finite logical
+indices and no integer contents. Its snapshot has `values=None`; context omits
+`value`, including for an empty domain. Count and relations on indices work;
+value reads fail. `with_values()` assigns exact contents with identity/lineage
+preserved. Reindexing, selection, placement and tuple-to-tuple concatenation
+preserve absence. Mixed concatenation and numeric padding reject an unvalued
+input. This domain distinction could not be expressed by a hidden constant grid.
+Existing Grid and Python Product defaults are unchanged.
+
+Workspace schema 2 represents optional contents and is emitted when any retained
+state/trace includes tuple domains; integer-only exports still use schema 1. Both
+schemas load without evaluating definitions. Older readers reject schema 2. The
+new operation uses the existing graph encoding; old evaluators lack its meaning.
+Motion has discrete optional endpoint labels, separate from geometric existence.
+
+The studio's `shell.js` owns contextual disclosure, `creation.js` owns shape and
+contents choices, and `workspace.js` owns the continuous shared scene and replay.
+`formulas.py` parses a bounded arithmetic subset into the existing structured
+expression protocol; it runs no Python code and does not guess ambiguous bindings.
+See [the refactor contracts](docs/CONTINUOUS_CANVAS.md) for command ownership,
+proof-provenance boundaries, compatibility and task-based validation.
 
 ## Snapshot ownership
 

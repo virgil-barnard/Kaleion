@@ -1,15 +1,15 @@
-import {actions, labels} from './context.js';
+import {creationActions,advancedActions,labels} from './context.js';
+import {canvasShell} from './shell.js';
+import {shapeControls,shapes} from './creation.js';
 import {expressionEditor} from './expressions.js';
 import {fieldKeys} from './groups.js';
 import {draftSession} from './drafts.js';
 import {coverageInspector} from './coverage.js';
-import {viewPositions} from './views.js';
 import {linkedViews} from './evidence.js';
 import {receiptInspector} from './receipts.js';
 import {caseFields,caseLabel,caseReport} from './cases.js';
 import {replayControls} from './replay.js';
 import {comparisonInspector} from './comparison.js';
-import {cameraControls} from './camera.js';
 import {spatialWorkspace} from './workspace.js';
 import {constructionInspector} from './construction.js';
 import {canvasDocument,readDocument} from './document.js';
@@ -24,36 +24,35 @@ const el = (tag, text, attrs={}) => {
 const field = name => ({field:name}), number = n => ({integer:String(n)});
 const operation = (op,a,b) => ({op,args:[a,b]});
 let state={revision:0,objects:[],undo:false,redo:false}, active=null, mode='objects';
-let selectedPoint=null, preview=null, busy=false, gesture=null, held=false;
+let selectedPoint=null, preview=null, busy=false;
 let groupReport=null, groupChoice=-1;
 let comparisonChoices=null;
 let sceneBeforePreview=null;
-let surface='workspace';
-let camera={x:0,y:0,zoom:1}, dots=[], labelField='value', objectTabsKey='', labelOptionsKey='';
+let objectTabsKey='';
 const draft=draftSession();
+const shell=canvasShell(document.querySelector('main'),{onClose:()=>{parkDraft();linked.close();render()}});
 const linked=linkedViews($('linked-views'),{
   load:capture=>request('capture',{capture}),
-  onVisibility:shown=>{$('single-view').hidden=shown||surface!=='focus';$('workspace-view').hidden=shown||surface!=='workspace';$('canvas-tools').hidden=shown||surface!=='focus';$('surface-tools').hidden=shown;$('scope').textContent=shown?'Read-only captured evidence · close to construct':resultScope();if(shown)status('Browsing captured evidence. Selection and view changes do not alter your construction.')}
+  onVisibility:shown=>{if(shown){shell.open('evidence','Captured evidence');status('Reading a saved result. The canvas and camera stay in place.')}}
 });
-const receipts=receiptInspector({panel:$('activity'),run,query:request,linked,beforeShow:()=>{parkDraft();construction.collapse()}});
-const replay=replayControls($('replay'),{draw,restore:()=>draw(),onPresentation:shown=>{
-  if(shown)$('scope').textContent='Replay · presentation only · applied case unchanged';
-  else $('scope').textContent=resultScope();
+const receipts=receiptInspector({panel:$('activity'),run,query:request,linked,beforeShow:()=>{parkDraft();shell.open('evidence','Why this value?');construction.collapse()}});
+const replay=replayControls($('replay'),{draw:frame=>board.frame(frame),restore:()=>board.frame(null),onPresentation:shown=>{
+  $('scope').textContent=shown?'Playing a saved movement':resultScope();
 }});
 const board=spatialWorkspace($('workspace-view'),{
-  select:selectObject,focus:name=>{selectObject(name);setSurface('focus')},
-  options:name=>{selectObject(name);mode='objects';syncMode();openMenu()},
+  select:selectObject,details:inspectObject,settings:$('object-view'),
+  options:name=>name?inspectObject(name):openMenu(),
   combine:combinePanel,locked:()=>busy||!!preview,status,
-  create:()=>{if(!draft.current)editor('sequence',{scene:true})},
+  create:()=>openMenu(),
   inspect:(name,ref)=>{active=name;selectedPoint=ref;run(async()=>showReceipt(await request('inspect',{name,ref})))},
 });
 const construction=constructionInspector($('construction'),{
   state:()=>state,query:target=>request('construction',{name:target.root,path:target.path}),beforeNavigate:parkDraft,locked:()=>busy,
-  remember:()=>({active,mode,surface,selectedPoint,groupReport,groupChoice,labelField,camera:{...camera},board:board.remember(),linked:linked.remember(),activity:[...$('activity').childNodes]}),
+  remember:()=>({active,mode,selectedPoint,groupReport,groupChoice,board:board.remember(),linked:linked.remember(),activity:[...$('activity').childNodes]}),
   restore:async (saved,current)=>{
     linked.close();active=saved.active;mode=saved.mode;selectedPoint=saved.selectedPoint;
-    groupReport=saved.groupReport;groupChoice=saved.groupChoice;labelField=saved.labelField;camera={...saved.camera};
-    setSurface(saved.surface);mode=saved.mode;syncMode();render();board.restore(saved.board);
+    groupReport=saved.groupReport;groupChoice=saved.groupChoice;
+    shell.open('details',active);render();board.restore(saved.board);
     $('activity').replaceChildren(...saved.activity);
     if(saved.linked)await linked.open(saved.linked.spec,saved.linked);
     if(current())status('Returned to the same selection and camera. The construction is unchanged.');
@@ -70,50 +69,45 @@ const construction=constructionInspector($('construction'),{
 });
 async function viewConstruction(data){
   parkDraft();replay.reset();
-  $('activity').replaceChildren(el('h3','Why this value?'),el('p','Choose an occurrence in the captured result, then Inspect selected occurrence.'));
+  $('activity').replaceChildren(el('h3','Why this value?'),el('p','Choose an item in the saved result below to follow its value.'));
   await linked.open({title:`Captured result · ${data.label}`,
     detail:`${data.context}. This picture is the saved result of the inspected definition. No construction is evaluated.`,
     left:{capture:data.capture,label:data.label,contextLabel:`${data.context} · captured result`},
     inspect:ref=>run(async()=>showReceipt(await request('inspect-driver',{ref})))
   });
+  shell.open('construction',data.label);
 }
-function syncMode(){document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)))}
-function setSurface(value){
-  board.cancel();linked.close();surface=value;
-  $('single-view').hidden=surface!=='focus';$('workspace-view').hidden=surface!=='workspace';$('canvas-tools').hidden=surface!=='focus';
-  document.querySelectorAll('[data-surface]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.surface===surface)));
-  if(surface==='workspace'){mode='objects';syncMode();replay.reset(false)}
-  render();
-  if(surface==='workspace')board.refresh();
+function inspectObject(name=active){
+  if(busy||!name)return;
+  selectObject(name);shell.open('details',name);
 }
-document.querySelectorAll('[data-surface]').forEach(b=>b.onclick=()=>{if(!busy){parkDraft();setSurface(b.dataset.surface)}});
 function selectObject(name){
-  if(busy)return;linked.close();parkDraft();active=name;selectedPoint=null;preview=null;clearGroups();
+  if(busy)return;linked.close();replay.reset();parkDraft();active=name;selectedPoint=null;preview=null;clearGroups();mode='objects';
+  $('advanced-tools').open=false;
   construction.select(name);
-  $('activity').replaceChildren(el('p','Follow an input above to see its construction. View captured result or Focus → Occurrences explains individual values.',{class:'help'}));
-  render();if(mode==='groups')groupPanel();
+  $('activity').replaceChildren();
+  if(shell.visible)shell.open('details',name);
+  render();
 }
 const object = () => state.objects.find(o=>o.name===active);
 const displayed = () => preview?.objects.find(o=>o.name===preview.name) || object();
 const selectedGroup=()=>groupReport?.revision===state.revision&&groupReport.name===active?groupReport.groups[groupChoice]:null;
 const groupLabel=(report,group)=>report.by.map((field,i)=>`${field} = ${group.key_types[i]==='text'?JSON.stringify(group.key[i]):group.key[i]}`).join(', ')||'Whole domain';
 function clearGroups(){groupReport=null;groupChoice=-1}
-function resultScope(){return preview?(preview.kind==='case'?`Preview case · ${caseLabel(preview.parameters)} · not applied`:'Preview · not yet applied'):surface==='workspace'?`${state.objects.length} objects · shared scene`:mode==='points'?'Choose an occurrence to explain':mode==='groups'?'Select by declared group keys':mode==='view'?'Drag to pan · pinch or wheel to zoom':'Hold for construction tools'}
+function resultScope(){return preview?'Preview · not saved':object()?.status==='ready'?`${object().rows.length} items${object().fields.includes('value')?'':' · tuples only'}`:object()?.error||''}
 function status(text, error=false){$('status').textContent=text;$('status').classList.toggle('error',error)}
 const busyControls=new Map();
 let busyFocus=null;
 function workspaceControls(){
   const drafting=!!draft.current;
-  $('panel').classList.toggle('scene-drafting',drafting&&!draft.current.parked&&draft.current.context.surface==='workspace');
   $('undo').disabled=busy||drafting||!state.undo;$('redo').disabled=busy||drafting||!state.redo;
   $('add').disabled=$('open').disabled=$('file').disabled=$('cases').disabled=busy||drafting;
-  $('workspace-view').querySelector('[data-combine]').disabled=busy||drafting||!active;
-  $('workspace-view').querySelector('[data-scene-source]').disabled=busy||drafting;
   const selected=object(),ready=selected?.status==='ready';
-  $('scene-actions').hidden=!selected;
   $('quick-lens').hidden=selected?.kind==='incidence';
   $('reuse-lens').hidden=selected?.kind!=='incidence';
-  for(const id of ['quick-lens','axis-total','reuse-lens'])$(id).disabled=busy||drafting||!ready;
+  for(const id of ['quick-lens','axis-total','reuse-lens','combine'])$(id).disabled=busy||drafting||!ready;
+  $('object-tools').querySelectorAll('[data-action]').forEach(b=>b.disabled=busy||drafting);
+  document.querySelectorAll('[data-create]').forEach(b=>b.disabled=busy||drafting);
   $('draft-tray').hidden=!drafting;
   if(drafting){
     const context=draft.current.context;
@@ -126,7 +120,7 @@ function setBusy(value){
   if(value){busyFocus=document.activeElement;document.querySelectorAll('button,input,select,fieldset').forEach(n=>{busyControls.set(n,n.disabled);n.disabled=true})}
   else{for(const [n,disabled] of busyControls)n.disabled=disabled;busyControls.clear()}
   workspaceControls();
-  if(!value){const a=$('apply');if(a)a.disabled=!preview;if(busyFocus?.isConnected&&!busyFocus.disabled&&document.activeElement===document.body)busyFocus.focus({preventScroll:true});busyFocus=null}
+  if(!value){const a=$('apply');if(a)a.disabled=!preview&&a.textContent!=='Create';if(busyFocus?.isConnected&&!busyFocus.disabled&&document.activeElement===document.body)busyFocus.focus({preventScroll:true});busyFocus=null}
 }
 async function request(path,body={}){
   const response=await fetch('/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -139,30 +133,26 @@ function adopt(next){
   if(next.active)active=next.active;
   if(!state.objects.some(o=>o.name===active))active=state.objects.at(-1)?.name || null;
   construction.select(active);
-  camera={x:0,y:0,zoom:1};render();
+  render();
 }
 function render(){
   replay.select(active);
-  $('case-summary').textContent=caseLabel(state.parameters);
-  // Do not replace an unchanged control on input blur: it can swallow the next click.
   const tabsKey=JSON.stringify([active,state.objects.map(o=>[o.name,o.kind,o.status,o.error])]);
   if(tabsKey!==objectTabsKey){
-    const focused=document.activeElement?.dataset.object;objectTabsKey=tabsKey;
-    $('objects').replaceChildren(...state.objects.map(o=>{
-      const button=el('button',o.name,{'aria-pressed':String(o.name===active),'data-object':o.name});
-      button.append(el('small',o.status==='ready'?o.kind:o.error));
-      button.onclick=()=>selectObject(o.name);
-      return button;
+    objectTabsKey=tabsKey;
+    $('objects').replaceChildren(el('option','Select an object',{value:''}),...state.objects.map(o=>el('option',o.name,{value:o.name})));
+    $('objects').value=active||'';
+    $('advanced-actions').replaceChildren(...advancedActions(object()).map(action=>{
+      const b=el('button',labels[action],{'data-action':action,type:'button'});b.onclick=()=>dispatch(action);return b;
     }));
-    if(focused)[...$('objects').children].find(b=>b.dataset.object===focused)?.focus({preventScroll:true});
   }
+  $('welcome').hidden=!!state.objects.length||!!draft.current;
+  $('surface-tools').hidden=!displayed();
   workspaceControls();
   $('title').textContent=displayed()?.name || 'Your blank canvas';
   $('scope').textContent=resultScope();
-  const fields=displayed()?.fields||[];if(!fields.includes(labelField))labelField='value';
-  const fieldKey=JSON.stringify(fields);if(fieldKey!==labelOptionsKey){labelOptionsKey=fieldKey;$('labels').replaceChildren(...fields.map(f=>el('option',f,{value:f})))}$('labels').value=labelField;
-  draw();occurrences();
-  if(preview&&surface==='workspace'&&draft.current?.context.surface==='workspace'){
+  draw();
+  if(preview){
     if(!sceneBeforePreview)sceneBeforePreview=board.save();
     board.update({...state,objects:preview.objects.map(o=>o.name===preview.name?{...o,preview:true}:o)},preview.name);
   }else{
@@ -173,113 +163,28 @@ function render(){
 $('quick-lens').onclick=()=>editor('lens',{workspace:true,scene:true,quick:true});
 $('axis-total').onclick=()=>editor('total',{workspace:true,scene:true});
 $('reuse-lens').onclick=()=>editor('reuse_lens',{workspace:true,scene:true});
-$('labels').onchange=()=>{labelField=$('labels').value;draw()};
-function draw(frame=null,bounds=null){
-  if(!frame)replay.reset(false);
-  const obj=displayed(), rows=obj?.rows || [], positions=frame?.positions || viewPositions(obj);
-  if(positions.some(p=>p.some(v=>!Number.isFinite(v)))){
-    $('marks').replaceChildren();dots=[];status('Exact values are available, but this table projection exceeds floating coordinate range. Declare a bounded placement.',true);return;
-  }
-  const samples=bounds || positions;
-  let xs=samples.map(p=>p[0]),ys=samples.map(p=>p[1]||0);
-  const xmin=Math.min(0,...xs),xmax=Math.max(1,...xs),ymin=Math.min(0,...ys),ymax=Math.max(1,...ys);
-  const scale=Math.min(590/(xmax-xmin),340/(ymax-ymin))*camera.zoom;
-  const project=p=>[350+(p[0]-(xmin+xmax)/2)*scale+camera.x,225-((p[1]||0)-(ymin+ymax)/2)*scale+camera.y];
-  const marks=$('marks');marks.replaceChildren();dots=[];
-  const unit=700/Math.max(260,$('canvas').getBoundingClientRect().width);
-  if(!positions.length){
-    const label=document.createElementNS('http://www.w3.org/2000/svg','text');
-    label.setAttribute('x','350');label.setAttribute('y','220');label.setAttribute('text-anchor','middle');
-    label.style.fontSize=`${12*unit}px`;
-    label.textContent=obj?.status==='failed'?'Evaluation failed':obj?'Empty domain · no occurrences':$('canvas').clientWidth<400?'Start with Add.':'Add something. Give it a rule. See what emerges.';marks.append(label);
-  }
-  const labelsShown=positions.length<=($('canvas').clientWidth<400?24:90);
-  const group=mode==='groups'&&!preview?selectedGroup():null;
-  const members=new Set(group?.members.map(r=>r[1])||[]),matches=new Set(group?.matches.map(r=>r[1])||[]);
-  positions.forEach((p,i)=>{
-    const [x,y]=project(p);const row=frame?rows.find(r=>r.ref[1]===(frame.after[i]||frame.before[i])):rows[i];
-    const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    const chosen=row&&(mode==='groups'?members.has(row.ref[1]):selectedPoint?.[1]===row.ref[1]);
-    const opacity=frame?frame.opacity[i]:group?(matches.has(row?.ref[1])?1:(chosen ? .45 : .12)):(row?.match===false ? .25 : 1);
-    for(const [k,v] of Object.entries({cx:x,cy:y,r:(chosen?8:5)*unit,fill:row?.match===false?'#a9b6ad':'#b96429',opacity,stroke:chosen?'#235d48':'none','stroke-width':3,'data-occurrence':row?.ref[1]||'','data-group-member':String(!!group&&chosen)}))circle.setAttribute(k,v);
-    marks.append(circle);if(row&&!frame)dots.push({x,y,row});
-    if(labelsShown&&row){const t=document.createElementNS(circle.namespaceURI,'text');t.setAttribute('x',x+8*unit);t.setAttribute('y',y-7*unit);t.style.fontSize=`${12*unit}px`;const text=String(row.fields[labelField]);t.textContent=text.length>16?text.slice(0,13)+'…':text;marks.append(t)}
-  });
-  $('projection').textContent=obj?.placed?`Declared ${obj.dimension}D placement${obj.dimension===3?' · XY projection':''}`:'Approximate table projection · exact labels. Arrange declares positions.';
+$('objects').onchange=()=>{if($('objects').value)selectObject($('objects').value)};
+$('combine').onclick=()=>combinePanel(active,null);
+$('options').onclick=()=>inspectObject();
+$('view-options').onclick=()=>{parkDraft();linked.close();shell.open('view',active);board.refresh()};
+function draw(){board.highlight(mode==='groups'&&!preview?selectedGroup():null)}
+function dispatch(action){
+  if(action==='group_options'){mode='groups';groupPanel()}
+  else if(action==='coverage')coveragePanel();
+  else if(action==='compare')comparisonPanel();
+  else editor(action,{quick:action==='lens'});
 }
-function occurrences(){
-  $('occurrence-label').hidden=mode!=='points'||!!preview;
-  const select=$('occurrence');select.replaceChildren(el('option','Choose an occurrence',{value:''}));
-  for(const r of object()?.rows || [])select.append(el('option',`${r.fields.index} · value ${r.fields.value}${r.match?'':' · outside relation'}`,{value:r.ref[1]}));
-  select.value=selectedPoint?.[1]||'';
+function openMenu(){
+  if(busy||draft.current)return;
+  $('menu-title').textContent='Create a shape';
+  $('menu-actions').replaceChildren(...creationActions.map(kind=>{
+    const b=el('button',shapes[kind].title,{'data-action':kind});
+    b.onclick=()=>{$('menu').close();editor('shape',{shape:kind})};return b;
+  }));
+  if(!$('menu').open)$('menu').showModal();
 }
-$('occurrence').onchange=()=>{selectedPoint=object()?.rows.find(r=>r.ref[1]===$('occurrence').value)?.ref || null;draw();if(selectedPoint)explain()};
-function openMenu(addOnly=false){
-  if(busy||preview)return;
-  replay.reset();
-  const options=actions(addOnly?{mode:'objects'}:{mode,object:object(),point:selectedPoint,group:selectedGroup()});
-  $('menu-title').textContent=addOnly?'Add to the canvas':mode==='points'?'Occurrence options':mode==='groups'?'Group options':mode==='view'?'View options':active||'Canvas options';
-  $('menu-actions').replaceChildren(...(options.length?options.map(action=>{
-    const button=el('button',action==='measure'&&mode==='groups'?'Measure all groups':labels[action],{'data-action':action});
-    if(draft.current&&!['explain','fit','group_options','coverage','compare'].includes(action)){button.disabled=true;button.title='Resume or discard your draft before starting another construction.'}
-    button.onclick=()=>{$('menu').close();if(action==='explain')explain();else if(action==='fit')fit();else if(action==='group_options')groupPanel();else if(action==='coverage')coveragePanel();else if(action==='compare')comparisonPanel();else editor(action)};return button;
-  }):[el('p','Select an occurrence first. The list also reaches coincident points.')]));
-  if(!addOnly&&mode==='objects'&&active){
-    const combine=el('button','Combine with…',{'data-action':'combine'});combine.disabled=!!draft.current;
-    combine.onclick=()=>{$('menu').close();combinePanel(active,null)};$('menu-actions').prepend(combine);
-  }
-  $('menu').showModal();
-}
-$('add').onclick=()=>openMenu(true);$('options').onclick=()=>openMenu();$('close-menu').onclick=()=>$('menu').close();
-document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>{
-  if(busy)return;linked.close();parkDraft();surface='focus';mode=button.dataset.mode;cancelHold();
-  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render();if(mode==='groups')groupPanel();
-});
-function fit(){camera={x:0,y:0,zoom:1};draw()}
-$('view-controls').append(cameraControls({name:'main',fit,fitId:'fit',zoom:factor=>{camera.zoom=Math.min(12,Math.max(.2,camera.zoom*factor));draw()},pan:(x,y)=>{camera.x+=x;camera.y+=y;draw()}}));
-document.querySelectorAll('[data-workspace-jump]').forEach(link=>link.onclick=event=>{
-  event.preventDefault();const target=$(link.dataset.workspaceJump);target.focus({preventScroll:true});target.scrollIntoView({block:'start'});
-});
-
-// Hold recognition owns time, movement, multi-touch, and cancellation only.
-// It sends the same open-options intent as the visible/keyboard command.
-const pointers=new Map();
-function point(event){const p=$('canvas').createSVGPoint();p.x=event.clientX;p.y=event.clientY;return p.matrixTransform($('canvas').getScreenCTM().inverse())}
-function cancelHold(){if(gesture)clearTimeout(gesture.timer);gesture=null}
-function chooseAt(p){
-  const radius=24/$('canvas').getScreenCTM().a;
-  const nearest=dots.map(d=>({...d,d:Math.hypot(d.x-p.x,d.y-p.y)})).filter(d=>d.d<radius).sort((a,b)=>a.d-b.d);
-  if(nearest.length){
-    if(mode==='groups'){
-      if(!groupReport)return;
-      groupChoice=groupReport.groups.findIndex(g=>g.members.some(r=>r[0]===nearest[0].row.ref[0]&&r[1]===nearest[0].row.ref[1]));
-      groupPanel();
-    }else{selectedPoint=nearest[0].row.ref;occurrences()}
-    draw();if(nearest.length>1)status(`${nearest.length} nearby occurrences. Use the ${mode==='groups'?'group':'occurrence'} list to choose exactly.`);
-  }
-}
-$('hit').onpointerdown=e=>{
-  if(busy||preview||e.button>0)return;e.preventDefault();held=false;
-  const p=point(e);pointers.set(e.pointerId,p);$('hit').setPointerCapture(e.pointerId);
-  if(pointers.size>1){cancelHold();return}
-  if(mode==='points'||mode==='groups')chooseAt(p);
-  gesture={start:p,last:p,moved:false,timer:setTimeout(()=>{held=true;openMenu();cancelHold()},480)};
-};
-$('hit').onpointermove=e=>{
-  if(!pointers.has(e.pointerId))return;const p=point(e),old=pointers.get(e.pointerId);
-  if(mode==='view'&&pointers.size===2){const other=[...pointers.entries()].find(([id])=>id!==e.pointerId)[1];const a=Math.hypot(old.x-other.x,old.y-other.y),b=Math.hypot(p.x-other.x,p.y-other.y);if(a>1)camera.zoom=Math.min(12,Math.max(.2,camera.zoom*b/a));draw()}
-  pointers.set(e.pointerId,p);
-  if(!gesture)return;
-  if(Math.hypot(p.x-gesture.start.x,p.y-gesture.start.y)*$('canvas').getScreenCTM().a>9){clearTimeout(gesture.timer);gesture.moved=true}
-  if(mode==='view'){camera.x+=p.x-gesture.last.x;camera.y+=p.y-gesture.last.y;draw()}
-  gesture.last=p;
-};
-$('hit').onpointerup=e=>{const tap=gesture&&!gesture.moved&&!held;pointers.delete(e.pointerId);cancelHold();if(tap&&mode==='points'&&selectedPoint)explain()};
-$('hit').onpointercancel=e=>{pointers.delete(e.pointerId);cancelHold()};
-$('canvas').addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
-$('canvas').addEventListener('wheel',e=>{if(mode!=='view'||busy)return;e.preventDefault();camera.zoom=Math.min(12,Math.max(.2,camera.zoom*Math.exp(-e.deltaY*.002)));draw()},{passive:false});
-$('canvas').oncontextmenu=e=>{e.preventDefault();cancelHold();if(!$('menu').open)openMenu()};
-$('canvas').onkeydown=e=>{if((e.shiftKey&&e.key==='F10')||e.key==='ContextMenu'){e.preventDefault();openMenu()}if(e.key==='Escape')cancelHold()};
+$('add').onclick=openMenu;$('close-menu').onclick=()=>$('menu').close();
+document.querySelectorAll('[data-create]').forEach(b=>b.onclick=()=>editor('shape',{shape:b.dataset.create}));
 
 function parkDraft(){
   if(!draft.current||draft.current.parked)return;
@@ -290,7 +195,7 @@ function parkDraft(){
 $('resume-draft').onclick=()=>{
   if(busy||!draft.current)return;
   try{
-    setSurface(draft.current.context.surface||'focus');const context=draft.resume(state.revision);active=context.target;mode=context.mode;
+    shell.open('edit',draft.current.context.title);const context=draft.resume(state.revision);active=context.target;mode=context.mode;
     construction.select(active);construction.collapse();
     groupReport=context.groupReport;groupChoice=context.groupChoice;selectedPoint=null;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
@@ -307,7 +212,7 @@ function combinePanel(from,to){
   if(busy)return;
   if(draft.current){status('Resume or discard your draft before proposing another construction.',true);return}
   linked.close();replay.reset();preview=null;
-  construction.collapse();
+  shell.open('edit','Combine');construction.collapse();
   const panel=$('activity');panel.replaceChildren(el('span','CONNECT / REVIEW / PREVIEW',{class:'eyebrow'}),el('h2','Combine objects'));
   const source=labeled(panel,'Source object',options(state.objects.map(o=>o.name),from));source.id='combine-source';
   const target=labeled(panel,'Destination object',options(state.objects.map(o=>o.name),to||state.objects.find(o=>o.name!==from)?.name||from));target.id='combine-target';
@@ -318,12 +223,12 @@ function combinePanel(from,to){
   function eligibility(){
     const a=state.objects.find(o=>o.name===source.value),b=state.objects.find(o=>o.name===target.value);
     const ready=a?.status==='ready'&&b?.status==='ready',collections=a?.kind!=='incidence'&&b?.kind!=='incidence';
-    product.disabled=place.disabled=!ready||!collections;
+    product.disabled=!ready||!collections;place.disabled=product.disabled||!a?.fields.includes('value');
     reuse.hidden=a?.kind!=='incidence';reuse.disabled=!ready||b?.kind==='incidence'||!a?.reusable_rule?.available;
-    reason.textContent=!ready?'Both objects need a successful captured result.':a?.kind==='incidence'?(a.reusable_rule?.available?'Map this lens’s inputs to destination fields. Preview shows its incidence; the original stays in place.':a.reusable_rule?.reason):!collections?'Choose a lens as source and a collection or arrangement as destination to reuse its rule.':`Every pair creates ${a.rows.length} × ${b.rows.length} occurrence tuples. Height reads need a unique source key for each destination key; the next editor shows both. The scene uses one scale; object offsets only organize the view.`;
+    reason.textContent=!ready?'Both objects need a successful captured result.':a?.kind==='incidence'?(a.reusable_rule?.available?'Map this lens’s inputs to destination fields. Preview shows its incidence; the original stays in place.':a.reusable_rule?.reason):!collections?'Choose a lens as source and a collection or arrangement as destination to reuse its rule.':`Every pair creates ${a.rows.length} × ${b.rows.length} item tuples. Height reads need a unique source key for each destination key; the next editor shows both. The scene uses one scale; object offsets only organize the view.`;
   }
   source.onchange=target.onchange=eligibility;eligibility();
-  product.onclick=()=>editor('product',{scene:surface==='workspace',factors:{left:source.value,right:target.value}});
+  product.onclick=()=>editor('product',{scene:true,factors:{left:source.value,right:target.value}});
   reuse.onclick=()=>editor('reuse_lens',{workspace:true,scene:true,source:source.value,target:target.value});
   place.onclick=()=>{
     const destination=state.objects.find(o=>o.name===target.value);active=target.value;
@@ -333,7 +238,7 @@ function combinePanel(from,to){
   panel.focus({preventScroll:true});panel.scrollIntoView({block:'nearest'});
 }
 function groupPanel(){
-  construction.collapse();
+  shell.open('edit','Groups');construction.collapse();
   linked.close();parkDraft();const source=object();
   const panel=$('activity');panel.replaceChildren(el('span','SELECT BY A DECLARED KEY',{class:'eyebrow'}),el('h2','Groups'));
   if(!source||source.status!=='ready'){panel.append(el('p','Select a ready object first.'));return}
@@ -352,14 +257,14 @@ function groupPanel(){
     }
     select.value=String(groupChoice);
     const receipt=el('p',undefined,{id:'group-summary'});results.append(receipt);
-    function summary(){const g=selectedGroup();receipt.textContent=g?`${g.count} incident occurrences · ${g.population} occurrences in the group. An empty group remains selectable.`:'No observed groups. Choose a declared axis or explicitly construct the expected bins.'}
+    function summary(){const g=selectedGroup();receipt.textContent=g?`${g.count} incident items · ${g.population} items in the group. An empty group remains selectable.`:'No observed groups. Choose a declared axis or explicitly construct the expected bins.'}
     select.onchange=()=>{groupChoice=Number(select.value);summary();draw()};summary();
-    const menu=el('button','Group options',{type:'button'});menu.onclick=()=>openMenu();results.append(menu);
+    for(const action of ['group_lens','measure','coverage']){const b=el('button',labels[action],{type:'button'});b.onclick=()=>dispatch(action);results.append(b)}
   }
   show();
 }
 function coveragePanel(){
-  construction.collapse();
+  shell.open('edit','Coverage');construction.collapse();
   linked.close();parkDraft();const source=object();
   const box=coverageInspector({source,objects:state.objects,initialBy:groupReport?.name===active?groupReport.by:[],run,
     check:spec=>request('coverage',spec),canAdopt:()=>!draft.current,
@@ -374,7 +279,7 @@ function coveragePanel(){
         left:{capture:report.expected_capture,label:'Expected items'},
         right:{capture:report.capture,label:'Candidates'},index,onChoose,
         links:rows.map(row=>({label:`${row.key.map((key,i)=>row.key_types[i]==='text'?JSON.stringify(key):String(key)).join(', ')} · ${row.count} matches${row.outside?' · outside':''}`,
-          left:row.expected_ref?[{ref:row.expected_ref,note:'Expected occurrence'}]:[],
+          left:row.expected_ref?[{ref:row.expected_ref,note:'Expected item'}]:[],
           right:row.members.map(ref=>{const match=row.matches.some(r=>r[0]===ref[0]&&r[1]===ref[1]);return {ref,emphasis:match,note:match?'Match':'Candidate · outside relation'}}),
           emptyLeft:'No expected item for this outside key.',
           emptyRight:'No candidate group for this expected item. No match is hidden here.'}))});
@@ -391,7 +296,7 @@ function expr(initial,fields){
   return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'),Object.keys(state.parameters||{}));
 }
 function comparisonPanel(){
-  construction.collapse();
+  shell.open('edit','Compare');construction.collapse();
   linked.close();replay.clear();parkDraft();const source=object();
   async function inspect(ref,trigger,note){
     const saved=linked.remember(),receipt=await request('inspect-driver',{ref});
@@ -413,8 +318,8 @@ function comparisonPanel(){
         links:rows.map(row=>({label:`(${row.key.join(', ')}) · ${row.status}${row.residual!==null?` · residual ${row.residual}`:''}`,
           left:row.left_ref?[{ref:row.left_ref,note:note(row,'left'),comparisonNote:note(row,'left')}]:[],
           right:row.right_ref?[{ref:row.right_ref,note:note(row,'right'),comparisonNote:note(row,'right')}]:[],
-          emptyLeft:'No left occurrence for this key. Absence is not a zero value.',
-          emptyRight:'No right occurrence for this key. Absence is not a zero value.'})),
+          emptyLeft:'No left item for this key. Absence is not a zero value.',
+          emptyRight:'No right item for this key. Absence is not a zero value.'})),
         inspect:(ref,trigger,item)=>run(()=>inspect(ref,trigger,item?.comparisonNote)),
       });
     },
@@ -422,47 +327,27 @@ function comparisonPanel(){
   $('activity').replaceChildren(box);
 }
 function editor(action,seed=null){
-  const returnToScene=!!seed?.scene;
+  seed=seed||{};
   linked.close();
   if(draft.current){status('Resume or discard your draft before starting another construction.',true);return}
-  setSurface(seed?.workspace?'workspace':'focus');
+  shell.open('edit',action==='shape'?`Create a ${shapes[seed.shape].title.toLowerCase()}`:labels[action]);
   construction.select(active);construction.collapse();
   replay.clear();
   preview=null;const editorRevision=state.revision,sourceName=seed?.source||active;render();
   const panel=$('activity');panel.replaceChildren(el('span','DECLARE / PREVIEW / APPLY',{class:'eyebrow'}),el('h2',labels[action]));
   const form=el('form'), controls=el('fieldset');controls.style.cssText='border:0;padding:0;margin:0;min-width:0';form.append(controls);panel.append(form);
   const source=state.objects.find(o=>o.name===sourceName), fields=source?.fields||['i','j','value','index','key'];
-  if(seed?.workspace){const inspectSource=el('button',`On ${sourceName} · inspect source`,{type:'button',class:'draft-source'});inspectSource.onclick=()=>selectObject(sourceName);form.before(inspectSource)}
-  const name=labeled(controls,'Result name',input(action==='place'?sourceName:`${labels[action]} ${state.objects.length+1}`));
+  if(source&&!['shape','integers','sequence','grid'].includes(action)){const inspectSource=el('button',`On ${sourceName} · inspect source`,{type:'button',class:'draft-source'});inspectSource.onclick=()=>selectObject(sourceName);form.before(inspectSource)}
+  const name=labeled(controls,'Result name',input(action==='place'?sourceName:`${action==='shape'?shapes[seed.shape].title:labels[action]} ${state.objects.length+1}`));
   name.id='result-name';if(action==='place')name.readOnly=true;
-  let args;
+  let args,shape;
   function expressionControl(label,spec,fs=fields){const card=expr(spec,fs);card.box.setAttribute('role','group');card.box.setAttribute('aria-label',label);controls.append(el('label',label),card.box);return card}
-  if(action==='integers'){
-    const values=labeled(controls,'Integer values · separated by commas',input('0, 1, 2, 3'));values.id='integer-values';
-    controls.append(el('p','Repeated values remain distinct occurrences. An empty list is an empty domain.',{class:'help'}));
-    args=()=>({values:values.value.trim()?values.value.split(',').map(s=>s.trim()):[]});
-  }else if(action==='sequence'){
-    const length=expressionControl('Finite length',number(6),[]),start=expressionControl('Start',number(0),[]),step=expressionControl('Step',number(1),[]);
-    controls.append(el('p','A finite arithmetic sequence. Each term keeps a distinct occurrence; length, start and step can use declared parameters.',{class:'help'}));
-    args=()=>({length:length.read(),start:start.read(),step:step.read()});
-  }else if(action==='grid'){
-    const shape=labeled(controls,'Axis lengths · one to three, separated by commas',input('4, 4'));shape.id='grid-shape';
-    controls.append(el('p','Use exact integers or declared parameter names. For a length such as n + 1, edit axis formulas.',{class:'help'}));
-    const editLengths=el('button','Edit axis formulas',{type:'button',id:'edit-axis-lengths'}),lengthBox=el('div',undefined,{class:'axis-expressions'});controls.append(editLengths,lengthBox);
-    let lengths=null;
-    const extent=text=>Object.hasOwn(state.parameters||{},text)?{parameter:text}:number(text);
-    editLengths.onclick=()=>{
-      if(lengths)return;
-      const sizes=shape.value.split(',').map(s=>s.trim());
-      if(sizes.length<1||sizes.length>3){status('Use one to three axis lengths.',true);return}
-      lengths=sizes.map((size,i)=>{const card=expr(extent(size),[]);card.box.setAttribute('role','group');card.box.setAttribute('aria-label',`Axis ${i+1} length`);lengthBox.append(el('label',`Axis ${i+1} length`),card.box);return card});
-      shape.parentElement.hidden=true;editLengths.hidden=true;
-      controls.dispatchEvent(new Event('change',{bubbles:true}));
-    };
-    const axes=labeled(controls,'Axis names · in the same order',input('i, j'));axes.id='grid-axes';
-    let value=expressionControl('Value at each occurrence',number(1),['i','j','index']);
-    axes.addEventListener('change',()=>{const next=expr(value.read(),[...axes.value.split(',').map(s=>s.trim()),'index']);value.box.replaceWith(next.box);value=next});
-    args=()=>({shape:lengths?lengths.map(card=>card.read()):shape.value.split(',').map(s=>Object.hasOwn(state.parameters||{},s.trim())?{parameter:s.trim()}:s.trim()),axes:axes.value.split(',').map(s=>s.trim()),value:value.read()});
+  if(action==='shape'){
+    shape=shapeControls(seed.shape,state.parameters);controls.append(shape.box);
+  }else if(action==='values'){
+    const value=labeled(controls,'Value at each location',input(source?.axes?.join(' + ')||'index'));value.id='values-formula';
+    controls.append(el('p','Use index fields, integer constants, + − * // %, and parentheses. The source stays available.',{class:'help'}));
+    args=()=>({source:sourceName,value:{formula:value.value}});
   }else if(action==='product'){
     const sources=state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'), choices=[];
     for(const role of ['left','right']){
@@ -492,7 +377,7 @@ function editor(action,seed=null){
     reducer.lastElementChild.textContent='Prefix sum · before each item';
     const groups=fieldKeys(fields,mode==='groups'?(groupReport?.by||[]):[],'Group keys');controls.append(groups.box);
     const meaning=el('p',undefined,{class:'help',id:'measurement-meaning'});controls.append(meaning);
-    const weight=expressionControl('Weight',field('value'));
+    const weight=expressionControl('Weight',field(fields.includes('value')?'value':source.axes[0]||'index'));
     const order=fieldKeys(fields,['index'],'Member order','Choose at least one ordering field');order.box.id='rank-order';controls.append(order.box);
     const key=labeled(controls,'Unique item key',options(fields,'key'));key.id='rank-key';
     function measurementFields(){
@@ -511,11 +396,13 @@ function editor(action,seed=null){
     args=()=>({...seed,value:value.read(),field:assigned.value});
   }else if(action==='place'){
     controls.append(el('p','Change this object’s placement. Use a Keyed read to let a measurement supply a coordinate. Existing derived objects keep their earlier input definitions.',{class:'help'}));
-    const x=expressionControl('x coordinate',seed?.coordinates?.[0]||field(fields.includes('i')?'i':'key'));
-    const y=expressionControl('y coordinate',seed?.coordinates?.[1]||field(fields.includes('j')?'j':'value'));
-    args=()=>({source:sourceName,coordinates:[x.read(),y.read()]});
+    const dimensions=labeled(controls,'Number of coordinates',options(['1','2','3'],String(Math.max(2,source.dimension||source.axes.length))));
+    const coordinates=['x','y','z'].map((axis,i)=>expressionControl(`${axis} coordinate`,seed?.coordinates?.[i]||((source.axes[i]||i===0)?field(source.axes[i]||'key'):i===1&&fields.includes('value')?field('value'):number(0))));
+    function showCoordinates(){coordinates.forEach((card,i)=>{card.box.hidden=card.box.previousElementSibling.hidden=i>=Number(dimensions.value)})}
+    dimensions.onchange=showCoordinates;showCoordinates();
+    args=()=>({source:sourceName,coordinates:coordinates.slice(0,Number(dimensions.value)).map(card=>card.read())});
   }else if(action==='select'){
-    controls.append(el('p','Keep matching occurrences as a new finite universe. Its later groups may differ from the original relation’s zero groups.',{class:'help'}));args=()=>({source:sourceName});
+    controls.append(el('p','Keep matching items as a new finite universe. Its later groups may differ from the original relation’s zero groups.',{class:'help'}));args=()=>({source:sourceName});
   }else if(action==='group_lens'){
     const selection={source:sourceName,capture:groupReport.capture,by:groupReport.by,group:groupChoice};
     controls.append(el('p','Create a relation for this exact captured group, intersecting any existing incidence. The original universe and its zero groups stay available.',{class:'help'}));
@@ -527,73 +414,79 @@ function editor(action,seed=null){
   form.append(el('p',effect,{class:'help',id:'draft-effect'}));
   const bar=el('div',undefined,{class:'form-actions'}), test=el('button','Preview',{type:'submit',class:'primary',id:'preview'}), apply=el('button','Apply',{type:'button',id:'apply'}),cancel=el('button','Cancel',{type:'button',id:'cancel'});apply.disabled=true;bar.append(test,apply,cancel);form.append(bar);
   const detail=el('details'), summary=el('summary','Read the declaration'),code=el('pre',undefined,{id:'declaration'});detail.append(summary,code);panel.append(detail);
-  const getCommand=()=>({action,name:name.value,args:args()});
+  const getCommand=()=>shape?{...shape.read(),name:name.value}:{action,name:name.value,args:args()};
   function message(phase,text){feedback.dataset.phase=phase;feedback.textContent=text}
-  function invalidate(){preview=null;apply.disabled=true;message('editing','Not previewed. Preview checks your current choices; Apply records them.')}
+  function invalidate(){preview=null;apply.disabled=!shape;message('editing','Not previewed. Preview checks your current choices; Apply records them.')}
   function changed(){invalidate();try{code.textContent=JSON.stringify(getCommand(),null,2)}catch(e){code.textContent=e.message}status('Draft changed. Preview again before applying.');render()}
-  draft.begin({target:sourceName,subject:['integers','grid','sequence'].includes(action)?'new source':action==='product'?'chosen factors':sourceName,title:labels[action],surface:seed?.workspace?'workspace':'focus',mode,groupReport,groupChoice,revision:editorRevision},panel,invalidate);
+  draft.begin({target:sourceName,subject:['shape','integers','grid','sequence'].includes(action)?'new source':action==='product'?'chosen factors':sourceName,title:labels[action],mode,groupReport,groupChoice,revision:editorRevision},panel,invalidate);
   form.addEventListener('change',changed);form.addEventListener('input',changed);changed();
   form.onsubmit=e=>{e.preventDefault();run(async()=>{
     try{
       if(editorRevision!==state.revision)throw Error('The workspace changed. Open this tool again.');
       const command=getCommand();preview=null;message('evaluating','Checking your current choices…');render();
       const result=await request('preview',{command});preview=result;render();apply.disabled=false;
-      if(seed?.workspace)board.center();
+      board.fit();
       const object=result.objects.find(o=>o.name===result.name),count=object?.rows?.filter(r=>r.match).length;
       message('ready',`${object?.kind==='incidence'?`${count} of ${object.rows.length} match. `:''}Exact preview ready. Apply keeps it; changing a choice requires another preview.`);status('Exact preview ready. Apply keeps this capture; Cancel leaves history unchanged.');
     }catch(error){invalidate();message('failed',`Preview failed: ${error.message} Your applied work is unchanged.`);render();throw error}
   })};
-  apply.onclick=()=>run(async()=>{if(!preview)return;try{const next=await request('commit',{token:preview.token});draft.clear();adopt(next);panel.replaceChildren(el('h2','Construction applied'),el('p','Choose any object and continue composing. Hold the canvas or use Options.'));await animate(next.motion);if(returnToScene){setSurface('workspace');board.fit()}status('Applied one construction. Undo restores its captured predecessor.')}catch(error){invalidate();message('failed',`Apply failed: ${error.message} Preview again to check the draft.`);render();throw error}});
+  if(shape){apply.textContent='Create';apply.disabled=false}
+  apply.onclick=()=>run(async()=>{
+    try{
+      if(!preview&&shape){preview=await request('preview',{command:getCommand()});render()}
+      if(!preview)return;
+      const next=await request('commit',{token:preview.token});draft.clear();adopt(next);
+      shell.open('details',active);$('activity').replaceChildren();
+      board.fit();
+      await animate(next.motion);status('Saved on the canvas. Undo returns to the previous result.');
+    }catch(error){invalidate();message('failed',error.message);render();throw error}
+  });
   cancel.onclick=cancelPreview;
-  if(seed?.workspace){panel.scrollIntoView({block:'nearest'});name.focus({preventScroll:true})}
+  name.focus({preventScroll:true});
 }
 function cancelPreview(){run(async()=>{await request('cancel');draft.clear();preview=null;render();$('activity').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
 function caseEditor(){
   if(busy||draft.current)return;
-  setSurface('focus');
+  shell.open('edit','Parameters');
   construction.collapse();
   linked.close();replay.clear();preview=null;
   const panel=$('activity'),editorRevision=state.revision;
-  panel.replaceChildren(el('span','DECLARE / EVALUATE / APPLY',{class:'eyebrow'}),el('h2','Explore parameter cases'));
+  panel.replaceChildren(el('span','DECLARE / EVALUATE / APPLY',{class:'eyebrow'}),el('h2','Change parameters'));
   const form=el('form'),fields=caseFields(state.parameters),report=el('div');
   const feedback=el('p',undefined,{id:'draft-status',role:'status','aria-live':'polite'});
-  const bar=el('div',undefined,{class:'form-actions'}),evaluate=el('button','Evaluate case',{type:'submit',id:'preview',class:'primary'}),apply=el('button','Apply case',{type:'button',id:'apply'}),cancel=el('button','Cancel',{type:'button',id:'cancel'});
+  const bar=el('div',undefined,{class:'form-actions'}),evaluate=el('button','Preview results',{type:'submit',id:'preview',class:'primary'}),apply=el('button','Keep results',{type:'button',id:'apply'}),cancel=el('button','Cancel',{type:'button',id:'cancel'});
   bar.append(evaluate,apply,cancel);form.append(fields.box,feedback,report,bar);panel.append(form);
   panel.append(el('p','Undo and Redo restore captured cases without evaluation. Case changes appear as exact endpoints. Replay controls belong to captured construction edits.',{class:'help'}));
-  function invalidate(){preview=null;apply.disabled=true;report.replaceChildren();feedback.dataset.phase='editing';feedback.textContent='Applied case unchanged. Evaluate to inspect the proposed results.'}
-  draft.begin({target:active,subject:'parameter case',title:'Cases',mode,groupReport,groupChoice,revision:editorRevision},panel,invalidate);
+  function invalidate(){preview=null;apply.disabled=true;report.replaceChildren();feedback.dataset.phase='editing';feedback.textContent='Current results unchanged. Evaluate to inspect the proposed results.'}
+  draft.begin({target:active,subject:'parameter values',title:'Parameters',mode,groupReport,groupChoice,revision:editorRevision},panel,invalidate);
   form.addEventListener('input',()=>{invalidate();render()});form.addEventListener('change',()=>{invalidate();render()});
   invalidate();render();
   form.onsubmit=e=>{e.preventDefault();run(async()=>{
     try{
-      if(editorRevision!==state.revision)throw Error('The workspace changed. Open Cases again.');
-      invalidate();feedback.dataset.phase='evaluating';feedback.textContent='Evaluating the proposed case…';
+      if(editorRevision!==state.revision)throw Error('The workspace changed. Open Parameters again.');
+      invalidate();feedback.dataset.phase='evaluating';feedback.textContent='Evaluating the new parameter values…';
       preview=await request('preview-case',{parameters:fields.read(),active});
-      report.replaceChildren(caseReport(preview));feedback.dataset.phase='ready';feedback.textContent='Case evaluated. Apply retains this capture, including reported failures.';
-      apply.disabled=false;render();status('Case preview ready. The applied case is unchanged.');
+      report.replaceChildren(caseReport(preview));feedback.dataset.phase='ready';feedback.textContent='Results evaluated. Apply retains this capture, including reported failures.';
+      apply.disabled=false;render();status('Preview ready. Your current results are unchanged.');
     }catch(error){invalidate();feedback.dataset.phase='failed';feedback.textContent=error.message;render();throw error}
   })};
   apply.onclick=()=>run(async()=>{
     if(!preview)return;
     try{
       const next=await request('commit',{token:preview.token});draft.clear();adopt(next);
-      panel.replaceChildren(el('h2',`Case applied · ${caseLabel(next.parameters)}`),caseReport(next,{applied:true}));
-      status('New case applied. No replay time was advanced.');
+      panel.replaceChildren(el('h2',`Parameters saved · ${caseLabel(next.parameters)}`),caseReport(next,{applied:true}));
+      status('New parameter values saved. Playback is separate.');
     }catch(error){invalidate();feedback.dataset.phase='failed';feedback.textContent=error.message;render();throw error}
   });
   cancel.onclick=cancelPreview;
 }
 $('cases').onclick=caseEditor;
 async function animate(frames){
-  if(frames?.length)setSurface('focus');
   replay.record(frames,active);
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches)await replay.play();
 }
 $('play-replay').onclick=()=>run(()=>replay.play());
 for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.current)return;run(async()=>{const next=await request(direction,{active});adopt(next);$('activity').replaceChildren(el('h2',direction==='undo'?'Earlier capture restored':'Capture restored again'),el('p',next.change==='case'?`Exact case · ${caseLabel(next.parameters)}. No construction was evaluated; no intermediate cases were created.`:'Playback uses recorded endpoints. No construction was evaluated.'));await animate(next.motion);status(direction==='undo'?'Undone.':'Redone.')})};
-function explain(){run(async()=>{
-  const receipt=await request('inspect',{name:active,ref:selectedPoint});showReceipt(receipt);
-})}
 function showReceipt(receipt,heading='Value',back=null){receipts.show(receipt,{heading,back:back?{label:'Back to coverage',restore:back}:null})}
 $('save').onclick=()=>$('save-menu').showModal();$('close-save').onclick=()=>$('save-menu').close();
 for(const choice of ['canvas','math'])$('save-'+choice).onclick=()=>{$('save-menu').close();run(async()=>{
@@ -601,8 +494,7 @@ for(const choice of ['canvas','math'])$('save-'+choice).onclick=()=>{$('save-men
   const content=choice==='canvas'?canvasDocument(text,sceneBeforePreview||board.save()):text;
   const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=el('a',undefined,{href:url,download:choice==='canvas'?'kaleion-canvas.json':'kaleion-workspace.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved ${choice==='canvas'?'canvas and view':'mathematics'}, captured evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
 })};
-$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const document=readDocument(await file.text());const next=await request('import',{capture:document.workspace});comparisonChoices=null;board.reset();adopt(next);if(document.scene){if(next.objects.some(o=>o.name===document.scene.selected?.name)){active=document.scene.selected.name;construction.select(active);render()}board.load(document.scene);selectedPoint=board.save().selected?.ref||null;setSurface('workspace')} $('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Captured definitions and history are restored. A canvas document also restores its scene view.'));status('Reopened captured workspace.');$('file').value=''})};
-window.addEventListener('blur',()=>{cancelHold();pointers.clear()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){cancelHold();if(!e.defaultPrevented&&e.target.tagName!=='SELECT'&&!$('menu').open&&draft.current&&!busy){parkDraft();render()}}});
-new ResizeObserver(()=>{if(!busy)draw()}).observe($('canvas'));
+$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const document=readDocument(await file.text());const next=await request('import',{capture:document.workspace});comparisonChoices=null;board.reset();adopt(next);if(document.scene){if(next.objects.some(o=>o.name===document.scene.selected?.name)){active=document.scene.selected.name;construction.select(active);render()}board.load(document.scene);selectedPoint=board.save().selected?.ref||null} $('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Captured definitions and history are restored. A canvas document also restores its scene view.'));status('Reopened captured workspace.');$('file').value=''})};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented&&e.target.tagName!=='SELECT'&&!$('menu').open&&draft.current&&!busy){parkDraft();render()}});
+new ResizeObserver(()=>document.querySelector('.workbench').style.setProperty('--transport-clearance',`${$('replay').getBoundingClientRect().height+44}px`)).observe($('replay'));
 adopt(await (await fetch('/api/state')).json());

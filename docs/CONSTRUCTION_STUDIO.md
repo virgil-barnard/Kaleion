@@ -1,5 +1,11 @@
 # A shared interaction grammar, tested from a blank canvas
 
+**Current interface:** see [One canvas, fewer decisions](CONTINUOUS_CANVAS.md).
+The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
+The contracts and dated implementation record below remain useful; use the new
+guide for current control names and the current browser gate.
+
+
 **Status:** working experimental authoring study. It composes new finite
 constructions in the Python core; it does not choose from prerecorded lessons.
 It is deliberately outside the installed core API. The latest
@@ -79,8 +85,8 @@ editing. Host and origin checks refuse cross-origin edits.
 
 **Save → Canvas and view** stores the captured workspace and the shared scene's
 offsets, charts, slices, selection and camera in a versioned studio document.
-**Save → Mathematics only** exports the ordinary schema-1 workspace for Python.
-**Open** accepts both without evaluating the graph. Focus/evidence navigation,
+**Save → Mathematics only** exports the ordinary workspace for Python (schema 2 when it contains tuple-only domains).
+**Open** accepts both without evaluating the graph. Evidence navigation,
 group selection and unfinished drafts remain temporary view state.
 The current editor admits 60 objects, 2000 occurrences per
 evaluated operation, and 40 recorded history steps. The existing 32 MiB capture
@@ -435,24 +441,21 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **212 tests**, and the discovery example
+The complete required suite passes **219 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
 
 ```sh
-node docs/studies/check-construction-studio.cjs
-node docs/studies/check-construction-inspector.cjs
+node docs/studies/check-continuous-canvas.cjs
 node docs/studies/check-scene-model.mjs
-node docs/studies/check-shared-scene.cjs
-node docs/studies/check-relation-workbench.cjs
 ```
 
 The optional gate starts its own fresh Python host. `KALEION_PYTHON` can select
 another environment's interpreter. `KALEION_PLAYWRIGHT_MODULE` and
 `KALEION_BROWSER_OPTIONS` can select an existing browser installation, as in the
 [earlier touch study](TOUCH_WORKSPACE.md). Neither is a project dependency.
-Screenshots and the report go to ignored `build/studio-check/`.
+Screenshots and the report go to ignored `build/continuous-canvas-check/`.
 
 On September 22, 2026, Chromium 153 passed the two constructions through actual
 controls, preview cancellation/failure, keyed rank placement and contributor

@@ -181,8 +181,8 @@ class Transition:
                 kept.positions,
                 tuple(kept.ids),
                 tuple(kept.ids),
-                tuple(kept.values),
-                tuple(kept.values),
+                (None,) * len(kept) if kept.values is None else tuple(kept.values),
+                (None,) * len(kept) if kept.values is None else tuple(kept.values),
                 np.ones(len(kept)),
                 np.ones(len(kept)),
                 "failed operation; retained geometry",
@@ -246,7 +246,7 @@ class Transition:
                     i = ancestor(new.motion_parents[j])
                 ends.append(new.positions[j])
                 ai.append(oid)
-                av.append(new.values[j])
+                av.append(None if new.values is None else new.values[j])
                 alpha1.append(1.0)
                 if i is None:
                     starts.append(new.positions[j])
@@ -256,7 +256,7 @@ class Transition:
                 else:
                     starts.append(old.positions[i])
                     bi.append(old.ids[i])
-                    bv.append(old.values[i])
+                    bv.append(None if old.values is None else old.values[i])
                     alpha0.append(1.0)
                     used.add(i)
         if old is not None:
@@ -267,7 +267,7 @@ class Transition:
                 ends.append(old.positions[i])
                 bi.append(oid)
                 ai.append(None)
-                bv.append(old.values[i])
+                bv.append(None if old.values is None else old.values[i])
                 av.append(None)
                 alpha0.append(1.0)
                 alpha1.append(0.0)

@@ -1,5 +1,29 @@
 # Validation · 0.1.0
 
+## Continuous canvas and tuple domains · September 23, 2026
+
+- **219 offline Python tests pass**. Seven new tests exercise optional contents,
+  exact index formulas, explicit value assignment, reindexing, zero fibers,
+  tuple products, contributor evidence, ambiguous names, failure isolation and
+  schema-1/schema-2 save/undo/redo with graph evaluation disabled.
+- `python3 examples/discovery.py --out build/example-output` passes with the
+  existing counts, measured drivers, sieve and history exports.
+- `node docs/studies/check-scene-model.mjs` passes the geometry and lossless
+  canvas-document contracts.
+- `node docs/studies/check-continuous-canvas.cjs` passes in Chromium
+  **153.0.8010.0**, with no uncaught page errors. It exercises real constructor
+  controls, exact values beyond 2^53, invalid-formula recovery, contextual menus,
+  unchanged camera on inspection/return, relations and axis totals, draft
+  retention, keyed comparison, coverage, ordered sums, five saved lessons,
+  weighted Radon evidence and return, shared-scene replay without evaluation,
+  3D orbit/slices, saved view state, native emulated touch holds and 320/360px
+  layouts. Reviewed desktop and phone screenshots.
+- Historical scripts for the removed Focus/mode UI are identified in
+  [the study README](docs/studies/README.md). They are not reported as passing
+  current gates. These checks establish executable contracts, not child/novice
+  usability, physical-touch comfort or accessibility conformance.
+
+
 ## Saved canvas prototypes · September 23, 2026
 
 - **190 tests pass** with `python3 -m unittest discover -s tests -v`. Six new

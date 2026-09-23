@@ -27,7 +27,7 @@ export function lensControls(source,expr){
     const mapping=[],inputs=el('div',undefined,{class:'pattern-inputs'});simple.append(inputs);
     for(let i=0;i<count;i++){
       const choices=source.fields.map(f=>[f,f]);
-      mapping.push(labeled(inputs,count===1?'Input field':['First','Second','Third'][i],select(choices,count===1?'value':source.axes[i]||'value',`Lens input ${i+1}`)));
+      mapping.push(labeled(inputs,count===1?'Input field':['First','Second','Third'][i],select(choices,count===1?(source.fields.includes('value')?'value':source.axes[0]||'index'):source.axes[i]||'index',`Lens input ${i+1}`)));
     }
     const limit=el('input',undefined,{type:'text',inputmode:'numeric','aria-label':'Pattern number',value:'3'}),limitLabel=el('label','Number');limitLabel.append(limit);simple.append(limitLabel);
     function update(){
@@ -40,18 +40,18 @@ export function lensControls(source,expr){
     kind.onchange=update;mapping.forEach(s=>s.onchange=update);limit.oninput=update;update();
   }
   arity.onchange=rebuild;rebuild();
-  const hint=el('p','The lens highlights matches and keeps every other occurrence in its domain.',{class:'help'});box.append(hint);
+  const hint=el('p','The lens highlights matches and keeps every other item in its domain.',{class:'help'});box.append(hint);
   return {box,read:()=>rule.read()};
 }
 
 export function totalControls(source,expr){
-  const box=el('div',undefined,{class:'pattern-controls'}),fields=source.total_fields||source.axes,reducer=select([['count','Count matches'],['sum','Sum weights']],source.kind==='incidence'?'count':'sum','Total operation');
+  const box=el('div',undefined,{class:'pattern-controls'}),fields=source.total_fields||source.axes,reducer=select([['count','Count matches'],['sum','Sum weights']],source.kind==='incidence'||!source.fields.includes('value')?'count':'sum','Total operation');
   labeled(box,'Total',reducer);
   const axes=el('fieldset',undefined,{class:'axis-totals'});axes.append(el('legend',source.axes.length?'Along these axes':'Along these retained keys'));box.append(axes);
   const checks=fields.map((name,i)=>{const c=el('input',undefined,{type:'checkbox',value:name,'aria-label':`Total along ${name}`});c.checked=i===fields.length-1;const label=el('label',name);label.prepend(c);axes.append(label);return c});
   if(!checks.length)axes.append(el('p','This object has no logical axes: make one total.'));
   const meaning=el('p',undefined,{class:'help',id:'axis-total-meaning'});box.append(meaning);
-  const weight=expr(field('value'),source.fields),detail=el('details');detail.append(el('summary','Weight formula'),weight.box);box.append(detail);
+  const weight=expr(field(source.fields.includes('value')?'value':source.axes[0]||'index'),source.fields),detail=el('details');detail.append(el('summary','Weight formula'),weight.box);box.append(detail);
   function update(){const retained=fields.filter((_,i)=>!checks[i].checked);detail.hidden=reducer.value!=='sum';meaning.textContent=`${retained.length?'Keep '+retained.join(', ')+' as result keys.':'Make one total.'} Empty fibers stay as zero. The new object can supply values to another construction.`}
   checks.forEach(c=>c.onchange=update);reducer.onchange=update;update();
   return {box,read:()=>({axes:checks.filter(c=>c.checked).map(c=>c.value),reducer:reducer.value,weight:weight.read()})};
@@ -70,6 +70,6 @@ export function reuseControls(source,objects,destination){
   }
   target.onchange=update;update();
   const bindings=Object.entries(rule.parameters).map(([k,v])=>`${k} = ${v}`).join(', ');
-  box.append(el('p',bindings?`Captured constants: ${bindings}. These stay fixed in the copy; the destination keeps its own case.`:'This copies the predicate. The original lens and its domain remain available.',{class:'help'}));
+  box.append(el('p',bindings?`Captured constants: ${bindings}. These stay fixed in the copy; the destination keeps its own parameters.`:'This copies the predicate. The original lens and its domain remain available.',{class:'help'}));
   return {box,read:()=>({target:target.value,mapping:Object.fromEntries(fields.map(([k,v])=>[k,v.value])),capture:rule.capture})};
 }

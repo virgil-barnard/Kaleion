@@ -20,6 +20,7 @@ from .comparison import captured_comparison
 from .connections import definition_connections
 from .construction import describe_construction
 from .relations import describe_rule, reuse_rule, reduce_axes, reduction_fields
+from .formulas import formula
 from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
 
@@ -33,6 +34,7 @@ OPERATORS = {
 ARGUMENTS = {
     "integers": {"values"}, "sequence": {"length", "start", "step"}, "grid": {"shape", "axes", "value"},
     "product": {"factors"}, "field": {"source", "field", "value"},
+    "values": {"source", "value"},
     "lens": {"source", "rule"}, "select": {"source"},
     "reuse_lens": {"source", "target", "mapping", "capture"},
     "total": {"source", "axes", "reducer", "weight"},
@@ -124,7 +126,14 @@ def build(command, roots, *, captured=None):
         raise ValueError("The study supports at most 60 objects in one workspace")
     if name in roots and (action != "place" or args.get("source") != name):
         raise ValueError("Choose a new name; existing constructions are retained")
-    ex = lambda value: expression(value, roots)
+    def ex(value, fields=()):
+        if isinstance(value, dict) and set(value) == {"formula"}:
+            if captured is not None and args.get("source") in captured.results:
+                source = captured.results[args["source"]]
+                source = source.source if isinstance(source, IncidenceSnapshot) else source
+                fields = source.context()
+            value = formula(value["formula"], captured.parameters if captured is not None else (), fields)
+        return expression(value, roots)
     if action == "integers":
         if not isinstance(args["values"], list) or len(args["values"]) > 2000:
             raise ValueError("The study supports at most 2000 source occurrences")
@@ -137,9 +146,9 @@ def build(command, roots, *, captured=None):
         if (not isinstance(axes, list) or not isinstance(args["shape"], list)
                 or not all(isinstance(a, str) and a.isidentifier() for a in axes)):
             raise ValueError("Give each axis a distinct field name")
-        result = Collection.grid(*(integer(v) if isinstance(v, str) else ex(v)
-                                   for v in args["shape"]), axes=axes,
-                                 values=ex(args["value"]), name=name)
+        shape = [integer(v) if isinstance(v, str) else ex(v) for v in args["shape"]]
+        result = (Collection.tuples(*shape, axes=axes, name=name) if args["value"] is None
+                  else Collection.grid(*shape, axes=axes, values=ex(args["value"], axes), name=name))
     elif action == "product":
         factors = args["factors"]
         product = Product(**{role: roots[entry["source"]] for role, entry in factors.items()})
@@ -150,7 +159,14 @@ def build(command, roots, *, captured=None):
                 if alias in fields or alias in factors:
                     raise ValueError("Copied field names must not collide with roles or each other")
                 fields[alias] = product.read(role, F[field])
-        result = product.domain.annotate(**fields)
+        # A product of tuple-only factors must not quietly introduce unit
+        # contents. Keep the legacy valued-product recipe for valued factors.
+        domain = product.domain
+        if captured is not None and all(captured.results[entry["source"]].values is None
+                                        for entry in factors.values()):
+            domain = Collection.tuples(*(roots[entry["source"]].count().scalar()
+                                         for entry in factors.values()), axes=tuple(factors), name=name)
+        result = domain.annotate(**fields)
     elif action in ("reuse_lens", "total"):
         if captured is None:
             raise ValueError("Choose a captured input before reusing a lens or taking a total")
@@ -161,6 +177,8 @@ def build(command, roots, *, captured=None):
         source = roots[args["source"]]
         if action == "field":
             result = source.annotate(**{args["field"]: ex(args["value"])})
+        elif action == "values":
+            result = source.with_values(ex(args["value"]))
         elif action == "lens":
             result = source.where(ex(args["rule"]))
         elif action == "select":
@@ -313,7 +331,9 @@ class Studio:
             if frame is None:
                 return []
             frames.append(dict(positions=frame.positions.tolist(), opacity=frame.opacity.tolist(),
-                               before=list(frame.before_ids), after=list(frame.after_ids)))
+                               before=list(frame.before_ids), after=list(frame.after_ids),
+                               labels=exact_wire(frame.label_pairs), fraction=frame.fraction,
+                               matched_before=list(frame.matched_before), matched_after=list(frame.matched_after)))
         return frames
 
     def history(self, direction, revision, active):

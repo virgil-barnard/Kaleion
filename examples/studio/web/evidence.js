@@ -26,7 +26,7 @@ export function linkedViews(host,{load,onVisibility}){
     const help=el('p',spec.detail,{class:'help'}),label=el('label','Evidence link'),choice=el('select',undefined,{id:'linked-choice'});
     spec.links.forEach((link,i)=>choice.append(el('option',link.label,{value:String(i)})));label.append(choice);
     label.hidden=sides.length===1;
-    const cards=el('div',undefined,{class:'linked-cards'}),message=el('p','Tap a linked item or use its occurrence list. Drag to pan; each view has its own zoom.',{class:'help',role:'status',id:'linked-status'});
+    const cards=el('div',undefined,{class:'linked-cards'}),message=el('p','Tap a linked item or use its item list. Drag to pan; each view has its own zoom.',{class:'help',role:'status',id:'linked-status'});
     cards.classList.toggle('single-capture',sides.length===1);
     host.append(header,help,label,cards,message);
     const controllers=sides.map((side,i)=>card(views[i],spec[side],side));
@@ -40,16 +40,16 @@ export function linkedViews(host,{load,onVisibility}){
       const svg=svgEl('svg',{viewBox:'0 0 420 260',role:'img','aria-label':descriptor.label}),marks=svgEl('g');svg.append(marks);
       const projection=el('p',projectionLabel(view),{class:'help'});
       const toolbar=cameraControls({name:side,fit:()=>{camera={x:0,y:0,zoom:1};draw()},zoom:factor=>{camera.zoom=Math.min(12,Math.max(.2,camera.zoom*factor));draw()},pan:(x,y)=>{camera.x+=x;camera.y+=y;draw()}});
-      const selection=el('label',`${descriptor.label} occurrence`),select=el('select',undefined,{'data-linked-occurrence':side});selection.append(select);
-      const detail=el('p','',{class:'linked-detail',role:'status'}),follow=el('button','Inspect selected occurrence',{type:'button','data-linked-inspect':side});
+      const selection=el('label',`${descriptor.label} item`),select=el('select',undefined,{'data-linked-occurrence':side});selection.append(select);
+      const detail=el('p','',{class:'linked-detail',role:'status'}),follow=el('button','Inspect selected item',{type:'button','data-linked-inspect':side});
       box.append(svg,projection,toolbar,selection,detail,follow);cards.append(box);
       const context=new Map(view.rows.map(r=>[refKey(r.ref),r])),positions=viewPositions(view),valid=positions.every(p=>p.every(Number.isFinite));
-      const valueField=descriptor.valueField||'value';
+      const valueField=descriptor.valueField||(view.fields.includes('value')?'value':'index');
       let items=[],selected=null,camera={x:0,y:0,zoom:1},points=[],gesture=null;
       const short=v=>{const s=String(v);return s.length>13?s.slice(0,10)+'…':s};
       const coordinates=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())};
       function draw(){
-        marks.replaceChildren();points=[];if(!valid){projection.textContent='Coordinates exceed floating range. Exact values remain in the occurrence list.';return}
+        marks.replaceChildren();points=[];if(!valid){projection.textContent='Coordinates exceed floating range. Exact values remain in the item list.';return}
         const xs=positions.map(p=>p[0]),ys=positions.map(p=>p[1]),xmin=Math.min(0,...xs),xmax=Math.max(1,...xs),ymin=Math.min(0,...ys),ymax=Math.max(1,...ys);
         const scale=Math.min(340/(xmax-xmin),190/(ymax-ymin))*camera.zoom,unit=420/Math.max(200,svg.getBoundingClientRect().width);
         const members=new Map(items.map(item=>[refKey(item.ref),item]));
@@ -70,7 +70,7 @@ export function linkedViews(host,{load,onVisibility}){
         for(const item of items){const row=context.get(refKey(item.ref));select.append(el('option',`${row.fields.index} · ${valueField} ${row.fields[valueField]}${item.note?` · ${item.note}`:''}`,{value:refKey(item.ref)}))}
         select.disabled=!items.length;
         selectItem(items.some(i=>refKey(i.ref)===selected)?selected:items.length?refKey((items.find(i=>i.emphasis!==false)||items[0]).ref):null);
-        if(!items.length)detail.textContent=link[side==='left'?'emptyLeft':'emptyRight']||'No linked occurrences. Faint points show context only.';
+        if(!items.length)detail.textContent=link[side==='left'?'emptyLeft':'emptyRight']||'No linked items. Faint points show context only.';
       }
       select.onchange=()=>selectItem(select.value);
       follow.onclick=()=>spec.inspect(context.get(selected).ref,follow,items.find(item=>refKey(item.ref)===selected));
@@ -84,7 +84,7 @@ export function linkedViews(host,{load,onVisibility}){
         if(!indices.length){message.textContent='No link in this evidence for that occurrence. Faint points provide context only.';return}
         const current=Number(choice.value),index=indices.includes(current)?current:indices.length===1?indices[0]:null;
         if(index===null){message.textContent='This occurrence belongs to several links. Choose an evidence link from the list.';return}
-        choose(index);selectItem(point.key);message.textContent=near.length>1?'Several points are close or coincident. Use the occurrence list to choose exactly.':'Selection follows captured evidence; no construction was changed.';
+        choose(index);selectItem(point.key);message.textContent=near.length>1?'Several points are close or coincident. Use the item list to choose exactly.':'Selection follows captured evidence; no construction was changed.';
       };
       svg.onpointercancel=()=>{gesture=null};const blur=()=>{gesture=null};window.addEventListener('blur',blur);
       const observer=new ResizeObserver(draw);observer.observe(svg);cleanups.push(()=>{observer.disconnect();window.removeEventListener('blur',blur)});

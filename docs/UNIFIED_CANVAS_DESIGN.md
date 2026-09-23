@@ -7,12 +7,18 @@ Keep an object's construction visible beside it, let rules be picked up and reus
 and give every scrubber a declared subject. Carry Icarus's direct, spatial actions
 into Kaleion's exact definitions, captured evidence, and reversible history.
 
+**Latest priority:** maintainer feedback on crowding and disorientation pauses the
+feature sequence below. The [continuous-canvas reset](CONTINUOUS_CANVAS.md) removes
+Focus, replaces source menus with Vector/Grid/Cube, and keeps inspection and replay
+in the shared scene. A general timeline remains future work; the next acceptance
+question is whether an uncoached author can make and inspect a construction.
+
 This records the design proposal and its implementation sequence. Its first two
 steps, [construction inspection](CONSTRUCTION_INSPECTION.md) and the
 [shared scene](SHARED_SCENE.md), are now implemented. The maintainer's subsequent
 request prioritizes quick relation construction, transfer and reduced sums. The
 [relation workbench](RELATION_WORKBENCH.md) brings that bounded part of step 4
-forward. Visible captured replay and case tracks remain the next separate step.
+forward. A library of captured tracks remains planned after the interaction reset.
 The larger direction is one spatial canvas with several representations; the
 remaining proposal does not describe already implemented capabilities.
 

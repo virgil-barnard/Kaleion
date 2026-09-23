@@ -1,5 +1,11 @@
 # A workspace for composing objects
 
+**Current interface:** see [One canvas, fewer decisions](CONTINUOUS_CANVAS.md).
+The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
+The contracts and dated implementation record below remain useful; use the new
+guide for current control names and the current browser gate.
+
+
 **Current implementation:** the [shared scene](SHARED_SCENE.md) now replaces this
 first preview-panel experiment with one coordinate scale, local frames, cell/point
 marks, 3D orbit and view slices. Drag object names to move view offsets. The
