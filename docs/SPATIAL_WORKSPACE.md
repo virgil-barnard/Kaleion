@@ -7,6 +7,14 @@ editor still did not feel like a place to build. This increment adds a spatial
 overview and reviewed composition gestures while retaining the existing Focus
 view for exact inspection and authoring.
 
+**After PR #29:** the maintainer still found object construction unclear and
+requested a closer review of Icarus's direct canvas interactions. The
+[unified canvas proposal](UNIFIED_CANVAS_DESIGN.md) records that review and the
+next implementation prompt. This page documents the merged preview-panel
+experiment; the proposal describes the intended shared scene and construction
+inspector. Its track contract distinguishes acquisition from seeking: evaluating
+new samples is explicit, while scrubbing retained samples is read-only.
+
 ## Try this increment
 
 Run `python3 -m examples.studio` in the existing environment, then open
