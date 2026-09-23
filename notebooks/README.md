@@ -114,7 +114,9 @@ The tenth writes to `build/notebooks/hermitian-partitions/`: seven HTML figures 
 
 All notebooks use the existing optional dependencies. Lessons 06–10 share [lesson_views.py](lesson_views.py), a presentation-only helper beside the notebooks; their mathematical constructions remain visible. Lessons 09–10 also share [quadratic_coordinates.py](quadratic_coordinates.py), visible coefficient formulas composed from integer operations, without adding a core value domain. Longer presentation cells can be expanded in Jupyter when initially folded. A normal notebook execution needs no browser, but displaying interactive figures does.
 
-Lessons 04–05 share [snapshot_views.py](snapshot_views.py), with no Plotly dependency:
+Lessons 04–05 share [snapshot_views.py](snapshot_views.py), with no Plotly dependency.
+It reexports lookup/comparison from `kaleion.comparison` and retains the rectangular
+presentation adapter locally:
 
 ```python
 from snapshot_views import compare_keyed_values, keyed_values, rectangular_values
@@ -130,7 +132,9 @@ shared keys. With no domain it can only compare the union of observed keys. It i
 a detached check of captured finite data, not a universal proof or new arrangement.
 
 Run from `notebooks/` or use the notebook's explicit path setup. These are
-lesson-support functions, not imports from the installed `kaleion` API. They read
+compatible lesson-support imports; lookup/comparison also serve the studio from
+the installed `kaleion.comparison` module. Optional `left_value` and `right_value`
+arguments choose integer fields instead of the default occurrence `value`. They read
 snapshots only; keep using symbolic bindings for construction and motion drivers.
 Keys are unique exact integers; x/y select fields rather than screen coordinates.
 Rows follow ascending y labels, columns ascending x labels. Missing cells fail,

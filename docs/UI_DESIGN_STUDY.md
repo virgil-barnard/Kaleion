@@ -1,6 +1,8 @@
 # UI design for mathematical discovery
 
-September 22, 2026 · Research, studio audit, and a testable design direction
+September 22, 2026 · Research and initial audit
+
+September 23, 2026 · Reevaluation through cases and keyed comparison
 
 **Recommendation:** build a workspace of reusable mathematical instruments, with
 low-cost experimentation and visible consequences. Judge it by whether someone
@@ -9,8 +11,12 @@ and pursue their own question. Completing a scripted lesson is necessary evidenc
 of expressiveness, but insufficient evidence of discovery or novice usability.
 
 This study reviews primary HCI research, authors' design guidance, and W3C
-accessibility guidance. It audits the studio at merged commit `1c35d358`, after
-shared group selection and compact formula editing. Findings about the code and
+accessibility guidance. The initial audit used merged commit `1c35d358`, after
+shared group selection and compact formula editing. The new review starts from
+`bba8b19` (merged parameter-case PR #25) and records the comparison/navigation
+changes below. [TOUCH_WORKSPACE.md](TOUCH_WORKSPACE.md) supplies the complementary
+design constraints: nearby object tools, readable declarations, explicit domains,
+and camera state separate from mathematics. Findings about the code and
 browser are observations; proposed effects on learners are hypotheses. No human
 participants were recruited and no accessibility conformance audit was performed.
 The existing [all-lesson coverage matrix](CONSTRUCTION_STUDIO.md#all-lessons-are-the-target-remaining-composition-coverage)
@@ -94,25 +100,26 @@ an equivalent accessible list instead of distorting mathematical positions. A
 keyboard equivalent does not by itself replace a single-pointer alternative to
 dragging. [R9]
 
-## 4. Audit of the current studio
+## 4. Initial audit and current disposition
 
 Severity here is local prioritization: **high** risks lost work or misleading
 state; **medium** adds substantial friction or an untested interpretation;
 **open** requires capability development or human observation.
 
-| ID | Baseline finding at `1c35d358` | Evidence | Priority / disposition |
+| ID | Finding (initial baseline unless noted) | Evidence | Current disposition |
 | --- | --- | --- | --- |
-| A1 | Clicking another object while composing removes the form, with no draft-return control | `studio.js` object handler clears the panel; fresh-browser probe reproduced it | High · preserve a draft through inspection in this increment |
-| A2 | After a valid preview, changing its expression disables Apply but leaves the old ready message | Fresh-browser probe and `changed()` handler | High · report current draft phase beside its controls |
-| A3 | Activating a formula token with Enter replaces the focused node; focus falls to the document body | Fresh-browser probe of `expressions.js` | High · preserve a useful focus destination on open/edit/close/undo |
-| A4 | Key removal destroys a focused chip without assigning a successor | `groups.js` inspection | Medium · return focus to the next chip or field picker |
+| A1 | Clicking another object while composing removes the form, with no draft-return control | `studio.js` object handler clears the panel; fresh-browser probe reproduced it | Addressed · one recoverable draft; creating a dependency while drafting remains constrained |
+| A2 | After a valid preview, changing its expression disables Apply but leaves the old ready message | Fresh-browser probe and `changed()` handler | Addressed · current local status and invalidation tests |
+| A3 | Activating a formula token with Enter replaces the focused node; focus falls to the document body | Fresh-browser probe of `expressions.js` | Addressed · focus recovery on open/edit/close/undo |
+| A4 | Key removal destroys a focused chip without assigning a successor | `groups.js` inspection | Addressed · successor chip or field-picker focus |
 | A5 | Group selection separates candidates from incidence and retains declared zero groups | Group contracts and additive/modular browser investigations | Preserve; use the same distinction in coverage checks |
 | A6 | Preview/apply and captured history are separate; driver inspection can use saved data | Adapter/core contracts and save/reopen browser checks | Preserve; no new numerical execution in the view layer |
-| A7 | Formula, canvas, and actions can be far apart on a narrow screen | 320 px screenshots: the form is below the canvas | Medium · local feedback now; compare a mobile bottom sheet/sticky preview later |
-| A8 | Contextual actions have visible and keyboard alternatives; View pan/zoom still lack complete button alternatives | Context resolver and gesture handlers | Open · add equivalent camera controls; no WCAG conformance claim |
-| A9 | A single object canvas obscures comparisons and immutable earlier inputs | Existing studio limit and lesson coverage matrix | Partly addressed · coverage, quotient, and Radon weight-read chains now use scoped views and return navigation; free pinning remains open |
+| A7 | Formula, canvas, and actions can be far apart on a narrow screen | 320 px screenshots: the form is below the canvas | Partly addressed · local feedback and focus-moving Canvas / Controls and evidence links; simultaneous visibility and reach remain untested |
+| A8 | Contextual actions have visible and keyboard alternatives; View pan/zoom still lack complete button alternatives | Context resolver and gesture handlers | Addressed for camera actions · shared Fit/zoom/directional-pan controls on main and linked views; physical input and accessibility audit remain open |
+| A9 | A single object canvas obscures comparisons and immutable earlier inputs | Existing studio limit and lesson coverage matrix | Partly addressed · scoped coverage, quotient, Radon and comparison views with return navigation; free pinning remains open |
 | A10 | No novice task or physical tablet trial has been conducted | Available evidence consists of code, deterministic fixtures, and emulated Chromium | Open · run the formative protocol below |
-| A11 | The first object-tab click after editing a number can disappear | Input blur triggers a render that replaces the tab before its click arrives; reproduced in the baseline probe | High · preserve unchanged controls and test one-click navigation |
+| A11 | The first object-tab click after editing a number can disappear | Input blur triggers a render that replaces the tab before its click arrives; reproduced in the baseline probe | Addressed · unchanged controls survive render; one-click navigation regression |
+| A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
 
 The baseline probe uses actual controls and records the browser version, focused
 element, message, Apply availability, and presence of a draft-return control.
@@ -120,6 +127,41 @@ Reproduction sequence: create A and B; start a relation on A; activate a formula
 number with Enter; preview; edit the number; select B. The first click can be
 swallowed (A11); clicking again navigates and loses the draft (A1). The JSON trace
 is a local build artifact, not a fabricated participant observation.
+
+### Reevaluation: what the interface now supports
+
+The strongest progress is continuity across instruments: an idea survives an
+inspection detour, a measured quantity leads to its captured inputs, and returning
+restores selection and camera state. Cases extend the same loop to changed
+assumptions. These are observed capabilities; easier discovery is still a
+hypothesis. The growing object rail, multiple key declarations, and long phone
+sheets may increase the effort of finding and interpreting controls.
+
+| Design lens | Progress through the current increment | Remaining question / next observation |
+| --- | --- | --- |
+| Direct manipulation and recovery | Drafts, previews, exact undo/redo, and evidence return paths preserve context | Can a new user predict which actions change a construction and which only inspect it? |
+| Instrument reuse | One group, coverage, evidence, case, and comparison grammar serves unrelated constructions | Can someone transfer without a recipe, and find the next instrument among the contextual choices? |
+| Visible dependencies | Radon inspection separates occurrence value, contribution weight, driver read, and selected comparison field | Can users explain those differences without facilitator prompts? |
+| Explicit assumptions | Named parameters reevaluate one graph; comparison declares fields, ordered keys, and an independent domain | Do users deliberately choose a domain, or accept a convenient operand that hides missing keys? |
+| Progressive disclosure | Comparison starts with all claim-changing inputs visible, then collapses inputs after a check; its report repeats the declaration | Are three key lists manageable on a phone? Does collapsing inputs hinder revising the question? |
+| Motion | Exact case evaluation is separate from request-free captured replay, including reduced-motion handling | Test endpoint/correspondence prediction against still views; smooth playback alone is insufficient evidence |
+| Accessible alternatives and proximity | Shared camera buttons and narrow-screen jump links reduce required gestures and navigation | Real-device reach, screen-reader status/focus, occlusion, and simultaneous view/control access remain open |
+
+Three concrete gaps determined this increment. Manual reconstruction checks lacked
+a reusable residual/domain inspector (new A12, addressed by
+[keyed comparison](KEYED_COMPARISON.md)); camera actions needed tap alternatives
+(A8); phone navigation needed a bounded improvement before a larger layout trial
+(A7). The comparison belongs in the selected object's menu, not a lesson-specific
+workflow. It treats zero, absence, ambiguity, and unavailable input separately,
+as required by the touch-workspace proposal. Totals, support, and structure
+isomorphism remain different questions.
+
+The next design work should test the present grammar with people before adding a
+free-form graph editor or a larger permanent tool shelf. A compact bottom sheet
+or contextual palette is a candidate to compare with this layout, not an already
+validated replacement. Persistent comparison recipes, named subexpressions, and
+a saved-case browser are useful development candidates once their reuse and
+visibility costs have concrete task evidence.
 
 ## 5. First design experiment: an idea survives a detour
 
@@ -129,7 +171,7 @@ the edited part should make its state easier to interpret. Behavioral tests can
 verify retention and state consistency; only human trials can assess the effect
 on thinking, comfort, or discoverability.
 
-This increment implements one recoverable draft in the current browser tab:
+The first increment implemented one recoverable draft in the current browser tab:
 
 - The target, selector context, form controls, and local expression undo belong to
   the draft. Selecting a different object parks it rather than retargeting it.
@@ -165,6 +207,9 @@ a module owns a decision that can change, rather than a stage of a lesson.
 | Which actions fit a target | `context.js` | Selection capabilities; no lesson identifiers |
 | How a preview becomes a recorded construction | Existing adapter/history | Revisioned token and exact captured state |
 | How an applied change moves | Existing motion/view code | Captured endpoints and paths |
+| What finite keyed equality means | `kaleion.comparison` | Exact selected fields and independent domain; no evaluation or UI |
+| How to inspect a comparison | `comparison.py`, `comparison.js`, existing linked views | Bounded scoped witnesses, input choices, and return navigation |
+| Which inputs move a camera | `camera.js` and existing view callbacks | Shared buttons; no mathematical extent or placement changes |
 
 Do not create a new core operation for draft retention, visual focus, or error
 placement. No saved-schema or public Python migration is needed. A future native,
@@ -199,7 +244,7 @@ unchanged workspace data during browsing, draft recovery, keyboard focus,
 status transitions, cancellation, and narrow-screen layout. A passing gate means
 those behaviors work under that browser; it is not a measured usability score.
 
-### Results of this increment
+### Results of the first authoring-loop increment
 
 The [browser gate](studies/check-construction-studio.cjs) passes against Chromium
 153.0.8010.0 using a fresh studio host. It reproduces the interruption with both
@@ -224,23 +269,29 @@ and free exploration remain untested. A1–A4 and A11 have deterministic regress
 coverage; A8–A10 remain open. A successful browser gate is not a claim that the
 whole interface is accessible or intuitive.
 
-### Proposed human observation
+### Progress since that baseline
 
-The subsequent [coverage instrument](COVERAGE_INSTRUMENT.md) provides another
-executable task for this protocol: distinguish a zero group from a wholly absent
-candidate key, inspect witnesses, then adopt a sole value as a new field. It is
-tested through modular and additive browser constructions and a restricted
-Hermitian adapter case. The suite now has 151 passing tests; this extends the
-behavioral evidence without adding human-study results. The subsequent
-[linked-view increment](LINKED_EVIDENCE_VIEWS.md) partially addresses A9: coverage
-and quotient tasks use one renderer for expected/matched items, keyed drivers,
-and contributors. It includes absent groups, zero sources, earlier driver
-versions, independent cameras, and phone/keyboard controls. The required suite
-now passes 156 tests and the expanded Chromium gate passes. No human-study or
-physical-device result is implied. The later [weighted-evidence investigation](WEIGHTED_EVIDENCE.md)
-adds a complete Radon receipt chain and transformed signed weights, with 160
-passing unit tests and an expanded Chromium gate. Return navigation restores
-selected evidence and independent cameras; novice transfer still needs observation.
+These are historical gate totals, not participant counts or usability scores.
+
+| Increment | Behavioral evidence added | Required Python suite |
+| --- | --- | --- |
+| [Coverage](COVERAGE_INSTRUMENT.md) | Zero/absent/multiple/outside witnesses; guarded owner adoption; modular/additive controls and bounded Hermitian adapter | 151 |
+| [Linked views](LINKED_EVIDENCE_VIEWS.md) | Expected/matched items, earlier drivers, quotient contributors, independent cameras | 156 |
+| [Weighted evidence](WEIGHTED_EVIDENCE.md) | Radon contribution → weight read → source field, signed sums, restored selection/camera | 160 |
+| [Parameter cases](PARAMETER_CASES.md), merged `bba8b19` | Prime/composite Radon, lattice growth, isolated failures, case undo, request-free replay | 166 |
+| [Keyed comparison](KEYED_COMPARISON.md), this increment | Exact selected fields and independent domain; residual receipts, lattice transfer, missing-both keys; shared camera buttons and phone navigation | 173 |
+
+The current required suite and discovery example pass. The expanded Chromium 153
+gate uses actual controls for prime/composite reconstruction and lattice equality,
+returns through nested evidence to the same comparison and camera, distinguishes
+missing zero-valued items from equality, and rejects duplicate keys. Camera taps,
+keyboard pan, and phone jump links leave exported workspace JSON unchanged. New
+navigation/camera controls meet the 44-pixel target goal in the tested phone
+layout. Desktop and 320-pixel screenshots were inspected; absence of overflow
+does not establish comfortable reach or low scrolling cost. No physical touch,
+Safari, screen-reader, or novice trial has been completed.
+
+### Proposed human observation
 
 **Formative human study, proposed:** start with 6–8 consenting adult volunteers,
 including people comfortable with school algebra but unfamiliar with the API and
@@ -261,6 +312,14 @@ facilitator. Use the same task wording and time budget across rounds.
    workspace undo.
 6. Transfer a learned instrument to a different mathematical setting with no
    step-by-step recipe. Finish with time for a self-chosen question.
+
+For the case/comparison round, ask participants to predict what changing `p` does,
+then explain why a zero division remainder need not mean reconstruction succeeds.
+Remove an expected zero-valued item from both operands and ask whether agreement
+on the remaining keys settles the original question. Have them follow a mismatch
+to its source and return. On a real phone/tablet, compare jump navigation with a
+prototype bottom sheet: record lost context, occlusion, repeated scrolling, reach,
+and whether camera motion is mistaken for changing mathematical extent.
 
 Record unassisted completion, facilitator interventions, wrong-target actions,
 lost edits, recovery actions, and whether the predicted effect matches the
@@ -289,7 +348,7 @@ Use this record for each review:
 ## 8. Development sequence
 
 1. **Stable authoring loop:** draft retention, accurate local feedback, and focus
-   recovery. Delivered and tested against additive/modular controls in this increment;
+   recovery. Delivered and tested against additive/modular controls;
    evaluate its one-draft constraint during human observation.
 2. **Coverage as an explicit claim:** retain an independent expected domain; show
    zero/one/multiple witnesses; guard unique-owner adoption. Delivered as the
@@ -300,7 +359,9 @@ Use this record for each review:
    measurement to its input. [Delivered for coverage and quotient-driven motion](LINKED_EVIDENCE_VIEWS.md),
    including empty evidence and earlier drivers. [Radon weight-read navigation](WEIGHTED_EVIDENCE.md)
    now adds ordered tuples, explicit weight/source roles, and return views, tested
-   against signed sums too. Arbitrary view pinning and human layout trials remain open.
+   against signed sums too. [Keyed comparison](KEYED_COMPARISON.md) now reuses these
+   views for exact residuals and missing/outside keys over an independent domain.
+   Arbitrary view pinning and human layout trials remain open.
 4. **Case versus replay controls:** [delivered explicit integer cases](PARAMETER_CASES.md)
    use named parameters in expressions and extents, with evaluate/apply and exact
    restored endpoints. Separate scrubbable replay has a static/reduced-motion path.
@@ -312,6 +373,8 @@ Use this record for each review:
 6. **Touch layout trials:** compare the current side/below sheet with a bottom
    sheet and a compact contextual palette on real devices. Check occlusion,
    reach, scrolling, alternative input, and ability to see the effect while editing.
+   Shared camera buttons and focus-moving phone links are now the baseline, not
+   evidence that the larger proximity problem is solved.
 
 ## Sources
 

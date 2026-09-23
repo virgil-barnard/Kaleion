@@ -73,6 +73,12 @@ all eleven lessons. No lesson-specific tools or new core operations are added.
 it in formulas and grid lengths. Evaluate/Apply explicitly changes the case;
 Undo restores its captured predecessor. Separate replay controls sample a recorded
 construction transition. Radon modulus changes and lattice growth share the controls.
+[Keyed comparison](docs/KEYED_COMPARISON.md) checks selected integer fields under
+ordered keys and an independent expected domain. Inspect exact residuals, missing
+keys, and outside keys, then follow their captured evidence and return. The same
+controls test Radon reconstruction and lattice counts. Camera buttons and phone
+links provide tap/keyboard routes between the picture and its controls; the
+updated design study records remaining physical-device and novice testing.
 
 The [interaction study and control plan](docs/TOUCH_WORKSPACE.md) explore composing
 an investigation directly on a canvas: move a relation lens, derive a count
@@ -293,7 +299,7 @@ Undo does not need an inverse of the mathematical operation. A many-to-one reduc
 
 Repeated gathers can yield coincident motion tracks. Reductions have contributor provenance, but no invented one-to-one movement. The default presentation fades unmatched items. Use exact snapshots at endpoints and for every subsequent calculation; never count animation tracks as mathematical items.
 
-The journal covers setting/replacing/removing constructions, parameter edits, and restoring captures. New edits clear redo. Captures are retained separately; adding or editing notebook annotations is not currently an undoable command. Camera controls and an actual Undo button belong to the future UI.
+The journal covers setting/replacing/removing constructions, parameter edits, and restoring captures. New edits clear redo. Captures are retained separately; adding or editing notebook annotations is not currently an undoable command. The experimental studio exposes Undo/Redo and keeps its camera controls outside mathematical history.
 
 ## The primitive objects
 

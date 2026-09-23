@@ -9,8 +9,25 @@ real captured Kaleion results and paths; it is not a general editor or a browser
 implementation of the evaluator. Its two source choices are deliberately finite.
 See the [cross-lesson audit](EXPLORATION_WORKFLOW.md) for the mathematical basis.
 The [UI design study](UI_DESIGN_STUDY.md) adds research, an audit rubric, and a
-formative testing protocol. Its first delivered experiment keeps a studio draft
-available through an inspection detour; human touch trials remain to be conducted.
+formative testing protocol. Draft retention, coverage, linked evidence, exact
+parameter cases, and [keyed comparison](KEYED_COMPARISON.md) now compose in the
+studio. The older two-source demonstration described below remains a bounded
+gesture study. Human touch trials remain to be conducted.
+
+### Progress against this proposal · September 23, 2026
+
+| Proposed experience | Current studio evidence | Still open |
+| --- | --- | --- |
+| Compose tools on objects | Contextual relations, measurements, keyed placement and comparison; one recoverable draft | Full lesson vocabulary, reusable recipes, novice transfer |
+| Inspect how a result was made | Paired captured views; contributor, weight and source navigation; return restores cameras/selection | Free pinning and a usable layout for many simultaneous views |
+| Change assumptions | Exact integer cases preview/apply a new evaluation; replay uses recorded motion separately | Saved-case browsing and measured case families |
+| Declare a comparison | Selected integer fields, ordered keys and an independent expected domain; missing-both and outside witnesses | Distinct support, totals and structural-correspondence contracts |
+| Reach tools without a gesture requirement | Visible menus, occurrence lists, shared Fit/zoom/pan buttons; phone links move between canvas and controls | Physical-device reach, screen-reader review, simultaneous picture/control visibility |
+
+The [updated UI study](UI_DESIGN_STUDY.md#4-initial-audit-and-current-disposition)
+records which findings these changes address. Deterministic browser transfer
+between Radon and lattice comparisons does not establish human discovery or
+comfortable touch use.
 
 ## The experience to aim for
 
@@ -243,7 +260,12 @@ candidate membership from incidence. Compact formulas open one selected part for
 editing; grouping, measurement, and member order reuse a field-key control.
 The [coverage instrument](COVERAGE_INSTRUMENT.md) now checks independent expected
 keys and attaches guarded assigned fields. Simple/additive browser tasks and a
-restricted Hermitian adapter test cover its witnesses and keyed reuse. Next test
-paired views while inspecting absent items and measured dependencies. Separately, weighted
+restricted Hermitian adapter test cover its witnesses and keyed reuse. Paired
+views now cover absent items, measured dependencies, and nested Radon weights.
+Comparison follows exact residuals into those receipts, while case controls expose
+the prime/composite assumption. Next observe whether new users can choose an
+independent domain, distinguish a compared field from an occurrence's value,
+and return to their original question. Compare the current phone jump links with
+a bottom-sheet prototype on real devices. Separately, weighted
 prefixes in lesson 06 should establish the missing ordered-measurement contract.
 A future prefix control should follow that evidence, not lead the core design.

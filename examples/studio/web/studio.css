@@ -402,6 +402,22 @@ pre {
 .linked-card .help {margin:8px 0}
 .linked-detail {font-size:13px;line-height:1.5;overflow-wrap:anywhere}
 .linked-card select {min-width:0}
+.camera-controls {display:flex;flex-wrap:wrap;align-items:start;gap:6px}
+.camera-controls button {min-width:44px}
+.camera-controls details {margin:0}
+.camera-controls summary {padding:12px;border:1px solid var(--line);border-radius:9px}
+.camera-controls details[open] {flex-basis:100%}
+.camera-controls details .row {margin-top:8px}
+.workspace-jumps {display:none}
+#comparison-status,.comparison-context {padding:10px;border-left:3px solid var(--green);background:#719e751a;overflow-wrap:anywhere}
+#comparison-status[data-phase=failed],#comparison-status[data-phase=error] {border-color:var(--amber)}
+#comparison-witness button {display:block;margin:8px 0}
+#comparison-tool summary,#comparison-results {overflow-wrap:anywhere}
+@media(max-width:900px) {
+  .workspace-jumps {display:flex;position:sticky;top:0;z-index:2;background:var(--paper);padding:6px;border:1px solid var(--line);border-radius:9px;margin-top:12px}
+  .workspace-jumps a {display:flex;align-items:center;min-height:44px;padding:8px;color:var(--green);font-size:13px}
+  #scene,#panel {scroll-margin-top:72px}
+}
 .casebar {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:16px 0;padding:12px 16px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
 .casebar>div {min-width:0}
 #case-summary {margin:5px 0 0;overflow-wrap:anywhere}

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add captured keyed comparison to the construction studio: choose exact integer fields, ordered keys, and an independent expected domain; inspect residuals, missing keys, and outside keys through the existing evidence views. Reuse the notebook comparison contract in `kaleion.comparison` with compatible imports. Exercise prime/composite Radon and lattice counts without adding an evaluator operation or saved schema.
+- Reevaluate the UI against `UI_DESIGN_STUDY.md` and `TOUCH_WORKSPACE.md`, recording delivered behavior separately from open human-testing questions. Add shared Fit/zoom/pan buttons and phone links between the canvas and controls; retain physical touch, screen-reader, and novice trials as open work.
+
 - Add explicit integer parameter cases to the construction studio. Declare once, reference parameters in formulas/grid extents, preview a new evaluation, and retain its exact results or failures. Preserve scopes, evidence, saved undo/redo, and independent roots. Separate case endpoints from request-free replay of captured construction edits. Exercise the same controls with prime/composite Radon reconstruction and lattice growth; no new core operation, dependency, or saved schema.
 
 - Add ordered key tuples to compact expression editing and extract shared receipt navigation. Follow a contribution's weight reads and copied source-field reads, then return to the earlier receipt, selected occurrences, and cameras. Construct a weighted Radon reconstruction and signed sums through the same controls, with explicit remainders and reversible measured placement. Preserve source value, weight, and driver-read distinctions; lower tuples to existing vector expressions with no core/schema/dependency change. Add a composite-modulus counterexample where exact division can still give an incorrect reconstruction.

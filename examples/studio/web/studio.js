@@ -8,6 +8,8 @@ import {linkedViews} from './evidence.js';
 import {receiptInspector} from './receipts.js';
 import {caseFields,caseLabel,caseReport} from './cases.js';
 import {replayControls} from './replay.js';
+import {comparisonInspector} from './comparison.js';
+import {cameraControls} from './camera.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -20,6 +22,7 @@ const operation = (op,a,b) => ({op,args:[a,b]});
 let state={revision:0,objects:[],undo:false,redo:false}, active=null, mode='objects';
 let selectedPoint=null, preview=null, busy=false, gesture=null, held=false;
 let groupReport=null, groupChoice=-1;
+let comparisonChoices=null;
 let camera={x:0,y:0,zoom:1}, dots=[], labelField='value', objectTabsKey='', labelOptionsKey='';
 const draft=draftSession();
 const linked=linkedViews($('linked-views'),{
@@ -140,8 +143,8 @@ function openMenu(addOnly=false){
   $('menu-title').textContent=addOnly?'Add to the canvas':mode==='points'?'Occurrence options':mode==='groups'?'Group options':mode==='view'?'View options':active||'Canvas options';
   $('menu-actions').replaceChildren(...(options.length?options.map(action=>{
     const button=el('button',action==='measure'&&mode==='groups'?'Measure all groups':labels[action],{'data-action':action});
-    if(draft.current&&!['explain','fit','group_options','coverage'].includes(action)){button.disabled=true;button.title='Resume or discard your draft before starting another construction.'}
-    button.onclick=()=>{$('menu').close();if(action==='explain')explain();else if(action==='fit')fit();else if(action==='group_options')groupPanel();else if(action==='coverage')coveragePanel();else editor(action)};return button;
+    if(draft.current&&!['explain','fit','group_options','coverage','compare'].includes(action)){button.disabled=true;button.title='Resume or discard your draft before starting another construction.'}
+    button.onclick=()=>{$('menu').close();if(action==='explain')explain();else if(action==='fit')fit();else if(action==='group_options')groupPanel();else if(action==='coverage')coveragePanel();else if(action==='compare')comparisonPanel();else editor(action)};return button;
   }):[el('p','Select an occurrence first. The list also reaches coincident points.')]));
   $('menu').showModal();
 }
@@ -151,7 +154,10 @@ document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>{
   document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render();if(mode==='groups')groupPanel();
 });
 function fit(){camera={x:0,y:0,zoom:1};draw()}
-$('fit').onclick=fit;
+$('view-controls').append(cameraControls({name:'main',fit,fitId:'fit',zoom:factor=>{camera.zoom=Math.min(12,Math.max(.2,camera.zoom*factor));draw()},pan:(x,y)=>{camera.x+=x;camera.y+=y;draw()}}));
+document.querySelectorAll('[data-workspace-jump]').forEach(link=>link.onclick=event=>{
+  event.preventDefault();const target=$(link.dataset.workspaceJump);target.focus({preventScroll:true});target.scrollIntoView({block:'start'});
+});
 
 // Hold recognition owns time, movement, multi-touch, and cancellation only.
 // It sends the same open-options intent as the visible/keyboard command.
@@ -269,6 +275,36 @@ function coveragePanel(){
 }
 function expr(initial,fields){
   return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'),Object.keys(state.parameters||{}));
+}
+function comparisonPanel(){
+  linked.close();replay.clear();parkDraft();const source=object();
+  async function inspect(ref,trigger,note){
+    const saved=linked.remember(),receipt=await request('inspect-driver',{ref});
+    receipts.show(receipt,{heading:'Source value',back:{label:'Back to comparison',restore:async()=>{
+      if(saved)await linked.open(saved.spec,saved);else linked.close();
+      $('panel').replaceChildren(box);(trigger.isConnected?trigger:$('view-comparison')).focus({preventScroll:true});
+    }}});
+    if(note)$('panel').insertBefore(el('p',note,{class:'comparison-context'}),$('panel').querySelector('pre'));
+  }
+  const box=comparisonInspector({source,objects:state.objects,initial:comparisonChoices,
+    remember:spec=>{comparisonChoices=spec},run,check:spec=>request('compare',spec),inspect,
+    clearLink:()=>linked.close(),chooseLink:index=>linked.choose(index,false),
+    link:async(report,rows,index,onChoose)=>{
+      const note=(row,side)=>`Compared ${side} field ${report[`${side}_value`]} = ${row[side]}. Residual ${row.residual??'unavailable'}.`;
+      await linked.open({title:'Compared fields under declared keys',
+        detail:`Residual = left − right. Expected domain: ${report.expected} by (${report.expected_by.join(', ')}). Faint points give context; missing values stay absent.`,
+        left:{capture:report.left_capture,label:`Left · ${report.name}.${report.left_value}`,valueField:report.left_value},
+        right:{capture:report.right_capture,label:`Right · ${report.right}.${report.right_value}`,valueField:report.right_value},index,onChoose,
+        links:rows.map(row=>({label:`(${row.key.join(', ')}) · ${row.status}${row.residual!==null?` · residual ${row.residual}`:''}`,
+          left:row.left_ref?[{ref:row.left_ref,note:note(row,'left'),comparisonNote:note(row,'left')}]:[],
+          right:row.right_ref?[{ref:row.right_ref,note:note(row,'right'),comparisonNote:note(row,'right')}]:[],
+          emptyLeft:'No left occurrence for this key. Absence is not a zero value.',
+          emptyRight:'No right occurrence for this key. Absence is not a zero value.'})),
+        inspect:(ref,trigger,item)=>run(()=>inspect(ref,trigger,item?.comparisonNote)),
+      });
+    },
+  });
+  $('panel').replaceChildren(box);
 }
 function editor(action,seed=null){
   linked.close();
@@ -418,7 +454,7 @@ $('save').onclick=()=>run(async()=>{
   const response=await fetch('/api/export');const text=await response.text();
   const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),a=el('a',undefined,{href:url,download:'kaleion-studio.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved captured definitions, evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
 });
-$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const next=await request('import',{capture:await file.text()});adopt(next);$('panel').replaceChildren(el('h2','Saved workspace opened'),el('p','Its captures and history are available without reevaluating definitions.'));status('Reopened captured workspace.');$('file').value=''})};
+$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const next=await request('import',{capture:await file.text()});comparisonChoices=null;adopt(next);$('panel').replaceChildren(el('h2','Saved workspace opened'),el('p','Its captures and history are available without reevaluating definitions.'));status('Reopened captured workspace.');$('file').value=''})};
 window.addEventListener('blur',()=>{cancelHold();pointers.clear()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){cancelHold();if(!e.defaultPrevented&&e.target.tagName!=='SELECT'&&!$('menu').open&&draft.current&&!busy){parkDraft();render()}}});
 new ResizeObserver(()=>{if(!busy)draw()}).observe($('canvas'));

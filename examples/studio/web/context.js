@@ -9,7 +9,7 @@ export function actions({mode, object, point, group}) {
   if (object.status !== 'ready') return add;
   return object.kind === 'incidence'
     ? ['measure', 'coverage', 'select', ...add]
-    : ['field', 'lens', 'measure', 'coverage', 'place', 'product', ...add];
+    : ['field', 'lens', 'measure', 'coverage', 'compare', 'place', 'product', ...add];
 }
 
 export const labels = {
@@ -19,4 +19,5 @@ export const labels = {
   explain: 'Explain this occurrence', fit: 'Fit view',
   group_options: 'Choose group keys', group_lens: 'Create a group lens',
   coverage: 'Check coverage', assignment: 'Use unique matches',
+  compare: 'Compare integer fields',
 };

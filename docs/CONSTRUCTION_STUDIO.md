@@ -10,6 +10,9 @@ the coverage target, not a claim about what this first editor can author.
 [Parameter cases](PARAMETER_CASES.md) now declare exact integers once, use them
 in formulas and grid extents, and explicitly preview/apply a changed assumption.
 Case restoration and replay of a captured construction remain separate controls.
+[Keyed comparison](KEYED_COMPARISON.md) now checks selected integer fields over
+an independent expected domain. Residuals and missing/outside keys lead into
+the same evidence views; zero and absence remain distinct.
 
 The design hypothesis is that a person chooses **what they are acting on**, then
 **what quantity or relationship they want to change**. Lesson names should never
@@ -55,10 +58,10 @@ import budget still applies; these limits do not promise every combination fits.
 
 | Selector | Tap or hold target | Contextual actions | What stays unchanged |
 | --- | --- | --- | --- |
-| Objects | Selected object in the canvas | Define a field, create a relation, measure, check coverage, arrange, form a product; a relation offers measurement, coverage, and explicit selection | A hold itself changes no definition |
+| Objects | Selected object in the canvas | Define a field, create a relation, measure, check coverage, compare integer fields, arrange, form a product; a relation offers measurement, coverage, and explicit selection | A hold itself changes no definition |
 | Occurrences | A captured occurrence, or an entry in its accessible list | Explain its fields, measurement contributors, and direct keyed reads; follow a read to its captured driver | Equal values and coincident positions do not merge identities |
 | Groups | A group chosen by declared field keys, from a point or the group list | Choose group keys, create a group lens, measure all groups, check coverage | Browsing changes neither the universe nor history; group membership does not specify member order |
-| View | Canvas | Fit; drag to pan, pinch/wheel to zoom | Camera changes do not change mathematical extent or placement |
+| View | Canvas | Fit/zoom/directional-pan buttons; drag to pan, pinch/wheel to zoom | Camera changes do not change mathematical extent or placement |
 | Objects, empty canvas | Blank canvas | Add integers or a grid | No implicit source is inferred from a gesture |
 
 A hold opens after 480 ms. Moving beyond the threshold, another pointer, pointer
@@ -67,6 +70,11 @@ button and Shift+F10 on the canvas invoke the same action resolver. Commands use
 labeled buttons rather than a gesture-only radial menu. Object tabs select a
 construction; hold the canvas to act on it. The menu is a sheet in this study;
 its eventual position and radial/list presentation can change independently.
+
+Main and paired views share camera buttons for tap and keyboard use. On narrow
+screens, **Canvas** and **Controls and evidence** links move focus and scroll to
+the relevant area. Both areas still require vertical space; this is a navigation
+improvement pending the [real-device layout trial](UI_DESIGN_STUDY.md).
 
 Occurrence selection uses captured `(node, occurrence)` references. A nearby hit
 is provisional; an explicit list reaches every coincident item. An occurrence
@@ -307,11 +315,11 @@ Most existing mathematics is already expressible in the Python core.
 | --- | --- | --- |
 | 01 · Discovery workbench | Sources, relations, grouped counts, driver placement, inspect/undo, exact parameter cases | Spiral/Young/sequence constructor sheets, constructor binding, structural-field vocabulary, roll/gather/tile/pad |
 | 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements | Composite Boolean lenses, union/intersection/coverage comparisons, 3D editor/camera, packed placement and explanatory annotations |
-| 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection, shared integer case editor | Three-component placements; keyed comparisons with independent expected domains |
-| 05 · Finite Radon | Parameterized prime/composite reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, and nested evidence navigation | Explicit arithmetic assumptions, independently declared comparison reports, and complete notebook parity |
+| 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection, shared integer case editor; generic keyed comparison available | Three-component placements and complete notebook composition through controls |
+| 05 · Finite Radon | Parameterized prime/composite reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, nested evidence and exact keyed comparison | Explicit arithmetic assumptions and complete notebook parity |
 | 06 · Young layers | Sources can be filtered grids; count/rank/read/placement | Young constructor and conjugation controls; efficient weighted prefix remains a **backend contract gap** |
 | 07 · Additive structure | Constructed from blank inputs, including group selection, strict ranks, and compact expressions | Bin-domain convenience, equal-sum quadruples and energy narration |
-| 08 · Ehrhart counts | Parameterized triangle growth and zero row counts using shared case controls | Reusable measured case families and their evidence remain a **backend contract gap**; finite differences and full lesson composition |
+| 08 · Ehrhart counts | Parameterized triangle growth, retained zero row counts, and comparison with an independent formula | Reusable measured case families and their evidence remain a **backend contract gap**; finite differences and full lesson composition |
 | 09 · Norm fibers | Groups, explicit order, source reads, placement | Arithmetic-domain/basis recipes, lookup tables, modular power and trig expressions; orbit/case controls |
 | 10 · Hermitian partitions | Product/read/group/rank and guarded coverage; adapter tested on a restricted seven-block family with canonical keys | Projective/field constructor controls, full support beyond the study budget, and complete lesson composition |
 | 11 · Cyclic code/plane | Integer arithmetic, incidence, measurement and explanations | Polynomial/binary-field recipes, coordinate dictionaries, distinct comparison contracts, coordinated replay across charts |
@@ -345,9 +353,12 @@ source and contributors. Captured keyed reads can refer to earlier versions.
 The [Radon transfer](WEIGHTED_EVIDENCE.md) now adds weight-read and copied-field
 navigation with a return path, plus composite key editing. [Exact parameter cases](PARAMETER_CASES.md)
 now change the modulus and grow a lattice arrangement. Replay samples captured
-construction edits without requests. **Next useful experiment:** compare recovered
-and source values over independently declared keys, then follow a residual into
-these evidence views. Measured families and a saved-case browser remain separate work.
+construction edits without requests. [Keyed comparison](KEYED_COMPARISON.md) now
+compares recovered/source fields and lattice counts/formulas, then follows their
+witnesses into those views. **Next useful experiment:** observe whether people can
+declare a domain, interpret a missing zero, and return from a discrepancy to their
+question. Named formulas, measured families, and a saved-case browser remain
+separate work; the updated [UI audit](UI_DESIGN_STUDY.md) records priorities.
 
 ## Validation and reproduction
 
@@ -358,6 +369,7 @@ python3 -m unittest discover -s tests -p test_studio_coverage.py -v
 python3 -m unittest discover -s tests -p test_studio_views.py -v
 python3 -m unittest discover -s tests -p test_studio_weighted.py -v
 python3 -m unittest discover -s tests -p test_studio_cases.py -v
+python3 -m unittest discover -s tests -p test_studio_comparison.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -375,7 +387,7 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **166 tests**, and the discovery example
+The complete required suite passes **173 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -404,7 +416,8 @@ status, keyboard focus recovery, and the first object click after input blur.
 Physical Safari/tablet and screen-reader testing
 remains open. The browser host and browser run in one local process tree because
 this execution environment isolates loopback across separate shell calls.
-No notebook source or core API changes are included, and no video export is added.
+The comparison helper now lives in the installed package with compatible notebook
+reexports; notebook cell sources and video exports are unchanged.
 
 The coverage extension passes actual controls for the balanced `[0,1,2]` failure,
 an absent group after selection, per-match receipts and return focus, a parked
@@ -434,3 +447,12 @@ through controls, checks wrong recovery despite exact division, parks/resumes ca
 drafts, and verifies replay makes no requests or saved-state changes. Reduced-motion
 preference, explicit playback, keyboard controls, and 320-pixel layout are exercised.
 The [case guide](PARAMETER_CASES.md) records the recipes, boundaries, and open limits.
+
+Seven comparison tests add selected integer fields, independent domains, missing
+keys on both sides, outside keys, exact residuals, reordered drivers, ambiguity,
+empty inputs, and read-only restored evidence. The expanded browser gate checks
+prime/composite Radon and lattice equality, retains declarations across cases,
+returns through nested receipts to the same witness/cameras, preserves a parked
+draft, and checks phone jump links and tap/keyboard camera controls. Reports
+distinguish comparison values from occurrence values. See the
+[comparison guide](KEYED_COMPARISON.md) for reproduction and remaining boundaries.
