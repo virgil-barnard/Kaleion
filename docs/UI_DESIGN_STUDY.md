@@ -2,7 +2,7 @@
 
 September 22, 2026 · Research and initial audit
 
-September 23, 2026 · Reevaluation through cases and keyed comparison
+September 23, 2026 · Reevaluation through cases, comparison and ordered accumulation
 
 **Recommendation:** build a workspace of reusable mathematical instruments, with
 low-cost experimentation and visible consequences. Judge it by whether someone
@@ -21,6 +21,8 @@ browser are observations; proposed effects on learners are hypotheses. No human
 participants were recruited and no accessibility conformance audit was performed.
 The existing [all-lesson coverage matrix](CONSTRUCTION_STUDIO.md#all-lessons-are-the-target-remaining-composition-coverage)
 remains the capability inventory. This document supplies the evaluation criteria.
+The ordered-prefix increment starts from `91a6e33` (merged PR #26); it adds the
+transfer evidence recorded below without claiming new human-study results.
 
 ## 1. What the research contributes
 
@@ -210,6 +212,7 @@ a module owns a decision that can change, rather than a stage of a lesson.
 | What finite keyed equality means | `kaleion.comparison` | Exact selected fields and independent domain; no evaluation or UI |
 | How to inspect a comparison | `comparison.py`, `comparison.js`, existing linked views | Bounded scoped witnesses, input choices, and return navigation |
 | Which inputs move a camera | `camera.js` and existing view callbacks | Shared buttons; no mathematical extent or placement changes |
+| How earlier weights become a measurement | `Grouping`, shared order plan, exact scan and existing contributor ranges | Explicit groups/order/keys; the Measure client edits declarations, not numerical state |
 
 Do not create a new core operation for draft retention, visual focus, or error
 placement. No saved-schema or public Python migration is needed. A future native,
@@ -279,7 +282,8 @@ These are historical gate totals, not participant counts or usability scores.
 | [Linked views](LINKED_EVIDENCE_VIEWS.md) | Expected/matched items, earlier drivers, quotient contributors, independent cameras | 156 |
 | [Weighted evidence](WEIGHTED_EVIDENCE.md) | Radon contribution → weight read → source field, signed sums, restored selection/camera | 160 |
 | [Parameter cases](PARAMETER_CASES.md), merged `bba8b19` | Prime/composite Radon, lattice growth, isolated failures, case undo, request-free replay | 166 |
-| [Keyed comparison](KEYED_COMPARISON.md), this increment | Exact selected fields and independent domain; residual receipts, lattice transfer, missing-both keys; shared camera buttons and phone navigation | 173 |
+| [Keyed comparison](KEYED_COMPARISON.md), merged `91a6e33` | Exact selected fields and independent domain; residual receipts, lattice transfer, missing-both keys; shared camera buttons and phone navigation | 173 |
+| [Ordered accumulation](ORDERED_PREFIX.md), this increment | Young layers and quotient columns use the same prefix/placement controls; nested measured contributors, tied-order recovery, zero/signed weights | 184 |
 
 The current required suite and discovery example pass. The expanded Chromium 153
 gate uses actual controls for prime/composite reconstruction and lattice equality,
@@ -290,6 +294,17 @@ navigation/camera controls meet the 44-pixel target goal in the tested phone
 layout. Desktop and 320-pixel screenshots were inspected; absence of overflow
 does not establish comfortable reach or low scrolling cost. No physical touch,
 Safari, screen-reader, or novice trial has been completed.
+
+The accumulation control adds a substantive shared operation while reusing the
+existing fields, weight editor, order chips and receipts. The result's cardinality
+matters: Count/Sum return group measurements, while Rank/Prefix sum return one
+measurement per selected item. The form now explains those differences beside the
+choices. Browser tasks derive a first zero with no contributors, then a later zero
+with a real zero-weight contributor, and inspect a transformed weight read.
+They recover a parked prefix draft and return through an offset's layer/cell
+evidence with its selected contributor and camera preserved. This supports the
+instrument-reuse and continuity criteria; whether users understand the distinction
+between Rank and Prefix sum remains a formative-study question.
 
 ### Proposed human observation
 

@@ -356,13 +356,20 @@ function editor(action,seed=null){
     const rule=expressionControl('Relation · true means incident',operation('=',field('value'),number(0)));
     args=()=>({source:sourceName,rule:rule.read()});
   }else if(action==='measure'){
-    const reducer=labeled(controls,'Measurement',options(['count','sum','rank']));reducer.id='reducer';
-    const groups=fieldKeys(fields,mode==='groups'?(groupReport?.by||[]):[],'Retained group keys');controls.append(groups.box);
-    controls.append(el('p','No retained fields means one total. Count keeps zero groups from the declared domain; it does not invent missing keys.',{class:'help'}));
-    const weight=expressionControl('Weight · used by Sum',field('value'));
+    const reducer=labeled(controls,'Measurement',options(['count','sum','rank','prefix_sum']));reducer.id='reducer';
+    reducer.lastElementChild.textContent='Prefix sum · before each item';
+    const groups=fieldKeys(fields,mode==='groups'?(groupReport?.by||[]):[],'Group keys');controls.append(groups.box);
+    const meaning=el('p',undefined,{class:'help',id:'measurement-meaning'});controls.append(meaning);
+    const weight=expressionControl('Weight',field('value'));
     const order=fieldKeys(fields,['index'],'Member order','Choose at least one ordering field');order.box.id='rank-order';controls.append(order.box);
-    const key=labeled(controls,'Unique item key · used by Rank',options(fields,'key'));key.id='rank-key';
-    function measurementFields(){weight.box.hidden=weight.box.previousElementSibling.hidden=reducer.value!=='sum';order.box.hidden=key.parentElement.hidden=reducer.value!=='rank'}
+    const key=labeled(controls,'Unique item key',options(fields,'key'));key.id='rank-key';
+    function measurementFields(){
+      const prefix=reducer.value==='prefix_sum',ordered=prefix||reducer.value==='rank';
+      weight.box.hidden=weight.box.previousElementSibling.hidden=!prefix&&reducer.value!=='sum';order.box.hidden=key.parentElement.hidden=!ordered;
+      meaning.textContent=ordered
+        ?`Return one measurement per selected item. ${prefix?'Sum the weights of earlier items':'Count earlier items'} within each group. No group fields means one group. The first result is zero; the current item is excluded. Order ties and duplicate item keys must be resolved explicitly.${prefix?' Zero and negative weights still contribute.':''}`
+        :'No group fields means one total. Count and Sum retain zero groups from the declared domain; they do not invent missing keys.';
+    }
     reducer.onchange=measurementFields;measurementFields();
     args=()=>({source:sourceName,reducer:reducer.value,by:groups.read(),weight:weight.read(),order:order.read(),key:key.value});
   }else if(action==='assignment'){

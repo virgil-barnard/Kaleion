@@ -87,6 +87,17 @@ def segment_sum(values, segments, count):
     return out
 
 
+def exclusive_sum(values):
+    """Exact exclusive scan of one ordered integer vector, with a zero origin."""
+    values = exact(values)
+    if values.ndim != 1:
+        raise ValueError("An exclusive sum needs a one-dimensional integer vector")
+    out = np.zeros(len(values), dtype=object)
+    if len(values) > 1:
+        out[1:] = np.cumsum(values[:-1], dtype=object)
+    return exact(out)
+
+
 def factorize(keys):
     """Compatibility entry point; key-domain policy lives in indexing."""
     from .indexing import factorize as implementation

@@ -1,6 +1,7 @@
 // Receipt navigation owns the meaning of reads and contributions. The paired
 // renderer receives scoped links and opaque selection context, never formulas to run.
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
+const measurementName=reducer=>reducer==='prefix_sum'?'prefix sum':reducer;
 export function receiptInspector({panel,run,query,linked,beforeShow}){
   function show(receipt,{heading='Value',back=null,contribution=null}={}){
     beforeShow();
@@ -33,7 +34,7 @@ export function receiptInspector({panel,run,query,linked,beforeShow}){
     if(contribution){
       const {item,measurement}=contribution;
       const section=el('section',undefined,{id:'contribution-evidence'});
-      section.append(el('h2',`Contribution to ${measurement.reducer}`),
+      section.append(el('h2',`Contribution to ${measurementName(measurement.reducer)}`),
         el('p',`Source value ${item.item.value} · weight ${item.weight}`),
         el('p',`Measured result ${measurement.item.value} · retained key (${measurement.key.join(', ')})`),
         el('p',measurement.formula,{class:'help'}));
@@ -44,12 +45,12 @@ export function receiptInspector({panel,run,query,linked,beforeShow}){
     const m=receipt.measurement;
     if(m.unavailable)panel.append(el('p','No active measurement receipt at this occurrence.',{class:'quiet'}));
     else{
-      panel.append(el('h2',`${m.reducer} · ${m.contributor_count} contributors`),el('p',m.formula));
+      panel.append(el('h2',`${measurementName(m.reducer)} · ${m.contributor_count} contributors`),el('p',m.formula));
       const together=el('button','View measurement and contributors',{type:'button',id:'view-contributors'});
       together.onclick=()=>run(async()=>{
         const evidence=await query('contributors',{ref:receipt.item.ref}),full=evidence.measurement;
         await linked.open({title:'A measurement and its contributors',
-          detail:`${full.reducer} · ${full.contributor_count} contributors in a candidate population of ${full.population}. Weights and values are distinct. Faint points are context only.`,
+          detail:`${measurementName(full.reducer)} · ${full.contributor_count} contributors in a candidate population of ${full.population}. Weights and values are distinct. Faint points are context only.`,
           left:{capture:receipt.item.ref[0],label:'Measurement'},right:{capture:evidence.universe,label:'Contributors'},
           links:[{label:`Key ${full.key.join(', ')} · value ${receipt.item.value}`,
             left:[{ref:receipt.item.ref,note:`${full.contributor_count} contributors`}],

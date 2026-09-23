@@ -13,6 +13,9 @@ Case restoration and replay of a captured construction remain separate controls.
 [Keyed comparison](KEYED_COMPARISON.md) now checks selected integer fields over
 an independent expected domain. Residuals and missing/outside keys lead into
 the same evidence views; zero and absence remain distinct.
+[Ordered accumulation](ORDERED_PREFIX.md) now adds **Prefix sum · before each item**
+to Measure. Explicit groups, order, unique item keys and weights derive offsets
+from measured sizes without constructing every predecessor pair.
 
 The design hypothesis is that a person chooses **what they are acting on**, then
 **what quantity or relationship they want to change**. Lesson names should never
@@ -317,17 +320,19 @@ Most existing mathematics is already expressible in the Python core.
 | 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements | Composite Boolean lenses, union/intersection/coverage comparisons, 3D editor/camera, packed placement and explanatory annotations |
 | 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection, shared integer case editor; generic keyed comparison available | Three-component placements and complete notebook composition through controls |
 | 05 · Finite Radon | Parameterized prime/composite reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, nested evidence and exact keyed comparison | Explicit arithmetic assumptions and complete notebook parity |
-| 06 · Young layers | Sources can be filtered grids; count/rank/read/placement | Young constructor and conjugation controls; efficient weighted prefix remains a **backend contract gap** |
+| 06 · Young layers | Filtered grids, layer counts, ordered weighted offsets, keyed strip placement, nested evidence and undo | Young constructor and conjugation controls, 3D editing and complete notebook composition |
 | 07 · Additive structure | Constructed from blank inputs, including group selection, strict ranks, and compact expressions | Bin-domain convenience, equal-sum quadruples and energy narration |
 | 08 · Ehrhart counts | Parameterized triangle growth, retained zero row counts, and comparison with an independent formula | Reusable measured case families and their evidence remain a **backend contract gap**; finite differences and full lesson composition |
 | 09 · Norm fibers | Groups, explicit order, source reads, placement | Arithmetic-domain/basis recipes, lookup tables, modular power and trig expressions; orbit/case controls |
 | 10 · Hermitian partitions | Product/read/group/rank and guarded coverage; adapter tested on a restricted seven-block family with canonical keys | Projective/field constructor controls, full support beyond the study budget, and complete lesson composition |
 | 11 · Cyclic code/plane | Integer arithmetic, incidence, measurement and explanations | Polynomial/binary-field recipes, coordinate dictionaries, distinct comparison contracts, coordinated replay across charts |
 
-No lesson-specific menu, source subclass, or evaluator primitive was necessary
-for the delivered constructions. That does not show that the complete vocabulary
-has been found. The standard for a new primitive remains an actual construction
-whose contract cannot be expressed clearly or efficiently with existing ones.
+No lesson-specific menu or source subclass was necessary for the delivered
+constructions. Most controls compose existing operations. The new `prefix_sum`
+operation addresses a concrete efficiency gap: layer offsets previously required
+a dense predecessor product. It shares strict ordering and compact evidence with
+Rank. This is the standard for adding an operation, not a claim that the complete
+vocabulary has been found.
 
 ## Limits and next experiment
 
@@ -339,8 +344,10 @@ Group selection uses named fields, including composite keys. To group by an
 expression, define a field first. Lasso and viewport-independent spatial queries
 remain future work.
 
-Count and Sum support multiple retained field keys. Rank offers multiple member
-order fields in chosen order and one unique item key. Keyed reads accept structured
+Count and Sum support multiple retained field keys. Rank and Prefix sum offer
+multiple member-order fields in chosen order and one unique item key. Prefix sum
+also uses the shared weight editor: the current item is excluded and each group's
+first result is zero. Zero/negative weights retain their contributors. Keyed reads accept structured
 expressions in target-key, source-key, and value contexts. **Key tuple** edits
 2–8 ordered scalar components for composite reads. Long formulas wrap rather than introduce a new row of
 controls at every nesting level, but named subexpressions and reusable formulas
@@ -370,6 +377,8 @@ python3 -m unittest discover -s tests -p test_studio_views.py -v
 python3 -m unittest discover -s tests -p test_studio_weighted.py -v
 python3 -m unittest discover -s tests -p test_studio_cases.py -v
 python3 -m unittest discover -s tests -p test_studio_comparison.py -v
+python3 -m unittest discover -s tests -p test_prefix_sums.py -v
+python3 -m unittest discover -s tests -p test_studio_prefix.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -387,7 +396,7 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **173 tests**, and the discovery example
+The complete required suite passes **184 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -456,3 +465,13 @@ returns through nested receipts to the same witness/cameras, preserves a parked
 draft, and checks phone jump links and tap/keyboard camera controls. Reports
 distinguish comparison values from occurrence values. See the
 [comparison guide](KEYED_COMPARISON.md) for reproduction and remaining boundaries.
+
+Eight core prefix tests and three studio contracts add exact exclusive offsets,
+group/order/key separation, signed/zero weights, compact evidence, local cases,
+failed-branch isolation, and restored inspection/history. The browser gate creates
+Young layers and quotient-column packings through the same Measure/Arrange
+controls, recovers from tied order, parks a prefix draft, follows offsets through
+layer counts to cells, and returns to the same selected contributor and camera.
+It also compares offsets with an independent finite list and follows a transformed
+weight read. Desktop and 320px screenshots were inspected. The
+[ordered-prefix brief](ORDERED_PREFIX.md) records the next development sequence.

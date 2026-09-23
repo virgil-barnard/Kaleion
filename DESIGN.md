@@ -11,7 +11,7 @@ The module boundary is chosen around a hidden decision: expression representatio
 | `grouping.py` | Grouping, member-order, and coverage declarations | Small immutable records; recipes build definitions without evaluation |
 | `products.py` | Named factors and current-slot addressing for finite products | Lazy Grid/Count/Bind recipe; explicit source reads, multiplicity, and new tuple occurrences |
 | `expressions.py` | Scalar/field interpretation, including explicit driver reads | Context, parameters, and an injected resolver produce a value or an error; no graph scheduling |
-| `tensor.py` | Exact integer rules, array validation, elementary numerical kernels | Checked arithmetic, broadcasting, gathering, and segment reduction |
+| `tensor.py` | Exact integer rules, array validation, elementary numerical kernels | Checked arithmetic, broadcasting, gathering, segment reduction, and exclusive scan |
 | `indexing.py` | Key representation, alignment, group domains, member ordering, rectangular address maps | Checked keys and addresses; no occurrence identity or placement policy |
 | `model.py` | Buffer ownership, evaluated data, occurrence/source identity, lineage, snapshot encoding | Validated finite snapshots; unchanged owned buffers may be shared |
 | `measurements.py` | Captured contributor representation and queries | Enumerated contributors or versioned ordered prefixes; no evaluator or viewer dependency |
@@ -31,7 +31,8 @@ semantics in `ir.py`, separate field interpretation from evaluation sessions, gr
 contributors in one pass, and prepare motion correspondence once. Snapshot ownership
 and shared indexing rules are now implemented too. Explicit grouping, strict ranks,
 coverage guards, and named placement shorten lessons 07 and 10. Operation-handler
-separation, weighted prefix sums, and case families remain planned. The
+separation and measured case families remain planned. Weighted exclusive prefixes
+now shorten Young-layer packing and serve quotient-column packing too. The
 [exploration workflow](docs/EXPLORATION_WORKFLOW.md) audits all eleven lessons;
 captured measurement and keyed-read inspection now serves lessons 04–05.
 Named products now serve 05 and 07. The [touch workspace study](docs/TOUCH_WORKSPACE.md)
@@ -44,7 +45,8 @@ depends on selector scope and target capabilities; its adapter lowers explicit
 declarations to existing builders. Preview tokens refer to captured states, and
 commit retains the accepted capture without reevaluation. Gesture policy,
 declaration editing, numerical execution, and history remain separate decisions.
-No public core signature, evaluator opcode, or saved schema changes are required.
+The initial studio required no public core signature, evaluator opcode, or saved
+schema changes. Later shared mathematical operations are justified separately.
 
 Its group selector queries captured candidates and incidence separately, without
 graph evaluation. The query shares the reducer's retained-axis domain policy in
@@ -103,6 +105,13 @@ receipts retain the occurrence's own value and measurement evidence. Reports are
 tab-local views of the applied capture; new cases require a new check. The notebook
 module reexports its old names. No evaluator operation or saved schema changes.
 Shared camera controls and phone focus links change presentation state only.
+
+The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted
+exclusive prefixes through the existing Measure controls. The shared strict
+order plan and compact contributor ranges serve Rank and Prefix sum; exact
+integer scanning belongs to `tensor.py`, and captured weight reconstruction stays
+in `Inspection`. A named `prefix_sum` operation replaces quadratic predecessor
+products for a documented lesson need. Its UI has no lesson-specific recipe.
 
 ## Four different things an arrangement contains
 
@@ -192,6 +201,7 @@ These operations form the reference implementation vocabulary; the table describ
 | Concat / Pad | Concatenate data and lineage; Pad creates explicit fill items | Shape/attribute compatibility checked |
 | Count / Sum | Factorize keys → masked weights → segment sum | Initialize all declared groups, including zero groups |
 | Group rank | Factorize keys → lexicographic sort → predecessor count | Unique item keys and strict member order; compact prefix evidence |
+| Exclusive prefix sum | Same order plan → exact exclusive scan → scatter to input order | Explicit integer weights; zero origin in each group; compact prefix evidence |
 | Require | Check all incidence entries → pass through items | Failed checks block this dependency; witnesses remain inspectable |
 | Driver binding | Key alignment → Gather selected source field | Unique source keys; complete requested matches |
 | Spiral | Bounded stateful scan → positions and structural fields | Special reference constructor, not a general recursive language |
@@ -247,6 +257,19 @@ separately, with the evaluated source identified by metadata `universe`.
 Reindexing and placement preserve this evidence. Value transformations remove the
 active measurement claim and retain its derivation.
 
+`groups.order_by(...).prefix_sums(key=..., value=...)` uses the same groups, strict
+member order and globally unique item-key contract. It sums weights of earlier
+members, excluding the current item, and returns measurements in input storage
+order. Each group's first result is zero. Incidences produce results only for
+selected items; retained zero-valued counts are real items and remain contributors.
+Weights are exact integers, including zero and negative values. A zero total
+therefore does not imply an empty predecessor set or guarantee a valid packing.
+Execution sorts in O(N log N) worst-case time, scans in O(N), and stores O(N)
+contributor addresses/ranges. Requesting all expanded receipts can still be
+quadratic. Parents anchor the measured item; predecessor contributions are
+separate. Inspection recovers weight expressions and keyed reads from captured
+inputs, including local parameter environments, without graph execution.
+
 `groups.coverage()` is a recipe around counts. It exposes missing and multiply
 covered groups, finite `exactly(...)` checks, and `on_keys(...)` in the grouped-count
 context. `unique(value=...)` guards a weighted sum with coverage exactly one before
@@ -287,7 +310,7 @@ is an ordinary coordinate expression; no row-specific driver object is needed.
 `Inspection(state)` resolves scoped references against a captured state's graph,
 execution contexts, and saved results. It can inspect one pointwise operation's
 keyed reads and follow preserved measurement evidence to its original Count, Sum,
-Any, or Rank. It reuses the field interpreter with a captured-only resolver; it
+Any, Rank, or Prefix sum. It reuses the field interpreter with a captured-only resolver; it
 never invokes operation execution. Direct parents, matched driver references,
 contributors, and motion correspondence retain their separate meanings.
 Receipts carry exact weights separately from source labels and report truncation.
@@ -368,6 +391,12 @@ version 1 inside schema-1 metadata; the updated query implementation is needed t
 read that evidence. Older captures with enumerated contributors still load and
 remain queryable. The new compact prefix record does not deduplicate snapshots
 across history states or change capture restoration semantics.
+
+Weighted accumulation adds `prefix_sum`, version 1, with groups, strict order,
+item keys and an integer `value` expression. It reuses contributor-prefix format 1
+and ordinary schema-1 snapshots. Old captures continue to load. Older evaluators
+cannot execute this new operation, and earlier inspectors do not reconstruct its
+weights. Reopening history and sampling recorded motion need no new evaluation.
 
 ## Extension points to exercise next
 

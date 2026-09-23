@@ -1,8 +1,8 @@
 """Small authoring records for groups, member order, and coverage.
 
 These records build definitions only. They do not evaluate, draw, or own history.
-Existing reductions and bindings do the work, with an ordered-rank operation for
-compact predecessor measurements and a requirement operation for checked reuse.
+Existing reductions and bindings do the work, with ordered measurements for
+compact predecessor evidence and a requirement operation for checked reuse.
 """
 
 from dataclasses import dataclass, replace
@@ -54,14 +54,26 @@ class Grouping:
         Ranks start at zero. Group/order ties and duplicate output keys fail;
         storage order never supplies an undeclared tiebreaker.
         """
+        return self._ordered_measurement("rank", key)
+
+    def prefix_sums(self, *, key=F.key, value=F.value):
+        """Sum the weights of strict predecessors within each declared group.
+
+        Exclusive: the current item does not contribute; the first result is
+        zero. Signed and zero weights remain contributors. Ties and duplicate
+        output keys fail as for ranks(). Results retain input storage order.
+        """
+        return self._ordered_measurement("prefix_sum", key, value=expression(value))
+
+    def _ordered_measurement(self, operation, key, **attributes):
         if not self.order:
-            raise ValueError("Declare member order with order_by() before ranks()")
+            raise ValueError("Declare member order with order_by() before ordered measurements")
         source = self.source.select() if isinstance(self.source, Incidence) else self.source
         keys = _named_groups(key)
         if not keys:
-            raise ValueError("Rank measurements need an explicit item key")
-        return Collection(Node("rank", "collection", (source.node,), {
-            "groups": self.groups, "order": self.order, "keys": keys,
+            raise ValueError("Ordered measurements need an explicit item key")
+        return Collection(Node(operation, "collection", (source.node,), {
+            "groups": self.groups, "order": self.order, "keys": keys, **attributes,
         }))
 
     def coverage(self):

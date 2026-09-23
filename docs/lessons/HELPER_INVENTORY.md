@@ -30,7 +30,7 @@ are included. Imports alone do not establish use.
 | [03 · Incidence box](03_three_incidence_box.md#functions-and-authoring-scaffolding) | 9 + 2 | Finite-case report, voxels, slices, membership displays, playback | None; Plotly |
 | [04 · Measured motion](04_measured_motion.md#functions-and-authoring-scaffolding) | 5 + 1 | Plane edges, discrepancy report, formatted measurement explanation | `snapshot_views`; public `Inspection`, viewer, and Plotly |
 | [05 · Finite Radon](05_finite_radon.md#functions-and-authoring-scaffolding) | 4 + 0 | Reconstruction check, linked highlights, formatted binding/contributor explanation | `snapshot_views`; public `Inspection`, viewer, and Plotly |
-| [06 · Young layers](06_young_layers.md#functions-and-authoring-scaffolding) | 0 + 0 | Inline conjugation, weighted prefixes, paths, receipts, and replay assembly | `lesson_views` |
+| [06 · Young layers](06_young_layers.md#functions-and-authoring-scaffolding) | 0 + 0 | Inline conjugation, prefix declaration and dense reference, paths, nested receipts, and replay assembly | Public `Grouping.prefix_sums`, `Inspection`; `lesson_views` |
 | [07 · Additive structure](07_additive_structure.md#functions-and-authoring-scaffolding) | 2 + 0 | Product and bin recipes; inline ranks, energy checks, and lens sweep | `lesson_views` |
 | [08 · Ehrhart counts](08_ehrhart_counts.md#functions-and-authoring-scaffolding) | 2 + 0 | Measured case family and finite difference; inline evidence and probes | `lesson_views` |
 | [09 · Norm fibers](09_norm_fibers.md#functions-and-authoring-scaffolding) | 3 + 0 | Arithmetic/phase recipes, placement, orbit validation, frame projection | `lesson_views`, `quadratic_coordinates` |
@@ -94,7 +94,7 @@ Public source: [inspection.py](../../src/kaleion/inspection.py). Lessons 04–05
 `Inspection.find`, `item`, `bindings`, and `measurement`. The adapter hides captured
 scope resolution and contributor joins, reusing existing key/expression semantics.
 It returns immutable records with detached `to_dict()` exports and executes no
-graph operations. It handles retained zero groups, weighted sums, ordered ranks,
+graph operations. It handles retained zero groups, weighted sums, ordered ranks and prefixes,
 copied measurements, and local parameter cases. The
 [workflow document](../EXPLORATION_WORKFLOW.md) states supported operations and limits.
 
@@ -181,13 +181,13 @@ Each proposal should first shorten an actual lesson while preserving its evidenc
 | Finite comparison report · keyed values delivered | 04–05 use `compare_keyed_values`; 02–03, 08, and 11 still use specialized assertions | The delivered boundary compares exact integer values on declared keys and reports domain failures and residuals. Subsets, occurrences, totals, and declared incidence correspondences remain distinct future comparison kinds. |
 | Staged and coordinated replay | Inline sampling throughout; 11 `sampled`; 03/04/05 custom views; 11 `linked_field_motion` | Compose recorded transitions with explicit times, endpoint holds, captions, projection, and ID colors. Keep discrete case selection separate; synchronized views do not imply atomic multi-root history. |
 | Measured case family | 08 `measured_family`; compare parameter sweeps in 01 and 10 | A finite case-keyed construction with parameter bindings and retained per-case measurement references. Do not substitute sampled frames for a mathematical family or lose evidence at concatenation. |
-| Weighted exclusive prefix | 06's level packing; compare unit-weight ranks in 07 and 10 | Explicit order, optional groups, zero initial offset, and queryable evidence with bounded storage. Existing ranks handle predecessor counts; weighted accumulation remains a separate need. |
+| Weighted exclusive prefix · delivered | 06's level packing and dense reference; quotient-column packing in core/studio checks; compare unit-weight ranks in 07 and 10 | `Grouping.prefix_sums` declares strict order, optional groups, globally unique item keys and integer weights. The version-1 operation shares Rank's compact contributor ranges; `Inspection` reconstructs captured weights and reads. |
 | Arithmetic and coordinate recipes | 09–10 quadratic formulas; 11 binary polynomial formulas and coordinate dictionary | Separate modulus/basis/encoding, exact arithmetic, and chart placement. First demonstrate a shared contract across models; a packed integer alone does not identify its arithmetic. |
 
 The keyed snapshot adapter and finite keyed-value report in 04–05 are completed
 lesson-support extractions from this inventory. Sampling/caption assembly is
-another contained authoring improvement. Weighted prefixes and measured families
-still need explicit evidence contracts. The inspector does not manufacture a
+another contained authoring improvement. Weighted prefixes now have a shared
+ordered-range evidence contract; measured families still need theirs. The inspector does not manufacture a
 measurement claim for a concatenated family or a transformed count. These needs
 agree with the remaining work in the
 [core refinement plan](../CORE_REFINEMENT_PLAN.md).

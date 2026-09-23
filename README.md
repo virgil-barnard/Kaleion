@@ -79,6 +79,10 @@ keys, and outside keys, then follow their captured evidence and return. The same
 controls test Radon reconstruction and lattice counts. Camera buttons and phone
 links provide tap/keyboard routes between the picture and its controls; the
 updated design study records remaining physical-device and novice testing.
+**Measure → Prefix sum · before each item** now accumulates earlier weights under
+declared groups and order. Use measured layer sizes or quotient counts to derive
+packing offsets, then inspect each offset's contributors. The
+[implementation brief and next steps](docs/ORDERED_PREFIX.md) explain the contract.
 
 The [interaction study and control plan](docs/TOUCH_WORKSPACE.md) explore composing
 an investigation directly on a canvas: move a relation lens, derive a count
@@ -155,7 +159,7 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 The [lesson guide](docs/lessons/README.md) provides educational notes for all eleven notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, further coding theory, Hermitian investigations, and earlier extensions.
 
-The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core shares unchanged owned snapshot buffers and centralizes address and grouping rules. Explicit grouping, member order, coverage checks, and named placement simplify lessons 07 and 10; weighted prefixes and measured case families remain planned.
+The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core shares unchanged owned snapshot buffers and centralizes address and grouping rules. Explicit grouping, member order, coverage checks, and named placement simplify lessons 07 and 10. Weighted prefixes now simplify lesson 06; measured case families remain planned.
 
 The [exploration workflow](docs/EXPLORATION_WORKFLOW.md) maps all eleven lessons to
 shared choices for a future UI. Lessons 04–05 now use `Inspection` to follow a
@@ -222,6 +226,18 @@ requires exactly one match for every retained key; missing or repeated matches
 fail explicitly, while `coverage.missing` and `coverage.overlaps` remain available
 for inspection. Coverage uses the declared pre-mask group domain, including its
 zero groups; it does not invent absent keys.
+
+Use `groups.order_by(...).prefix_sums(key=..., value=...)` to sum predecessor
+weights instead of counting them. It is exclusive: the current item is omitted,
+and the first result of each group is zero. Signed and zero weights remain in
+its compact contributor evidence. Output keys are globally unique; bindings
+follow those keys independently of storage or placement. For example:
+
+```python
+lengths = Collection.literal([3, 3, 2, 1, 1])
+offsets = lengths.group_by().order_by(F.key).prefix_sums()
+assert offsets.evaluate().values.tolist() == [0, 3, 6, 8, 9]
+```
 
 The [authoring guide](docs/AUTHORING.md) explains contexts, composite keys,
 independent measurement-driven placement, and saved evidence. Run
@@ -349,6 +365,7 @@ Use `&`, `|`, and `~` for expressions, not Python `and`, `or`, or `not`. Chained
 | Labels and attributes | `.with_values(...)`, `.annotate(...)`, `.lookup(table, address=...)` |
 | Inspection | `.where(rule)`, `Lens(rule)(A)`, `Lens(rule).window(lower, upper)(A)` |
 | Selection and measurement | `.select()`, `.count(by=...)`, `.sum(by=..., value=...)`, incidence `.any(by=...)` |
+| Ordered measurements | `.group_by(...).order_by(...).ranks(key=...)` / `.prefix_sums(key=..., value=...)` |
 | Address maps | `.gather(addresses, axis=...)`, `.permute(...)`, `.order_by(...)` |
 | Cyclic shift | Arrangement `.roll(axis=..., shift=...)` |
 | Multiplicity and extension | `.tile(times, axis=...)`, `.concat(other, axis=...)`, `.pad(...)` |
