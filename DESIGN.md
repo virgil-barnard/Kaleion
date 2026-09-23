@@ -16,6 +16,7 @@ The module boundary is chosen around a hidden decision: expression representatio
 | `model.py` | Buffer ownership, evaluated data, occurrence/source identity, lineage, snapshot encoding | Validated finite snapshots; unchanged owned buffers may be shared |
 | `measurements.py` | Captured contributor representation and queries | Enumerated contributors or versioned ordered prefixes; no evaluator or viewer dependency |
 | `inspection.py` | Scoped navigation of captured items, measurement origins, and declared keyed reads | Read-only receipts from saved inputs; no graph execution, history edits, or plotting |
+| `comparison.py` | Unique integer-key lookup and finite selected-field equality | Detached exact residuals and explicit domain failures over snapshots; no evaluator, geometry, history, or plotting policy |
 | `evaluate.py` | CPU evaluation, dependency ordering, parameter cases, bounded work | A result or an explicit error for each requested root |
 | `motion.py` | Correspondence tracks, paths, reverse sampling | Presentation frames derived from captured states; no changes to mathematical results |
 | `history.py` | Workspace commands, exact retained states, captures, persistence | Undo/redo, independent observations, portable historical results |
@@ -91,6 +92,17 @@ restores that exact preview, including failed dependencies, without reevaluation
 Case history restores endpoints with no interpolated parameter values. A separate
 `replay.js` consumes captured construction frames and makes no evaluation requests.
 Parameters already persist per state in schema 1; no core API or schema changes.
+
+The studio's [keyed comparison](docs/KEYED_COMPARISON.md) shares the existing
+notebook alignment contract through `kaleion.comparison`. It adds explicit value
+field choices and requires a separately declared expected domain in the UI.
+Missing keys, outside keys, duplicate keys, and nonzero residuals remain distinct;
+absence is never filled with zero. The adapter attaches scoped occurrence
+references to a read-only report. Linked views label the selected fields, while
+receipts retain the occurrence's own value and measurement evidence. Reports are
+tab-local views of the applied capture; new cases require a new check. The notebook
+module reexports its old names. No evaluator operation or saved schema changes.
+Shared camera controls and phone focus links change presentation state only.
 
 ## Four different things an arrangement contains
 

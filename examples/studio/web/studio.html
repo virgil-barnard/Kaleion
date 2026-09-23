@@ -12,14 +12,15 @@
     <div><strong id="draft-title"></strong><p class="help">One draft at a time. Browse and inspect freely; finish or discard it before changing the workspace. Save includes applied work only. Drafts last until this tab reloads.</p></div>
     <div class="row"><button id="resume-draft">Resume draft</button><button id="discard-draft">Discard draft</button></div>
   </section>
+  <nav class="workspace-jumps" aria-label="Move around the workspace"><a href="#scene" data-workspace-jump="scene">Canvas</a><a href="#panel" data-workspace-jump="panel">Controls and evidence</a></nav>
   <section class="workbench">
-    <div class="picture">
+    <div class="picture" id="scene" tabindex="-1">
       <div class="canvasbar" id="canvas-tools"><div class="modes" aria-label="Selector mode"><button data-mode="objects" aria-pressed="true">Objects</button><button data-mode="points" aria-pressed="false">Occurrences</button><button data-mode="groups" aria-pressed="false">Groups</button><button data-mode="view" aria-pressed="false">View</button></div><button id="options">Options ⋯</button></div>
       <div class="caption"><h2 id="title">Your blank canvas</h2><span id="scope">Hold the canvas or choose Add</span></div>
       <section id="linked-views" aria-label="Linked captured evidence" hidden></section>
       <div id="single-view">
       <svg id="canvas" viewBox="0 0 700 450" tabindex="0" role="img" aria-label="Construction canvas. Options are also available with Shift F10."><g id="marks"></g><rect id="hit" width="700" height="450" fill="transparent"/></svg>
-      <div class="viewbar"><span id="projection">View projection only; use Arrange to declare positions.</span><button id="fit">Fit</button></div>
+      <div class="viewbar"><span id="projection">View projection only; use Arrange to declare positions.</span><div id="view-controls"></div></div>
       <section id="replay" aria-label="Captured transformation replay" hidden>
         <label>Replay captured transformation <input id="replay-progress" type="range" min="0" max="24" value="24" step="1"></label>
         <output for="replay-progress">Applied result</output>
@@ -31,7 +32,7 @@
       </div>
       <p id="status" role="status" aria-live="polite">No construction yet. Every action starts with your choices.</p>
     </div>
-    <aside id="panel"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>One vocabulary, many investigations.</h2><p>Hold an object for construction tools. Switch to Occurrences to inspect a point, or Groups to select by declared keys.</p><p>Tap part of a formula to edit a field, number, operation, or keyed read. Build relations and measurements directly on your canvas.</p><p class="quiet">This is an early authoring study. It tests a shared interaction grammar, not the complete future interface.</p></aside>
+    <aside id="panel" tabindex="-1"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>One vocabulary, many investigations.</h2><p>Hold an object for construction tools. Switch to Occurrences to inspect a point, or Groups to select by declared keys.</p><p>Tap part of a formula to edit a field, number, operation, or keyed read. Build relations and measurements directly on your canvas.</p><p class="quiet">This is an early authoring study. It tests a shared interaction grammar, not the complete future interface.</p></aside>
   </section>
   <dialog id="menu"><div class="menuhead"><strong id="menu-title">Object options</strong><button id="close-menu" aria-label="Close options">Close</button></div><div id="menu-actions"></div></dialog>
 </main><script type="module" src="/studio.js"></script></body></html>

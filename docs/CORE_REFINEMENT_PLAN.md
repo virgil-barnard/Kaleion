@@ -81,6 +81,14 @@ its optional expected domain is an independent authoring choice. The
 [helper inventory](lessons/HELPER_INVENTORY.md) records this boundary. Comparisons
 of subsets, occurrences, totals, and declared correspondences remain separate work.
 
+The studio now exercises that same finite comparison contract for Radon and
+lattice counts. Integer-key lookup and comparison live in `kaleion.comparison`;
+the notebook helper retains compatible reexports and its rectangular projection.
+Value-field selection is explicit, while the studio requires the independent
+expected-domain choice and attaches captured references for inspection. This
+extraction serves two clients without moving rendering or evaluator policy into
+the comparison module. See [the comparison guide](KEYED_COMPARISON.md).
+
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the
 diagnostic fell from roughly 0.50 s to 0.027 s on this host. Its motion fixture now

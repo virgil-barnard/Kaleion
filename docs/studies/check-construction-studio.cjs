@@ -53,6 +53,17 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
    await page.locator('#cases').click();await page.locator('#declare-parameter').click();
    await page.getByLabel('Parameter name',{exact:true}).last().fill(name);await page.getByLabel('Parameter value',{exact:true}).fill(value);await apply();
  }
+ async function compare(left,leftKeys,right,rightKeys,expected,expectedKeys,leftValue='value'){
+   await select(left);await tool('compare');
+   await page.locator('#comparison-left-value').selectOption(leftValue);
+   await page.locator('#comparison-right').selectOption(right);await page.locator('#comparison-expected').selectOption(expected);
+   const keySets=page.locator('#comparison-tool .field-keys');
+   for(const [i,fields] of [leftKeys,rightKeys,expectedKeys].entries()){
+     while(await keySets.nth(i).locator('.key-chips button').count())await keySets.nth(i).locator('.key-chips button').first().click();
+     for(const field of fields)await keySets.nth(i).locator('[data-group-add]').selectOption(field);
+   }
+   await page.locator('#check-comparison').click();await idle();
+ }
  await declare('p','3');
  assert.deepEqual((await state()).parameters,{p:'3'});
  assert.equal(await page.locator('#replay').isVisible(),false);
@@ -412,6 +423,8 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeReplay);
  await page.locator('#replay-progress').fill('6');await page.locator('#options').click();assert.equal(await page.locator('#replay-progress').inputValue(),'24');await page.locator('#close-menu').click();
  await page.emulateMedia({reducedMotion:'no-preference'});
+ await compare('Radon recovered',['point_u','point_v'],'Radon image',['u','v'],'Radon image',['u','v'],'recovered');
+ assert.match(await page.locator('#comparison-status').textContent(),/Finite equality holds. 9 equal/);
  // Traverse pixel -> line-count weight -> source pixels, preserving return views.
  await select('Radon backprojection');await page.locator('[data-mode="points"]').click();const backPixel=(await state()).objects.find(o=>o.name==='Radon backprojection').rows[0];await page.locator('#occurrence').selectOption(backPixel.ref[1]);await idle();
  const radonBefore=await(await page.request.get(origin+'/api/export')).text();await page.locator('#view-contributors').click();await idle();
@@ -462,6 +475,34 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.screenshot({path:path.join(output,'parameter-case-four.png'),fullPage:true});
  await page.locator('#undo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Radon recovered').rows,primeRows);assert.equal(await page.locator('#replay').isVisible(),false);
  await page.locator('#redo').click();await idle();assert.deepEqual((await state()).parameters,{p:'4'});
+ // The declaration survives a case change; no old comparison verdict does.
+ await select('Radon recovered');await tool('compare');
+ assert.equal(await page.locator('#comparison-left-value').inputValue(),'recovered');
+ assert.equal(await page.locator('#comparison-right').inputValue(),'Radon image');
+ assert.equal(await page.locator('#comparison-results').textContent(),'');
+ const beforeComparison=await(await page.request.get(origin+'/api/export')).text();
+ await page.locator('#check-comparison').click();await idle();
+ assert.match(await page.locator('#comparison-status').textContent(),/Finite equality fails/);
+ assert.match(await page.locator('#comparison-key option').first().textContent(),/\(0, 0\).*residual -1/);
+ assert.match(await page.locator('#comparison-witness').textContent(),/Left recovered: -1 · Right value: 0/);
+ await page.locator('#view-comparison').click();await idle();
+ assert.match(await leftCard().locator('.linked-detail').textContent(),/recovered -1/);
+ await leftCard().locator('summary').click();await page.getByRole('button',{name:'Pan left view right',exact:true}).focus();await page.keyboard.press('Enter');
+ const comparisonCamera=await leftCard().locator('circle').first().getAttribute('cx'),comparisonKey=await page.locator('#comparison-key').inputValue();
+ await page.getByRole('button',{name:'Inspect left occurrence',exact:true}).click();await idle();
+ assert.match(await page.locator('.comparison-context').textContent(),/recovered = -1/);
+ assert.match(await page.locator('#panel').textContent(),/"value": "56"/);
+ await page.locator('#view-contributors').click();await idle();
+ await rightCard().locator('[data-linked-inspect]').click();await idle();
+ await page.getByRole('button',{name:/Follow weight read/}).first().click();await idle();
+ await page.getByRole('button',{name:'Back to contribution',exact:true}).click();await idle();
+ await page.getByRole('button',{name:'Back to measurement',exact:true}).click();await idle();
+ await page.getByRole('button',{name:'Back to comparison',exact:true}).click();await idle();
+ assert.equal(await page.locator('#comparison-key').inputValue(),comparisonKey);
+ assert.equal(await leftCard().locator('circle').first().getAttribute('cx'),comparisonCamera);
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeComparison);
+ await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'comparison-radon.png'),fullPage:true});
+ await page.locator('#close-linked').click();
  await select('Radon backprojection');await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption((await state()).objects.find(o=>o.name==='Radon backprojection').rows[0].ref[1]);await idle();
  assert.match(await page.locator('#panel').textContent(),/5 contributors/);await page.locator('#view-contributors').click();await idle();assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),5);
  await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();
@@ -475,6 +516,49 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await page.setViewportSize({width:320,height:950});await page.locator('#cases').click();await page.getByLabel('Value of n',{exact:true}).fill('0');await page.locator('#preview').focus();await page.keyboard.press('Enter');await idle();
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:path.join(output,'parameter-case-phone.png'),fullPage:true});
  await page.locator('#apply').click();await idle();assert.deepEqual(await values('Triangle rows'),['0']);
+ // The same comparison checks a lattice formula, retaining the zero measurement.
+ await tool('grid',true);await page.locator('#result-name').fill('Triangle formula');await page.locator('#grid-shape').fill('1');await page.locator('#grid-axes').fill('i');await page.locator('#grid-axes').press('Tab');await page.locator('#edit-axis-lengths').click();
+ await expression(page.getByRole('group',{name:'Axis 1 length',exact:true}),op('+',parameterN,n(1)));
+ await expression(cards().nth(0),op('-',parameterN,f('i')));await apply();
+ await compare('Triangle rows',['i'],'Triangle formula',['i'],'Triangle formula',['i']);
+ assert.match(await page.locator('#comparison-status').textContent(),/Finite equality holds. 1 equal/);
+ await page.getByRole('button',{name:'Inspect left occurrence',exact:true}).click();await idle();assert.match(await page.locator('#panel').textContent(),/0 contributors/);
+ await page.getByRole('button',{name:'Back to comparison',exact:true}).click();await idle();
+ await page.locator('#cases').click();await page.getByLabel('Value of n',{exact:true}).fill('4');await apply();
+ await select('Triangle rows');await tool('compare');await page.locator('#check-comparison').click();await idle();
+ assert.match(await page.locator('#comparison-status').textContent(),/Finite equality holds. 5 equal/);
+ const cameraExport=await(await page.request.get(origin+'/api/export')).text();
+ await page.locator('#view-controls summary').tap();const canvasBeforePan=await page.locator('#marks circle').first().getAttribute('cx');
+ await page.getByRole('button',{name:'Pan main view left',exact:true}).tap();
+ assert.notEqual(await page.locator('#marks circle').first().getAttribute('cx'),canvasBeforePan);
+ await page.locator('[data-workspace-jump="panel"]').tap();assert.equal(await page.evaluate(()=>document.activeElement.id),'panel');
+ await page.locator('[data-workspace-jump="scene"]').tap();assert.equal(await page.evaluate(()=>document.activeElement.id),'scene');
+ for(const control of await page.locator('.workspace-jumps a,#view-controls button').all()){
+   const size=await control.boundingBox();assert.ok(size.width>=44&&size.height>=44,'Camera and navigation targets reach the 44px project goal');
+ }
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),cameraExport);
+ await page.locator('[data-workspace-jump="panel"]').tap();await page.screenshot({path:path.join(output,'comparison-phone.png'),fullPage:true});
+ await page.locator('#cases').click();await page.getByLabel('Value of n',{exact:true}).fill('0');await apply();
+ // Removing a zero-valued expected item from both sides cannot establish equality.
+ await tool('grid',true);await page.locator('#result-name').fill('Comparison domain');await page.locator('#grid-shape').fill('3');await page.locator('#grid-axes').fill('i');await page.locator('#grid-axes').press('Tab');await expression(cards().nth(0),n(0));await apply();
+ await tool('lens');await page.locator('#result-name').fill('Comparison retained');await expression(cards().nth(0),op('≠',f('i'),n(1)));await apply();
+ await tool('select');await page.locator('#result-name').fill('Comparison truncated');await apply();
+ await compare('Comparison truncated',['i'],'Comparison truncated',['i'],'Comparison domain',['i']);
+ assert.match(await page.locator('#comparison-status').textContent(),/missing left 1, right 1/);
+ await page.locator('#comparison-filter').selectOption('missing');assert.match(await page.locator('#comparison-witness').textContent(),/Left value: absent · Right value: absent/);
+ await page.locator('#view-comparison').click();await idle();assert.equal(await leftCard().locator('[data-linked-member="true"]').count(),0);assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),0);
+ await page.getByRole('button',{name:'Inspect expected key',exact:true}).click();await idle();assert.match(await page.locator('#panel').textContent(),/"i": "1"/);
+ await page.getByRole('button',{name:'Back to comparison',exact:true}).click();await idle();await page.locator('#close-linked').click();
+ await compare('Comparison domain',['i'],'Comparison domain',['i'],'Comparison truncated',['i']);
+ assert.match(await page.locator('#comparison-status').textContent(),/outside left 1, right 1/);
+ await compare('Comparison domain',['value'],'Comparison domain',['i'],'Comparison domain',['i']);
+ assert.match(await page.locator('#comparison-status').textContent(),/Could not compare: Duplicate key/);
+ // Read-only comparison also leaves a parked mathematical draft intact.
+ await select('Triangle rows');await tool('field');await page.locator('#result-name').fill('Still drafting');const parkedComparisonDraft=JSON.parse(await page.locator('#declaration').textContent());
+ await compare('Triangle rows',['i'],'Triangle formula',['i'],'Triangle formula',['i']);
+ await page.locator('#resume-draft').click();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()),parkedComparisonDraft);await page.locator('#cancel').click();await idle();
+ const comparisonChecks={primeEquality:true,compositeCounterexample:true,selectedFields:true,retainedCaseChoices:true,nestedEvidenceReturn:true,latticeFormulaAndZero:true,missingBoth:true,outsideDomain:true,duplicateRejection:true,parkedDraft:true,cameraButtons:true,phoneJumps:true,unchangedCapture:true};
  // Invalid arithmetic blocks dependents, never erases an independent count or masquerades as zero.
  await select('A');await tool('field');await page.locator('#result-name').fill('Parameter residue');await page.locator('#field-name').fill('residue');await expression(cards().nth(0),op('%',f('value'),p));await apply();
  await page.locator('#cases').click();await page.getByLabel('Value of p',{exact:true}).fill('0');await page.locator('#preview').click();await idle();assert.match(await page.locator('#case-report').textContent(),/Parameter residue:.*Division or remainder by zero/i);
@@ -489,7 +573,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 99 · weight 0/);await page.getByRole('button',{name:'Follow weight read · 2',exact:true}).click();await idle();
  assert.match(await leftCard().locator('.linked-detail').textContent(),/Weight 0/);assert.match(await rightCard().locator('.linked-detail').textContent(),/Read 2/);
  const weightedChecks={compositeKeyEditing:true,tupleDraftAndUndo:true,orderedKeyFailure:true,radonReconstruction:true,exactDivision:true,measurementDrivenUndo:true,weightReadNavigation:true,zeroWeightSource:true,returnSelectionAndCamera:true,keyboardAndPhone:true,unchangedCapture:true,transformedReadWeight:true};
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,weighted:weightedChecks,cases:caseChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,weighted:weightedChecks,cases:caseChecks,comparison:comparisonChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

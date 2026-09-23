@@ -16,6 +16,7 @@ from kaleion.ir import expression as constant
 from kaleion.model import IncidenceSnapshot, Ref
 from .groups import captured_groups
 from .coverage import captured_coverage, unique_assignment
+from .comparison import captured_comparison
 from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
 
@@ -371,6 +372,22 @@ class Studio:
             except (ValueError, KeyError, TypeError) as error:
                 receipt[query] = {"unavailable": str(error)}
         return exact_wire(receipt)
+
+    def compare(self, name, left_by, left_value, right, right_by, right_value,
+                expected, expected_by, revision):
+        """Finite field equality over independently chosen keys; never graph execution."""
+        self.check(revision)
+        results = self.workspace.state.results
+        for selected in (name, right, expected):
+            if selected not in results:
+                raise ValueError(f"Comparison input {selected!r} is unavailable in this case")
+        report = captured_comparison(results[name], left_by, left_value,
+                                     results[right], right_by, right_value,
+                                     results[expected], expected_by)
+        return dict(revision=revision, name=name, left_by=left_by, left_value=left_value,
+                    right=right, right_by=right_by, right_value=right_value,
+                    expected=expected, expected_by=expected_by,
+                    parameters=exact_wire(dict(self.workspace.state.parameters)), **report)
 
     def capture(self, capture, revision):
         """Read one retained version, without substituting a current named root."""

@@ -1,4 +1,5 @@
 import {viewPositions,projectionLabel,refKey} from './views.js';
+import {cameraControls} from './camera.js';
 
 // This renderer knows scoped links, never how coverage, weights, or bindings were computed.
 // Each card owns its camera. Selection, cameras, and lifetime are tab-local only.
@@ -32,12 +33,13 @@ export function linkedViews(host,{load,onVisibility}){
       const name=view.roots.length?`Current capture · ${view.roots.join(', ')}`:'Captured dependency · may differ from a current object';
       box.append(el('h3',descriptor.label),el('p',name,{class:'help','data-capture-label':''}));
       const svg=svgEl('svg',{viewBox:'0 0 420 260',role:'img','aria-label':descriptor.label}),marks=svgEl('g');svg.append(marks);
-      const projection=el('p',projectionLabel(view),{class:'help'}),toolbar=el('div',undefined,{class:'row'});
-      const fit=el('button','Fit',{type:'button','aria-label':`Fit ${side} view`}),minus=el('button','−',{type:'button','aria-label':`Zoom out ${side} view`}),plus=el('button','+',{type:'button','aria-label':`Zoom in ${side} view`});toolbar.append(fit,minus,plus);
+      const projection=el('p',projectionLabel(view),{class:'help'});
+      const toolbar=cameraControls({name:side,fit:()=>{camera={x:0,y:0,zoom:1};draw()},zoom:factor=>{camera.zoom=Math.min(12,Math.max(.2,camera.zoom*factor));draw()},pan:(x,y)=>{camera.x+=x;camera.y+=y;draw()}});
       const selection=el('label',`${descriptor.label} occurrence`),select=el('select',undefined,{'data-linked-occurrence':side});selection.append(select);
       const detail=el('p','',{class:'linked-detail',role:'status'}),follow=el('button','Inspect selected occurrence',{type:'button','data-linked-inspect':side});
       box.append(svg,projection,toolbar,selection,detail,follow);cards.append(box);
       const context=new Map(view.rows.map(r=>[refKey(r.ref),r])),positions=viewPositions(view),valid=positions.every(p=>p.every(Number.isFinite));
+      const valueField=descriptor.valueField||'value';
       let items=[],selected=null,camera={x:0,y:0,zoom:1},points=[],gesture=null;
       const short=v=>{const s=String(v);return s.length>13?s.slice(0,10)+'…':s};
       const coordinates=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())};
@@ -51,23 +53,22 @@ export function linkedViews(host,{load,onVisibility}){
           const x=210+(p[0]-(xmin+xmax)/2)*scale+camera.x,y=130-(p[1]-(ymin+ymax)/2)*scale+camera.y;
           const circle=svgEl('circle',{cx:x,cy:y,r:(chosen?7:4)*unit,fill:item?.emphasis===false?'#a9b6ad':'#b96429',opacity:item?1:.12,stroke:chosen?'#235d48':'none','stroke-width':3,'data-linked-ref':key,'data-linked-member':String(!!item),'data-linked-selected':String(chosen)});
           marks.append(circle);points.push({x,y,key});
-          if(item&&items.length<=16){const text=svgEl('text',{x:x+9*unit,y:y-8*unit});text.style.fontSize=`${12*unit}px`;text.textContent=short(row.fields.value);marks.append(text)}
+          if(item&&items.length<=16){const text=svgEl('text',{x:x+9*unit,y:y-8*unit});text.style.fontSize=`${12*unit}px`;text.textContent=short(row.fields[valueField]);marks.append(text)}
         });
       }
       function selectItem(key){
         selected=key;select.value=key||'';const row=context.get(key),item=items.find(i=>refKey(i.ref)===key);
-        detail.textContent=row?`Value ${row.fields.value}${item?.note?` · ${item.note}`:''}`:'';follow.disabled=!row;draw();
+        detail.textContent=row?`${valueField==='value'?'Value':valueField} ${row.fields[valueField]}${item?.note?` · ${item.note}`:''}`:'';follow.disabled=!row;draw();
       }
       function update(link){
         items=link[side];select.replaceChildren();
-        for(const item of items){const row=context.get(refKey(item.ref));select.append(el('option',`${row.fields.index} · value ${row.fields.value}${item.note?` · ${item.note}`:''}`,{value:refKey(item.ref)}))}
+        for(const item of items){const row=context.get(refKey(item.ref));select.append(el('option',`${row.fields.index} · ${valueField} ${row.fields[valueField]}${item.note?` · ${item.note}`:''}`,{value:refKey(item.ref)}))}
         select.disabled=!items.length;
         selectItem(items.some(i=>refKey(i.ref)===selected)?selected:items.length?refKey((items.find(i=>i.emphasis!==false)||items[0]).ref):null);
         if(!items.length)detail.textContent=link[side==='left'?'emptyLeft':'emptyRight']||'No linked occurrences. Faint points show context only.';
       }
       select.onchange=()=>selectItem(select.value);
       follow.onclick=()=>spec.inspect(context.get(selected).ref,follow,items.find(item=>refKey(item.ref)===selected));
-      fit.onclick=()=>{camera={x:0,y:0,zoom:1};draw()};minus.onclick=()=>{camera.zoom=Math.max(.2,camera.zoom/1.4);draw()};plus.onclick=()=>{camera.zoom=Math.min(12,camera.zoom*1.4);draw()};
       svg.onpointerdown=e=>{if(!e.isPrimary||e.button>0){gesture=null;return}e.preventDefault();svg.setPointerCapture(e.pointerId);const p=coordinates(e);gesture={id:e.pointerId,start:p,last:p,moved:false}};
       svg.onpointermove=e=>{if(!gesture||e.pointerId!==gesture.id)return;const p=coordinates(e);if(Math.hypot(p.x-gesture.start.x,p.y-gesture.start.y)*svg.getScreenCTM().a>9)gesture.moved=true;if(gesture.moved){camera.x+=p.x-gesture.last.x;camera.y+=p.y-gesture.last.y;draw()}gesture.last=p};
       svg.onpointerup=e=>{

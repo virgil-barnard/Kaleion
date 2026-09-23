@@ -95,6 +95,8 @@ See the [cross-lesson inventory](HELPER_INVENTORY.md) for related recipes.
 | `explain_pixel(captured, key)` | Use `Inspection` to follow backprojection weights to line measurements, then sampling bindings to image pixels; retain the lesson's exact inverse arithmetic and format its explanation. |
 
 **Shared functions used.** [snapshot_views.py](../../notebooks/snapshot_views.py)
+reexports lookup/comparison from `kaleion.comparison` for compatibility and keeps
+rectangular presentation locally. The same exact comparison serves the studio. It
 provides `keyed_values` with explicit `keys=("u", "v")` or `keys=("m", "t")`, and
 `rectangular_values` with explicitly chosen x/y field names, and
 `compare_keyed_values` with an explicitly declared pixel domain. Keys must be unique

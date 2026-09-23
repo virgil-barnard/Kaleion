@@ -63,17 +63,20 @@ not counted as functions.
 
 ### Captured integer-key adapters and comparison
 
-Source: [notebooks/snapshot_views.py](../../notebooks/snapshot_views.py).
+Sources: [kaleion/comparison.py](../../src/kaleion/comparison.py) owns keyed
+lookup/comparison; [notebooks/snapshot_views.py](../../notebooks/snapshot_views.py)
+reexports the original names and owns rectangular presentation.
 All three functions are used directly in 04–05; the two adapters replace four
 local definitions. They do not import Plotly, evaluate definitions, or modify
 captured evidence.
 
 | Function | Input → result and required choices |
 | --- | --- |
-| `keyed_values` | Snapshot and explicit key-field names → a detached tuple-keyed dictionary in occurrence order. Require unique exact integer keys, preserving integer values and zeros. |
+| `keyed_values` | Snapshot, explicit key-field names and optional value field → a detached tuple-keyed dictionary in occurrence order. Require unique exact integer keys, preserving integer values and zeros. |
 | `rectangular_values` | Snapshot and explicit x/y field names → ascending axis labels and rows indexed by y, columns by x. Uses `keyed_values`; require a complete product of observed labels, without filling holes. |
-| `compare_keyed_values` | Two snapshots, explicit key fields, and an optional ordered expected domain → exact left-minus-right residuals plus missing and unexpected keys on each side. Without an expected domain it reports only the union of observed keys. |
-| `_field_names`, `_key_tuple` | Private validation for declared field names and exact integer key tuples. |
+| `compare_keyed_values` | Two snapshots, explicit key fields, optional selected value fields and an optional ordered expected domain → exact left-minus-right residuals plus missing and unexpected keys on each side. Without an expected domain it reports only the union of observed keys. |
+| `keyed_indices`, `keyed_items` | Shared occurrence lookup for studio witnesses: unique integer-key indices, or indices paired with a selected integer value; the domain's labels are not compared. |
+| `_context`, `_field_names`, `_key_tuple` | Private stored/intrinsic-field context and validation for declared field names and exact integer key tuples; placement never supplies keys. |
 | `KeyedDifference.to_dict`; `KeyedComparison.nonzero`, `same_domain`, `values_equal_on_common`, `holds`, `to_dict` | Detached witness serialization and report predicates. `KeyedComparison.to_dict.keys` converts tuple keys to lists. |
 
 Empty input with valid key fields yields an empty map or three empty lists. A
@@ -82,6 +85,8 @@ metadata supplies implicit keys or absent axis labels. Comparison makes the expe
 domain an independent input when absent labels matter. This is not a new core
 operation or proof/evidence API; returned containers carry no measurement claim,
 and equality is only for the captured finite case.
+The studio requires an explicit domain and wraps the report with scoped receipts;
+the shared Python helper retains its optional-domain behavior for existing clients.
 
 ### Captured binding and measurement inspection
 

@@ -78,6 +78,8 @@ functions and one nested function. See the [cross-lesson inventory](HELPER_INVEN
 **Shared functions used.** [snapshot_views.py](../../notebooks/snapshot_views.py)
 provides `keyed_values(snapshot, keys=("u", "v"))`,
 `rectangular_values(snapshot, x="u", y="v")`, and `compare_keyed_values`.
+Lookup/comparison are now compatible reexports from `kaleion.comparison`, shared
+with the studio; rectangular presentation remains beside the notebooks.
 The lookup rejects duplicate or
 noninteger keys; the rectangular adapter requires a complete product of observed
 axis labels and returns ascending axes with rows indexed by y, columns by x. Neither reads
