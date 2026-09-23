@@ -103,6 +103,16 @@ view filters do not redefine fitting bounds. A canvas document nests the origina
 mathematical JSON as text to avoid JavaScript rounding; mathematical export and
 the core schema remain unchanged. Sequence controls lower to the existing builder.
 
+The [relation workbench](docs/RELATION_WORKBENCH.md) keeps pattern starters and
+axis/key choices in `patterns.js`. `relations.py` reads a captured scalar predicate,
+resolves its local parameter scope, and freezes parameter constants before explicit
+field substitution onto a new universe. It rejects dependency reads rather than
+rebinding them implicitly. Totals retain the complementary logical axes or
+declared measurement keys through existing Count/Sum, then display remaining keys
+with ordinary Arrange. They remain keyed collections, not inferred logical grids.
+Draft preview geometry and its saved applied-view checkpoint stay in the client;
+only the existing Preview/Apply boundary changes mathematical history.
+
 The studio's [parameter-case controls](docs/PARAMETER_CASES.md) lower named
 integer references and expression-valued extents to existing `param` and Grid
 definitions. Ordinary previews retain the applied parameter environment; case

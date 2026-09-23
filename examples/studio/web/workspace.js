@@ -86,7 +86,7 @@ export function spatialWorkspace(host,{select,focus,options,combine,inspect,crea
       const s=layout.get(obj.name),m=models.get(obj.name),offset=project.point(s.pose),local=corners(m.low,m.high).map(p=>project.point(p));
       const b=projectedBounds(local);if(!m.positions.length){b.right=Math.max(b.right,b.left+100);b.bottom=Math.max(b.bottom,b.top+70)}
       const total=obj.rows?.length||0,visible=m.positions.filter(m.visible).length;
-      const meta=obj.status==='failed'?'Evaluation failed':!m.valid?'Geometry unavailable':`${total} occurrences${s.slice?` · ${visible} in slice`:''}${counts.get(obj.name)<visible?` · ${counts.get(obj.name)} drawn`:''}`;
+      const meta=obj.status==='failed'?'Evaluation failed':!m.valid?'Geometry unavailable':`${obj.preview?'Preview · ':''}${total} occurrences${s.slice?` · ${visible} in slice`:''}${counts.get(obj.name)<visible?` · ${counts.get(obj.name)} drawn`:''}`;
       const labelWidth=Math.max(130,Math.min(320,Math.max(obj.name.length*8,meta.length*5.5)+22));
       const bound={left:b.left+offset[0]-14,right:Math.max(b.right+14,b.left-10+labelWidth)+offset[0],top:b.top+offset[1]-53,bottom:b.bottom+offset[1]+14};bounds.set(obj.name,bound);
       const frame=svgNode('g',{'data-scene-frame':obj.name,transform:`translate(${offset[0]},${offset[1]})`});
@@ -228,7 +228,7 @@ export function spatialWorkspace(host,{select,focus,options,combine,inspect,crea
     initialized=true;syncTools();syncSettings();connectionText();draw();
   }
   new ResizeObserver(()=>{if(!drag)draw()}).observe(canvas);
-  return {update,cancel,save,load,fit,refresh:draw,
+  return {update,cancel,save,load,fit,center:centerSelected,refresh:draw,
     remember:()=>({camera:{...view},tool,inputsOpen:list.open,chosen}),
     restore(saved){cancel();view={...saved.camera};tool=saved.tool;chosen=saved.chosen;list.open=saved.inputsOpen;syncTools();syncSettings();draw()},
     reset(){cancel();layout.clear();models.clear();chosen=null;initialized=false;view=initialCamera()},

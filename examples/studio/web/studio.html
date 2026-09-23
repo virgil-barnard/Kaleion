@@ -22,6 +22,7 @@
       <section id="workspace-view" aria-label="Spatial workspace">
         <div class="workspace-toolbar"><div class="modes" aria-label="Workspace tool"><button data-workspace-tool="move" aria-pressed="true">Move objects</button><button data-workspace-tool="connect" aria-pressed="false">Connections</button><button data-workspace-tool="orbit" aria-pressed="false">Orbit</button></div><div class="row"><button data-scene-source>+ Sequence</button><button data-combine>Combine…</button></div></div>
         <p class="help" data-spatial-help></p>
+        <div class="row scene-actions" id="scene-actions" aria-label="Make something from this object" hidden><button id="quick-lens">Lens…</button><button id="reuse-lens" hidden>Reuse lens…</button><button id="axis-total">Total…</button></div>
         <section data-scene-selection class="scene-selection" aria-label="Selected object view" hidden></section>
         <svg id="workspace-canvas" viewBox="0 0 900 600" tabindex="0" role="group" aria-label="Shared canvas. Select an object; Enter to focus; Shift F10 for options."><defs><marker id="workspace-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs></svg>
         <div class="viewbar"><span data-scene-caption></span><div data-spatial-camera></div></div>

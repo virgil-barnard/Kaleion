@@ -46,8 +46,11 @@ The images are static previews; selected motion frames show presentation states.
 The [next canvas design](docs/UNIFIED_CANVAS_DESIGN.md) compares Icarus's direct
 grid and reusable relations with Kaleion's construction and evidence model. It
 now includes [readable construction on selection](docs/CONSTRUCTION_INSPECTION.md)
-and a [shared cell/point/3D scene](docs/SHARED_SCENE.md). Explicit reusable rule
-bindings and labeled case/generation/replay tracks remain planned.
+and a [shared cell/point/3D scene](docs/SHARED_SCENE.md). The
+[relation workbench](docs/RELATION_WORKBENCH.md) now adds quick pattern starters,
+copied lenses with explicit field mappings, and repeatable axis totals.
+Standalone rule objects, dependency bindings and labeled case/generation/replay
+tracks remain planned.
 
 The [shared scene](docs/SHARED_SCENE.md) draws objects at one coordinate scale.
 Switch **Cells / Points**, choose **Logical axes / Placement**, and orbit or slice
@@ -56,6 +59,13 @@ or keyed placement. **+ Sequence** creates a finite source with explicit length,
 start and step. **Focus** retains lesson tools and the existing XY replay.
 **Save → Canvas and view** preserves scene choices; **Mathematics only** exports
 the ordinary workspace for Python.
+
+Select an object and try **Lens…**: choose one, two or three field inputs and
+preview a pattern in the scene. **Reuse lens…** applies its predicate to another
+object with explicit mappings. **Total…** counts matches or sums weights along
+chosen axes, making a new object whose retained keys can be totaled again or
+used in another construction. Detailed formula and measurement tools remain
+available. Ease for children and new users still needs human testing.
 
 Select an object to see **How this is made**: its constructor, expressions,
 ordered inputs, keys and parameter case. Follow an input to its actual definition

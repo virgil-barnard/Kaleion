@@ -5,6 +5,10 @@ axes and separate view offsets. Selecting a mark leads into the existing capture
 evidence; selecting its name opens construction inspection. This implements the
 second step of the [unified canvas design](UNIFIED_CANVAS_DESIGN.md).
 
+The subsequent [relation workbench](RELATION_WORKBENCH.md) adds quick one/two/three
+input pattern starters, explicit lens reuse, and repeated axis/key totals. These
+forms preview a new object beside its inputs in this scene.
+
 ![Equal-sum constructions on the shared cell grid](images/shared-scene-cells.png)
 
 ## Start with the objects

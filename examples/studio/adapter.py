@@ -19,6 +19,7 @@ from .coverage import captured_coverage, unique_assignment
 from .comparison import captured_comparison
 from .connections import definition_connections
 from .construction import describe_construction
+from .relations import describe_rule, reuse_rule, reduce_axes, reduction_fields
 from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
 
@@ -33,6 +34,8 @@ ARGUMENTS = {
     "integers": {"values"}, "sequence": {"length", "start", "step"}, "grid": {"shape", "axes", "value"},
     "product": {"factors"}, "field": {"source", "field", "value"},
     "lens": {"source", "rule"}, "select": {"source"},
+    "reuse_lens": {"source", "target", "mapping", "capture"},
+    "total": {"source", "axes", "reducer", "weight"},
     "measure": {"source", "by", "reducer", "weight", "order", "key"},
     "place": {"source", "coordinates"},
     "group_lens": {"source", "capture", "by", "group"},
@@ -148,6 +151,12 @@ def build(command, roots, *, captured=None):
                     raise ValueError("Copied field names must not collide with roles or each other")
                 fields[alias] = product.read(role, F[field])
         result = product.domain.annotate(**fields)
+    elif action in ("reuse_lens", "total"):
+        if captured is None:
+            raise ValueError("Choose a captured input before reusing a lens or taking a total")
+        result = (reuse_rule(captured, args["source"], args["target"], args["mapping"], args["capture"])
+                  if action == "reuse_lens" else reduce_axes(captured, args["source"], args["axes"],
+                                                            args["reducer"], ex(args["weight"])))
     else:
         source = roots[args["source"]]
         if action == "field":
@@ -212,6 +221,9 @@ def describe(state):
         if name in state.errors:
             objects.append({**obj, "status": "failed", "error": state.errors[name]})
             continue
+        if definition.node.kind == "incidence":
+            obj["reusable_rule"] = describe_rule(state, name)
+        obj["total_fields"] = reduction_fields(state, name)
         objects.append({**obj, **snapshot_view(state.results[name]),
                         "declaration": str(definition.node.op) + " · " + name})
     return objects

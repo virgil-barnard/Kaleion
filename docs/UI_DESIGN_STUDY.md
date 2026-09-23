@@ -137,8 +137,8 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
 | A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the current studio hides replay until a recent movement | Open · four saved canvases and an existing-controls walkthrough provide material for feedback; no UI redesign in this increment |
 | A14 | Selecting an object does not adequately reveal how it was constructed | Maintainer feedback after PR #29; now checked through all four saved canvases plus earlier/local/failed inputs | Implemented · selection reveals actual constructor, arguments, scoped inputs and result status; Back restores context and captured results lead to occurrence evidence. Human interpretation remains untested |
-| A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 used independent XY previews; the shared-scene gate now exercises cells/points, direct mark inspection, 3D slices and saved views | Partly implemented · common scale/local frames, explicit charts, name-handle movement, Sequence creation and reviewed combination targets. Direct mathematical manipulators, reusable rules and human evaluation remain open |
-| A16 | Reusable rules and live dependencies lack a complete visible authoring contract | Core Lens is reusable; current connections describe immutable definitions, while Icarus exposes movable relation tokens | Open · separate rule, application, and captured incidence; add explicit recipe ports before promising propagation through editable cables |
+| A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 used independent XY previews; shared-scene and relation-workbench gates exercise marks, 3D, canvas-side pattern previews and derived objects | Partly implemented · common scale/local frames, explicit charts, Sequence/pattern construction and reviewed combinations. Direct mathematical manipulators and human ease remain open |
+| A16 | Reusable rules and live dependencies lack a complete visible authoring contract | The relation workbench copies saved scalar predicates with explicit field mappings and captured constants; Connections remains an immutable definition map | Partly implemented · predicate transfer retains source/destination and survives core save/undo. Standalone rule tokens, support, dependency bindings and editable recipe ports remain open |
 
 The baseline probe uses actual controls and records the browser version, focused
 element, message, Apply availability, and presence of a draft-return control.
@@ -290,6 +290,34 @@ camera movement into mathematical undo. Focus, linked evidence and replay still
 use their labeled XY views; the UI must not imply that a 3D scene means every
 instrument has already gained 3D rendering.
 
+### Quick patterns and totals: a short path with deeper controls
+
+The maintainer now explicitly asks for an interface that children can enjoy while
+retaining mathematical research depth. The [relation workbench](RELATION_WORKBENCH.md)
+responds with nearby Lens/Reuse lens/Total actions, one/two/three-field pattern
+starters, an expandable full formula editor, and exact previews in the shared
+canvas. Input mappings stay visible; reusing a rule copies its actual predicate
+and captured parameter constants onto another object's universe. No finite mask
+is promoted to a general rule.
+
+Total chooses directions to reduce and shows which keys remain. Count and Sum
+preserve the core's zero-fiber policy. A new result displays its retained keys
+as coordinates and can be reduced again or used as another object's input.
+The actual measurement, placement and contributors remain inspectable. A view
+slice does not limit the reduction's mathematical input.
+
+These choices aim to reduce initial configuration while preserving exact meaning.
+The first layout put three input selectors in a vertical stack; screenshot review
+showed too much scrolling, so they now share one row. Full formulas and long field
+names still need room. While editing beside the canvas, a compact source button
+replaces the full construction sheet; it parks the draft and opens that source's
+construction. On a phone the form remains below the picture, with jump
+links; simultaneous visibility and comfortable reach are unresolved. A labeled
+preview, a match count and easy reversal are implemented. Whether this feels fun,
+legible or intuitive to children is an untested hypothesis, not a behavioral-test
+result. Begin the next observation with an unscripted new pattern, reuse on a
+different domain, and a predicted reduction including a zero.
+
 ## 5. First design experiment: an idea survives a detour
 
 **Hypothesis:** retaining an unfinished construction while someone inspects a
@@ -416,6 +444,7 @@ These are historical gate totals, not participant counts or usability scores.
 | [Spatial workspace](SPATIAL_WORKSPACE.md), merged PR #29 | Named objects visible together; definition paths distinguish earlier and local inputs; reviewed drag/tap composition preserves declaration and history boundaries | 195 |
 | [Construction inspection](CONSTRUCTION_INSPECTION.md), after merged design PR #30 | Readable constructors and exact expressions; scoped input navigation, failed/unfamiliar declarations, captured-result evidence and restored context | 203 |
 | [Shared scene](SHARED_SCENE.md), after merged PR #31 | Common-scale cells/points, 3D orbit/slices, source creation, exact saved view documents and direct occurrence inspection | 206 |
+| [Relation workbench](RELATION_WORKBENCH.md), after merged PR #32 | One/two/three-field starters, explicit predicate transfer and captured constants, canvas previews, repeated axis/key reductions, exact zeros/weights and retained evidence | 212 |
 
 PR #29 reported the required suite and discovery example passing; the subsequent
 Icarus/design review does not rerun or change those executable gates. The expanded Chromium 153
@@ -473,6 +502,14 @@ failed/empty captures and phone widths. The existing inspector, spatial,
 saved-canvas and full-studio gates pass as regressions. Required tests total
 **206**, and discovery outputs are unchanged. These are automated and visual
 inspection results; no participant or physical-device evidence has been added.
+
+The relation-workbench gate adds actual one/two/three-input construction, a lens
+drag and explicit remapping, cube/plane/line/scalar reductions, a view slice that
+does not change the total, zero fibers, and draft/save/undo isolation. Six semantic
+tests cover independent finite results, nested captured cases, rejected bindings
+and dependency reads, large weights, contributors and read-only restoration.
+The required suite now passes **212 tests**. Discovery and the six browser gates
+pass. These results add no child/novice or physical-touch observation.
 
 ### Proposed human observation
 
@@ -544,8 +581,10 @@ Use this record for each review:
 The list below records the original sequence and delivered increments. Following
 the Icarus review, the [next PR sequence](UNIFIED_CANVAS_DESIGN.md#a-sequence-of-small-reviewable-pull-requests)
 started with construction inspection and shared representations, now implemented.
-Visible captured tracks follow. Reusable rules and editable recipes retain
-explicit scope and compatibility contracts; those later steps remain planned.
+The latest maintainer priority brings quick relation work and a bounded part of
+predicate reuse forward. Visible captured tracks follow. Standalone rules and
+editable recipes retain explicit scope and compatibility contracts; those parts
+remain planned.
 
 1. **Stable authoring loop:** draft retention, accurate local feedback, and focus
    recovery. Delivered and tested against additive/modular controls;

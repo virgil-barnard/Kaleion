@@ -42,6 +42,11 @@ Choose **Preview**, then **Apply**. Three pairs should be highlighted. **Save**
 downloads your extended workspace; the source file in this folder is unchanged.
 
 To compose by connecting objects, see the [shared workspace walkthrough](../../docs/SPATIAL_WORKSPACE.md#try-this-increment).
+For a shorter pattern-building path, return to **Workspace** and choose **Lens…**.
+The [relation workbench walkthrough](../../docs/RELATION_WORKBENCH.md) uses the
+same examples for quick patterns, lens transfer and multi-axis totals. In the 3D
+box, select **X region → Total…** and total along `k` to create an inspectable
+plane of counts; reduce its retained keys again or use it in another construction.
 **Save → Canvas and view** retains scene layout, chart/slice choices, selection
 and camera as well as the mathematical workspace. **Mathematics only** exports
 the ordinary workspace for Python. Unfinished drafts remain temporary.

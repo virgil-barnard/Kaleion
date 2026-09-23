@@ -19,6 +19,7 @@ gesture study. Human touch trials remain to be conducted.
 | Proposed experience | Current studio evidence | Still open |
 | --- | --- | --- |
 | Compose tools on objects | Shared-scale cells/points with local frames and 3D orbit/slices; exact Sequence creation, definition paths, reviewed drag/tap Product and keyed Arrange; existing measurements, comparison and recoverable drafts | Recurrences, mathematical coordinate manipulators, richer composition, editable dependencies, novice transfer |
+| Make and reuse relations; pull out totals | One/two/three-field pattern starters, explicit predicate copy to another domain, captured parameter constants, canvas previews, multi-axis/key Count/Sum and repeated reductions | Standalone rules, typed structured arguments, dependency-read bindings, child/novice ease and transfer |
 | Inspect how a result was made | Readable construction on selection; scoped input navigation and Back; captured results connect to contributor/weight/source evidence and restored cameras/selection | Human interpretation, arbitrary capture pinning, density/occlusion trials, physical touch |
 | Change assumptions | Exact integer cases preview/apply a new evaluation; replay uses recorded motion separately | Saved-case browsing and measured case families |
 | Declare a comparison | Selected integer fields, ordered keys and an independent expected domain; missing-both and outside witnesses | Distinct support, totals and structural-correspondence contracts |
@@ -48,7 +49,14 @@ brief preserves this document's input, identity, coverage, and history boundarie
 Its first two steps, [construction inspection](CONSTRUCTION_INSPECTION.md) and
 the [shared scene](SHARED_SCENE.md), are implemented. Scene choices now save in
 a versioned studio document; ordinary mathematical export remains schema 1.
-Tracks and the remaining steps are still proposals. Construction stays in a collapsible section
+The [relation workbench](RELATION_WORKBENCH.md) brings a bounded part of rule reuse
+forward after the maintainer's request for easy, playful construction with deep
+mathematical access. Lens and Total actions stay beside the selected object;
+three input choices fit in one row, with the full formula editor expandable.
+Parameters freeze from the copied rule's captured scope; the destination keeps
+its own case. Reduced objects retain keyed zero fibers and contributor evidence.
+Standalone rules, dependency bindings and captured tracks remain proposals.
+Construction stays in a collapsible section
 beside the current task; on phones it remains below the picture. The new
 320/360-pixel checks establish fitting controls and preserved context, not
 comfortable reach or simultaneous visibility on a physical device.

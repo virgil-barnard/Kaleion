@@ -22,6 +22,12 @@ visible together. Move their name handles, inspect definition connections, or
 drag a source name to a destination in Connections to propose a product or keyed
 placement. Focus preserves the existing single-object tools and captured evidence.
 
+The [relation workbench](RELATION_WORKBENCH.md) adds canvas-side **Lens…** pattern
+starters, **Reuse lens…** with explicit field mappings and captured constants, and
+**Total…** over selected logical axes or retained measurement keys. Exact previews
+appear in the scene; applied results retain contributor inspection and ordinary
+save/history behavior. The detailed formula and Measure editors remain available.
+
 The [shared scene](SHARED_SCENE.md) now replaces independent preview scales with
 one camera, local axes and view offsets. Cells/Points, explicit logical/placement
 charts, 3D orbit and slices consume captures. A Sequence sheet lowers finite
@@ -429,7 +435,7 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **206 tests**, and the discovery example
+The complete required suite passes **212 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -439,6 +445,7 @@ node docs/studies/check-construction-studio.cjs
 node docs/studies/check-construction-inspector.cjs
 node docs/studies/check-scene-model.mjs
 node docs/studies/check-shared-scene.cjs
+node docs/studies/check-relation-workbench.cjs
 ```
 
 The optional gate starts its own fresh Python host. `KALEION_PYTHON` can select
