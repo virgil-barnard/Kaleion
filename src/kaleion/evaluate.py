@@ -43,6 +43,7 @@ _PRIMITIVES = {
     "pad": ("constant", "concatenate"),
     "case": ("bind_parameters", "evaluate_construction"),
     "rank": ("factorize_keys", "lexicographic_sort", "prefix_ranges"),
+    "prefix_sum": ("factorize_keys", "lexicographic_sort", "exclusive_scan", "prefix_ranges"),
     "require": ("all_checks", "view"),
 }
 
@@ -351,8 +352,8 @@ class Evaluator:
             raise ValueError("This operation needs integer items")
         if op == "items":
             return self._derive(node, source, positions=None)
-        if op == "rank":
-            return self._rank(node, source)
+        if op in ("rank", "prefix_sum"):
+            return self._ordered_measurement(node, source)
         if op == "values":
             metadata = measurements.changed_values(source.metadata, source.node)
             return self._derive(
@@ -466,27 +467,37 @@ class Evaluator:
             return self._pad(node, source)
         raise ValueError(f"Unsupported operation {op}")
 
-    def _rank(self, node, source):
+    def _ordered_measurement(self, node, source):
         a = node.attributes
+        label = "Rank" if node.op == "rank" else "Prefix sum"
         if not a["order"] or not a["keys"]:
-            raise ValueError("Rank needs member order and unique item keys")
+            raise ValueError(f"{label} needs member order and unique item keys")
         groups = (indexing.key_rows([self.expr(e, source) for _, e in a["groups"]], len(source))
                   if a["groups"] else ((),) * len(source))
         order = indexing.key_rows([self.expr(e, source) for e in a["order"]], len(source))
         keys = indexing.key_rows([self.expr(e, source) for _, e in a["keys"]], len(source))
         if len(set(keys)) != len(keys):
-            raise ValueError("Rank item keys must be unique; choose an explicit identifying key")
+            raise ValueError(f"{label} item keys must be unique; choose an explicit identifying key")
         inverse, members, ranks = indexing.ordered_groups(groups, order)
+        values = ranks
+        formula = "Count strict predecessors within declared groups, ordered by "
+        if node.op == "prefix_sum":
+            weights = T.exact(T.broadcast(self.expr(a["value"], source), len(source)))
+            values = np.empty(len(source), dtype=object)
+            for group in members:
+                addresses = np.asarray(group, dtype=np.int64)
+                values[addresses] = T.exclusive_sum(weights[addresses])
+            formula = f"Sum {a['value']} over strict predecessors within declared groups, ordered by "
         ids = tuple(f"{node.id}:key:{json.dumps(key, separators=(',', ':'))}" for key in keys)
         fields = {name: np.asarray([key[i] for key in keys], dtype=object)
                   for i, (name, _) in enumerate(a["keys"])}
         fields.setdefault("key", np.asarray([key[0] for key in keys], dtype=object)
                           if len(a["keys"]) == 1 else np.arange(len(keys), dtype=object))
-        # Anchor lineage identifies the item being ranked. The counted predecessors
+        # Anchor lineage identifies the measured item. Its contributing predecessors
         # are a separate compact record, expanded only by contributor_ids(key).
         parents = tuple((Ref(source.node, oid),) for oid in source.ids)
-        return Snapshot(node.id, ranks, ids, ids, fields, parents=parents, metadata={
-            "reducer": "rank", "counted": "strict predecessors", "keys": keys,
+        return Snapshot(node.id, values, ids, ids, fields, parents=parents, metadata={
+            "reducer": node.op, "counted": "strict predecessors", "keys": keys,
             "population": tuple(len(members[g]) for g in inverse),
             "contributor_prefixes": {
                 "version": 1,
@@ -494,8 +505,7 @@ class Evaluator:
                 "ranges": tuple((int(g), int(rank)) for g, rank in zip(inverse, ranks)),
             },
             "universe": source.node,
-            "formula": "Count strict predecessors within declared groups, ordered by "
-                       + ", ".join(str(e) for e in a["order"]),
+            "formula": formula + ", ".join(str(e) for e in a["order"]),
             "complete": True, "finite": True,
         })
 

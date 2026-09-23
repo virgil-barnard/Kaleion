@@ -1,5 +1,33 @@
 # Validation · 0.1.0
 
+## Ordered weighted prefixes · September 23, 2026
+
+- **184 tests pass** with `python3 -m unittest discover -s tests -v`. Eight new
+  core tests and three studio contracts cover Young/quotient packing, grouped
+  signed weights, strict order and unique keys, empty/zero inputs, exact integers,
+  compact evidence, scoped weight reads, saved inspection and history.
+- `python3 examples/discovery.py --out build/example-output` retains its expected
+  counts, drivers, sieve and saved outputs. Existing Rank and legacy capture
+  contracts remain in the passing suite.
+- The expanded Chromium 153 studio gate authors both prefix constructions,
+  rejects tied order, preserves a parked draft, follows measured layers to their
+  cells, restores selection/cameras on return, and checks zero/signed weight
+  reads. Desktop and 320px screenshots were inspected; physical touch and novice
+  usability remain untested.
+- Lesson 06's seven code cells execute in fresh in-process IPython sessions for
+  default and empty heights. Dense-reference equality, 84 recorded motion frames,
+  reverse paths, saved workspaces and nested prefix receipts pass. The host denies
+  TCP and IPC kernel sockets; no live JupyterLab execution is claimed. See the
+  [notebook record](notebooks/VALIDATION.md#lesson-06--ordered-weighted-prefixes).
+- `prefix_sum` is a new version-1 operation using existing contributor-prefix
+  format 1. The updated implementation reads old schema-1 captures; older
+  evaluators cannot execute new definitions and older inspectors cannot recover
+  their weights. No runtime dependency or outer schema changes.
+
+The [implementation brief](docs/ORDERED_PREFIX.md) records the contract, completed
+acceptance tasks and next development sequence. Finite fixtures are not universal
+proofs or human usability evidence.
+
 ## Captured inspection and exploration workflow · September 21, 2026
 
 - **122 tests pass** with `python3 -m unittest discover -s tests -v`; nine new

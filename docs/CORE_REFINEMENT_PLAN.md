@@ -66,7 +66,11 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   empty-axis zero groups, and states the slot-identity and dense-cost limits.
   The [touch study](TOUCH_WORKSPACE.md) tests how the shared choices might become
   controls; it is a bounded captured demonstration, not a general editor.
-- **Next:** weighted prefix sums, measured case families,
+- **Delivered weighted prefixes:** exact exclusive accumulation now shares the
+  strict order plan and compact contributor ranges with Rank. Lesson 06 uses it
+  for layer offsets; the studio transfers it to quotient-column packing. Nested
+  receipts retain the earlier measured layers and their original contributors.
+- **Next:** measured case families,
   and comparison kinds beyond exact keyed integer values. Separate operation
   execution from session scheduling when that reduces concrete coupling. The public
   `Coverage` helper is scoped to an existing reduction domain, so it does not complete the general
@@ -222,7 +226,7 @@ not a claim of universal mathematical minimality.
 | Field expressions | Evaluate typed arithmetic, predicates, and coordinates | Values, Annotate, Place, Move, Lens |
 | Index maps | Transport fields with checked addresses | Gather, Lookup, Roll, Tile, Select, keyed binding |
 | Grouped reduction | Combine selected weights over a specified key domain | Count, Sum, Any, convolution, finite-line measurements |
-| Ordered scan | Accumulate along explicit order, optionally within groups | Prefix offsets and predecessor ranks; proposed extension |
+| Ordered scan | Accumulate along explicit order, optionally within groups | Exclusive weighted prefixes and predecessor ranks delivered; arbitrary scans/recurrences remain separate |
 | Bounded recurrence | Carry state and emit occurrences/roles under a work limit | General authored spirals, stair steps, and 3D paths; later extension |
 
 Count is a readable operation even if its kernel is a masked sum. Roll is a readable
@@ -270,8 +274,9 @@ would make the system shorter to describe but harder to interpret correctly.
 
 ## 5. Enrich the authoring language with proven recipes
 
-The table is the original recipe agenda. Strict ranks are now implemented as
-`source.group_by(...).order_by(...).ranks(key=...)`, along with scoped coverage and
+The table is the original recipe agenda. Strict ranks and weighted prefixes are now
+implemented as `source.group_by(...).order_by(...).ranks(key=...)` and
+`.prefix_sums(key=..., value=...)`, along with scoped coverage and
 named placement. Captured keyed-read/measurement inspection is now implemented,
 as is the lesson-support report for exact keyed integer values. The remaining
 rows and broader forms of these queries are proposals, not API signatures.
@@ -365,8 +370,9 @@ If compressed evidence or storage needs a new format, version it explicitly and 
 reopening old captures without executing sources. Do not migrate history silently.
 
 **Implementation completed:** Stages A–B, the index/group-rule portion of C, and
-the ordered-rank/coverage portion of D exercised in lessons 07 and 10. Stage D is
-not complete: weighted prefix sums, case families, broader comparison meanings,
+the ordered-rank/coverage portion of D exercised in lessons 07 and 10. Weighted
+prefixes now serve lesson 06 and quotient-column packing through the studio.
+Stage D is not complete: case families, broader comparison meanings,
 and explanation of scalar/positional or nested driver reads remain. Direct keyed
 bindings and captured measurement receipts now serve lessons 04–05. The next
 refinements should address those concrete gaps before adding another layer of notation.

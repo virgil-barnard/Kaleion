@@ -573,7 +573,68 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 99 · weight 0/);await page.getByRole('button',{name:'Follow weight read · 2',exact:true}).click();await idle();
  assert.match(await leftCard().locator('.linked-detail').textContent(),/Weight 0/);assert.match(await rightCard().locator('.linked-detail').textContent(),/Read 2/);
  const weightedChecks={compositeKeyEditing:true,tupleDraftAndUndo:true,orderedKeyFailure:true,radonReconstruction:true,exactDivision:true,measurementDrivenUndo:true,weightReadNavigation:true,zeroWeightSource:true,returnSelectionAndCamera:true,keyboardAndPhone:true,unchangedCapture:true,transformedReadWeight:true};
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,weighted:weightedChecks,cases:caseChecks,comparison:comparisonChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+ // Ordered accumulation: measured layer sizes become offsets without a pair domain.
+ await page.setViewportSize({width:1250,height:950});await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();
+ async function memberOrder(fields){
+   while(await page.locator('#rank-order .key-chips button').count())await page.locator('#rank-order .key-chips button').first().click();
+   for(const field of fields)await page.locator('#rank-order [data-group-add]').selectOption(field);
+ }
+ async function prefix(name,source,order,key,weight=f('value')){
+   await select(source);await tool('measure');await page.locator('#result-name').fill(name);await page.locator('#reducer').selectOption('prefix_sum');
+   await memberOrder(order);await page.locator('#rank-key').selectOption(key);await expression(cards().nth(0),weight);await apply();
+ }
+ await integers('Young heights','5, 3, 2, 0');
+ await tool('grid',true);await page.locator('#result-name').fill('Young domain');await page.locator('#grid-shape').fill('4, 5');await expression(cards().nth(0),n(1));await apply();
+ await tool('lens');await page.locator('#result-name').fill('Young diagram');await expression(cards().nth(0),op('<',f('j'),read('Young heights',f('i'),f('key'))));await apply();
+ await tool('measure');await page.locator('#result-name').fill('Young layers');await retain('j');await apply();assert.deepEqual(await values('Young layers'),['3','3','2','1','1']);
+ await tool('measure');await page.locator('#result-name').fill('Layer offsets');await page.locator('#reducer').selectOption('prefix_sum');
+ assert.match(await page.locator('#measurement-meaning').textContent(),/current item is excluded/);
+ await memberOrder(['value']);await page.locator('#rank-key').selectOption('j');
+ const prefixRevision=(await state()).revision;
+ await page.locator('#preview').click();await idle();assert.equal(await page.locator('#apply').isEnabled(),false);assert.match(await page.locator('#draft-status').textContent(),/ties within a group/);assert.equal((await state()).revision,prefixRevision);
+ const prefixDraft=JSON.parse(await page.locator('#declaration').textContent());await select('Young heights');await page.locator('#resume-draft').click();assert.deepEqual(JSON.parse(await page.locator('#declaration').textContent()),prefixDraft);
+ await memberOrder(['j']);await apply();assert.deepEqual(await values('Layer offsets'),['0','3','6','8','9']);
+ const offsetRows=(await state()).objects.find(o=>o.name==='Layer offsets').rows;
+ await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption(offsetRows[0].ref[1]);await idle();
+ assert.match(await page.locator('#panel').textContent(),/prefix sum · 0 contributors/);await page.locator('#view-contributors').click();await idle();
+ assert.equal(await rightCard().locator('circle').count(),5);assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),0);await page.locator('#close-linked').click();
+ await page.locator('#occurrence').selectOption(offsetRows[3].ref[1]);await idle();await page.locator('#view-contributors').click();await idle();
+ assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),3);
+ await rightCard().locator('[data-linked-occurrence]').selectOption({index:2});await page.getByRole('button',{name:'Zoom in right view',exact:true}).click();
+ const offsetSelection=await rightCard().locator('[data-linked-occurrence]').inputValue(),offsetCamera=await rightCard().locator('circle').first().getAttribute('cx'),offsetExport=await(await page.request.get(origin+'/api/export')).text();
+ await rightCard().locator('[data-linked-inspect]').click();await idle();assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 2 · weight 2/);
+ await page.locator('#view-contributors').click();await idle();assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),2);
+ await rightCard().locator('[data-linked-inspect]').click();await idle();await page.getByRole('button',{name:'Back to measurement',exact:true}).click();await idle();await page.getByRole('button',{name:'Back to measurement',exact:true}).click();await idle();
+ assert.equal(await rightCard().locator('[data-linked-occurrence]').inputValue(),offsetSelection);assert.equal(await rightCard().locator('circle').first().getAttribute('cx'),offsetCamera);
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),offsetExport);
+ await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'prefix-layer-evidence.png'),fullPage:true});
+ await page.setViewportSize({width:320,height:950});await rightCard().locator('[data-linked-inspect]').focus();await page.keyboard.press('Enter');await idle();
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:path.join(output,'prefix-layer-phone.png'),fullPage:true});
+ await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();await page.setViewportSize({width:1250,height:950});
+ await select('Young diagram');await tool('select');await page.locator('#result-name').fill('Young cells');await apply();
+ await tool('place');await expression(cards().nth(0),f('i'));await expression(cards().nth(1),f('j'));await apply();
+ const beforePacking=(await state()).objects.find(o=>o.name==='Young cells').rows;
+ await tool('place');await expression(cards().nth(0),op('+',f('i'),read('Layer offsets',f('j'),f('j'))));await expression(cards().nth(1),n(0));await apply();
+ const packedLayers=(await state()).objects.find(o=>o.name==='Young cells').rows;
+ assert.deepEqual(packedLayers.map(r=>r.position[0]).sort((a,b)=>a-b),Array.from({length:10},(_,i)=>i));assert.deepEqual(packedLayers.map(r=>r.ref[1]),beforePacking.map(r=>r.ref[1]));
+ await page.locator('#undo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Young cells').rows,beforePacking);await page.locator('#redo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Young cells').rows,packedLayers);
+ await page.locator('#labels').selectOption('j');await page.screenshot({path:path.join(output,'prefix-packed-layers.png'),fullPage:true});
+ await integers('Expected layer offsets','0, 3, 6, 8, 9');await compare('Layer offsets',['j'],'Expected layer offsets',['key'],'Expected layer offsets',['key']);assert.match(await page.locator('#comparison-status').textContent(),/Finite equality holds. 5 equal/);
+ // Transfer to quotient columns: the zero-length column is a real contributor.
+ await prefix('Quotient offsets','Quotient counts',['i'],'i');assert.deepEqual(await values('Quotient offsets'),['0','0','1','4','8','14','21']);
+ await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption((await state()).objects.find(o=>o.name==='Quotient offsets').rows[1].ref[1]);await idle();
+ assert.match(await page.locator('#panel').textContent(),/prefix sum · 1 contributors/);await page.locator('#view-contributors').click();await idle();await rightCard().locator('[data-linked-inspect]').click();await idle();assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 0 · weight 0/);assert.match(await page.locator('#panel').textContent(),/count · 0 contributors/);
+ await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();await select('Quotient hits');await tool('measure');await page.locator('#result-name').fill('Quotient row ranks');await page.locator('#reducer').selectOption('rank');await retain('i');await memberOrder(['j']);await apply();
+ await select('Quotient hits');await tool('select');await page.locator('#result-name').fill('Quotient packed cells');await apply();await tool('place');
+ await expression(cards().nth(0),op('+',read('Quotient offsets',f('i'),f('i')),read('Quotient row ranks',f('key'),f('key'))));await expression(cards().nth(1),n(0));await apply();
+ assert.deepEqual((await state()).objects.find(o=>o.name==='Quotient packed cells').rows.map(r=>r.position[0]).sort((a,b)=>a-b),Array.from({length:30},(_,i)=>i));
+ // A general accumulation can contain negative and zero weights; it need not pack lengths.
+ await prefix('Signed prefixes','Weighted items',['key'],'key',op('-',op('*',n(2),read('Weight driver',f('key'),f('key'))),n(4)));assert.deepEqual(await values('Signed prefixes'),['0','-4','-4']);
+ await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption((await state()).objects.find(o=>o.name==='Signed prefixes').rows[2].ref[1]);await idle();await page.locator('#view-contributors').click();await idle();
+ await rightCard().locator('[data-linked-occurrence]').selectOption({index:1});await rightCard().locator('[data-linked-inspect]').click();await idle();assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 99 · weight 0/);
+ await page.getByRole('button',{name:'Follow weight read · 2',exact:true}).click();await idle();assert.match(await rightCard().locator('.linked-detail').textContent(),/Read 2/);
+ const prefixChecks={youngLayers:true,exclusiveZero:true,strictOrderFailure:true,parkedDraft:true,measuredContributors:true,nestedReturn:true,unchangedCapture:true,phoneAndKeyboard:true,drivenPackingUndo:true,keyedComparison:true,quotientTransfer:true,zeroWeightContributor:true,signedWeightReads:true};
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,weighted:weightedChecks,cases:caseChecks,comparison:comparisonChecks,prefix:prefixChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

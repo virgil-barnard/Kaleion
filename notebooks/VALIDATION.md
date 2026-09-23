@@ -1,5 +1,31 @@
 # Notebook viewer validation
 
+## Lesson 06 · Ordered weighted prefixes
+
+September 23, 2026; based on merged `91a6e33`. The Young notebook now uses
+`Grouping.prefix_sums` as its offset driver, with the original dense construction
+retained as a small independent check. Source cells have cleared outputs.
+
+- Separate fresh in-process IPython runs execute all **seven code cells** for
+  heights `[5,3,2,0]` and `[]`. The default layers `[3,3,2,1,1]` produce offsets
+  `[0,3,6,8,9]`; the empty input retains one measured zero layer and offset zero.
+- Dense-reference equality, original occurrence identity, 84 sampled motion
+  frames, exact reverse-path comparisons, three saved workspaces per run, and
+  reopened offset/earlier-layer receipts pass. Each run writes the four existing
+  standalone figures. The offset receipt now reaches earlier count measurements
+  directly rather than synthetic layer pairs.
+- The **184-test suite** and discovery example pass. Core and studio tests
+  independently exercise quotient-column packing and captured prefix evidence,
+  including zero/signed weights and local parameter cases.
+- A normal `nbconvert --execute` attempt fails during kernel startup because the
+  host denies network-interface/socket access. IPC transport is also denied.
+  The established fresh-process IPython runner executes the cells and captures
+  rich outputs instead; this is not a live JupyterLab test.
+
+The studio's separate Chromium gate authors prefix/placement through actual
+controls, including nested evidence, keyboard use and phone width. It does not
+establish physical-touch or novice usability. No MP4 is added or changed.
+
 ## Lessons 05/07 · Named products and a touch interaction study
 
 September 22, 2026; based on main `fa0dffb`. Python 3.12.14, NumPy 2.5.3,

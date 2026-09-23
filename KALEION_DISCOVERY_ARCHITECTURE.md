@@ -241,6 +241,14 @@ The six product concepts and the sequence of a discovery session do not prescrib
 
 The [post-notebook core plan](docs/CORE_REFINEMENT_PLAN.md) applies this criterion to actual code: scoped incidence semantics, field evaluation, index/group maps, result ownership, contributor representation, and prepared motion tracks. It records the gaps as well as the working contracts. The service inventory below is not a prescription to split code by stages of a discovery session.
 
+The later [ordered-prefix contract](docs/ORDERED_PREFIX.md) is a concrete example:
+Young layers and quotient columns need cumulative measured sizes under a declared
+order. A version-1 `prefix_sum` operation avoids dense predecessor products while
+sharing Rank's strict order plan and compact contributor ranges. The UI edits
+groups, order, keys and weights through the existing Measure instrument;
+inspection follows earlier measurements back to their captured contributors.
+This adds a bounded exact scan, not an arbitrary recurrence or sampled case family.
+
 | Hidden decision | Owning responsibility | What clients may rely on |
 | --- | --- | --- |
 | Dense, sparse, tiled, or lazily computed storage | Collection access | Defined indices, values, identities, extent, and access status |

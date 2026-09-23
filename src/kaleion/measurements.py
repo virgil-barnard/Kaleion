@@ -1,6 +1,6 @@
 """Captured measurement evidence, independent of execution and presentation.
 
-Reductions enumerate contributors. Ordered ranks store each group's ordered
+Reductions enumerate contributors. Ranks and prefix sums store each group's ordered
 occurrences once and one prefix range per result. Queries expand only that range.
 """
 

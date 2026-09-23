@@ -93,6 +93,7 @@ identities; the rank collection is a new measurement with its own identities.
 | `groups.count()` / `groups.sum(value=...)` | Existing exact reductions, with zero-group rules unchanged |
 | `groups.order_by(F.a, F.b)` | Declare lexicographic member order within each group |
 | `ordered.ranks(key=F.id)` | One zero-based predecessor count per unique item key |
+| `ordered.prefix_sums(key=F.id, value=F.weight)` | One sum of earlier weights per unique item key; current item excluded, first result zero |
 | `counts.order_by(F.key)` | Separately choose the storage/display order of group measurements |
 | `driver.bind(on=..., key=..., read=...)` | Match a target key to a unique driver key and read a quantity |
 | `target.arrange(x=..., y=..., z=...)` | Assign coordinates explicitly; supply x, x/y, or x/y/z |
@@ -104,6 +105,26 @@ Ranking an incidence ranks its selected occurrences; an empty selection produces
 no rank items. Its grouped count can still retain zero groups.
 For composite keys, retained fields keep their names, including a field named
 `key`; an ordinal `F.key` is supplied only when that name is otherwise unused.
+
+### Accumulate measured sizes in a declared order
+
+Young-layer offsets are a sum of earlier lengths, rather than their count:
+
+```python
+lengths = Collection.literal([3, 3, 2, 1, 1])
+offsets = lengths.group_by().order_by(F.key).prefix_sums()
+assert offsets.evaluate().values.tolist() == [0, 3, 6, 8, 9]
+```
+
+The same declaration accepts a count arrangement directly; the notebook's layer
+counts use `order_by(F.j).prefix_sums(key=F.j)`. Declare order and item keys
+explicitly. Groups reset the running sum; results retain input storage order.
+An incidence first selects its members, so an empty selection produces no items.
+Weights are exact integers; zero and negative weights still contribute. A zero
+prefix can have contributors, and signed weights need not produce a packing.
+`Inspection.measurement` follows a prefix to its earlier items and their weight
+reads. A contributing count retains its own receipt to the original cells.
+See [ordered accumulation](ORDERED_PREFIX.md) for the two transfer constructions.
 
 ## Check coverage before adopting an assignment
 
@@ -167,13 +188,14 @@ earlier_occurrences = rank_snapshot.contributor_ids(6)
 assert len(earlier_occurrences) == 1
 ```
 
-Rank evaluation groups and sorts in O(N log N) worst-case time. Its stored evidence
+Rank and weighted-prefix evaluation group and sort in O(N log N) worst-case time;
+the weighted scan adds O(N) work. Their stored evidence
 contains each group's ordered occurrence IDs once, plus one prefix range per
 result: O(N) space. This query locates the retained key and expands only its prefix;
 requesting every prefix can still require quadratic total output. The snapshot's
 `metadata["universe"]` identifies the evaluated source of these contributor IDs.
-Direct rank parents anchor the item being ranked; they are distinct from the
-counted predecessors.
+Direct parents anchor the measured item; they are distinct from its counted or
+weighted predecessors.
 
 Placement and reindexing preserve the evidence. Changing measured values removes
 the active measurement claim while retaining the input derivation. Captured JSON
@@ -213,8 +235,10 @@ The evaluator schedules their execution; history and viewers retain their own
 responsibilities. This applies the project's Parnas criterion to changeable
 decisions rather than creating a class for each screen.
 
-Two new version-1 operations are justified: `rank` avoids a dense predecessor
-expansion, and `require` makes a finite prerequisite part of the dependency graph.
+Three version-1 operations are justified: `rank` and weighted `prefix_sum` avoid
+dense predecessor expansion; `require` makes a finite prerequisite part of the dependency graph.
 Coverage uses existing reductions, predicates, and bindings. Older schema-1
 captures remain supported by the updated code. Executing the new operations and
-reading contributor-prefix version 1 require this updated implementation.
+reading contributor-prefix version 1 require an implementation that supports
+them. Prefix sums reuse that contributor format; reconstructing their weights
+requires the updated inspector. Captured history still restores without execution.

@@ -42,8 +42,25 @@ demonstrates why equal totals do not establish unique owners. Compact prefix
 queries work from saved captures without source execution.
 
 These choices simplify two independent constructions without changing their visible
-endpoints. They do not yet provide weighted prefix sums, measured case families,
-all comparison meanings, or an inspector that follows every driver read.
+endpoints. The later ordered-prefix increment below adds weighted sums. Measured
+case families, broader comparison meanings, and inspection of every kind of
+driver read remain separate work.
+
+## Delivered: ordered weighted accumulation
+
+Lesson 06 now declares `layers.group_by().order_by(F.j).prefix_sums(key=F.j)`
+for its packing driver, retaining the old dense construction as a small independent
+check. Prefix receipts identify earlier measured layers, whose receipts identify
+the original cells. The same Measure controls pack quotient columns; a zero
+column is a real zero-weight contributor to the following offset.
+
+The new operation shares member-order planning and contributor-prefix format 1
+with Rank. A 160-item test fits a 160-item evaluator budget, retains 160 roster
+entries and 160 ranges, and never builds the 25,600-item predecessor product.
+It checks exact values beyond 64 bits without claiming a general timing result.
+Ties, duplicate keys, signed weights, local cases, saved inspection and history
+have explicit tests. [The implementation brief](../ORDERED_PREFIX.md) records the
+UI contract and next work; this is not a general recurrence or case-family API.
 
 ## Delivered: captured explanations and a common exploration workflow
 
@@ -79,7 +96,7 @@ comparison meanings and read kinds still need separate contracts.
 | --- | --- | --- |
 | Measure, bind by keys, change a target | 04's lifted plane, 05's reconstruction, 06's packing, 07's stacks, 08's probes | Can the author declare the target quantity and correspondence in one readable expression? |
 | Pair domain, relation, reduction | Lines × pixels in 05; layers × layers in 06; pairs × bins and pairs × pairs in 07 | Would a paired-domain recipe expose source keys more clearly without hiding identity? |
-| Ordered prefix and rank | 06's starting offsets; 07's equal-sum predecessor counts | What ordering must an eventual scan/rank convenience function require? |
+| Ordered prefix and rank | 06's starting offsets; 07's equal-sum predecessor counts | Delivered with declared strict order and unique item keys. How should a novice resolve ties? |
 | Exact case family | 08's measured dilations and finite differences | How should a family expose case parameters and measured contributors? |
 | Keyed comparison with witnesses | 04's bump, 05's failed divisibility, 08's reciprocity residuals | Which equality is intended: totals, keyed values, subsets, or occurrences? |
 | Contributor explanation | A column in 04, a pixel in 05, a layer in 06, a sum in 07, a dilation in 08 | Can a common inspector follow target → bound driver → original contributors? |
@@ -124,10 +141,11 @@ general identity in these lessons has a separate argument with stated assumption
 
 ## Remaining experiments
 
-1. Extend the comparison to layer packing with a weighted prefix recipe. Named
-   `Product` roles now shorten pair-domain declarations in 05 and 07; next test
-   reordered canonical representatives in 10. The strict-rank recipe is already exercised
-   in sum stacking and Hermitian partitions. Preserve their keys and evidence.
+1. Ordered prefixes now drive layer and quotient-column packing, with keyed
+   comparison and contributor receipts. Named `Product` roles shorten pair-domain
+   declarations in 05 and 07; next test reordered canonical representatives in 10.
+   The strict-rank recipe is already exercised in sum stacking and Hermitian
+   partitions. Preserve their keys and evidence.
 2. Apply the delivered captured inspector to further contributor examples. The
    tests already include zero groups, signed weights, ranks, copied measurements,
    and local parameter cases; lesson 05 follows several derivation steps. Next

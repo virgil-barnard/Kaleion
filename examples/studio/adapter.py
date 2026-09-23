@@ -161,10 +161,12 @@ def build(command, roots, *, captured=None):
                 result = groups.count()
             elif reducer == "sum":
                 result = groups.sum(value=ex(args["weight"]))
-            elif reducer == "rank":
-                result = groups.order_by(*(F[k] for k in args["order"])).ranks(key=F[args["key"]])
+            elif reducer in ("rank", "prefix_sum"):
+                ordered = groups.order_by(*(F[k] for k in args["order"]))
+                result = (ordered.ranks(key=F[args["key"]]) if reducer == "rank" else
+                          ordered.prefix_sums(key=F[args["key"]], value=ex(args["weight"])))
             else:
-                raise ValueError("Choose Count, Sum, or Rank")
+                raise ValueError("Choose Count, Sum, Rank, or Prefix sum")
         elif action == "place":
             # Placement edits one view root. Existing derived roots keep their
             # immutable input definitions; this study does not rewrite a DAG.

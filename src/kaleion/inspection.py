@@ -92,7 +92,7 @@ class Inspection:
     """Queries over one captured state, including a reopened workspace's state.
 
     find() uses declared field names; item() uses scoped occurrence references.
-    measurement() follows preserved evidence to its original reduction/rank.
+    measurement() follows preserved evidence to its original measured operation.
     bindings() inspects a pointwise operation's input, never its changed output.
     Only keyed bindings are explained; scalar/positional reads and bindings nested
     inside another binding's key/read need a later, separately stated contract.
@@ -244,7 +244,7 @@ class Inspection:
     def measurement(self, ref, *, limit=32):
         """Inspect one retained measurement and at most limit contributors.
 
-        Count/rank contributors have unit weight; Sum weights are reconstructed
+        Count/rank contributors have unit weight; sum/prefix weights are reconstructed
         from captured inputs and the recorded expression. Zero/negative weights
         remain contributors. The limit bounds expanded contributor records, not
         stored parent references or the work of interpreting the weight field.
@@ -260,7 +260,7 @@ class Inspection:
         for _ in range(100):
             snapshot, i = self._locate(origin)
             node, params, resolve = self._execution(origin.node)
-            if node.op in ("reduce", "rank"):
+            if node.op in ("reduce", "rank", "prefix_sum"):
                 break
             if len(snapshot.parents[i]) != 1:
                 raise ValueError("Measurement origin needs one preserved parent per derived occurrence")
@@ -271,7 +271,7 @@ class Inspection:
         key = meta["keys"][i]
         ids = snapshot.contributor_ids(key)
         universe = self._snapshot(meta["universe"])
-        rule = node.attributes.get("value") if meta["reducer"] == "sum" else None
+        rule = node.attributes.get("value") if meta["reducer"] in ("sum", "prefix_sum") else None
         weights = None if rule is None else T.exact(T.broadcast(evaluate_expression(
             rule, universe.context(), params, resolve, length=len(universe)), len(universe)))
         plans = () if rule is None else tuple(self._read_plans(rule, "weight", universe, params, resolve))

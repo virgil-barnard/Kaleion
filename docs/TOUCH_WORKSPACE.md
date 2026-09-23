@@ -18,7 +18,7 @@ gesture study. Human touch trials remain to be conducted.
 
 | Proposed experience | Current studio evidence | Still open |
 | --- | --- | --- |
-| Compose tools on objects | Contextual relations, measurements, keyed placement and comparison; one recoverable draft | Full lesson vocabulary, reusable recipes, novice transfer |
+| Compose tools on objects | Contextual relations, measurements including ordered prefixes, keyed placement and comparison; one recoverable draft | Full lesson vocabulary, reusable recipes, novice transfer |
 | Inspect how a result was made | Paired captured views; contributor, weight and source navigation; return restores cameras/selection | Free pinning and a usable layout for many simultaneous views |
 | Change assumptions | Exact integer cases preview/apply a new evaluation; replay uses recorded motion separately | Saved-case browsing and measured case families |
 | Declare a comparison | Selected integer fields, ordered keys and an independent expected domain; missing-both and outside witnesses | Distinct support, totals and structural-correspondence contracts |
@@ -58,7 +58,7 @@ Names in the first column are proposed user-facing labels.
 | **Pair** | Select two sources; name their roles, then choose “Every pair” | `Product(left=A, right=B)` declares occurrence tuples. Show factor sizes and total product size before applying. It is different from matching keys or combining collections. |
 | **Fields** | Tap named value/index/attribute chips to compose an expression | `annotate` or `with_values`. Chips carry their source context; `left.value`, a retained key, and a displayed x coordinate are different inputs. |
 | **Relate** | Choose field, comparison, argument; place the resulting lens on an object | `where(predicate)` keeps its universe. Dragging a handle changes an explicit parameter. Compose AND/OR/complement within that universe. |
-| **Measure** | Choose Count, Sum, Presence, or Rank; pull the result into the scene | Declare retained group keys and expected coverage. Sum also asks for a weight; Rank asks for strict member order and item key. Show zero groups. |
+| **Measure** | Choose Count, Sum, Presence, Rank, or Prefix sum; pull the result into the scene | Declare groups and expected coverage. Sum asks for a weight; Rank asks for strict member order and item key; Prefix sum combines those choices. Distinguish retained zero groups from an item's empty prefix. |
 | **Arrange** | Assign fields or measurements to x/y/z; preview a built-in layout | `arrange`/`place` changes positions. `move` adds displacements. Values, occurrence identity, and arithmetic remain separate. |
 | **Use measurement** | Select a measurement, then a destination such as “height” | Show target key ↔ driver key, quantity read, and quantity changed before committing `bind` plus the destination operation. Equal lengths do not imply alignment. |
 | **Transform** | Choose Shift, Gather, Tile, or Join from an object menu | Expose whether the change moves contents in fixed slots, changes placement, creates copies, or selects occurrences. Boundary/wrap and axis choices belong to the operation. |
@@ -68,8 +68,10 @@ Names in the first column are proposed user-facing labels.
 
 Count and Rank should not share a vague “height” button. Lesson 07 needs the number
 of earlier **members** to stack points; lesson 06 needs the total **weight** of
-earlier layers to pack them. The latter still lacks the intended efficient prefix
-operation. Similar pictures do not justify concealing this difference.
+earlier layers to pack them. The [ordered-prefix operation](ORDERED_PREFIX.md) now
+supplies that weighted accumulation. Its control says **before each item**, shows
+the weight expression, and requires explicit order and a unique item key. Similar
+pictures do not justify concealing the difference between counts and weights.
 
 Keep rare options in an “Edit declaration” sheet. A readable symbolic expression
 is a parallel representation of the same definition, not an unrelated script
@@ -266,6 +268,8 @@ Comparison follows exact residuals into those receipts, while case controls expo
 the prime/composite assumption. Next observe whether new users can choose an
 independent domain, distinguish a compared field from an occurrence's value,
 and return to their original question. Compare the current phone jump links with
-a bottom-sheet prototype on real devices. Separately, weighted
-prefixes in lesson 06 should establish the missing ordered-measurement contract.
-A future prefix control should follow that evidence, not lead the core design.
+a bottom-sheet prototype on real devices. Weighted prefixes in lesson 06 now
+establish the ordered-measurement contract, with a dense reference and transfer
+to quotient-column packing. The shared Measure control follows that contract;
+its first zero, retained zero-weight items, signed sums and tied orders have
+automated checks. Measured case families remain a separate backend gap.
