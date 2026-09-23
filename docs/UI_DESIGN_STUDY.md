@@ -4,6 +4,8 @@ September 22, 2026 · Research and initial audit
 
 September 23, 2026 · Reevaluation through cases, comparison and ordered accumulation
 
+September 23, 2026 · Icarus comparison and construction-inspection review after PR #29
+
 **Recommendation:** build a workspace of reusable mathematical instruments, with
 low-cost experimentation and visible consequences. Judge it by whether someone
 can transfer an interaction to an unfamiliar construction, explain what changed,
@@ -23,6 +25,10 @@ The existing [all-lesson coverage matrix](CONSTRUCTION_STUDIO.md#all-lessons-are
 remains the capability inventory. This document supplies the evaluation criteria.
 The ordered-prefix increment starts from `91a6e33` (merged PR #26); it adds the
 transfer evidence recorded below without claiming new human-study results.
+The latest [unified canvas proposal](UNIFIED_CANVAS_DESIGN.md) reviews merged
+PR #29 (`00d9202`) against Icarus and the maintainer's further desktop feedback.
+It records design decisions and an implementation sequence; it adds no runtime
+capability or new Kaleion test-suite result.
 
 ## 1. What the research contributes
 
@@ -118,11 +124,14 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A6 | Preview/apply and captured history are separate; driver inspection can use saved data | Adapter/core contracts and save/reopen browser checks | Preserve; no new numerical execution in the view layer |
 | A7 | Formula, canvas, and actions can be far apart on a narrow screen | 320 px screenshots: the form is below the canvas | Partly addressed · local feedback and focus-moving Canvas / Controls and evidence links; simultaneous visibility and reach remain untested |
 | A8 | Contextual actions have visible and keyboard alternatives; View pan/zoom still lack complete button alternatives | Context resolver and gesture handlers | Addressed for camera actions · shared Fit/zoom/directional-pan controls on main and linked views; physical input and accessibility audit remain open |
-| A9 | A single object canvas obscures comparisons and immutable earlier inputs | Existing studio limit and lesson coverage matrix | Partly addressed · scoped coverage, quotient, Radon and comparison views with return navigation; free pinning remains open |
+| A9 | A single object canvas obscures comparisons and immutable earlier inputs | Existing studio limit and lesson coverage matrix | Partly addressed · linked evidence plus PR #29's simultaneous named-root previews and definition paths; free pinning and direct shared geometry remain open |
 | A10 | No novice task or physical tablet trial has been conducted | Available evidence consists of code, deterministic fixtures, and emulated Chromium | Open · run the formative protocol below |
 | A11 | The first object-tab click after editing a number can disappear | Input blur triggers a render that replaces the tab before its click arrives; reproduced in the baseline probe | Addressed · unchanged controls survive render; one-click navigation regression |
 | A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
 | A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the current studio hides replay until a recent movement | Open · four saved canvases and an existing-controls walkthrough provide material for feedback; no UI redesign in this increment |
+| A14 | Selecting an object does not adequately reveal how it was constructed | Maintainer feedback after PR #29; the root description exposes an operation name, while detailed evidence starts from captured occurrences | Open · next implementation should show a readable constructor, arguments, scoped inputs, and result status on selection |
+| A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 uses independently scaled XY previews; Icarus browser review shows grid-native vectors, product headers, and lens extraction | Open · proposed common scene, local frames, cells/points and 3D views; preserve the distinction between view movement and mathematical placement |
+| A16 | Reusable rules and live dependencies lack a complete visible authoring contract | Core Lens is reusable; current connections describe immutable definitions, while Icarus exposes movable relation tokens | Open · separate rule, application, and captured incidence; add explicit recipe ports before promising propagation through editable cables |
 
 The baseline probe uses actual controls and records the browser version, focused
 element, message, Apply availability, and presence of a draft-return control.
@@ -184,6 +193,44 @@ or contextual palette is a candidate to compare with this layout, not an already
 validated replacement. Persistent comparison recipes, named subexpressions, and
 a saved-case browser are useful development candidates once their reuse and
 visibility costs have concrete task evidence.
+
+### Icarus comparison: construction must be visible before evidence
+
+The maintainer's next report identifies a specific unresolved question: selecting
+a workspace object still does not make its construction clear. The requested
+reference is their older Icarus application, particularly its grid, directly
+created vectors/products, reusable relation tokens, and spatial interactions.
+This feedback supports A14–A16; it does not establish that all of Icarus's controls
+are intuitive or should be adopted.
+
+The [design brief](UNIFIED_CANVAS_DESIGN.md) records the exact source revisions
+and the bounded browser exercise: vector drawing and inspection, a product from
+two vectors, a four-member relation on a six-by-six domain, extraction, and
+reattachment. Source inspection distinguishes working mechanisms from prospective
+3D and general recurrence ideas. No private source or browser screenshots are
+copied into Kaleion; the brief includes an independently drawn concept.
+
+The revised priority is **readable construction on selection**, connected to
+existing occurrence evidence. A measurement receipt answers why one result has
+its value; an object's constructor explains its source, reducer, groups, weight,
+order, and parameters. Neither substitutes for the other. Input navigation must
+retain the earlier-definition and local-case boundaries already protected by
+the spatial workspace.
+
+Against this study's rubric, simultaneous objects improve visibility but do not
+yet resolve A14 or the direct-manipulation goal. Grid cells and points should
+share selection identity; choosing logical axes versus placement stays explicit.
+Reusable rules should expose their arguments and bindings. A persistent transport
+should label Cases, Generation, or Replay, with seeking captured samples separated
+from acquiring new evaluations. These are design hypotheses with concrete
+acceptance tasks, not completed fixes.
+
+The next human observation should begin without an editing instruction: select
+Moving pairs, explain how its y coordinate is obtained, follow the rank source,
+and return. Then ask the person to create two short sources, propose a product,
+reuse a relation, and explain what the chosen scrubber changes. Repeat in an
+unrelated lesson. This tests discovery, interpretation, and transfer rather than
+only whether the controls execute correctly.
 
 ## 5. First design experiment: an idea survives a detour
 
@@ -305,9 +352,10 @@ These are historical gate totals, not participant counts or usability scores.
 | [Keyed comparison](KEYED_COMPARISON.md), merged `91a6e33` | Exact selected fields and independent domain; residual receipts, lattice transfer, missing-both keys; shared camera buttons and phone navigation | 173 |
 | [Ordered accumulation](ORDERED_PREFIX.md), merged PR #27 | Young layers and quotient columns use the same prefix/placement controls; nested measured contributors, tied-order recovery, zero/signed weights | 184 |
 | [Saved canvases](../examples/canvases/README.md), merged PR #28 | Four editable investigations open with captured evidence and reversible movement | 190 |
-| [Spatial workspace](SPATIAL_WORKSPACE.md), this increment | Named objects visible together; definition paths distinguish earlier and local inputs; reviewed drag/tap composition preserves declaration and history boundaries | 195 |
+| [Spatial workspace](SPATIAL_WORKSPACE.md), merged PR #29 | Named objects visible together; definition paths distinguish earlier and local inputs; reviewed drag/tap composition preserves declaration and history boundaries | 195 |
 
-The current required suite and discovery example pass. The expanded Chromium 153
+PR #29 reported the required suite and discovery example passing; the subsequent
+Icarus/design review does not rerun or change those executable gates. The expanded Chromium 153
 gate uses actual controls for prime/composite reconstruction and lattice equality,
 returns through nested evidence to the same comparison and camera, distinguishes
 missing zero-valued items from equality, and rejects duplicate keys. Camera taps,
@@ -403,6 +451,13 @@ Use this record for each review:
 | Next change | Owner, bounded change, test that would disconfirm the hypothesis |
 
 ## 8. Development sequence
+
+The list below records the original sequence and delivered increments. Following
+the Icarus review, the [next PR sequence](UNIFIED_CANVAS_DESIGN.md#a-sequence-of-small-reviewable-pull-requests)
+starts with construction inspection, then shared representations and visible
+captured tracks. Reusable rules and editable recipes follow with explicit scope
+and compatibility contracts. That proposal changes priorities, not the delivery
+status recorded here.
 
 1. **Stable authoring loop:** draft retention, accurate local feedback, and focus
    recovery. Delivered and tested against additive/modular controls;

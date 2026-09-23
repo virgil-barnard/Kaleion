@@ -38,6 +38,15 @@ planned recurrence steps, ordered exact parameter cases, and captured replay.
 It also records the immutable-definition boundary that an eventual cable editor
 must respect. This progress does not establish that the interface is intuitive.
 
+The next round of maintainer feedback asks for more visible construction details
+and Icarus-like direct interaction. The [unified canvas design](UNIFIED_CANVAS_DESIGN.md)
+compares the two implementations and gives a staged plan: construction inspection
+first, then a shared cell/point/3D scene, visible captured tracks, reusable rules,
+and explicit editable dependencies. It sharpens the time contract: creating new
+case or recurrence samples can evaluate; seeking retained samples cannot. The
+brief preserves this document's input, identity, coverage, and history boundaries.
+It is a proposal, not an additional implemented feature set.
+
 ## The experience to aim for
 
 Let a person compose a scene: put down a source, shape it, move a lens over it,
