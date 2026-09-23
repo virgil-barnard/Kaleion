@@ -22,10 +22,11 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
    if(path.length)await card.locator(`[data-path="${path.join('/')}"]`).click();
    else await card.locator('[data-edit-root]').click();
    const sheet=card.locator('.expression-sheet'),type=sheet.getByLabel('Expression type');
-   const desired='field'in spec?'Field':'integer'in spec?'Number':spec.op?'Operation':spec.tuple?'Key tuple':'Keyed read';
+   const desired='field'in spec?'Field':'integer'in spec?'Number':'parameter'in spec?'Parameter':spec.op?'Operation':spec.tuple?'Key tuple':'Keyed read';
    if(await type.inputValue()!==desired)await type.selectOption(desired);
    if(desired==='Field'){assert.ok((await sheet.getByLabel('Field',{exact:true}).locator('option').allTextContents()).includes(spec.field),`Unavailable field ${spec.field} at ${path.join('/')}`);await sheet.getByLabel('Field',{exact:true}).selectOption(spec.field);}
    else if(desired==='Number')await sheet.getByLabel('Exact integer',{exact:true}).fill(String(spec.integer));
+   else if(desired==='Parameter')await sheet.getByLabel('Parameter',{exact:true}).selectOption(spec.parameter);
    else if(desired==='Operation'){
      await sheet.getByLabel('Operation',{exact:true}).selectOption(spec.op);
      await expression(card,spec.args[0],[...path,'args',0]);
@@ -48,6 +49,13 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  async function integers(name,values){await tool('integers',true);await page.locator('#result-name').fill(name);await page.locator('#integer-values').fill(values);await apply()}
  async function select(name){await page.locator('[data-object]').filter({hasText:name}).first().click()}
  async function values(name){return (await state()).objects.find(o=>o.name===name).rows.map(r=>r.fields.value)}
+ async function declare(name,value){
+   await page.locator('#cases').click();await page.locator('#declare-parameter').click();
+   await page.getByLabel('Parameter name',{exact:true}).last().fill(name);await page.getByLabel('Parameter value',{exact:true}).fill(value);await apply();
+ }
+ await declare('p','3');
+ assert.deepEqual((await state()).parameters,{p:'3'});
+ assert.equal(await page.locator('#replay').isVisible(),false);
  await integers('A','0, 1, 3');await integers('B','0, 2');await select('A');
  await tool('product');await page.locator('#result-name').fill('Pairs');
  const sources=page.locator('#panel fieldset > label > select');await sources.nth(0).selectOption('A');await sources.nth(1).selectOption('B');await apply();
@@ -348,16 +356,19 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  // Radon: compose ordered-key reads, then follow a contribution's weight to another sum.
  await page.setViewportSize({width:1250,height:950});await page.locator('[data-mode="objects"]').click();
  const tuple=(...fields)=>({tuple:fields.map(f)}),read=(object,on,key,value=f('value'))=>({read:{object,on,key,value}});
- await tool('grid',true);await page.locator('#result-name').fill('Radon image');await page.locator('#grid-shape').fill('3, 3');await page.locator('#grid-axes').fill('u, v');await page.locator('#grid-axes').press('Tab');
+ const p={parameter:'p'};
+ await tool('grid',true);await page.locator('#result-name').fill('Radon image');await page.locator('#grid-shape').fill('p, p');await page.locator('#grid-axes').fill('u, v');await page.locator('#grid-axes').press('Tab');
  await expression(cards().nth(0),op('*',f('u'),op('+',f('v'),n(1))));await apply();
  await tool('place');await expression(cards().nth(0),f('u'));await expression(cards().nth(1),f('v'));await apply();
- await tool('grid',true);await page.locator('#result-name').fill('Radon lines');await page.locator('#grid-shape').fill('4, 3');await page.locator('#grid-axes').fill('m, t');await page.locator('#grid-axes').press('Tab');await expression(cards().nth(0),n(0));await apply();
+ await tool('grid',true);await page.locator('#result-name').fill('Radon lines');await page.locator('#grid-shape').fill('p, p');await page.locator('#edit-axis-lengths').click();
+ await expression(page.getByRole('group',{name:'Axis 1 length',exact:true}),op('+',p,n(1)));
+ await page.locator('#grid-axes').fill('m, t');await page.locator('#grid-axes').press('Tab');await expression(cards().nth(0),n(0));await apply();
  await tool('product');await page.locator('#result-name').fill('Radon pairs');
  const roles=page.locator('#panel fieldset > label > input:not(#result-name)'),factors=page.locator('#panel fieldset > label > select'),copies=page.locator('#panel fieldset > div');
  await roles.nth(0).fill('point');await roles.nth(1).fill('line');await factors.nth(0).selectOption('Radon image');await factors.nth(1).selectOption('Radon lines');
  for(const field of ['u','v'])await copies.nth(0).locator(`input[value="${field}"]`).check();
  for(const field of ['m','t'])await copies.nth(1).locator(`input[value="${field}"]`).check();await apply();
- const onLine=op('or',op('and',op('<',f('line_m'),n(3)),op('=',op('%',op('-',op('-',f('point_v'),op('*',f('line_m'),f('point_u'))),f('line_t')),n(3)),n(0))),op('and',op('=',f('line_m'),n(3)),op('=',f('point_u'),f('line_t'))));
+ const onLine=op('or',op('and',op('<',f('line_m'),p),op('=',op('%',op('-',op('-',f('point_v'),op('*',f('line_m'),f('point_u'))),f('line_t')),p),n(0))),op('and',op('=',f('line_m'),p),op('=',f('point_u'),f('line_t'))));
  await tool('lens');await page.locator('#result-name').fill('Radon incidence');await expression(cards().nth(0),onLine);await apply();
  await tool('measure');await page.locator('#result-name').fill('Radon counts');await page.locator('#reducer').selectOption('sum');await retain('line_m');await retain('line_t');await expression(cards().nth(0),f('point_value'));await apply();
  assert.deepEqual(await values('Radon counts'),['3','6','9','8','5','5','7','7','4','0','6','12']);
@@ -381,14 +392,26 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  await tool('measure');await page.locator('#result-name').fill('Radon total');await page.locator('#reducer').selectOption('sum');await expression(cards().nth(0),f('value'));await apply();assert.deepEqual(await values('Radon total'),['18']);
  await select('Radon backprojection');await tool('field');await page.locator('#result-name').fill('Radon recovered');await page.locator('#field-name').fill('recovered');
  const numerator=op('-',f('value'),read('Radon total',n(0),f('key')));
- await expression(cards().nth(0),op('//',numerator,n(3)));await apply();
+ await expression(cards().nth(0),op('//',numerator,p));await apply();
  assert.deepEqual((await state()).objects.find(o=>o.name==='Radon recovered').rows.map(r=>r.fields.recovered),['0','0','0','1','2','3','2','4','6']);
- await select('Radon backprojection');await tool('field');await page.locator('#result-name').fill('Radon division check');await page.locator('#field-name').fill('remainder');await expression(cards().nth(0),op('%',numerator,n(3)));await apply();
+ await tool('place');await expression(cards().nth(0),f('point_u'));await expression(cards().nth(1),f('point_v'));await apply();
+ await select('Radon backprojection');await tool('field');await page.locator('#result-name').fill('Radon division check');await page.locator('#field-name').fill('remainder');await expression(cards().nth(0),op('%',numerator,p));await apply();
  assert.deepEqual((await state()).objects.find(o=>o.name==='Radon division check').rows.map(r=>r.fields.remainder),Array(9).fill('0'));
  await select('Radon image');const flatRadon=(await state()).objects.find(o=>o.name==='Radon image').rows;
  await tool('place');await expression(cards().nth(0),f('u'));await expression(cards().nth(1),op('+',f('v'),read('Radon recovered',tuple('u','v'),tuple('point_u','point_v'),f('recovered'))));await apply();
  const raisedRadon=(await state()).objects.find(o=>o.name==='Radon image').rows;assert.deepEqual(raisedRadon.map(r=>r.position),[[0,0],[0,1],[0,2],[1,1],[1,3],[1,5],[2,2],[2,5],[2,8]]);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.evaluate(()=>{window.replayLabels=[];window.replayObserver=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)window.replayLabels.push(node.textContent)});window.replayObserver.observe(document.querySelector('#replay output'),{childList:true})});
  await page.locator('#undo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Radon image').rows,flatRadon);await page.locator('#redo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Radon image').rows,raisedRadon);
+ assert.equal(await page.evaluate(()=>{window.replayObserver.disconnect();return window.replayLabels.some(text=>text.startsWith('Replay '))}),false);
+ // Scrubbing has no evaluation or history request; construction returns to the exact endpoint.
+ const beforeReplay=await(await page.request.get(origin+'/api/export')).text();
+ let replayRequests=0;const countRequest=request=>{if(request.url().includes('/api/'))replayRequests++};page.on('request',countRequest);
+ await page.locator('#replay-progress').fill('12');assert.match(await page.locator('#scope').textContent(),/presentation only/);
+ await page.locator('#play-replay').click();await idle();page.off('request',countRequest);assert.equal(replayRequests,0);
+ assert.equal(await(await page.request.get(origin+'/api/export')).text(),beforeReplay);
+ await page.locator('#replay-progress').fill('6');await page.locator('#options').click();assert.equal(await page.locator('#replay-progress').inputValue(),'24');await page.locator('#close-menu').click();
+ await page.emulateMedia({reducedMotion:'no-preference'});
  // Traverse pixel -> line-count weight -> source pixels, preserving return views.
  await select('Radon backprojection');await page.locator('[data-mode="points"]').click();const backPixel=(await state()).objects.find(o=>o.name==='Radon backprojection').rows[0];await page.locator('#occurrence').selectOption(backPixel.ref[1]);await idle();
  const radonBefore=await(await page.request.get(origin+'/api/export')).text();await page.locator('#view-contributors').click();await idle();
@@ -416,6 +439,48 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#linked-views').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'radon-weight-phone.png'),fullPage:true});
  assert.equal(await(await page.request.get(origin+'/api/export')).text(),radonBefore);
  await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();
+ // Change one declaration. Every unbound use reevaluates; the current case stays visible until Apply.
+ await page.setViewportSize({width:1250,height:950});await select('Radon recovered');
+ const primeRows=(await state()).objects.find(o=>o.name==='Radon recovered').rows;
+ await page.locator('[data-mode="points"]').click();
+ await page.locator('#cases').click();await page.getByLabel('Value of p',{exact:true}).fill('4');
+ await page.locator('#preview').click();await idle();assert.match(await page.locator('#case-report').textContent(),/0 failed/);
+ assert.equal(await page.locator('#occurrence-label').isVisible(),false,'Applied occurrence references must not appear on a proposed case');
+ assert.deepEqual((await state()).parameters,{p:'3'});assert.match(await page.locator('#scope').textContent(),/Preview case · p = 4/);
+ await page.locator('#cancel').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Radon recovered').rows,primeRows);
+ assert.equal(await page.locator('#occurrence-label').isVisible(),true);
+ await page.locator('[data-mode="objects"]').click();
+ await page.locator('#cases').click();await page.getByLabel('Value of p',{exact:true}).fill('4');
+ // Inspect a source while the case is parked; the proposed binding returns unchanged.
+ await select('Radon image');await page.locator('#resume-draft').click();assert.equal(await page.getByLabel('Value of p',{exact:true}).inputValue(),'4');
+ await apply();assert.deepEqual((await state()).parameters,{p:'4'});assert.equal(await page.locator('#replay').isVisible(),false);
+ const composite=(await state()).objects;
+ assert.equal(composite.find(o=>o.name==='Radon recovered').rows[0].fields.recovered,'-1');
+ assert.equal(composite.find(o=>o.name==='Radon division check').rows[0].fields.remainder,'0');
+ assert.equal(composite.find(o=>o.name==='Radon image').rows[0].fields.value,'0');
+ await page.locator('#labels').selectOption('recovered');
+ await page.screenshot({path:path.join(output,'parameter-case-four.png'),fullPage:true});
+ await page.locator('#undo').click();await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Radon recovered').rows,primeRows);assert.equal(await page.locator('#replay').isVisible(),false);
+ await page.locator('#redo').click();await idle();assert.deepEqual((await state()).parameters,{p:'4'});
+ await select('Radon backprojection');await page.locator('[data-mode="points"]').click();await page.locator('#occurrence').selectOption((await state()).objects.find(o=>o.name==='Radon backprojection').rows[0].ref[1]);await idle();
+ assert.match(await page.locator('#panel').textContent(),/5 contributors/);await page.locator('#view-contributors').click();await idle();assert.equal(await rightCard().locator('[data-linked-member="true"]').count(),5);
+ await page.locator('#close-linked').click();await page.locator('[data-mode="objects"]').click();
+ // Transfer the same parameter control to lattice growth, with a retained zero row.
+ await declare('n','2');const parameterN={parameter:'n'};
+ await tool('grid',true);await page.locator('#result-name').fill('Growing square');await page.locator('#grid-shape').fill('n, n');await page.locator('#edit-axis-lengths').click();
+ for(const axis of [1,2])await expression(page.getByRole('group',{name:`Axis ${axis} length`,exact:true}),op('+',parameterN,n(1)));await apply();
+ await tool('lens');await page.locator('#result-name').fill('Growing triangle');await expression(cards().nth(0),op('<',op('+',f('i'),f('j')),parameterN));await apply();
+ await tool('measure');await page.locator('#result-name').fill('Triangle rows');await retain('i');await apply();assert.deepEqual(await values('Triangle rows'),['2','1','0']);
+ await page.locator('#cases').click();await page.getByLabel('Value of n',{exact:true}).fill('4');await apply();assert.deepEqual(await values('Triangle rows'),['4','3','2','1','0']);
+ await page.setViewportSize({width:320,height:950});await page.locator('#cases').click();await page.getByLabel('Value of n',{exact:true}).fill('0');await page.locator('#preview').focus();await page.keyboard.press('Enter');await idle();
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:path.join(output,'parameter-case-phone.png'),fullPage:true});
+ await page.locator('#apply').click();await idle();assert.deepEqual(await values('Triangle rows'),['0']);
+ // Invalid arithmetic blocks dependents, never erases an independent count or masquerades as zero.
+ await select('A');await tool('field');await page.locator('#result-name').fill('Parameter residue');await page.locator('#field-name').fill('residue');await expression(cards().nth(0),op('%',f('value'),p));await apply();
+ await page.locator('#cases').click();await page.getByLabel('Value of p',{exact:true}).fill('0');await page.locator('#preview').click();await idle();assert.match(await page.locator('#case-report').textContent(),/Parameter residue:.*Division or remainder by zero/i);
+ await page.locator('#apply').click();await idle();assert.equal((await state()).objects.find(o=>o.name==='Parameter residue').status,'failed');assert.deepEqual(await values('Triangle rows'),['0']);
+ await page.locator('#undo').click();await idle();assert.equal((await state()).objects.find(o=>o.name==='Parameter residue').status,'ready');
+ const caseChecks={declaredOnce:true,parameterExpressions:true,formulaExtents:true,primeComposite:true,exactButWrong:true,casePreviewCancel:true,parkedCase:true,capturedCaseUndo:true,caseEvidence:true,replayWithoutRequests:true,latticeTransfer:true,failedCaseIsolation:true,keyboardAndPhone:true};
  // A weight expression may transform its read: 2*read - 4 gives [-4,0,6].
  await integers('Weight driver','0, 2, 5');await integers('Weighted items','99, 99, 99');await tool('measure');await page.locator('#result-name').fill('Signed total');await page.locator('#reducer').selectOption('sum');
  await expression(cards().nth(0),op('-',op('*',n(2),read('Weight driver',f('index'),f('index'))),n(4)));await apply();assert.deepEqual(await values('Signed total'),['2']);
@@ -424,7 +489,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.match(await page.locator('#contribution-evidence').textContent(),/Source value 99 · weight 0/);await page.getByRole('button',{name:'Follow weight read · 2',exact:true}).click();await idle();
  assert.match(await leftCard().locator('.linked-detail').textContent(),/Weight 0/);assert.match(await rightCard().locator('.linked-detail').textContent(),/Read 2/);
  const weightedChecks={compositeKeyEditing:true,tupleDraftAndUndo:true,orderedKeyFailure:true,radonReconstruction:true,exactDivision:true,measurementDrivenUndo:true,weightReadNavigation:true,zeroWeightSource:true,returnSelectionAndCamera:true,keyboardAndPhone:true,unchangedCapture:true,transformedReadWeight:true};
- assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,weighted:weightedChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
+ assert.deepEqual(errors,[]);fs.writeFileSync(path.join(output,'report.json'),JSON.stringify({browser:browser.version(),errors,layouts,authoring,coverage:coverageChecks,linked:linkedChecks,weighted:weightedChecks,cases:caseChecks,objects:(await state()).objects.length,checks:['two constructions through controls','sum/modular/coverage group selection','zero-group lens retains universe','tied order and explicit tie breaker','compact formula/subtree edit/local undo','phone formula edits and captured group taps','recoverable drafts across relation/measurement inspections','current local preview status and keyboard focus','independent coverage keys and guarded field assignment','coverage witnesses and absent groups','assigned fields drive reversible placement','preview/cancel/failure','keyed rank placement and inspection','zero contributors','captured undo/redo/save/open','exact integer transport','hold/drag/cancel/multi-touch','mode/context and keyboard menus','same-origin mutation guard']},null,2));
  console.log('Construction studio browser checks passed.');
  }finally{await browser.close();server?.kill()}
 })().catch(e=>{server?.kill();console.error(e);process.exitCode=1});

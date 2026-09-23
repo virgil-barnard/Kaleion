@@ -222,6 +222,16 @@ view-state recall and forwards opaque selection context; `expressions.js` edits
 ordered tuples lowered to existing vector expressions. Radon reconstruction and
 signed sums share these controls; notebook function counts remain unchanged.
 
+The [parameter-case instrument](../PARAMETER_CASES.md) adds `web/cases.js`
+(`caseFields`, `caseLabel`, `caseReport`) for exact declarations and case reports,
+plus `web/replay.js::replayControls` for presentation samples with no requests.
+`adapter.py::preview_case` validates proposed integer bindings and delegates
+evaluation to existing `State.evaluate`; one-use commit/history reuse captured
+states. Expression and grid controls emit parameter references, not evaluated
+literals. Inline browser work parameterizes Radon and constructs a growing
+triangle through the same choices; the weighted test fixture can lower a literal
+or a parameterized modulus. Notebooks 05/08 and their function counts are unchanged.
+
 Use the Parnas guidepost in [DESIGN.md](../../DESIGN.md): isolate decisions likely
 to change, rather than turning each stage of a lesson into a module. A viewer can
 change its routing without changing incidence; an arithmetic recipe can change

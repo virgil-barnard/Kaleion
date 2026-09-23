@@ -57,9 +57,11 @@ fibers, and restricted Hermitian ownership exercise the same contract.
 [Linked views](../LINKED_EVIDENCE_VIEWS.md) now serve coverage, quotient contributors,
 and earlier keyed drivers. [Weighted evidence](../WEIGHTED_EVIDENCE.md) now follows
 a Radon reconstruction's line-count weights through source-field reads, using
-ordered key tuples and return views. Next expose exact parameter cases, using
-the prime/composite change and lattice growth as transfer tasks; keep replay
-sampling separate from mathematical inputs.
+ordered key tuples and return views. [Exact parameter cases](../PARAMETER_CASES.md)
+now use the prime/composite change and lattice growth as transfer tasks, keeping
+replay sampling separate from mathematical inputs. Next expose finite keyed
+comparisons with independently declared expected domains and inspectable residuals;
+measured case families still need their own evidence contract.
 Full-lesson UI coverage and new-user trials remain
 future work; its coverage matrix distinguishes editor gaps from backend gaps.
 The [UI design study](../UI_DESIGN_STUDY.md) now supplies the quality rubric and

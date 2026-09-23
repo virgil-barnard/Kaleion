@@ -11,6 +11,7 @@ const node=(tag,text,attrs={})=>{
 export function formatExpression(spec){
   if('field' in spec)return spec.field;
   if('integer' in spec)return spec.integer;
+  if('parameter' in spec)return `$${spec.parameter}`;
   if('tuple' in spec)return `(${spec.tuple.map(formatExpression).join(', ')})`;
   if('op' in spec)return `(${formatExpression(spec.args[0])} ${symbols[spec.op]} ${formatExpression(spec.args[1])})`;
   const r=spec.read;
@@ -34,7 +35,7 @@ function contextAt(tree,path,fields,sources){
   return context;
 }
 
-export function expressionEditor(initial,fields,sources=[]){
+export function expressionEditor(initial,fields,sources=[],parameters=[]){
   let tree=clone(initial), selected=null, past=[], returnPath=null;
   const box=node('div',undefined,{class:'expression'});
   const formula=node('div',undefined,{class:'formula','aria-label':'Structured expression'});
@@ -81,6 +82,7 @@ export function expressionEditor(initial,fields,sources=[]){
     function render(spec,path,parent){
       if('field' in spec){parent.append(token(spec.field,path,`Edit field ${spec.field}`));return}
       if('integer' in spec){parent.append(token(spec.integer,path,`Edit integer ${spec.integer}`));return}
+      if('parameter' in spec){parent.append(token(`$${spec.parameter}`,path,`Edit parameter ${spec.parameter}`));return}
       if('op' in spec){
         parent.append(node('span','('));render(spec.args[0],[...path,'args',0],parent);
         parent.append(token(symbols[spec.op],path,`Edit operation ${symbols[spec.op]}`));
@@ -105,13 +107,17 @@ export function expressionEditor(initial,fields,sources=[]){
     const heading=node('div',undefined,{class:'row'}),done=node('button','Done',{type:'button','data-expression-done':''});
     heading.append(node('strong','Edit selected part'),done);sheet.append(heading);
     done.onclick=close;
-    const kind='field'in spec?'Field':'integer'in spec?'Number':'op'in spec?'Operation':'tuple'in spec?'Key tuple':'Keyed read';
-    const type=labeled('Replace with',optionList(['Field','Number','Operation','Key tuple','Keyed read'],kind,'Expression type'));
+    const kind='field'in spec?'Field':'integer'in spec?'Number':'parameter'in spec?'Parameter':'op'in spec?'Operation':'tuple'in spec?'Key tuple':'Keyed read';
+    const type=labeled('Replace with',optionList(['Field','Number','Parameter','Operation','Key tuple','Keyed read'],kind,'Expression type'));
     type.onchange=()=>{
       if(selected.length>30){sheet.append(node('p','Expression nesting exceeds the editor budget.'));type.value=kind;return}
       let replacement;
       if(type.value==='Field')replacement=field(available[0]||'value');
       else if(type.value==='Number')replacement=number(0);
+      else if(type.value==='Parameter'){
+        if(!parameters.length){sheet.append(node('p','Declare a parameter in Cases before starting this construction.'));type.value=kind;return}
+        replacement={parameter:parameters[0]};
+      }
       else if(type.value==='Operation')replacement={op:'+',args:[clone(at(tree,selected)),number(1)]};
       else if(type.value==='Key tuple')replacement={tuple:[clone(at(tree,selected)),field(available[0]||'value')]};
       else{
@@ -127,6 +133,10 @@ export function expressionEditor(initial,fields,sources=[]){
     }else if(kind==='Number'){
       const value=node('input',undefined,{type:'text',inputmode:'numeric','aria-label':'Exact integer'});value.value=spec.integer;
       labeled('Exact integer',value);value.oninput=()=>update(number(value.value));
+    }else if(kind==='Parameter'){
+      const value=labeled('Declared parameter',optionList(parameters,spec.parameter,'Parameter'));
+      value.onchange=()=>update({parameter:value.value});
+      sheet.append(node('p','This name reads the evaluated case. Use Cases to change its exact value across the construction.',{class:'help'}));
     }else if(kind==='Operation'){
       const value=labeled('Operation',optionList(Object.keys(symbols),spec.op,'Operation'));
       value.onchange=()=>update({...at(tree,selected),op:value.value});

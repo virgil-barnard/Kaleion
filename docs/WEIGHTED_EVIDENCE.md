@@ -162,9 +162,9 @@ require substantial vertical scrolling on phones. Scalar/positional reads and
 bindings nested inside another binding's key or read remain outside the existing
 inspector contract. This increment does not claim full lesson-05 UI parity.
 
-**Next experiment:** exact case controls for the prime-to-composite change, clearly
-separated from replay time. The repeated modulus currently has to be entered in
-several expressions. A shared parameter declaration could make changing that
-assumption both easier and explicit, while preserving each measured case and its
-evidence. Test it on this investigation and a growing lattice-point arrangement
-before introducing a broader reactive editing mechanism.
+**Follow-up delivered:** [exact parameter cases](PARAMETER_CASES.md) now make
+the prime-to-composite change through one declaration, separate from replay time.
+Use `$p` in the extents, incidence, quotient, and remainder expressions above.
+The same control grows a lattice triangle. Captured history preserves each case's
+evidence within the existing retention budget. Finite keyed comparison controls
+and measured case families remain the next experiments.

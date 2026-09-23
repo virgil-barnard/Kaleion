@@ -6,6 +6,8 @@ import {coverageInspector} from './coverage.js';
 import {viewPositions} from './views.js';
 import {linkedViews} from './evidence.js';
 import {receiptInspector} from './receipts.js';
+import {caseFields,caseLabel,caseReport} from './cases.js';
+import {replayControls} from './replay.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -25,18 +27,23 @@ const linked=linkedViews($('linked-views'),{
   onVisibility:shown=>{$('single-view').hidden=shown;$('canvas-tools').hidden=shown;$('scope').textContent=shown?'Read-only captured evidence · close to construct':'Hold for construction tools';if(shown)status('Browsing captured evidence. Selection and view changes do not alter your construction.')}
 });
 const receipts=receiptInspector({panel:$('panel'),run,query:request,linked,beforeShow:parkDraft});
+const replay=replayControls($('replay'),{draw,restore:()=>draw(),onPresentation:shown=>{
+  if(shown)$('scope').textContent='Replay · presentation only · applied case unchanged';
+  else $('scope').textContent=resultScope();
+}});
 const object = () => state.objects.find(o=>o.name===active);
 const displayed = () => preview?.objects.find(o=>o.name===preview.name) || object();
 const selectedGroup=()=>groupReport?.revision===state.revision&&groupReport.name===active?groupReport.groups[groupChoice]:null;
 const groupLabel=(report,group)=>report.by.map((field,i)=>`${field} = ${group.key_types[i]==='text'?JSON.stringify(group.key[i]):group.key[i]}`).join(', ')||'Whole domain';
 function clearGroups(){groupReport=null;groupChoice=-1}
+function resultScope(){return preview?(preview.kind==='case'?`Preview case · ${caseLabel(preview.parameters)} · not applied`:'Preview · not yet applied'):mode==='points'?'Choose an occurrence to explain':mode==='groups'?'Select by declared group keys':mode==='view'?'Drag to pan · pinch or wheel to zoom':'Hold for construction tools'}
 function status(text, error=false){$('status').textContent=text;$('status').classList.toggle('error',error)}
 const busyControls=new Map();
 let busyFocus=null;
 function workspaceControls(){
   const drafting=!!draft.current;
   $('undo').disabled=busy||drafting||!state.undo;$('redo').disabled=busy||drafting||!state.redo;
-  $('add').disabled=$('open').disabled=$('file').disabled=busy||drafting;
+  $('add').disabled=$('open').disabled=$('file').disabled=$('cases').disabled=busy||drafting;
   $('draft-tray').hidden=!drafting;
   if(drafting){
     const context=draft.current.context;
@@ -58,12 +65,14 @@ async function request(path,body={}){
 }
 async function run(fn){if(busy)return;setBusy(true);try{await fn()}catch(e){status(e.message,true)}finally{setBusy(false)}}
 function adopt(next){
-  linked.close();state=next;preview=null;selectedPoint=null;clearGroups();
+  linked.close();replay.clear();state=next;preview=null;selectedPoint=null;clearGroups();
   if(next.active)active=next.active;
   if(!state.objects.some(o=>o.name===active))active=state.objects.at(-1)?.name || null;
   camera={x:0,y:0,zoom:1};render();
 }
 function render(){
+  replay.select(active);
+  $('case-summary').textContent=caseLabel(state.parameters);
   // Do not replace an unchanged control on input blur: it can swallow the next click.
   const tabsKey=JSON.stringify([active,state.objects.map(o=>[o.name,o.kind,o.status,o.error])]);
   if(tabsKey!==objectTabsKey){
@@ -78,13 +87,14 @@ function render(){
   }
   workspaceControls();
   $('title').textContent=displayed()?.name || 'Your blank canvas';
-  $('scope').textContent=preview?'Preview · not yet applied':mode==='points'?'Choose an occurrence to explain':mode==='groups'?'Select by declared group keys':mode==='view'?'Drag to pan · pinch or wheel to zoom':'Hold for construction tools';
+  $('scope').textContent=resultScope();
   const fields=displayed()?.fields||[];if(!fields.includes(labelField))labelField='value';
   const fieldKey=JSON.stringify(fields);if(fieldKey!==labelOptionsKey){labelOptionsKey=fieldKey;$('labels').replaceChildren(...fields.map(f=>el('option',f,{value:f})))}$('labels').value=labelField;
   draw();occurrences();
 }
 $('labels').onchange=()=>{labelField=$('labels').value;draw()};
 function draw(frame=null,bounds=null){
+  if(!frame)replay.reset(false);
   const obj=displayed(), rows=obj?.rows || [], positions=frame?.positions || viewPositions(obj);
   if(positions.some(p=>p.some(v=>!Number.isFinite(v)))){
     $('marks').replaceChildren();dots=[];status('Exact values are available, but this table projection exceeds floating coordinate range. Declare a bounded placement.',true);return;
@@ -100,7 +110,7 @@ function draw(frame=null,bounds=null){
     const label=document.createElementNS('http://www.w3.org/2000/svg','text');
     label.setAttribute('x','350');label.setAttribute('y','220');label.setAttribute('text-anchor','middle');
     label.style.fontSize=`${12*unit}px`;
-    label.textContent=obj?'Empty domain · no occurrences':$('canvas').clientWidth<400?'Start with Add.':'Add something. Give it a rule. See what emerges.';marks.append(label);
+    label.textContent=obj?.status==='failed'?'Evaluation failed':obj?'Empty domain · no occurrences':$('canvas').clientWidth<400?'Start with Add.':'Add something. Give it a rule. See what emerges.';marks.append(label);
   }
   const labelsShown=positions.length<=($('canvas').clientWidth<400?24:90);
   const group=mode==='groups'&&!preview?selectedGroup():null;
@@ -111,13 +121,13 @@ function draw(frame=null,bounds=null){
     const chosen=row&&(mode==='groups'?members.has(row.ref[1]):selectedPoint?.[1]===row.ref[1]);
     const opacity=frame?frame.opacity[i]:group?(matches.has(row?.ref[1])?1:(chosen ? .45 : .12)):(row?.match===false ? .25 : 1);
     for(const [k,v] of Object.entries({cx:x,cy:y,r:(chosen?8:5)*unit,fill:row?.match===false?'#a9b6ad':'#b96429',opacity,stroke:chosen?'#235d48':'none','stroke-width':3,'data-occurrence':row?.ref[1]||'','data-group-member':String(!!group&&chosen)}))circle.setAttribute(k,v);
-    marks.append(circle);if(row)dots.push({x,y,row});
+    marks.append(circle);if(row&&!frame)dots.push({x,y,row});
     if(labelsShown&&row){const t=document.createElementNS(circle.namespaceURI,'text');t.setAttribute('x',x+8*unit);t.setAttribute('y',y-7*unit);t.style.fontSize=`${12*unit}px`;const text=String(row.fields[labelField]);t.textContent=text.length>16?text.slice(0,13)+'…':text;marks.append(t)}
   });
   $('projection').textContent=obj?.placed?`Declared ${obj.dimension}D placement${obj.dimension===3?' · XY projection':''}`:'Approximate table projection · exact labels. Arrange declares positions.';
 }
 function occurrences(){
-  $('occurrence-label').hidden=mode!=='points';
+  $('occurrence-label').hidden=mode!=='points'||!!preview;
   const select=$('occurrence');select.replaceChildren(el('option','Choose an occurrence',{value:''}));
   for(const r of object()?.rows || [])select.append(el('option',`${r.fields.index} · value ${r.fields.value}${r.match?'':' · outside relation'}`,{value:r.ref[1]}));
   select.value=selectedPoint?.[1]||'';
@@ -125,6 +135,7 @@ function occurrences(){
 $('occurrence').onchange=()=>{selectedPoint=object()?.rows.find(r=>r.ref[1]===$('occurrence').value)?.ref || null;draw();if(selectedPoint)explain()};
 function openMenu(addOnly=false){
   if(busy||preview)return;
+  replay.reset();
   const options=actions(addOnly?{mode:'objects'}:{mode,object:object(),point:selectedPoint,group:selectedGroup()});
   $('menu-title').textContent=addOnly?'Add to the canvas':mode==='points'?'Occurrence options':mode==='groups'?'Group options':mode==='view'?'View options':active||'Canvas options';
   $('menu-actions').replaceChildren(...(options.length?options.map(action=>{
@@ -194,7 +205,7 @@ $('resume-draft').onclick=()=>{
     linked.close();const context=draft.resume(state.revision);active=context.target;mode=context.mode;
     groupReport=context.groupReport;groupChoice=context.groupChoice;selectedPoint=null;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
-    render();$('panel').scrollIntoView({block:'nearest'});$('result-name').focus({preventScroll:true});
+    render();$('panel').scrollIntoView({block:'nearest'});($('result-name')||$('panel').querySelector('input,button'))?.focus({preventScroll:true});
     status(preview?'Exact preview ready to apply.':'Draft restored on its original target. Preview to check it.');
   }catch(error){status(error.message,true)}
 };
@@ -257,11 +268,12 @@ function coveragePanel(){
   $('panel').replaceChildren(box);
 }
 function expr(initial,fields){
-  return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'));
+  return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'),Object.keys(state.parameters||{}));
 }
 function editor(action,seed=null){
   linked.close();
   if(draft.current){status('Resume or discard your draft before starting another construction.',true);return}
+  replay.clear();
   preview=null;const editorRevision=state.revision,sourceName=seed?.source||active;render();
   const panel=$('panel');panel.replaceChildren(el('span','DECLARE / PREVIEW / APPLY',{class:'eyebrow'}),el('h2',labels[action]));
   const form=el('form'), controls=el('fieldset');controls.style.cssText='border:0;padding:0;margin:0;min-width:0';form.append(controls);panel.append(form);
@@ -276,10 +288,22 @@ function editor(action,seed=null){
     args=()=>({values:values.value.trim()?values.value.split(',').map(s=>s.trim()):[]});
   }else if(action==='grid'){
     const shape=labeled(controls,'Axis lengths · one to three, separated by commas',input('4, 4'));shape.id='grid-shape';
+    controls.append(el('p','Use exact integers or declared parameter names. For a length such as n + 1, edit axis formulas.',{class:'help'}));
+    const editLengths=el('button','Edit axis formulas',{type:'button',id:'edit-axis-lengths'}),lengthBox=el('div',undefined,{class:'axis-expressions'});controls.append(editLengths,lengthBox);
+    let lengths=null;
+    const extent=text=>Object.hasOwn(state.parameters||{},text)?{parameter:text}:number(text);
+    editLengths.onclick=()=>{
+      if(lengths)return;
+      const sizes=shape.value.split(',').map(s=>s.trim());
+      if(sizes.length<1||sizes.length>3){status('Use one to three axis lengths.',true);return}
+      lengths=sizes.map((size,i)=>{const card=expr(extent(size),[]);card.box.setAttribute('role','group');card.box.setAttribute('aria-label',`Axis ${i+1} length`);lengthBox.append(el('label',`Axis ${i+1} length`),card.box);return card});
+      shape.parentElement.hidden=true;editLengths.hidden=true;
+      controls.dispatchEvent(new Event('change',{bubbles:true}));
+    };
     const axes=labeled(controls,'Axis names · in the same order',input('i, j'));axes.id='grid-axes';
     let value=expressionControl('Value at each occurrence',number(1),['i','j','index']);
     axes.addEventListener('change',()=>{const next=expr(value.read(),[...axes.value.split(',').map(s=>s.trim()),'index']);value.box.replaceWith(next.box);value=next});
-    args=()=>({shape:shape.value.split(',').map(s=>s.trim()),axes:axes.value.split(',').map(s=>s.trim()),value:value.read()});
+    args=()=>({shape:lengths?lengths.map(card=>card.read()):shape.value.split(',').map(s=>Object.hasOwn(state.parameters||{},s.trim())?{parameter:s.trim()}:s.trim()),axes:axes.value.split(',').map(s=>s.trim()),value:value.read()});
   }else if(action==='product'){
     const sources=state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'), choices=[];
     for(const role of ['left','right']){
@@ -346,12 +370,46 @@ function editor(action,seed=null){
   cancel.onclick=cancelPreview;
 }
 function cancelPreview(){run(async()=>{await request('cancel');draft.clear();preview=null;render();$('panel').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
-async function animate(frames){
-  if(!frames?.length||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const bounds=frames.flatMap(f=>f.positions);let start;
-  await new Promise(resolve=>{function tick(t){start??=t;const p=Math.min(1,(t-start)/550),i=Math.round(p*(frames.length-1));draw(frames[i],bounds);if(p<1)requestAnimationFrame(tick);else resolve()}requestAnimationFrame(tick)});draw();
+function caseEditor(){
+  if(busy||draft.current)return;
+  linked.close();replay.clear();preview=null;
+  const panel=$('panel'),editorRevision=state.revision;
+  panel.replaceChildren(el('span','DECLARE / EVALUATE / APPLY',{class:'eyebrow'}),el('h2','Explore parameter cases'));
+  const form=el('form'),fields=caseFields(state.parameters),report=el('div');
+  const feedback=el('p',undefined,{id:'draft-status',role:'status','aria-live':'polite'});
+  const bar=el('div',undefined,{class:'form-actions'}),evaluate=el('button','Evaluate case',{type:'submit',id:'preview',class:'primary'}),apply=el('button','Apply case',{type:'button',id:'apply'}),cancel=el('button','Cancel',{type:'button',id:'cancel'});
+  bar.append(evaluate,apply,cancel);form.append(fields.box,feedback,report,bar);panel.append(form);
+  panel.append(el('p','Undo and Redo restore captured cases without evaluation. Case changes appear as exact endpoints. Replay controls belong to captured construction edits.',{class:'help'}));
+  function invalidate(){preview=null;apply.disabled=true;report.replaceChildren();feedback.dataset.phase='editing';feedback.textContent='Applied case unchanged. Evaluate to inspect the proposed results.'}
+  draft.begin({target:active,subject:'parameter case',title:'Cases',mode,groupReport,groupChoice,revision:editorRevision},panel,invalidate);
+  form.addEventListener('input',()=>{invalidate();render()});form.addEventListener('change',()=>{invalidate();render()});
+  invalidate();render();
+  form.onsubmit=e=>{e.preventDefault();run(async()=>{
+    try{
+      if(editorRevision!==state.revision)throw Error('The workspace changed. Open Cases again.');
+      invalidate();feedback.dataset.phase='evaluating';feedback.textContent='Evaluating the proposed case…';
+      preview=await request('preview-case',{parameters:fields.read(),active});
+      report.replaceChildren(caseReport(preview));feedback.dataset.phase='ready';feedback.textContent='Case evaluated. Apply retains this capture, including reported failures.';
+      apply.disabled=false;render();status('Case preview ready. The applied case is unchanged.');
+    }catch(error){invalidate();feedback.dataset.phase='failed';feedback.textContent=error.message;render();throw error}
+  })};
+  apply.onclick=()=>run(async()=>{
+    if(!preview)return;
+    try{
+      const next=await request('commit',{token:preview.token});draft.clear();adopt(next);
+      panel.replaceChildren(el('h2',`Case applied · ${caseLabel(next.parameters)}`),caseReport(next,{applied:true}));
+      status('New case applied. No replay time was advanced.');
+    }catch(error){invalidate();feedback.dataset.phase='failed';feedback.textContent=error.message;render();throw error}
+  });
+  cancel.onclick=cancelPreview;
 }
-for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.current)return;run(async()=>{const next=await request(direction,{active});adopt(next);$('panel').replaceChildren(el('h2',direction==='undo'?'Earlier capture restored':'Capture restored again'),el('p','Playback uses recorded endpoints. No construction was evaluated.'));await animate(next.motion);status(direction==='undo'?'Undone.':'Redone.')})};
+$('cases').onclick=caseEditor;
+async function animate(frames){
+  replay.record(frames,active);
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)await replay.play();
+}
+$('play-replay').onclick=()=>run(()=>replay.play());
+for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.current)return;run(async()=>{const next=await request(direction,{active});adopt(next);$('panel').replaceChildren(el('h2',direction==='undo'?'Earlier capture restored':'Capture restored again'),el('p',next.change==='case'?`Exact case · ${caseLabel(next.parameters)}. No construction was evaluated; no intermediate cases were created.`:'Playback uses recorded endpoints. No construction was evaluated.'));await animate(next.motion);status(direction==='undo'?'Undone.':'Redone.')})};
 function explain(){run(async()=>{
   const receipt=await request('inspect',{name:active,ref:selectedPoint});showReceipt(receipt);
 })}

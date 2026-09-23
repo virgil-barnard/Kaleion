@@ -32,15 +32,19 @@ def apply(studio, action, name, **args):
     studio.commit(preview["token"], studio.revision)
 
 
-def radon(size):
+def radon(size, *, parameterized=False):
     studio = Studio()
-    apply(studio, "grid", "image", shape=[str(size)]*2, axes=["u", "v"], value=op("*", f("u"), op("+", f("v"), n(1))))
-    apply(studio, "grid", "lines", shape=[str(size+1), str(size)], axes=["m", "t"], value=n(0))
+    modulus = {"parameter": "p"} if parameterized else n(size)
+    if parameterized:
+        preview = studio.preview_case({"p": str(size)}, studio.revision)
+        studio.commit(preview["token"], studio.revision)
+    apply(studio, "grid", "image", shape=[modulus]*2, axes=["u", "v"], value=op("*", f("u"), op("+", f("v"), n(1))))
+    apply(studio, "grid", "lines", shape=[op("+", modulus, n(1)), modulus], axes=["m", "t"], value=n(0))
     apply(studio, "product", "pairs", factors={"point":dict(source="image", fields=["u", "v", "value"]),
                                                "line":dict(source="lines", fields=["m", "t"])})
-    rule = op("or", op("and", op("<", f("line_m"), n(size)),
-                                op("=", op("%", op("-", op("-", f("point_v"), op("*", f("line_m"), f("point_u"))), f("line_t")), n(size)), n(0))),
-                    op("and", op("=", f("line_m"), n(size)), op("=", f("point_u"), f("line_t"))))
+    rule = op("or", op("and", op("<", f("line_m"), modulus),
+                                op("=", op("%", op("-", op("-", f("point_v"), op("*", f("line_m"), f("point_u"))), f("line_t")), modulus), n(0))),
+                    op("and", op("=", f("line_m"), modulus), op("=", f("point_u"), f("line_t"))))
     apply(studio, "lens", "incidence", source="pairs", rule=rule)
     apply(studio, "measure", "counts", source="incidence", by=["line_m", "line_t"], reducer="sum", weight=f("point_value"))
     weight = read("counts", key("line_m", "line_t"), key("line_m", "line_t"))
@@ -48,8 +52,8 @@ def radon(size):
     apply(studio, "lens", "family", source="counts", rule=op("=", f("line_m"), n(0)))
     apply(studio, "measure", "total", source="family", by=[], reducer="sum", weight=f("value"))
     numerator = op("-", f("value"), read("total", n(0), f("key")))
-    apply(studio, "field", "recovered", source="back", field="recovered", value=op("//", numerator, n(size)))
-    apply(studio, "field", "remainders", source="back", field="remainder", value=op("%", numerator, n(size)))
+    apply(studio, "field", "recovered", source="back", field="recovered", value=op("//", numerator, modulus))
+    apply(studio, "field", "remainders", source="back", field="remainder", value=op("%", numerator, modulus))
     return studio
 
 
@@ -58,6 +62,43 @@ def on_line(size, u, v, m, t):
 
 
 class WeightedStudioTests(unittest.TestCase):
+    def test_one_parameter_changes_radon_assumptions_and_history_restores_evidence(self):
+        studio = radon(3, parameterized=True)
+        before = studio.workspace.state
+        before_ref = [before.results["back"].node, before.results["back"].ids[0]]
+        preview = studio.preview_case({"p": "4"}, studio.revision, "recovered")
+        self.assertIs(studio.workspace.state, before)
+        self.assertEqual(preview["errors"], {})  # A false conjecture is valid arithmetic.
+        after = studio.pending.state
+        self.assertEqual(dict(after.roots), dict(before.roots))
+        counts = {(m,t):sum(u*(v+1) for u in range(4) for v in range(4) if on_line(4,u,v,m,t))
+                  for m in range(5) for t in range(4)}
+        expected = [sum(w for (m,t),w in counts.items() if on_line(4,u,v,m,t))
+                    for u in range(4) for v in range(4)]
+        self.assertEqual(after.results["back"].values.tolist(), expected)
+        self.assertEqual(after.results["recovered"].fields["recovered"][0], -1)
+        self.assertEqual(after.results["remainders"].fields["remainder"][0], 0)
+        self.assertEqual(after.results["image"].values[0], 0)
+        with patch("kaleion.evaluate.Evaluator.get", side_effect=AssertionError("execution")):
+            committed = studio.commit(preview["token"], studio.revision)
+            self.assertEqual(committed["motion"], [])
+            self.assertIs(studio.workspace.state, after)
+            with self.assertRaises(ValueError):
+                studio.inspect("back", before_ref, studio.revision)
+            back = after.results["back"]
+            receipt = studio.contributors([back.node,back.ids[0]],studio.revision)["measurement"]
+            self.assertEqual(receipt["contributor_count"], "5")
+            self.assertEqual(sum(int(c["weight"]) for c in receipt["contributors"]), 56)
+            saved = studio.workspace.to_json()
+            studio.reopen(saved, studio.revision)
+            self.assertEqual(studio.history("undo", studio.revision, "back")["motion"], [])
+            self.assertEqual(studio.state()["parameters"], {"p":"3"})
+            old = studio.contributors(before_ref, studio.revision)["measurement"]
+            self.assertEqual(old["contributor_count"], "4")
+            self.assertEqual(old["item"]["value"], "18")
+            self.assertEqual(studio.history("redo", studio.revision, "back")["motion"], [])
+            self.assertEqual(studio.workspace.to_json(), saved)
+
     def test_radon_composite_reads_recover_image_and_follow_weights_to_pixels(self):
         for size in (2, 3, 5):
             with self.subTest(size=size):

@@ -83,6 +83,15 @@ retains only temporary view selections and cameras. Key-tuple syntax lowers to
 the existing vector expression. No evaluator opcode, core class, or saved-format
 change is needed for the Radon and signed-sum constructions.
 
+The studio's [parameter-case controls](docs/PARAMETER_CASES.md) lower named
+integer references and expression-valued extents to existing `param` and Grid
+definitions. Ordinary previews retain the applied parameter environment; case
+previews explicitly evaluate the same roots under proposed bindings. Apply
+restores that exact preview, including failed dependencies, without reevaluation.
+Case history restores endpoints with no interpolated parameter values. A separate
+`replay.js` consumes captured construction frames and makes no evaluation requests.
+Parameters already persist per state in schema 1; no core API or schema changes.
+
 ## Four different things an arrangement contains
 
 For an evaluated arrangement with N items:

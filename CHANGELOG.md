@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add explicit integer parameter cases to the construction studio. Declare once, reference parameters in formulas/grid extents, preview a new evaluation, and retain its exact results or failures. Preserve scopes, evidence, saved undo/redo, and independent roots. Separate case endpoints from request-free replay of captured construction edits. Exercise the same controls with prime/composite Radon reconstruction and lattice growth; no new core operation, dependency, or saved schema.
+
 - Add ordered key tuples to compact expression editing and extract shared receipt navigation. Follow a contribution's weight reads and copied source-field reads, then return to the earlier receipt, selected occurrences, and cameras. Construct a weighted Radon reconstruction and signed sums through the same controls, with explicit remainders and reversible measured placement. Preserve source value, weight, and driver-read distinctions; lower tuples to existing vector expressions with no core/schema/dependency change. Add a composite-modulus counterexample where exact division can still give an incorrect reconstruction.
 
 - Add shared linked evidence views for coverage, keyed drivers, and measurement contributors. Keep missing expected items and zero-measurement source universes visible; resolve earlier inputs by capture ID. Selection and independent cameras remain read-only. Share bounded display records and projection policy, with exact fields, complete contributor weights, saved evidence, and no core/schema/dependency changes. Validate coverage and quotient constructions through the same browser controls.

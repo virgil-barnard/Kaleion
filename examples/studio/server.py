@@ -33,7 +33,7 @@ def serve(port=8765):
                 self.reply(studio.state())
             elif self.path == "/api/export":
                 self.reply(studio.workspace.to_json().encode())
-            elif self.path in ("/", "/studio.js", "/context.js", "/studio.css", "/expressions.js", "/groups.js", "/drafts.js", "/coverage.js", "/views.js", "/evidence.js", "/receipts.js"):
+            elif self.path in ("/", "/studio.js", "/context.js", "/studio.css", "/expressions.js", "/groups.js", "/drafts.js", "/coverage.js", "/views.js", "/evidence.js", "/receipts.js", "/cases.js", "/replay.js"):
                 name = "studio.html" if self.path == "/" else self.path[1:]
                 mime = {".html": "text/html", ".js": "text/javascript", ".css": "text/css"}[Path(name).suffix]
                 self.reply((ASSETS / name).read_bytes(), mime=mime)
@@ -58,6 +58,8 @@ def serve(port=8765):
                 studio.check(revision)
                 if self.path == "/api/preview":
                     result = studio.preview(body["command"], revision)
+                elif self.path == "/api/preview-case":
+                    result = studio.preview_case(body["parameters"], revision, body.get("active"))
                 elif self.path == "/api/commit":
                     result = studio.commit(body["token"], revision)
                 elif self.path == "/api/cancel":

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from kaleion import Collection, F, Inspection, Product, Workspace, vector
+from kaleion import Collection, F, Inspection, Product, Workspace, param, vector
 from kaleion.history import Observation, State
 from kaleion.ir import expression as constant
 from kaleion.model import IncidenceSnapshot, Ref
@@ -46,11 +46,36 @@ def integer(text):
     return int(text)
 
 
+def parameter_name(name):
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,31}", name):
+        raise ValueError("Parameter names use 1–32 letters, digits, or underscores, starting with a letter")
+    return name
+
+
+def case_parameters(current, changes):
+    """Exact global bindings; local with_params scopes remain owned by the core."""
+    if not isinstance(changes, dict):
+        raise ValueError("Give parameter names and exact integer values")
+    parameters = dict(current)
+    for name, value in parameters.items():
+        parameter_name(name)
+        if type(value) is not int:
+            raise ValueError("The studio case editor supports integer parameters only")
+        integer(str(value))
+    for name, value in changes.items():
+        parameters[parameter_name(name)] = integer(value)
+    if len(parameters) > 16:
+        raise ValueError("The studio supports at most 16 declared parameters")
+    return parameters
+
+
 def expression(spec, roots, depth=0):
     if depth > 20 or not isinstance(spec, dict):
         raise ValueError("Expression needs a bounded structured formula")
     if set(spec) == {"integer"}:
         return constant(integer(spec["integer"]))
+    if set(spec) == {"parameter"}:
+        return param(parameter_name(spec["parameter"]))
     if set(spec) == {"field"} and isinstance(spec["field"], str):
         return F[spec["field"]]
     if set(spec) == {"op", "args"} and spec["op"] in OPERATORS:
@@ -103,7 +128,8 @@ def build(command, roots, *, captured=None):
         if (not isinstance(axes, list) or not isinstance(args["shape"], list)
                 or not all(isinstance(a, str) and a.isidentifier() for a in axes)):
             raise ValueError("Give each axis a distinct field name")
-        result = Collection.grid(*(integer(v) for v in args["shape"]), axes=axes,
+        result = Collection.grid(*(integer(v) if isinstance(v, str) else ex(v)
+                                   for v in args["shape"]), axes=axes,
                                  values=ex(args["value"]), name=name)
     elif action == "product":
         factors = args["factors"]
@@ -186,8 +212,9 @@ def describe(state):
 class Preview:
     token: str
     revision: int
-    name: str
+    name: str | None
     state: State
+    kind: str = "construction"
 
 
 class Studio:
@@ -204,13 +231,15 @@ class Studio:
 
     def state(self):
         return dict(revision=self.revision, objects=describe(self.workspace.state),
+                    parameters=exact_wire(dict(self.workspace.state.parameters)),
                     undo=self.workspace.can_undo, redo=self.workspace.can_redo)
 
     def preview(self, command, revision):
         self.check(revision)
         self.pending = None
         name, definition = build(command, self.workspace.state.roots, captured=self.workspace.state)
-        state = State.evaluate({**self.workspace.state.roots, name: definition}, {}, max_items=2000)
+        state = State.evaluate({**self.workspace.state.roots, name: definition},
+                               self.workspace.state.parameters, max_items=2000)
         if name in state.errors:
             raise ValueError(state.errors[name])
         # Validate correspondence/dimensionality before offering Apply.
@@ -220,17 +249,35 @@ class Studio:
         return dict(token=self.pending.token, revision=revision, name=name,
                     objects=describe(state))
 
+    def preview_case(self, changes, revision, active=None):
+        self.check(revision)
+        self.pending = None
+        parameters = case_parameters(self.workspace.state.parameters, changes)
+        if parameters == dict(self.workspace.state.parameters):
+            raise ValueError("Change or declare a parameter before evaluating a new case")
+        state = State.evaluate(self.workspace.state.roots, parameters, max_items=2000)
+        # Failures are part of a case, not zero measurements. Independent roots
+        # remain inspectable after Apply; Cancel leaves the previous case intact.
+        from kaleion.motion import Transition
+        Transition(self.workspace.state, state, {}).validate()
+        name = active if active in state.roots else next(iter(state.roots), None)
+        self.pending = Preview(uuid4().hex, revision, name, state, "case")
+        return dict(token=self.pending.token, revision=revision, name=name, kind="case",
+                    parameters=exact_wire(dict(state.parameters)), objects=describe(state),
+                    errors=dict(state.errors))
+
     def commit(self, token, revision):
         self.check(revision)
         if self.pending is None or self.pending.token != token or self.pending.revision != revision:
             raise ValueError("Preview is no longer current; preview this declaration again")
         preview = self.pending
         transition = self.workspace.restore(Observation(
-            "Studio declaration", datetime.now(timezone.utc).isoformat(), preview.state))
+            "Studio parameter case" if preview.kind == "case" else "Studio declaration",
+            datetime.now(timezone.utc).isoformat(), preview.state))
         self.pending = None
         self.revision += 1
-        return {**self.state(), "active": preview.name,
-                "motion": self.frames(transition, preview.name)}
+        return {**self.state(), "active": preview.name, "change": preview.kind,
+                "motion": [] if preview.kind == "case" else self.frames(transition, preview.name)}
 
     @staticmethod
     def frames(transition, name):
@@ -250,7 +297,9 @@ class Studio:
         transition = getattr(self.workspace, direction)()
         self.pending = None
         self.revision += 1
-        return {**self.state(), "motion": self.frames(transition, active)}
+        case = transition.before.parameters != transition.after.parameters
+        return {**self.state(), "change": "case" if case else "construction",
+                "motion": [] if case else self.frames(transition, active)}
 
     def inspect(self, name, ref, revision):
         self.check(revision)

@@ -113,6 +113,15 @@ weight and field-read receipts; `web/evidence.js` presents/restores paired views
 All numerical evidence comes from the existing captured inspector. The browser
 investigation needs no Radon-specific UI function or core subclass.
 
+The [parameter-case follow-up](../PARAMETER_CASES.md) adds `web/cases.js` for
+named integer inputs and per-object case reports, and `web/replay.js` for captured
+presentation samples. The adapter's `preview_case` uses the existing evaluation
+contract; committing and restoring use existing captures. Inline browser work
+declares `p`, builds symbolic image/line extents, and reuses `$p` in incidence and
+inverse arithmetic. It changes 3 to 4, observes wrong recovery with zero remainder,
+and follows five line contributions. This is separate from the unchanged notebook's
+four local functions; no parameter-specific Radon helper is added to the application.
+
 **Inline scaffolding.** The notebook defines the binary image, a point–line
 product domain using `Product(point=pixels, line=lines)` and its source-field
 reads, incidence, counts, backprojection, exact quotient/remainder, and
