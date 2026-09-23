@@ -33,7 +33,7 @@ def serve(port=8765):
                 self.reply(studio.state())
             elif self.path == "/api/export":
                 self.reply(studio.workspace.to_json().encode())
-            elif self.path in ("/", "/studio.js", "/context.js", "/studio.css", "/canvas.css", "/shell.js", "/creation.js", "/expressions.js", "/groups.js", "/drafts.js", "/coverage.js", "/views.js", "/evidence.js", "/receipts.js", "/cases.js", "/replay.js", "/comparison.js", "/camera.js", "/workspace.js", "/construction.js", "/scene.js", "/document.js", "/patterns.js"):
+            elif self.path in ("/", "/studio.js", "/context.js", "/studio.css", "/canvas.css", "/shell.js", "/creation.js", "/expressions.js", "/notation.js", "/groups.js", "/drafts.js", "/coverage.js", "/views.js", "/evidence.js", "/receipts.js", "/cases.js", "/replay.js", "/comparison.js", "/camera.js", "/workspace.js", "/construction.js", "/scene.js", "/document.js", "/patterns.js"):
                 name = "studio.html" if self.path == "/" else self.path[1:]
                 mime = {".html": "text/html", ".js": "text/javascript", ".css": "text/css"}[Path(name).suffix]
                 self.reply((ASSETS / name).read_bytes(), mime=mime)
@@ -75,6 +75,8 @@ def serve(port=8765):
                     result = studio.capture(body["capture"], revision)
                 elif self.path == "/api/construction":
                     result = studio.construction(body["name"], body.get("path", []), revision)
+                elif self.path == "/api/parse-relation":
+                    result = studio.parse_relation(body["name"], body["text"], revision)
                 elif self.path == "/api/contributors":
                     result = studio.contributors(body["ref"], revision)
                 elif self.path == "/api/groups":

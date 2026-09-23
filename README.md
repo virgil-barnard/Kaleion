@@ -55,6 +55,11 @@ remain under **More tools**; Cells/Points, charts and slices live in **Appearanc
 Orbit and Connect stay available on the board. Replay shows a saved movement on
 that board; **Parameters** explicitly calculates new results.
 
+In **Relation → Customize the formula**, choose **Write a rule** for notation such
+as `(j - 2*i - 1) % 5 = 0`, or **Use controls** to edit its terms. Both create the
+same exact construction. The [short-rule guide](docs/RELATION_NOTATION.md)
+explains the syntax and cross-lesson checks.
+
 [Open a worked canvas](examples/canvases/README.md) to explore the lesson
 constructions. Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;
@@ -64,6 +69,9 @@ use workspace schema 2; existing integer captures remain compatible with schema 
 The [continuous-canvas guide](docs/CONTINUOUS_CANVAS.md) explains the interaction
 reset prompted by maintainer feedback. The [UI design study](docs/UI_DESIGN_STUDY.md)
 records its research, rejected assumptions and remaining human usability questions.
+The [comparable-workspaces survey](docs/COMPARABLE_WORKSPACES.md) studies twelve
+education and research tools, distinguishes existing ideas from Kaleion's proposed
+strengths, and prioritizes improvements to creation, reuse, motion, and access.
 The [studio capability matrix](docs/CONSTRUCTION_STUDIO.md#all-lessons-are-the-target-remaining-composition-coverage)
 tracks the deeper lesson capabilities and remaining work. Child and physical-touch
 usability have not been established by the automated checks.

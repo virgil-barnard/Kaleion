@@ -204,8 +204,11 @@ Motion has discrete optional endpoint labels, separate from geometric existence.
 
 The studio's `shell.js` owns contextual disclosure, `creation.js` owns shape and
 contents choices, and `workspace.js` owns the continuous shared scene and replay.
-`formulas.py` parses a bounded arithmetic subset into the existing structured
-expression protocol; it runs no Python code and does not guess ambiguous bindings.
+`formulas.py` parses bounded arithmetic and optional comparison/Boolean notation
+into the existing structured expression protocol; it runs no Python code and
+does not guess ambiguous bindings. `notation.js` switches between short relation
+text and term controls without evaluating it. A read-only adapter endpoint parses
+text; Preview alone calculates the proposal. See [relation notation](docs/RELATION_NOTATION.md).
 See [the refactor contracts](docs/CONTINUOUS_CANVAS.md) for command ownership,
 proof-provenance boundaries, compatibility and task-based validation.
 

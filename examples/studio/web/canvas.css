@@ -71,7 +71,10 @@ main {max-width:none;height:100dvh;padding:0;display:flex;flex-direction:column;
 .shape-diagram.cube span {box-shadow:-4px 4px #b3ccbf}
 .shape-dimensions {display:flex;gap:10px}.shape-dimensions label {flex:1;min-width:0}.shape-dimensions input {width:100%}
 .shape-meaning {padding:12px;background:#eaf1eb;font-size:12px;line-height:1.6;border-radius:10px}
-#shape-formula,#values-formula {font-family:ui-monospace,monospace;font-size:18px}
+#shape-formula,#values-formula,.relation-notation textarea {font-family:ui-monospace,monospace;font-size:18px}
+.relation-notation textarea {display:block;width:100%;box-sizing:border-box;resize:vertical;min-height:90px;scroll-margin-block:80px}
+.relation-notation .help {overflow-wrap:anywhere}
+.relation-notation button[aria-pressed="true"] {outline:2px solid var(--green);outline-offset:-2px}
 @media(max-width:950px){.wordmark span{display:none}.app-header{padding:10px 16px}.app-header nav #add{margin-right:0}.workspace-toolbar{left:14px;right:14px;gap:8px}.object-picker{font-size:0;padding-left:0}.selection-bar{left:14px}.canvas-footer [data-scene-caption]{display:none}}
 @media(max-width:600px){
   .app-header{padding:10px 12px;gap:8px}.wordmark{font-size:23px}.app-header nav{gap:0;justify-content:flex-end}.app-header nav button{padding:6px 9px;font-size:11px;min-height:40px}
