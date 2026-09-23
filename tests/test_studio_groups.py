@@ -72,6 +72,21 @@ class CapturedGroupTests(unittest.TestCase):
         self.assertEqual(studio.groups("empty_row",["i"],1)["groups"][0]["population"],"4")
         self.assertTrue(studio.workspace.can_undo)
 
+    def test_field_inspection_preserves_a_ready_measurement_preview(self):
+        cells = Collection.grid(6, 6)
+        studio = self.studio(hits=cells.where((F.j - 2*F.i - 1) % 6 == 0))
+        command = dict(action="measure", name="counts", args=dict(
+            source="hits", by=["j"], reducer="count"))
+        preview = studio.preview(command, 0)
+        saved = studio.workspace.to_json()
+        with patch("kaleion.evaluate.Evaluator.get", side_effect=AssertionError("execution")):
+            report = studio.groups("hits", ["j"], 0)
+        self.assertEqual([g["population"] for g in report["groups"]], ["6"]*6)
+        self.assertEqual([g["count"] for g in report["groups"]], ["0", "2"]*3)
+        self.assertEqual(studio.workspace.to_json(), saved)
+        studio.commit(preview["token"], 0)
+        self.assertEqual(studio.workspace.state.results["counts"].values.tolist(), [0, 2]*3)
+
     def test_group_lens_intersects_original_mask_and_scoped_parameters(self):
         cells = Collection.grid(3, 4)
         incidence = cells.where(F.j < param("n")).with_params(n=2)

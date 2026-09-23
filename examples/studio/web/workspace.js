@@ -12,7 +12,7 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   const canvas=host.querySelector('svg'),grid=svgNode('g',{'aria-hidden':'true',class:'scene-grid'}),wires=svgNode('g',{'aria-hidden':'true'}),frames=svgNode('g'),marks=svgNode('g'),labels=svgNode('g');
   canvas.append(grid,wires,frames,marks,labels);
   const layout=new Map(),cards=new Map(),bounds=new Map(),models=new Map(),pointers=new Set();
-  let state={objects:[]},active=null,tool='move',drag=null,view=initialCamera(),initialized=false,holdClick=false,chosen=null,drawn=[],presentation=null,highlighted=null;
+  let state={objects:[]},active=null,tool='move',drag=null,view=initialCamera(),initialized=false,holdClick=false,chosen=null,drawn=[],presentation=null,highlighted=null,emphasis=null;
   const help=host.querySelector('[data-spatial-help]'),list=host.querySelector('[data-connection-list]'),caption=host.querySelector('[data-scene-caption]');
   const controls=cameraControls({name:'workspace',fit,zoom:factor=>zoom(factor),pan:(x,y)=>{view.x-=x*view.w/700;view.y-=y*view.h/450;draw()}});
   function button(text,label,fn){const b=el('button',text,{type:'button','aria-label':label});b.onclick=fn;return b}
@@ -117,6 +117,8 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
     }
     drawn.sort((a,b)=>a.screen[2]-b.screen[2]);
     const readable=UNIT*canvas.getBoundingClientRect().width/view.w>20;
+    const focus=emphasis&&state.objects.some(o=>o.name===emphasis.name&&o.capture===emphasis.capture)?emphasis:null;
+    const memberKeys=new Set(focus?.members.map(refKey)||[]),matchKeys=new Set(focus?.matches.map(refKey)||[]);
     for(const item of drawn){
       const {name,row,local,world,screen,settings,model}=item,isChosen=chosen?.name===name&&refKey(chosen.ref)===refKey(row.ref);
       const group=svgNode('g',{'data-scene-owner':name,'data-scene-mark':refKey(row.ref),'data-scene-depth':screen[2],class:`scene-mark ${name===active?'active':''} ${row.match?'':'outside'} ${isChosen?'chosen':''}`});
@@ -124,10 +126,16 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
       else cellFaces(world,model.dimension,project).forEach((face,i)=>group.append(svgNode('polygon',{points:face.map(p=>p.slice(0,2).join(',')).join(' '),class:`scene-face face-${i}`})));
       if(settings.marks==='cells'&&readable&&model.dimension<3&&row.fields.value!==undefined){const value=String(row.fields.value);group.append(svgNode('text',{x:screen[0],y:screen[1]+4,'text-anchor':'middle',class:'scene-value'},value.length>6?value.slice(0,5)+'…':value))}
       if(row.replay)group.style.opacity=String(row.opacity);
+      else if(focus&&name===focus.name){
+        const member=memberKeys.has(refKey(row.ref)),match=matchKeys.has(refKey(row.ref));
+        group.dataset.fieldMember=String(member);
+        if(member){group.classList.add('field-member');if(!match)group.classList.add('field-nonmatch')}
+        else group.style.opacity='.08';
+      }
       else if(highlighted&&name===active&&!highlighted.members.some(ref=>refKey(ref)===refKey(row.ref)))group.style.opacity='.12';
       group.append(svgNode('title',{},`${name} · item ${row.fields.index}${row.fields.value===undefined?' · tuple only':` · value ${row.fields.value}`} · ${model.axes.map((a,i)=>`${a}=${local[i]}`).join(', ')}${row.match?'':' · outside relation'}`));marks.append(group);
     }
-    connections();syncSelection(project);caption.textContent=`Shared scale · view offsets only · ${drawn.length} marks${budget===0?' · drawing limit reached; select an object to prioritize it':''}`;
+    connections();syncSelection(project);caption.textContent=`Shared scale · view offsets only · ${drawn.length} marks${budget===0?' · drawing limit reached; select an object to prioritize it':''}${focus?` · ${focus.name}: ${focus.label}`:''}`;
     if(focused)cards.get(focused)?.focus({preventScroll:true});
   }
   function connections(){
@@ -248,8 +256,9 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   return {update,cancel,save,load,fit,center:centerSelected,refresh:draw,
     frame(sample){presentation=sample;rebuildModels();draw()},
     highlight(group){highlighted=group;draw()},
+    emphasize(field){emphasis=field;draw();return !field||state.objects.some(o=>o.name===field.name&&o.capture===field.capture)},
     remember:()=>({camera:{...view},tool,inputsOpen:list.open,chosen}),
     restore(saved){cancel();view={...saved.camera};tool=saved.tool;chosen=saved.chosen;list.open=saved.inputsOpen;syncTools();syncSettings();draw()},
-    reset(){cancel();state={objects:[]};active=null;presentation=null;highlighted=null;layout.clear();models.clear();chosen=null;initialized=false;view=initialCamera();draw()},
+    reset(){cancel();state={objects:[]};active=null;presentation=null;highlighted=null;emphasis=null;layout.clear();models.clear();chosen=null;initialized=false;view=initialCamera();draw()},
   };
 }

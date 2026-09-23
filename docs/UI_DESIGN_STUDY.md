@@ -94,6 +94,11 @@ in Kaleion. Its prioritized experiments preserve the interaction reset above.
 [Short relation notation](RELATION_NOTATION.md) now provides an optional view of
 the same structured expression. Automated transfer checks pass; whether it helps
 novices invent rules remains an open human question.
+The [field guide](FIELD_GUIDE.md) adds a concrete scope experiment: a selected
+field describes a saved object and outlines its fibers, including candidate
+items outside a relation. The same view serves a term, grouping choice, measured
+value or driver read. Automated checks address meaning, failure and layout;
+whether its automatic disclosure helps or interrupts authors needs human testing.
 
 The applications below are our design deductions, not prescriptions the cited
 papers make about Kaleion. Full-text papers were inspected where available;

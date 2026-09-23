@@ -14,6 +14,7 @@ import {spatialWorkspace} from './workspace.js';
 import {constructionInspector} from './construction.js';
 import {canvasDocument,readDocument} from './document.js';
 import {lensControls,totalControls,reuseControls} from './patterns.js';
+import {fieldGuide} from './field-guide.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -29,6 +30,7 @@ let groupReport=null, groupChoice=-1;
 let comparisonChoices=null;
 let sceneBeforePreview=null;
 let objectTabsKey='';
+let fieldHelp=null;
 const draft=draftSession();
 const shell=canvasShell(document.querySelector('main'),{onClose:()=>{parkDraft();linked.close();render()}});
 const linked=linkedViews($('linked-views'),{
@@ -129,6 +131,7 @@ async function request(path,body={}){
 }
 async function run(fn){if(busy)return;setBusy(true);try{await fn()}catch(e){status(e.message,true)}finally{setBusy(false)}}
 function adopt(next){
+  fieldHelp?.clear();fieldHelp=null;
   linked.close();replay.clear();state=next;preview=null;selectedPoint=null;clearGroups();
   if(next.active)active=next.active;
   if(!state.objects.some(o=>o.name===active))active=state.objects.at(-1)?.name || null;
@@ -159,6 +162,7 @@ function render(){
     board.update(state,active);
     if(sceneBeforePreview){const saved=sceneBeforePreview;sceneBeforePreview=null;board.load(saved)}
   }
+  fieldHelp?.refresh();
 }
 $('quick-lens').onclick=()=>editor('lens',{workspace:true,scene:true,quick:true});
 $('axis-total').onclick=()=>editor('total',{workspace:true,scene:true});
@@ -188,6 +192,7 @@ document.querySelectorAll('[data-create]').forEach(b=>b.onclick=()=>editor('shap
 
 function parkDraft(){
   if(!draft.current||draft.current.parked)return;
+  fieldHelp?.suspend();
   draft.park();preview=null;
   $('activity').replaceChildren(el('h2','Your draft is parked'),el('p','Inspect another object, then choose Resume draft to continue.'));
   workspaceControls();status('Draft retained. Browsing does not apply it.');
@@ -199,7 +204,7 @@ $('resume-draft').onclick=()=>{
     construction.select(active);construction.collapse();
     groupReport=context.groupReport;groupChoice=context.groupChoice;selectedPoint=null;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
-    render();$('activity').scrollIntoView({block:'nearest'});($('result-name')||$('activity').querySelector('input,button'))?.focus({preventScroll:true});
+    render();fieldHelp?.resume();$('activity').scrollIntoView({block:'nearest'});($('result-name')||$('activity').querySelector('input,button'))?.focus({preventScroll:true});
     status(preview?'Exact preview ready to apply.':'Draft restored on its original target. Preview to check it.');
   }catch(error){status(error.message,true)}
 };
@@ -409,6 +414,18 @@ function editor(action,seed=null){
     controls.append(el('pre',groupLabel(groupReport,selectedGroup())));
     args=()=>selection;
   }
+  if(source&&source.status==='ready'&&!['shape','integers','sequence','grid','product'].includes(action)){
+    fieldHelp=fieldGuide({source,objects:state.objects,revision:editorRevision,
+      query:spec=>request('groups',spec),highlight:spec=>board.emphasize(spec),
+      current:()=>state.revision===editorRevision&&draft.current?.context.target===sourceName&&!draft.current.parked});
+    const guide=fieldHelp;controls.append(guide.box);
+    form.addEventListener('inspect-field',event=>{
+      event.stopPropagation();
+      const anchor=event.target.closest('.pattern-controls')||event.target.closest('.expression,.field-keys');
+      if(anchor)anchor.after(guide.box);
+      guide.show(event.detail);
+    });
+  }
   const feedback=el('p',undefined,{id:'draft-status',role:'status','aria-live':'polite','aria-atomic':'true'});form.append(feedback);
   const effect=action==='place'?`Change placement of ${sourceName}`:action==='assignment'?`Create a new field on a copy of ${seed.expected}`:action==='product'?'Create a new object from the chosen factors':`Create a new object${sourceName&&!['integers','grid'].includes(action)?` from ${sourceName}`:''}`;
   form.append(el('p',effect,{class:'help',id:'draft-effect'}));
@@ -444,7 +461,7 @@ function editor(action,seed=null){
   cancel.onclick=cancelPreview;
   name.focus({preventScroll:true});
 }
-function cancelPreview(){run(async()=>{await request('cancel');draft.clear();preview=null;render();$('activity').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
+function cancelPreview(){run(async()=>{await request('cancel');fieldHelp?.clear();fieldHelp=null;draft.clear();preview=null;render();$('activity').replaceChildren(el('h2','Draft discarded'),el('p','Your construction and its history are unchanged.'));status('Cancelled.')})}
 function caseEditor(){
   if(busy||draft.current)return;
   shell.open('edit','Parameters');

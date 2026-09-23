@@ -60,6 +60,11 @@ as `(j - 2*i - 1) % 5 = 0`, or **Use controls** to edit its terms. Both create t
 same exact construction. The [short-rule guide](docs/RELATION_NOTATION.md)
 explains the syntax and cross-lesson checks.
 
+While editing, tap a field term or use **See a field on the canvas** to browse
+its values and outline the corresponding items. Matching and nonmatching members
+remain distinct, including groups with zero matches. The [field guide](docs/FIELD_GUIDE.md)
+also follows a keyed read to its driver without changing your construction.
+
 [Open a worked canvas](examples/canvases/README.md) to explore the lesson
 constructions. Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;
@@ -72,6 +77,8 @@ records its research, rejected assumptions and remaining human usability questio
 The [comparable-workspaces survey](docs/COMPARABLE_WORKSPACES.md) studies twelve
 education and research tools, distinguishes existing ideas from Kaleion's proposed
 strengths, and prioritizes improvements to creation, reuse, motion, and access.
+The deferred [provenance-to-conjecture design](docs/PROVENANCE_CONJECTURES.md)
+records how a finite observation could later become a parameterized proof goal.
 The [studio capability matrix](docs/CONSTRUCTION_STUDIO.md#all-lessons-are-the-target-remaining-composition-coverage)
 tracks the deeper lesson capabilities and remaining work. Child and physical-touch
 usability have not been established by the automated checks.

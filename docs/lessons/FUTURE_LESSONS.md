@@ -83,13 +83,30 @@ Ask an author to build and count a modular-line relation, use those counts as a
 keyed height driver, and explain a zero when the slope is not invertible modulo
 6. Transfer the same choices to a bounded lattice region and then to binary
 point–line incidence. Keep the exact domain and grouping visible. Selecting a
-term or key could highlight the locations it describes; test that this helps
-before adding more syntax. The bit-expanded Fano rule remains cumbersome and is
+term or key now opens the [field guide](../FIELD_GUIDE.md), which highlights the
+saved fiber and distinguishes its candidates from matches. Modular, measured
+value and 3D browser tasks exercise that shared interaction. Test with authors
+that it helps before adding more syntax. The bit-expanded Fano rule remains cumbersome and is
 a concrete candidate for a reusable authoring recipe, not a new evaluator node.
 
 Later, pin a captured case and a counterexample as an observation, then investigate
 user-defined recipes and motion choices. These remain proposed UI experiments;
 finite evidence does not prove a general identity or incidence isomorphism.
+
+## Later · Turn a finite observation into a conjecture
+
+The [provenance-to-conjecture design](../PROVENANCE_CONJECTURES.md) preserves the
+goal of selecting two objects, choosing an equality meaning, promoting selected
+constants to variables, declaring assumptions and asking a proof assistant for
+an automatic proof attempt. It is a future contract, not implemented UI.
+
+Start with lesson 02's coprime floor sums at `(a,b) = (11,7)`. Keep its domains
+and measurement provenance; explicitly generalize those definitions rather than
+the displayed values. Remove coprimality and recover the `(6,4)` counterexample
+with totals 16 and 15. Distinguish a checked finite comparison, a conjecture, an
+unresolved proof attempt and a checked proof. This can later exercise scoped
+literal selection and reusable statement recipes without entangling the canvas
+with any particular prover.
 
 ## Next · Symmetry, orbits, and Burnside counting
 

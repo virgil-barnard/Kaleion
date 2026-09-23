@@ -1,5 +1,6 @@
 // Two syntax views of one relation. Parsing belongs to the adapter; neither
 // switching views nor formatting a rule evaluates or commits mathematics.
+import {inspectField} from './field-guide.js';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
 const symbols={'+':'+','-':'-','*':'*','//':'//','%':'%','=':'=','≠':'!=','<':'<','≤':'<=','>':'>','≥':'>=',and:'and',or:'or'};
 const precedence={or:1,and:2,'=':3,'≠':3,'<':3,'≤':3,'>':3,'≥':3,'+':4,'-':4,'*':5,'//':5,'%':5};
@@ -43,7 +44,9 @@ export function relationNotation(initial,fields,parameters,expr,parse){
   const graphical=el('div');graphical.append(editor.box);
   const written=el('div'),label=el('label','Match when'),input=el('textarea',undefined,{rows:'3',maxlength:'256','aria-label':'Relation rule',spellcheck:'false',autocomplete:'off',autocapitalize:'off'});
   label.append(input);written.append(label,el('p','Use =, !=, <, <=, >, >=; join conditions with and / or. Arithmetic: + - * // %. For example: 0 <= i < 4 and i != j.',{class:'help'}));
-  const names=el('p',`Fields: ${fields.join(', ')}. Parameters: ${parameters.join(', ')||'none'}.`,{class:'help'});
+  const names=el('div',undefined,{class:'field-names'});names.append(el('p','Explore a field on the canvas:',{class:'help'}));
+  for(const name of fields){const b=el('button',name,{type:'button','aria-label':`Explore field ${name}`});b.onclick=()=>inspectField(box,name);names.append(b)}
+  names.append(el('p',`Parameters: ${parameters.join(', ')||'none'}.`,{class:'help'}));
   written.append(names);written.hidden=true;
   const feedback=el('p',undefined,{class:'help',role:'status','aria-live':'polite','data-rule-status':''});
   box.append(graphical,written,feedback);
