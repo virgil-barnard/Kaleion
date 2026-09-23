@@ -83,6 +83,12 @@ For the broader mathematical setting, see [Yufei Zhao, Structure of Set Addition
 
 ## Functions and authoring scaffolding
 
+The [saved studio prototype](../../examples/canvases/README.md) uses `equal_sums`
+in [save_canvases.py](../../examples/save_canvases.py). It retains literal sources,
+pairs, an exact sum lens, explicit zero bins, ranks and energy, plus two recorded
+gather/stack movements. It opens with the existing studio controls; no lesson menu
+or separate inspector is introduced.
+
 The [notebook](../../notebooks/07_additive_structure.ipynb) defines two top-level
 functions. See the [cross-lesson inventory](HELPER_INVENTORY.md).
 

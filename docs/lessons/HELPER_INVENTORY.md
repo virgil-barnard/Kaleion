@@ -39,6 +39,15 @@ are included. Imports alone do not establish use.
 
 ## Keep different responsibilities visible
 
+Four [saved studio canvases](../../examples/canvases/README.md) adapt lessons 02,
+05, 06 and 07 for exploration with the existing Open control. Their generator,
+[save_canvases.py](../../examples/save_canvases.py), has four construction functions
+and one export entry point. Each recipe declares bounded sources, keys and 2D
+placements, creates a workspace, and records one or two motion edits. Export
+losslessly compacts ordinary schema-1 JSON. Inspection, preview/apply and rendering
+remain shared studio responsibilities; no lesson UI is embedded in the files.
+These prototype functions are outside the unchanged notebook counts above.
+
 | Responsibility | Typical input → output | Boundary to preserve |
 | --- | --- | --- |
 | Construction recipe | Parameters, expressions, collections → definitions | Compose existing operations; evaluation stays explicit. Width, domain, and key choices belong here. |

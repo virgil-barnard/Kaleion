@@ -117,6 +117,13 @@ spatial gesture alone cannot supply that recursive meaning.
 
 ## Work through three different constructions
 
+Desktop feedback exposed difficulty getting started and finding playback. Before
+adding more controls, four [saved canvas prototypes](../examples/canvases/README.md)
+now supply existing lesson constructions through the studio's Open button. They
+retain actual definitions, measurements and motion history. Their guide explains
+the current Undo/Redo route to the scrubber. These are materials for observing use
+of the shared tools, not evidence that the tools are already intuitive.
+
 ### Equal sums: relate, measure, then compose a new placement
 
 1. Add two integer arrangements. Pair them with roles `left` and `right`.

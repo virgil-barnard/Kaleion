@@ -1,5 +1,29 @@
 # Validation · 0.1.0
 
+## Saved canvas prototypes · September 23, 2026
+
+- **190 tests pass** with `python3 -m unittest discover -s tests -v`. Six new
+  tests read the four saved files: independent counts/reconstruction expectations,
+  zero bins, measured rank/prefix evidence, composite and non-coprime cases,
+  continued authoring, and save/open/undo/redo with graph evaluation disabled.
+- `python3 examples/discovery.py --out build/example-output` passes.
+- `docs/studies/check-saved-canvases.cjs` passes in Chromium 153. It opens every
+  file through the existing Open control, runs Undo/Redo, scrubs in both directions
+  with no API requests, and verifies the exported workspace remains unchanged.
+  It follows the guide's rank/zero-count path, adds and reopens a new relation,
+  follows a Young offset through its layer to its cells, and checks a 320px layout.
+  No page errors were reported; desktop and phone evidence screenshots were inspected.
+- The recipes use ordinary schema-1 workspaces, 6–10 named objects, one or two
+  recorded movements, and the existing 2000-item / 40-edit studio limits. There
+  are no changes to the application controls, host, core operations, or saved format.
+- These are focused 2D adaptations of lessons 02, 05, 06 and 07. The existing
+  scrubber still requires Undo/Redo or a recent action after Open. Human usability
+  and physical touch remain untested; the user's difficulty getting started is
+  recorded in the [design study](docs/UI_DESIGN_STUDY.md).
+
+Files, first steps, and regeneration instructions are in the
+[saved canvas guide](examples/canvases/README.md).
+
 ## Ordered weighted prefixes · September 23, 2026
 
 - **184 tests pass** with `python3 -m unittest discover -s tests -v`. Eight new

@@ -43,6 +43,11 @@ The images are static previews; selected motion frames show presentation states.
 
 ## Toward a touch workspace
 
+**Prefer to start with an example?** [Open a worked canvas](examples/canvases/README.md)
+in the studio with **Open**. Four saved investigations contain editable sources,
+measurements, evidence and recorded motion. Start with equal-sum stacks; the guide
+shows how **Undo → Redo** exposes the existing replay scrubber.
+
 The [construction studio](docs/CONSTRUCTION_STUDIO.md) now starts from a blank
 canvas. With the environment below active, run `python3 -m examples.studio` and
 open **http://127.0.0.1:8765**. Hold the selected object for contextual tools;
