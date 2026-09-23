@@ -86,6 +86,14 @@ retains only temporary view selections and cameras. Key-tuple syntax lowers to
 the existing vector expression. No evaluator opcode, core class, or saved-format
 change is needed for the Radon and signed-sum constructions.
 
+The studio's [construction inspector](docs/CONSTRUCTION_INSPECTION.md) reads IR
+definitions and captured trace paths in `construction.py`; it never evaluates.
+A case's definition input enters its local subtrace, while binding-expression
+reads remain in the surrounding scope. Missing local traces cannot fall back to
+global captures. `construction.js` owns browsing and return context; existing
+evidence views draw the retained result. Exact syntax is transported as text,
+and unknown constructors remain inspectable. No core or saved-format change.
+
 The studio's [parameter-case controls](docs/PARAMETER_CASES.md) lower named
 integer references and expression-valued extents to existing `param` and Grid
 definitions. Ordinary previews retain the applied parameter environment; case

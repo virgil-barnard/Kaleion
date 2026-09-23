@@ -6,6 +6,8 @@ September 23, 2026 · Reevaluation through cases, comparison and ordered accumul
 
 September 23, 2026 · Icarus comparison and construction-inspection review after PR #29
 
+September 23, 2026 · Readable construction inspection implemented after the PR #30 design
+
 **Recommendation:** build a workspace of reusable mathematical instruments, with
 low-cost experimentation and visible consequences. Judge it by whether someone
 can transfer an interaction to an unfamiliar construction, explain what changed,
@@ -27,8 +29,10 @@ The ordered-prefix increment starts from `91a6e33` (merged PR #26); it adds the
 transfer evidence recorded below without claiming new human-study results.
 The latest [unified canvas proposal](UNIFIED_CANVAS_DESIGN.md) reviews merged
 PR #29 (`00d9202`) against Icarus and the maintainer's further desktop feedback.
-It records design decisions and an implementation sequence; it adds no runtime
-capability or new Kaleion test-suite result.
+It records design decisions and an implementation sequence. The first step,
+[construction inspection](CONSTRUCTION_INSPECTION.md), now implements readable
+declarations and scoped input navigation on top of merged PR #30 (`dfa8cb1`).
+The shared scene and later steps remain proposals.
 
 ## 1. What the research contributes
 
@@ -122,14 +126,14 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A4 | Key removal destroys a focused chip without assigning a successor | `groups.js` inspection | Addressed · successor chip or field-picker focus |
 | A5 | Group selection separates candidates from incidence and retains declared zero groups | Group contracts and additive/modular browser investigations | Preserve; use the same distinction in coverage checks |
 | A6 | Preview/apply and captured history are separate; driver inspection can use saved data | Adapter/core contracts and save/reopen browser checks | Preserve; no new numerical execution in the view layer |
-| A7 | Formula, canvas, and actions can be far apart on a narrow screen | 320 px screenshots: the form is below the canvas | Partly addressed · local feedback and focus-moving Canvas / Controls and evidence links; simultaneous visibility and reach remain untested |
+| A7 | Formula, canvas, and actions can be far apart on a narrow screen | 320 px screenshots: the form is below the canvas | Partly addressed · local feedback and focus-moving Canvas / Construction and evidence links; simultaneous visibility and reach remain untested |
 | A8 | Contextual actions have visible and keyboard alternatives; View pan/zoom still lack complete button alternatives | Context resolver and gesture handlers | Addressed for camera actions · shared Fit/zoom/directional-pan controls on main and linked views; physical input and accessibility audit remain open |
 | A9 | A single object canvas obscures comparisons and immutable earlier inputs | Existing studio limit and lesson coverage matrix | Partly addressed · linked evidence plus PR #29's simultaneous named-root previews and definition paths; free pinning and direct shared geometry remain open |
 | A10 | No novice task or physical tablet trial has been conducted | Available evidence consists of code, deterministic fixtures, and emulated Chromium | Open · run the formative protocol below |
 | A11 | The first object-tab click after editing a number can disappear | Input blur triggers a render that replaces the tab before its click arrives; reproduced in the baseline probe | Addressed · unchanged controls survive render; one-click navigation regression |
 | A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
 | A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the current studio hides replay until a recent movement | Open · four saved canvases and an existing-controls walkthrough provide material for feedback; no UI redesign in this increment |
-| A14 | Selecting an object does not adequately reveal how it was constructed | Maintainer feedback after PR #29; the root description exposes an operation name, while detailed evidence starts from captured occurrences | Open · next implementation should show a readable constructor, arguments, scoped inputs, and result status on selection |
+| A14 | Selecting an object does not adequately reveal how it was constructed | Maintainer feedback after PR #29; now checked through all four saved canvases plus earlier/local/failed inputs | Implemented · selection reveals actual constructor, arguments, scoped inputs and result status; Back restores context and captured results lead to occurrence evidence. Human interpretation remains untested |
 | A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 uses independently scaled XY previews; Icarus browser review shows grid-native vectors, product headers, and lens extraction | Open · proposed common scene, local frames, cells/points and 3D views; preserve the distinction between view movement and mathematical placement |
 | A16 | Reusable rules and live dependencies lack a complete visible authoring contract | Core Lens is reusable; current connections describe immutable definitions, while Icarus exposes movable relation tokens | Open · separate rule, application, and captured incidence; add explicit recipe ports before promising propagation through editable cables |
 
@@ -217,8 +221,9 @@ order, and parameters. Neither substitutes for the other. Input navigation must
 retain the earlier-definition and local-case boundaries already protected by
 the spatial workspace.
 
-Against this study's rubric, simultaneous objects improve visibility but do not
-yet resolve A14 or the direct-manipulation goal. Grid cells and points should
+Against this study's rubric, simultaneous objects alone did not resolve A14 or
+the direct-manipulation goal. The construction inspector now addresses A14's
+missing information; it does not establish comprehension. Grid cells and points should
 share selection identity; choosing logical axes versus placement stays explicit.
 Reusable rules should expose their arguments and bindings. A persistent transport
 should label Cases, Generation, or Replay, with seeking captured samples separated
@@ -231,6 +236,31 @@ and return. Then ask the person to create two short sources, propose a product,
 reuse a relation, and explain what the chosen scrubber changes. Repeat in an
 unrelated lesson. This tests discovery, interpretation, and transfer rather than
 only whether the controls execute correctly.
+
+### Construction inspection: implementation and tradeoffs
+
+The selected object's constructor is now visible without opening Options or
+choosing an occurrence. Coordinates, grouping, contribution weight, strict order,
+item keys and parameter bindings use the same read-only inspector across saved
+investigations. Input buttons lead through unnamed expansions and distinguish
+earlier definitions from local parameter scopes; the actual captured result
+connects to existing occurrence receipts. Back restores the selected occurrence,
+main/workspace/linked cameras, previous controls and input-button focus. A draft
+survives the detour on its original target.
+
+This improves recognition and dependency visibility without treating an old
+capture as a live wire. Product's lowered Grid/count/read definitions remain
+visible rather than being guessed back into an editable recipe. That fidelity
+also has a cost: intermediate definitions can require several steps to interpret.
+The exact-operation view supports unfamiliar constructors but is not a substitute
+for readable authored recipes in later work.
+
+The sidebar preserves the construction header while evidence or editing occupies
+the activity area; opening those tasks collapses the declaration. Screenshots
+show no horizontal overflow at 320 pixels, but phone sheets remain long and the
+picture may be off-screen. A7, A10, A13, A15 and A16 remain open or partial. The
+next common-scene increment should improve direct object interaction while human
+observation tests whether this declaration/evidence split is understandable.
 
 ## 5. First design experiment: an idea survives a detour
 
@@ -279,6 +309,7 @@ a module owns a decision that can change, rather than a stage of a lesson.
 | What finite keyed equality means | `kaleion.comparison` | Exact selected fields and independent domain; no evaluation or UI |
 | How to inspect a comparison | `comparison.py`, `comparison.js`, existing linked views | Bounded scoped witnesses, input choices, and return navigation |
 | Which inputs move a camera | `camera.js` and existing view callbacks | Shared buttons; no mathematical extent or placement changes |
+| What a selected definition declares | `construction.py`, `construction.js` | Actual IR and captured scopes; read-only browsing and return context, no recipe inference or evaluation |
 | How earlier weights become a measurement | `Grouping`, shared order plan, exact scan and existing contributor ranges | Explicit groups/order/keys; the Measure client edits declarations, not numerical state |
 
 Do not create a new core operation for draft retention, visual focus, or error
@@ -353,6 +384,7 @@ These are historical gate totals, not participant counts or usability scores.
 | [Ordered accumulation](ORDERED_PREFIX.md), merged PR #27 | Young layers and quotient columns use the same prefix/placement controls; nested measured contributors, tied-order recovery, zero/signed weights | 184 |
 | [Saved canvases](../examples/canvases/README.md), merged PR #28 | Four editable investigations open with captured evidence and reversible movement | 190 |
 | [Spatial workspace](SPATIAL_WORKSPACE.md), merged PR #29 | Named objects visible together; definition paths distinguish earlier and local inputs; reviewed drag/tap composition preserves declaration and history boundaries | 195 |
+| [Construction inspection](CONSTRUCTION_INSPECTION.md), after merged design PR #30 | Readable constructors and exact expressions; scoped input navigation, failed/unfamiliar declarations, captured-result evidence and restored context | 203 |
 
 PR #29 reported the required suite and discovery example passing; the subsequent
 Icarus/design review does not rerun or change those executable gates. The expanded Chromium 153
@@ -385,6 +417,20 @@ could choose a newly opened menu item under the finger. Desktop and narrow-scree
 images were inspected. The saved-canvas and full construction browser gates also
 pass, preserving replay, comparison and nested evidence; this does not establish
 physical-device ergonomics or whether users understand the new overview.
+
+The construction-inspector gate passes in Chromium 153. It selects objects in
+all four saved canvases, follows their actual inputs, opens captured evidence,
+and returns to the same selected occurrence, cameras and focus. Further fixtures
+exercise earlier drivers, local cases (including bindings equal to global ones),
+failed/empty captures, an unknown constructor, an integer above 64 bits, a parked
+draft and a delayed reply after a new selection. Exported JSON is unchanged and
+no evaluation/history request is issued. Eight new Python tests also disable the
+evaluator while inspecting saved definitions. The full **203-test** suite,
+discovery example, and inspector/studio/spatial/saved-canvas browser gates pass.
+Light, dark and narrow-screen images were inspected. A phone group-tap regression
+now uses the visible Canvas jump and asserts an unobscured target instead of
+scrolling a point underneath the sticky navigation. These checks do not add
+human, physical-touch, Safari or screen-reader evidence.
 
 ### Proposed human observation
 
@@ -454,10 +500,9 @@ Use this record for each review:
 
 The list below records the original sequence and delivered increments. Following
 the Icarus review, the [next PR sequence](UNIFIED_CANVAS_DESIGN.md#a-sequence-of-small-reviewable-pull-requests)
-starts with construction inspection, then shared representations and visible
-captured tracks. Reusable rules and editable recipes follow with explicit scope
-and compatibility contracts. That proposal changes priorities, not the delivery
-status recorded here.
+started with construction inspection, now implemented. Shared representations
+and visible captured tracks follow. Reusable rules and editable recipes retain
+explicit scope and compatibility contracts; those later steps remain planned.
 
 1. **Stable authoring loop:** draft retention, accurate local feedback, and focus
    recovery. Delivered and tested against additive/modular controls;

@@ -22,6 +22,12 @@ visible together. Move their view panels, inspect definition connections, or
 drag a source to a destination in Connections to propose a product or keyed
 placement. Focus preserves the existing single-object tools and captured evidence.
 
+[Construction inspection](CONSTRUCTION_INSPECTION.md) now opens on selection.
+Read the constructor, expressions, ordered inputs and parameter case; follow an
+input to its actual definition and return with selection and camera restored.
+Earlier and local inputs retain their own captured scope. View captured result
+connects the declaration to the existing occurrence evidence.
+
 The design hypothesis is that a person chooses **what they are acting on**, then
 **what quantity or relationship they want to change**. Lesson names should never
 determine the available tools. A count, a rank, and an ordinary integer source can
@@ -93,7 +99,7 @@ construction; hold the canvas to act on it. The menu is a sheet in this study;
 its eventual position and radial/list presentation can change independently.
 
 Main and paired views share camera buttons for tap and keyboard use. On narrow
-screens, **Canvas** and **Controls and evidence** links move focus and scroll to
+screens, **Canvas** and **Construction and evidence** links move focus and scroll to
 the relevant area. Both areas still require vertical space; this is a navigation
 improvement pending the [real-device layout trial](UI_DESIGN_STUDY.md).
 
@@ -397,6 +403,7 @@ python3 -m unittest discover -s tests -p test_studio_cases.py -v
 python3 -m unittest discover -s tests -p test_studio_comparison.py -v
 python3 -m unittest discover -s tests -p test_prefix_sums.py -v
 python3 -m unittest discover -s tests -p test_studio_prefix.py -v
+python3 -m unittest discover -s tests -p test_studio_construction.py -v
 python3 -m unittest discover -s tests -v
 python3 examples/discovery.py --out build/example-output
 ```
@@ -414,13 +421,14 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **184 tests**, and the discovery example
+The complete required suite passes **203 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
 
 ```sh
 node docs/studies/check-construction-studio.cjs
+node docs/studies/check-construction-inspector.cjs
 ```
 
 The optional gate starts its own fresh Python host. `KALEION_PYTHON` can select

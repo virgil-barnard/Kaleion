@@ -20,7 +20,9 @@ it cannot open these files.
 
 1. Open **07_equal_sums.json**. The selected object is **Moving pairs**. Workspace
    shows its sources and measurements together; Connections exposes their named
-   definition paths. Choose Focus to inspect the selected object alone.
+   definition paths. **How this is made** shows the coordinates and keyed read
+   from Ranks. Follow **Ranks** to inspect its construction, then choose **Back to
+   Moving pairs**. Choose Focus to inspect the selected object alone.
 2. Click **Undo** once: equal sums collapse onto seven positions, retaining all
    sixteen pairs. Click **Redo**: ranks separate them into the stacks again.
 3. Below the canvas, drag **Replay captured transformation** slowly from left to

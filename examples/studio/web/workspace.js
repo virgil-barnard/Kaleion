@@ -138,5 +138,8 @@ export function spatialWorkspace(host,{select,focus,options,combine,locked,statu
   document.addEventListener('click',e=>{const block=holdClick&&e.detail>0;holdClick=false;if(block){e.preventDefault();e.stopImmediatePropagation()}},true);
   window.addEventListener('blur',()=>{cancel();pointers.clear()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')cancel()});
-  return {update,cancel,reset(){cancel();layout.clear();initialized=false;view={x:0,y:0,w:900,h:600}}};
+  return {update,cancel,
+    remember:()=>({view:{...view},tool,inputsOpen:list.open}),
+    restore(saved){cancel();view={...saved.view};tool=saved.tool;list.open=saved.inputsOpen;host.querySelectorAll('[data-workspace-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.workspaceTool===tool)));connections();caption();camera()},
+    reset(){cancel();layout.clear();initialized=false;view={x:0,y:0,w:900,h:600}}};
 }

@@ -18,6 +18,7 @@ from .groups import captured_groups
 from .coverage import captured_coverage, unique_assignment
 from .comparison import captured_comparison
 from .connections import definition_connections
+from .construction import describe_construction
 from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
 
@@ -203,7 +204,8 @@ def describe(state):
     """Read-only display data. Table projection is not a mathematical placement."""
     objects = []
     for name, definition in state.roots.items():
-        obj = dict(name=name, kind=definition.node.kind, status="ready")
+        obj = dict(name=name, kind=definition.node.kind, status="ready",
+                   construction=describe_construction(state, name))
         if name in state.errors:
             objects.append({**obj, "status": "failed", "error": state.errors[name]})
             continue
@@ -238,6 +240,10 @@ class Studio:
                     connections=definition_connections(self.workspace.state.roots),
                     parameters=exact_wire(dict(self.workspace.state.parameters)),
                     undo=self.workspace.can_undo, redo=self.workspace.can_redo)
+
+    def construction(self, name, path, revision):
+        self.check(revision)
+        return describe_construction(self.workspace.state, name, path)
 
     def preview(self, command, revision):
         self.check(revision)
