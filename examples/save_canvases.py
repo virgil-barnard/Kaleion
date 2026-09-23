@@ -1,7 +1,7 @@
 """Generate small, ordinary saved workspaces for the existing studio's Open button.
 
 Run from the repository root: python3 examples/save_canvases.py
-These are focused adaptations of lessons 02, 05, 06 and 07, not notebook exports.
+These are focused adaptations of lessons 02, 03, 05, 06 and 07, not notebook exports.
 There is no viewer code, new saved format, or lesson dispatch in the studio.
 """
 
@@ -31,6 +31,22 @@ def floor_sums():
     }, {"a": 11, "b": 7}, max_items=2000, max_history=40)
     workspace.set("Pieces", rectangle, motion=Motion.arc(height=1))
     return workspace
+
+
+def incidence_box():
+    """Lesson 03: a three-dimensional domain and three inspectable incidences."""
+    a, b, c = param("a"), param("b"), param("c")
+    box = (Collection.grid(a - 1, b - 1, c - 1, values=1)
+           .annotate(u=F.i + 1, v=F.j + 1, w=F.k + 1)
+           .arrange(F.u, F.v, F.w))
+    x = box.where((a * F.v <= b * F.u) & (a * F.w <= c * F.u))
+    y = box.where((b * F.u <= a * F.v) & (b * F.w <= c * F.v))
+    z = box.where((c * F.u <= a * F.w) & (c * F.v <= b * F.w))
+    return Workspace({"Box": box, "X region": x, "Y region": y,
+                      "Z region": z, "X sections": x.count(by=F.u),
+                      "X volume": x.count(), "Y volume": y.count(),
+                      "Z volume": z.count(), "Shared cells": (x & y) | (x & z) | (y & z)},
+                     {"a": 11, "b": 7, "c": 5}, max_items=2000, max_history=40)
 
 
 def radon():
@@ -108,7 +124,7 @@ def equal_sums():
     return workspace
 
 
-BUILDERS = {"02_floor_sums": floor_sums, "05_radon_reconstruction": radon,
+BUILDERS = {"02_floor_sums": floor_sums, "03_incidence_box": incidence_box, "05_radon_reconstruction": radon,
             "06_young_layers": young_layers, "07_equal_sums": equal_sums}
 
 

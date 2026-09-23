@@ -39,11 +39,14 @@ are included. Imports alone do not establish use.
 
 ## Keep different responsibilities visible
 
-Four [saved studio canvases](../../examples/canvases/README.md) adapt lessons 02,
-05, 06 and 07 for exploration with the existing Open control. Their generator,
-[save_canvases.py](../../examples/save_canvases.py), has four construction functions
-and one export entry point. Each recipe declares bounded sources, keys and 2D
-placements, creates a workspace, and records one or two motion edits. Export
+Five [saved studio canvases](../../examples/canvases/README.md) adapt lessons 02,
+03, 05, 06 and 07 for exploration with Open. Their generator,
+[save_canvases.py](../../examples/save_canvases.py), has five construction functions
+and one export entry point. Four recipes declare bounded sources, keys and 2D
+placements, create a workspace, and record one or two motion edits. The new
+`incidence_box()` recipe declares the lesson-03 box, three inequalities, section
+and volume measurements, and shared-cell incidence with actual 3D placement;
+it captures one initial case without adding motion. Export
 losslessly compacts ordinary schema-1 JSON. Inspection, preview/apply and rendering
 remain shared studio responsibilities; no lesson UI is embedded in the files.
 These prototype functions are outside the unchanged notebook counts above.

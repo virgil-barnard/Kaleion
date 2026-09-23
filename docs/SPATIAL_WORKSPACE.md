@@ -1,9 +1,16 @@
 # A workspace for composing objects
 
-The next interaction experiment starts with several mathematical objects visible
+**Current implementation:** the [shared scene](SHARED_SCENE.md) now replaces this
+first preview-panel experiment with one coordinate scale, local frames, cell/point
+marks, 3D orbit and view slices. Drag object names to move view offsets. The
+construction/combination contracts below still apply; the historical independent
+scales and unsaved-layout limits have been superseded by the versioned canvas
+document. Focus and current replay retain their labeled XY views.
+
+The original interaction experiment started with several mathematical objects visible
 together. The maintainer's desktop feedback supplied the concrete need: saved
 canvases made the mathematics and replay discoverable, but the single-object
-editor still did not feel like a place to build. This increment adds a spatial
+editor still did not feel like a place to build. That increment added a spatial
 overview and reviewed composition gestures while retaining the existing Focus
 view for exact inspection and authoring.
 
@@ -12,18 +19,23 @@ requested a closer review of Icarus's direct canvas interactions. The
 [unified canvas proposal](UNIFIED_CANVAS_DESIGN.md) records that review and the
 implementation sequence. [Construction inspection](CONSTRUCTION_INSPECTION.md)
 now reveals the selected object's declaration and lets inputs be followed with
-a return path. This page documents the preview-panel experiment; the shared
-cell/point/3D scene remains planned. The track contract distinguishes acquisition
+a return path. This page documents the preview-panel experiment; use the
+[shared-scene guide](SHARED_SCENE.md) for its implemented successor.
+The planned track contract distinguishes acquisition
 from seeking: evaluating new samples is explicit, while scrubbing retained
 samples is read-only.
 
 ## Try this increment
 
+These composition steps remain useful. In the current scene, drag object names;
+the [shared-scene guide](SHARED_SCENE.md#start-with-the-objects) explains marks,
+charts, cameras and saving the view.
+
 Run `python3 -m examples.studio` in the existing environment, then open
 `examples/canvases/07_equal_sums.json`.
 
 1. In **Workspace**, select **Moving pairs**. All eight named objects remain
-   visible. **Move objects** drags their view panels; mathematical positions,
+   visible. **Move objects** drags their name handles; mathematical positions,
    values and history stay unchanged. **Fit** shows the whole workspace;
    **Selected** centers the chosen object at a more readable scale.
 2. Switch to **Connections**. The selected object's paths stand out. Expand
@@ -48,14 +60,13 @@ Neither a drop nor opening a proposal evaluates or commits work. Invalid keys
 fail during Preview; the applied workspace survives. An unfinished declaration
 can be parked while browsing the workspace and resumed with its original inputs.
 
-These are independently scaled XY previews, not one common mathematical coordinate
-system. Each preview draws at most the first 180 captured occurrences and labels
-that limit; Focus retains the full bounded result. Empty and failed roots remain
-selectable. Layout and camera are temporary view state, retained across Focus
-detours and local construction edits but reset on Open/reload. Save remains the
-ordinary schema-1 mathematical workspace. On narrow screens, use the object
-buttons and Selected/zoom/pan controls; a fitted overview alone is too small for
-precise selection.
+**Historical rendering limits (PR #29):** previews used independent XY scales and
+drew at most the first 180 captured occurrences. Layout and camera reset on Open;
+Save exported only the ordinary schema-1 workspace. The shared scene supersedes
+those limits with common units, a labeled 6000-mark budget and optional saved
+view state. Empty and failed roots remain selectable. On narrow screens, use the
+object buttons and Selected/zoom/pan controls; a fitted overview alone is too
+small for precise selection.
 
 ## What a connection means
 

@@ -45,15 +45,17 @@ The images are static previews; selected motion frames show presentation states.
 
 The [next canvas design](docs/UNIFIED_CANVAS_DESIGN.md) compares Icarus's direct
 grid and reusable relations with Kaleion's construction and evidence model. It
-now has its first increment: [readable construction on selection](docs/CONSTRUCTION_INSPECTION.md).
-Shared cell/point/3D views, explicit rule bindings, and labeled case/generation/replay
-tracks remain planned. The working interface is described below.
+now includes [readable construction on selection](docs/CONSTRUCTION_INSPECTION.md)
+and a [shared cell/point/3D scene](docs/SHARED_SCENE.md). Explicit reusable rule
+bindings and labeled case/generation/replay tracks remain planned.
 
-The [shared workspace](docs/SPATIAL_WORKSPACE.md) displays named objects together.
-Move their views, reveal definition connections, and drag a source to a destination
-to propose a product or keyed placement. **Focus** retains exact inspection,
-lesson tools and captured replay. The design brief also separates planned
-recurrence steps, ordered parameter cases and presentation time.
+The [shared scene](docs/SHARED_SCENE.md) draws objects at one coordinate scale.
+Switch **Cells / Points**, choose **Logical axes / Placement**, and orbit or slice
+3D relations. Drag names to move view offsets; **Connections** proposes a product
+or keyed placement. **+ Sequence** creates a finite source with explicit length,
+start and step. **Focus** retains lesson tools and the existing XY replay.
+**Save → Canvas and view** preserves scene choices; **Mathematics only** exports
+the ordinary workspace for Python.
 
 Select an object to see **How this is made**: its constructor, expressions,
 ordered inputs, keys and parameter case. Follow an input to its actual definition
@@ -62,9 +64,10 @@ and local cases stay distinct from current named objects. Occurrence inspection
 continues from the same captured evidence without evaluating the graph.
 
 **Prefer to start with an example?** [Open a worked canvas](examples/canvases/README.md)
-in the studio with **Open**. Four saved investigations contain editable sources,
-measurements, evidence and recorded motion. Start with equal-sum stacks; the guide
-shows how **Undo → Redo** exposes the existing replay scrubber.
+in the studio with **Open**. Five saved investigations contain editable sources,
+measurements and evidence. Start with equal-sum stacks, or try the new 3D incidence
+box. Four examples retain recorded motion; the guide shows how **Undo → Redo**
+exposes the existing replay scrubber.
 
 The [construction studio](docs/CONSTRUCTION_STUDIO.md) now starts from a blank
 canvas. With the environment below active, run `python3 -m examples.studio` and

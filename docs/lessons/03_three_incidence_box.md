@@ -73,6 +73,15 @@ mathematical construction. See the [cross-lesson inventory](HELPER_INVENTORY.md)
 slice figures use Plotly directly; core snapshots, motion, and workspace history
 supply their data.
 
+**Saved-canvas adaptation.** `incidence_box()` in
+[save_canvases.py](../../examples/save_canvases.py) adds a focused ordinary
+[workspace file](../../examples/canvases/03_incidence_box.json) with the box,
+X/Y/Z regions, X sections, three volumes and shared-cell incidence. It uses
+`(11,7,5)` and captures the initial results without motion. The shared studio
+scene supplies cell/point marks, camera orbit and view slices; this helper owns
+only the construction. It does not replace the notebook's proof, full comparison
+cases or packing animation, and does not change the notebook function counts.
+
 **Inline scaffolding.** Box construction, the three inequalities, intersections,
 section counts, and displacement targets remain visible declarations. The lesson
 also assembles staged edits, undo and sampling loops, alternative parameter

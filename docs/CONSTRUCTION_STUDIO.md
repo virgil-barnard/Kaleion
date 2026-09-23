@@ -18,9 +18,14 @@ to Measure. Explicit groups, order, unique item keys and weights derive offsets
 from measured sizes without constructing every predecessor pair.
 
 The [spatial workspace](SPATIAL_WORKSPACE.md) now opens with all named objects
-visible together. Move their view panels, inspect definition connections, or
-drag a source to a destination in Connections to propose a product or keyed
+visible together. Move their name handles, inspect definition connections, or
+drag a source name to a destination in Connections to propose a product or keyed
 placement. Focus preserves the existing single-object tools and captured evidence.
+
+The [shared scene](SHARED_SCENE.md) now replaces independent preview scales with
+one camera, local axes and view offsets. Cells/Points, explicit logical/placement
+charts, 3D orbit and slices consume captures. A Sequence sheet lowers finite
+length/start/step to the existing builder. Scene choices can now be saved.
 
 [Construction inspection](CONSTRUCTION_INSPECTION.md) now opens on selection.
 Read the constructor, expressions, ordered inputs and parameter case; follow an
@@ -44,7 +49,7 @@ capture descriptions and scoped references across investigations.
 
 ## Run the study
 
-For an example to inspect before building, use the four
+For an example to inspect before building, use the five
 [saved canvases and first-five-minutes guide](../examples/canvases/README.md).
 They open through **Open**. Choose Workspace for the overview or Focus for the
 selected object's occurrences and construction tools.
@@ -66,20 +71,23 @@ a single-file offline viewer. It has one workspace shared by its local tabs.
 Opening it in two tabs can produce a stale revision; refresh the older tab before
 editing. Host and origin checks refuse cross-origin edits.
 
-**Save** downloads an ordinary Kaleion schema-1 workspace, including definitions,
-captured evidence, and pending undo/redo. **Open** restores those captures without
-evaluating the graph. Spatial layout, camera, point/group selection, and unfinished drafts are view state
-and are not saved. The current editor admits 60 objects, 2000 occurrences per
+**Save → Canvas and view** stores the captured workspace and the shared scene's
+offsets, charts, slices, selection and camera in a versioned studio document.
+**Save → Mathematics only** exports the ordinary schema-1 workspace for Python.
+**Open** accepts both without evaluating the graph. Focus/evidence navigation,
+group selection and unfinished drafts remain temporary view state.
+The current editor admits 60 objects, 2000 occurrences per
 evaluated operation, and 40 recorded history steps. The existing 32 MiB capture
 import budget still applies; these limits do not promise every combination fits.
 
 ## Selection scope comes before the tool
 
-Workspace selects whole objects. **Move objects** changes their temporary view
-layout; **Connections** shows named input/read paths and proposes composition.
+Workspace name handles select objects; cells and points inspect occurrences.
+**Move objects** changes view offsets; **Connections** shows named input/read
+paths and proposes composition.
 **Combine…** offers source/destination selectors as a tap and keyboard alternative.
 Double-click an object, press Enter on it, or choose **Focus** for the selectors
-below. Arrow keys move a focused workspace panel; camera buttons pan/zoom the
+below. Arrow keys move a focused object's view; camera buttons pan/zoom the
 overview. Touch hold opens object options, and releasing that hold does not
 activate a tool underneath the finger.
 
@@ -89,7 +97,7 @@ activate a tool underneath the finger.
 | Occurrences | A captured occurrence, or an entry in its accessible list | Explain its fields, measurement contributors, and direct keyed reads; follow a read to its captured driver | Equal values and coincident positions do not merge identities |
 | Groups | A group chosen by declared field keys, from a point or the group list | Choose group keys, create a group lens, measure all groups, check coverage | Browsing changes neither the universe nor history; group membership does not specify member order |
 | View | Canvas | Fit/zoom/directional-pan buttons; drag to pan, pinch/wheel to zoom | Camera changes do not change mathematical extent or placement |
-| Objects, empty canvas | Blank canvas | Add integers or a grid | No implicit source is inferred from a gesture |
+| Objects, empty canvas | Blank canvas | Add integers, a finite sequence or a grid | No implicit source is inferred from a gesture |
 
 A hold opens after 480 ms. Moving beyond the threshold, another pointer, pointer
 cancellation, or losing focus cancels the pending hold. The visible **Options**
@@ -340,8 +348,8 @@ Most existing mathematics is already expressible in the Python core.
 
 | Lessons | Shared controls exercised here | What is still needed to recreate the full investigation |
 | --- | --- | --- |
-| 01 · Discovery workbench | Sources, relations, grouped counts, driver placement, inspect/undo, exact parameter cases | Spiral/Young/sequence constructor sheets, constructor binding, structural-field vocabulary, roll/gather/tile/pad |
-| 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements | Composite Boolean lenses, union/intersection/coverage comparisons, 3D editor/camera, packed placement and explanatory annotations |
+| 01 · Discovery workbench | Integer/sequence/grid sources, relations, grouped counts, driver placement, inspect/undo, exact parameter cases | Spiral/Young constructor sheets, structural-field vocabulary, roll/gather/tile/pad |
+| 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements, shared 3D capture camera and view slices | Composite Boolean lens authoring, union/intersection/coverage comparisons, 3D placement editing, packed placement and explanatory annotations |
 | 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection, shared integer case editor; generic keyed comparison available | Three-component placements and complete notebook composition through controls |
 | 05 · Finite Radon | Parameterized prime/composite reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, nested evidence and exact keyed comparison | Explicit arithmetic assumptions and complete notebook parity |
 | 06 · Young layers | Filtered grids, layer counts, ordered weighted offsets, keyed strip placement, nested evidence and undo | Young constructor and conjugation controls, 3D editing and complete notebook composition |
@@ -421,7 +429,7 @@ Seven coverage tests add independent expected domains, zero/absent/multiple/outs
 witnesses, live assignment guards, exact/composite keys, expected identity,
 keyed reuse, and the Hermitian missing-polar case. Inspection and saved assignment
 receipts work with graph execution disabled.
-The complete required suite passes **203 tests**, and the discovery example
+The complete required suite passes **206 tests**, and the discovery example
 retains its expected counts, driver results, sieve, and history exports.
 
 With a separately installed Node/Playwright and Chromium:
@@ -429,6 +437,8 @@ With a separately installed Node/Playwright and Chromium:
 ```sh
 node docs/studies/check-construction-studio.cjs
 node docs/studies/check-construction-inspector.cjs
+node docs/studies/check-scene-model.mjs
+node docs/studies/check-shared-scene.cjs
 ```
 
 The optional gate starts its own fresh Python host. `KALEION_PYTHON` can select

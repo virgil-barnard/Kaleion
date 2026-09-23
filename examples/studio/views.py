@@ -34,7 +34,8 @@ def snapshot_view(result):
                  position=None if source.positions is None else source.positions[i].tolist(),
                  match=True if not incidence else bool(result.mask[i]))
             for i, oid in enumerate(source.ids)]
-    return dict(capture=result.node, fields=list(context), axes=list(source.axes), rows=rows,
+    return dict(capture=result.node, fields=list(context), axes=list(source.axes),
+                shape=exact_wire(source.shape), rows=rows,
                 placed=source.positions is not None,
                 dimension=None if source.positions is None else source.positions.shape[1])
 

@@ -20,10 +20,12 @@
       <div class="caption"><h2 id="title">Your blank canvas</h2><span id="scope">Hold the canvas or choose Add</span></div>
       <section id="linked-views" aria-label="Linked captured evidence" hidden></section>
       <section id="workspace-view" aria-label="Spatial workspace">
-        <div class="workspace-toolbar"><div class="modes" aria-label="Workspace tool"><button data-workspace-tool="move" aria-pressed="true">Move objects</button><button data-workspace-tool="connect" aria-pressed="false">Connections</button></div><button data-combine>Combine…</button></div>
+        <div class="workspace-toolbar"><div class="modes" aria-label="Workspace tool"><button data-workspace-tool="move" aria-pressed="true">Move objects</button><button data-workspace-tool="connect" aria-pressed="false">Connections</button><button data-workspace-tool="orbit" aria-pressed="false">Orbit</button></div><div class="row"><button data-scene-source>+ Sequence</button><button data-combine>Combine…</button></div></div>
         <p class="help" data-spatial-help></p>
+        <section data-scene-selection class="scene-selection" aria-label="Selected object view" hidden></section>
         <svg id="workspace-canvas" viewBox="0 0 900 600" tabindex="0" role="group" aria-label="Shared canvas. Select an object; Enter to focus; Shift F10 for options."><defs><marker id="workspace-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs></svg>
-        <div class="viewbar"><span>View layout only · each preview has its own scale · XY projection</span><div data-spatial-camera></div></div>
+        <div class="viewbar"><span data-scene-caption></span><div data-spatial-camera></div></div>
+        <div data-scene-planes class="camera-controls" aria-label="Scene orientation"></div>
         <details data-connection-list hidden></details>
       </section>
       <div id="single-view" hidden>
@@ -43,4 +45,5 @@
     <aside id="panel" tabindex="-1"><section id="construction" aria-labelledby="construction-title" hidden></section><section id="activity" tabindex="-1"><span class="eyebrow">COMPOSE / EXPLORE</span><h2>Start with something you can move.</h2><p>Choose <strong>+ Add → Integers</strong>, or Open a saved canvas. Select any object for Options; double-click it or choose Focus to inspect its occurrences.</p><p>Move objects organizes the workspace. Switch to Connections and drag one object to another to propose a product or a keyed placement. Combine… offers the same choices without dragging.</p><p class="quiet">Preview checks a construction; Apply records it. Cases evaluates exact parameter values. Replay scrubs a captured movement.</p></section></aside>
   </section>
   <dialog id="menu"><div class="menuhead"><strong id="menu-title">Object options</strong><button id="close-menu" aria-label="Close options">Close</button></div><div id="menu-actions"></div></dialog>
+  <dialog id="save-menu"><div class="menuhead"><strong>Save investigation</strong><button id="close-save">Close</button></div><p>Both choices keep applied mathematics, captured evidence and history. Unfinished drafts stay in this tab.</p><button id="save-canvas">Canvas and view</button><p class="help">Also keep object offsets, cell/point charts, slices, selection and the scene camera.</p><button id="save-math">Mathematics only</button><p class="help">The ordinary workspace file for Python and other Kaleion clients.</p></dialog>
 </main><script type="module" src="/studio.js"></script></body></html>

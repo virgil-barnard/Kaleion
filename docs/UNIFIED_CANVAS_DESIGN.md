@@ -7,9 +7,10 @@ Keep an object's construction visible beside it, let rules be picked up and reus
 and give every scrubber a declared subject. Carry Icarus's direct, spatial actions
 into Kaleion's exact definitions, captured evidence, and reversible history.
 
-This records the design proposal and its implementation sequence. Its first
-step, [construction inspection](CONSTRUCTION_INSPECTION.md), is now implemented.
-The next step is a common scene with local object frames and cell/point/3D views.
+This records the design proposal and its implementation sequence. Its first two
+steps, [construction inspection](CONSTRUCTION_INSPECTION.md) and the
+[shared scene](SHARED_SCENE.md), are now implemented. The next step makes
+captured replay and case tracks visible on Open.
 The larger direction is one spatial canvas with several representations; the
 remaining proposal does not describe already implemented capabilities.
 
@@ -33,6 +34,9 @@ The review used Kaleion `00d92028d7da08b07475a126204e42f09d362b0e` and
 [Icarus `935dda4`](https://github.com/virgil-barnard/Icarus/tree/935dda494af043b75043aecb5d9d278db2b8a3cb).
 Icarus's README calls the application ModScope. Both implementation and design
 documents were inspected; a feature in a design document was not assumed to work.
+
+The table records that baseline; the implemented increments above supersede its
+Kaleion preview and inspection limitations.
 
 | Area | Observed implementation | Design consequence |
 | --- | --- | --- |
@@ -370,7 +374,7 @@ they are not a commitment to one large redesign PR.
 | Order | Deliverable | Completion evidence |
 | --- | --- | --- |
 | 1 · implemented | **[Readable construction on selection](CONSTRUCTION_INSPECTION.md)** in today's workspace | Sequence, product expansion, incidence, measurement, and keyed placement show real arguments and inputs; earlier/local inputs stay honest; inspection makes no evaluation request; Back restores context. 203 Python tests and four browser gates pass; human interpretation remains untested. |
-| 2 | **Direct canvas foundation**: common scene, local frames, cells/points, source creation and explicit combination targets | Two sources and their product remain individually selectable; mark changes preserve identity; 3D snapshot orbit/slices work on lesson 03; camera/view movement changes no mathematics; versioned view persistence |
+| 2 · implemented | **[Direct canvas foundation](SHARED_SCENE.md)**: common scene, local frames, cells/points, source creation and explicit combination targets | Retained sources/product, mark identity, lesson-03 orbit/slices, view-only camera/offset changes, exact Sequence creation and versioned canvas persistence; 206 Python tests plus geometry/browser checks. Focus/replay still use their labeled XY renderer. |
 | 3 | **Visible transport and captured case tracks** | Replay available on Open without Undo/Redo; retained-case scrubbing makes no evaluations/history edits; source-derived order and failures stay visible; Radon and lattice cases transfer |
 | 4 | **Reusable rules and incidence combinations** | Copy/detach/apply with explicit bindings; symbolic rule versus saved support survives save/load; union/intersection on common universes; replay uses captured membership evidence |
 | 5 | **Authored recipes and editable input ports** | Changing one declared source rebuilds only intended dependents; pinned inputs stay pinned; cycles and stale replies fail clearly; old workspaces retain their meaning |
@@ -388,10 +392,11 @@ viewer through the same declared Arrange/lens controls, not a second tool system
 
 The bounded prompt below is now implemented; its walkthrough and validation are
 in [Construction inspection](CONSTRUCTION_INSPECTION.md). The next development
-priority is step 2: a common scene with local object frames and interchangeable
-cell/point representations, retaining this inspector and the lesson contracts.
-Step 3 should then make retained replay and case tracks visible on Open. Neither
-depends on implementing general recurrence or live recipe wiring first.
+priority is now step 3: make retained replay and case tracks visible on Open.
+The shared scene retains this inspector and the lesson contracts. Transport
+must label its subject, separate acquiring evaluations from seeking captures,
+and preserve a static/reduced-motion path. It need not wait for general recurrence
+or live recipe wiring.
 
 > Implement construction inspection in the current Kaleion studio. Begin with
 > the current UI study, touch-workspace contracts, and this brief. When an object

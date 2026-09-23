@@ -150,7 +150,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
 
  // Browser transport preserves integers that cannot be represented by Number.
  await integers('Exact','1152921504606846977');assert.deepEqual(await values('Exact'),['1152921504606846977']);
- const downloadPromise=page.waitForEvent('download');await page.locator('#save').click();const download=await downloadPromise;const saved=path.join(output,'workspace.json');await download.saveAs(saved);await idle();
+ const downloadPromise=page.waitForEvent('download');await page.locator('#save').click();await page.locator('#save-math').click();const download=await downloadPromise;const saved=path.join(output,'workspace.json');await download.saveAs(saved);await idle();
  await page.locator('#undo').click();await idle();assert.equal((await state()).objects.some(o=>o.name==='Exact'),false);
  await page.locator('#file').setInputFiles(saved);await idle();assert.deepEqual(await values('Exact'),['1152921504606846977']);
  assert.equal((await page.request.post(origin+'/api/cancel',{headers:{Origin:'https://example.invalid'},data:{revision:(await state()).revision}})).status(),403);
@@ -318,7 +318,7 @@ const output=path.resolve(process.argv[3]||'build/studio-check');fs.mkdirSync(ou
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Coverage choices and witnesses fit a phone');await page.locator('#coverage-status').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,'coverage-phone.png'),fullPage:true});
  await page.locator('#coverage-adopt').tap();await page.locator('#result-name').fill('Assigned sums');await page.locator('#assigned-field').fill('partner');await expression(cards().nth(0),f('right_value'));await apply();
  assert.deepEqual((await state()).objects.find(o=>o.name==='Assigned sums').rows.map(r=>r.fields.partner),['2','0','2','0']);
- const coverageDownload=page.waitForEvent('download');await page.locator('#save').click();const capture=await coverageDownload;const coverageSaved=path.join(output,'coverage-workspace.json');await capture.saveAs(coverageSaved);await idle();
+ const coverageDownload=page.waitForEvent('download');await page.locator('#save').click();await page.locator('#save-math').click();const capture=await coverageDownload;const coverageSaved=path.join(output,'coverage-workspace.json');await capture.saveAs(coverageSaved);await idle();
  await page.locator('#undo').click();await idle();await page.locator('#file').setInputFiles(coverageSaved);await idle();assert.deepEqual((await state()).objects.find(o=>o.name==='Assigned sums').rows.map(r=>r.fields.partner),['2','0','2','0']);
  const coverageChecks={balancedFailure:true,absentExpectedKey:true,candidateAndMatchInspection:true,unchangedCapture:true,originalKeysRetained:true,zeroValuedOwner:true,drivenPlacementUndo:true,additiveTransfer:true,phoneLayout:true,savedAssignment:true};
 

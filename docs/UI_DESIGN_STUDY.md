@@ -8,6 +8,8 @@ September 23, 2026 · Icarus comparison and construction-inspection review after
 
 September 23, 2026 · Readable construction inspection implemented after the PR #30 design
 
+September 23, 2026 · Shared scene, cell/point charts, 3D slices and saved views after PR #31
+
 **Recommendation:** build a workspace of reusable mathematical instruments, with
 low-cost experimentation and visible consequences. Judge it by whether someone
 can transfer an interaction to an unfamiliar construction, explain what changed,
@@ -32,7 +34,8 @@ PR #29 (`00d9202`) against Icarus and the maintainer's further desktop feedback.
 It records design decisions and an implementation sequence. The first step,
 [construction inspection](CONSTRUCTION_INSPECTION.md), now implements readable
 declarations and scoped input navigation on top of merged PR #30 (`dfa8cb1`).
-The shared scene and later steps remain proposals.
+The [shared scene](SHARED_SCENE.md) now implements the next step on merged
+PR #31 (`5740d63`). Captured transport, reusable rules and later steps remain proposals.
 
 ## 1. What the research contributes
 
@@ -134,7 +137,7 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
 | A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the current studio hides replay until a recent movement | Open · four saved canvases and an existing-controls walkthrough provide material for feedback; no UI redesign in this increment |
 | A14 | Selecting an object does not adequately reveal how it was constructed | Maintainer feedback after PR #29; now checked through all four saved canvases plus earlier/local/failed inputs | Implemented · selection reveals actual constructor, arguments, scoped inputs and result status; Back restores context and captured results lead to occurrence evidence. Human interpretation remains untested |
-| A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 uses independently scaled XY previews; Icarus browser review shows grid-native vectors, product headers, and lens extraction | Open · proposed common scene, local frames, cells/points and 3D views; preserve the distinction between view movement and mathematical placement |
+| A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 used independent XY previews; the shared-scene gate now exercises cells/points, direct mark inspection, 3D slices and saved views | Partly implemented · common scale/local frames, explicit charts, name-handle movement, Sequence creation and reviewed combination targets. Direct mathematical manipulators, reusable rules and human evaluation remain open |
 | A16 | Reusable rules and live dependencies lack a complete visible authoring contract | Core Lens is reusable; current connections describe immutable definitions, while Icarus exposes movable relation tokens | Open · separate rule, application, and captured incidence; add explicit recipe ports before promising propagation through editable cables |
 
 The baseline probe uses actual controls and records the browser version, focused
@@ -259,8 +262,33 @@ The sidebar preserves the construction header while evidence or editing occupies
 the activity area; opening those tasks collapses the declaration. Screenshots
 show no horizontal overflow at 320 pixels, but phone sheets remain long and the
 picture may be off-screen. A7, A10, A13, A15 and A16 remain open or partial. The
-next common-scene increment should improve direct object interaction while human
-observation tests whether this declaration/evidence split is understandable.
+common-scene increment below extends direct object interaction while human
+observation still needs to test whether this declaration/evidence split is understandable.
+
+### Shared scene: closer to direct manipulation
+
+The workspace now draws cells or points using one coordinate scale, with local
+axes and explicit view offsets. Selection leads from a mark to its captured
+receipt; a list retains depth-overlapping and sliced-out occurrences. Changing
+marks preserves the selected reference and camera. Changing Logical axes versus
+Placement is a separate, labeled chart decision. Name-handle movement, camera
+orbit and view slices leave mathematical export unchanged.
+
+This closes part of A15's gap: objects can be touched directly, constructed as
+finite sequences, and retained alongside a reviewed product. It also exposes
+tradeoffs. Shared scale makes relative extents honest but long sources compress
+the fitted overview. Three-dimensional glyphs can occlude each other; plane
+buttons, Selected, slices and an occurrence list help, but do not establish
+comfortable picking. Representation controls are compact and expandable above
+the canvas; expanding both chart and occurrence details still pushes the picture
+down on a phone. Physical-device density and reach trials remain necessary.
+
+Canvas and view saves now retain the scene camera, chart choices and offsets.
+Mathematics-only export preserves the ordinary workspace for other clients.
+This gives provisional spatial organization a useful lifetime without putting
+camera movement into mathematical undo. Focus, linked evidence and replay still
+use their labeled XY views; the UI must not imply that a 3D scene means every
+instrument has already gained 3D rendering.
 
 ## 5. First design experiment: an idea survives a detour
 
@@ -310,6 +338,8 @@ a module owns a decision that can change, rather than a stage of a lesson.
 | How to inspect a comparison | `comparison.py`, `comparison.js`, existing linked views | Bounded scoped witnesses, input choices, and return navigation |
 | Which inputs move a camera | `camera.js` and existing view callbacks | Shared buttons; no mathematical extent or placement changes |
 | What a selected definition declares | `construction.py`, `construction.js` | Actual IR and captured scopes; read-only browsing and return context, no recipe inference or evaluation |
+| How captured objects share a scene | `scene.js`, `workspace.js` | One projection and explicit local offsets; picking follows captured identity, slices are view filters |
+| How scene choices survive Open | `document.js` | Versioned view envelope; original mathematical JSON text remains exact and independently exportable |
 | How earlier weights become a measurement | `Grouping`, shared order plan, exact scan and existing contributor ranges | Explicit groups/order/keys; the Measure client edits declarations, not numerical state |
 
 Do not create a new core operation for draft retention, visual focus, or error
@@ -385,6 +415,7 @@ These are historical gate totals, not participant counts or usability scores.
 | [Saved canvases](../examples/canvases/README.md), merged PR #28 | Four editable investigations open with captured evidence and reversible movement | 190 |
 | [Spatial workspace](SPATIAL_WORKSPACE.md), merged PR #29 | Named objects visible together; definition paths distinguish earlier and local inputs; reviewed drag/tap composition preserves declaration and history boundaries | 195 |
 | [Construction inspection](CONSTRUCTION_INSPECTION.md), after merged design PR #30 | Readable constructors and exact expressions; scoped input navigation, failed/unfamiliar declarations, captured-result evidence and restored context | 203 |
+| [Shared scene](SHARED_SCENE.md), after merged PR #31 | Common-scale cells/points, 3D orbit/slices, source creation, exact saved view documents and direct occurrence inspection | 206 |
 
 PR #29 reported the required suite and discovery example passing; the subsequent
 Icarus/design review does not rerun or change those executable gates. The expanded Chromium 153
@@ -432,17 +463,29 @@ now uses the visible Canvas jump and asserts an unobscured target instead of
 scrolling a point underneath the sticky navigation. These checks do not add
 human, physical-touch, Safari or screen-reader evidence.
 
+The shared-scene increment adds a fifth saved example: lesson 03's 240-cell box.
+Its finite partition and captured contributors are independently checked.
+The offline geometry/document gate verifies projection, chart/slice identity,
+empty declared bounds, large exact integers and invalid documents. The Chromium
+scene gate checks direct mark picking, Sequence creation, mark/chart changes,
+view-only slice/orbit cancellation, exact camera/offset/selection restoration,
+failed/empty captures and phone widths. The existing inspector, spatial,
+saved-canvas and full-studio gates pass as regressions. Required tests total
+**206**, and discovery outputs are unchanged. These are automated and visual
+inspection results; no participant or physical-device evidence has been added.
+
 ### Proposed human observation
 
 Add three tasks motivated by the maintainer's feedback: construct every pair by
 bringing two objects together; use a count as another object's height; explain
 why an earlier consumer does not retarget when a named source is rearranged.
 Record whether people identify the active source/destination, review the keys,
-and predict what Apply changes. Ask them to distinguish moving a view panel,
-changing x/y/z, selecting an exact parameter case, and scrubbing recorded motion.
-The workspace previews have independent scales; test whether apparent geometric
-comparisons are mistakenly treated as mathematical equality. Dense scenes,
-crossing/occluded paths and the Focus detour are explicit unresolved design costs.
+and predict what Apply changes. Ask them to distinguish moving a view offset,
+changing its chart, changing mathematical x/y/z, selecting an exact parameter
+case, and scrubbing recorded motion. The scene now shares a coordinate scale;
+test whether users understand its local frames and avoid treating visual overlap
+as mathematical equality. Dense scenes, crossing/occluded paths and the Focus
+detour are explicit unresolved design costs.
 
 **Formative human study, proposed:** start with 6–8 consenting adult volunteers,
 including people comfortable with school algebra but unfamiliar with the API and
@@ -500,8 +543,8 @@ Use this record for each review:
 
 The list below records the original sequence and delivered increments. Following
 the Icarus review, the [next PR sequence](UNIFIED_CANVAS_DESIGN.md#a-sequence-of-small-reviewable-pull-requests)
-started with construction inspection, now implemented. Shared representations
-and visible captured tracks follow. Reusable rules and editable recipes retain
+started with construction inspection and shared representations, now implemented.
+Visible captured tracks follow. Reusable rules and editable recipes retain
 explicit scope and compatibility contracts; those later steps remain planned.
 
 1. **Stable authoring loop:** draft retention, accurate local feedback, and focus
