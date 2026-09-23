@@ -148,7 +148,9 @@ def build(command, roots, *, captured=None):
             raise ValueError("Give each axis a distinct field name")
         shape = [integer(v) if isinstance(v, str) else ex(v) for v in args["shape"]]
         result = (Collection.tuples(*shape, axes=axes, name=name) if args["value"] is None
-                  else Collection.grid(*shape, axes=axes, values=ex(args["value"], axes), name=name))
+                  else Collection.grid(*shape, axes=axes,
+                                       values=ex(args["value"], [*axes, "index"]),
+                                       name=name))
     elif action == "product":
         factors = args["factors"]
         product = Product(**{role: roots[entry["source"]] for role, entry in factors.items()})

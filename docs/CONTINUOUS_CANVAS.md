@@ -38,6 +38,8 @@ true division, and exponentiation are outside this short notation. Detailed
 expression controls still handle keyed reads and specialist constructions.
 **Index names and sizes** discloses naming and parameterized lengths such as
 `n + 1`. Ambiguous field/parameter names fail rather than guess their meaning.
+That check includes the built-in flat `index` in value formulas. The same name can
+still be a parameter in a size formula, where item fields do not exist.
 
 ## Command ownership
 

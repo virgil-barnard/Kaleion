@@ -127,9 +127,22 @@ class TupleDomainTests(unittest.TestCase):
         apply('Parameter formula',{'formula':'n*i + j'})
         self.assertEqual(studio.workspace.state.results['Parameter formula'].values.tolist(),[0,1,2,4,5,6])
         self.assertIn('n',str(studio.workspace.state.roots['Parameter formula'].node.attributes['values']))
+        apply('Flat index',{'formula':'index'},shape=['2','3'])
+        self.assertEqual(studio.workspace.state.results['Flat index'].values.tolist(),list(range(6)))
         studio.workspace.set_parameters(i=9)
         with self.assertRaisesRegex(ValueError,'both an index/field and a parameter'):
             apply('Ambiguous',{'formula':'i+j'})
+        studio.workspace.set_parameters(index=9)
+        before_ambiguous=studio.workspace.to_json()
+        with self.assertRaisesRegex(ValueError,'index names both an index/field and a parameter'):
+            apply('Ambiguous index',{'formula':'index + i'})
+        self.assertEqual(studio.workspace.to_json(),before_ambiguous)
+        # The same name is unambiguous in an extent expression: shape formulas
+        # have parameters but no item-field context.
+        apply('Parameterized extent',None,shape=[{'formula':'index + 1'},'0'])
+        parameterized=studio.workspace.state.results['Parameterized extent']
+        self.assertEqual(parameterized.shape,(10,0))
+        self.assertIsNone(parameterized.values)
         # Even when undone, a tuple state retained for redo needs the new format.
         old=Workspace({'ordinary':Collection.grid(1)})
         old.set('tuples',Collection.tuples(0))
