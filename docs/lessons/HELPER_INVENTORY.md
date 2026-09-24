@@ -39,17 +39,22 @@ are included. Imports alone do not establish use.
 
 ## Keep different responsibilities visible
 
-Five [saved studio canvases](../../examples/canvases/README.md) adapt lessons 02,
-03, 05, 06 and 07 for exploration with Open. Their generator,
-[save_canvases.py](../../examples/save_canvases.py), has five construction functions
-and one export entry point. Four recipes declare bounded sources, keys and 2D
-placements, create a workspace, and record one or two motion edits. The new
-`incidence_box()` recipe declares the lesson-03 box, three inequalities, section
-and volume measurements, and shared-cell incidence with actual 3D placement;
-it captures one initial case without adding motion. Export
-losslessly compacts ordinary schema-1 JSON. Inspection, preview/apply and rendering
-remain shared studio responsibilities; no lesson UI is embedded in the files.
-These prototype functions are outside the unchanged notebook counts above.
+Ten [saved studio examples and one blank canvas](../../examples/canvases/README.md)
+adapt lessons 02–07 and the introductory triangle for exploration with Open.
+Their generator, [save_canvases.py](../../examples/save_canvases.py), has eleven
+registered builders, two shared construction recipes, and one export entry point.
+`triangle_parts()` supplies a common domain, incidence, counts and independent
+formula to first motion and packing. `ownership_regions()` supplies the box and
+three predicates to the original box, cell-ownership comparison and planar lifts.
+`measured_plane()` records three paired value/position changes; `cell_coverage()`
+compares singleton measurements to a separately derived unit field, and
+`tied_coverage()` selects the assumption-breaking parameters. `triangle_packing()`
+composes selected cells, ranks and measured prefixes. These remain ordinary core
+operations and captures; the tutorial adds no lesson-specific evaluator behavior.
+Export losslessly compacts schema-1 JSON. Inspection, preview/apply and rendering
+remain shared studio responsibilities. `studio/catalog.py` owns trusted example
+choices and descriptions, while `web/learning.js` owns non-executing instructions.
+These functions are outside the unchanged notebook/helper counts above.
 
 | Responsibility | Typical input → output | Boundary to preserve |
 | --- | --- | --- |

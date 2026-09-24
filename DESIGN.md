@@ -212,6 +212,16 @@ text; Preview alone calculates the proposal. See [relation notation](docs/RELATI
 See [the refactor contracts](docs/CONTINUOUS_CANVAS.md) for command ownership,
 proof-provenance boundaries, compatibility and task-based validation.
 
+The [canvas walkthrough](docs/CANVAS_TUTORIAL.md) separates teaching from execution.
+`examples/save_canvases.py` owns small mathematical recipes; `studio/catalog.py`
+owns trusted example identifiers, titles and file lookup; `learning.js` owns the
+chooser and instructional steps. Selecting a title or changing a tutorial step
+does not edit a workspace. Loading uses the existing validated import contract;
+the guide invokes no construction commands. Coordinate previews/applies explicitly
+show placement, and a first placement becomes visible on Redo. Cancel restores
+the prior view; browsing and replay preserve an explicitly chosen logical chart.
+No core primitive, dependency or saved-format migration is required.
+
 ## Snapshot ownership
 
 Public snapshot construction copies and validates incoming buffers, even if a

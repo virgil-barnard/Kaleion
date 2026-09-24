@@ -27,7 +27,9 @@ Run `python3 -m examples.studio` and open the printed local address.
    remain on the board. **More tools → Set values from a formula** assigns contents
    to a new child of a tuple object without erasing the original.
 5. Open a saved lesson canvas. Follow an input in **How this is made**, then Back.
-   Select a cell to follow its value and contributors. Saved evidence opens in the
+   **Open → Start walkthrough** gives a complete first-motion path using these
+   same controls; the [full tutorial](CANVAS_TUTORIAL.md) develops exact comparison
+   and the box identity. Select a cell to follow its value and contributors. Saved evidence opens in the
    drawer while the working scene stays visible.
 
 A Vector also offers **Values I type**. Formulas accept integer constants, index
@@ -103,6 +105,12 @@ selected object's appearance. No camera fit or parameter evaluation occurs while
 scrubbing. Replay is still offered after a captured edit or Undo/Redo; this is not
 a general timeline/library of all past transformations. Parameters explicitly
 calculate new results and do not advance replay time.
+
+Coordinate Preview/Apply explicitly displays placement. When an unplaced object
+first acquires coordinates (including Redo), its chart becomes Placement. Otherwise
+an explicit logical-chart choice survives inspection and replay; Cancel restores
+the pre-preview view. This fixes the tutorial failure where a successful move
+returned to the old logical grid and appeared to have done nothing.
 
 The core adds `Collection.tuples(*shape, axes=...)`, a finite indexed domain whose
 `Snapshot.values` is **None**. `F.value` is absent, including on an empty domain.

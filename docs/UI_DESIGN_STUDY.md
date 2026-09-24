@@ -676,6 +676,38 @@ remain planned.
    Shared camera buttons and focus-moving phone links are now the baseline, not
    evidence that the larger proximity problem is solved.
 
+## Follow-up · Learning to create motion
+
+September 24, 2026. The maintainer's brief trial found the reset cleaner and easier
+to read, successfully loaded all examples and played their recorded motion, and
+liked the 3D view. Orbit felt somewhat laggy. They had not found how to create
+motion from scratch. This is useful direct feedback from one short trial; it
+does not establish ease of learning, performance or accessibility more generally.
+
+The response adds [an Open catalog and a walkthrough](CANVAS_TUTORIAL.md), keeping
+the same controls for every investigation. The guide is collapsible and does not
+execute a lesson or change mathematical history. The completed first-motion
+capture and blank start permit worked-example and independent-construction trials.
+Further captures transfer the same measurement/placement contract to triangle
+packing, three planar lifts, and a pointwise box equality with a counterexample.
+
+Walking the public controls also exposed a real feedback failure: after applying
+coordinates, the view could keep displaying logical indices and make the move
+look ineffective. Coordinate preview/apply now shows placement; Undo/Redo handles
+the first placement, while Cancel restores the earlier appearance. Ordinary
+browsing and replay retain an explicit chart choice. This follows the instrument
+principle without turning view offsets into mathematical coordinates.
+
+The browser gate constructs the tutorial from blank, follows contributors,
+compares independent fields, changes parameters including zero, saves/reopens,
+loads every catalog entry, checks failed loads, and tests keyboard/emulated-touch
+navigation. It verifies the placement feedback fix and cancelled-preview recovery.
+These are observable software checks. Next observe a new author doing the same
+task without loading the finished answer, then transferring it to another relation.
+Measure time-to-first-motion and where help was needed. Profile orbit separately
+on an actual device; the compact 24-cell example and Points/slices are available
+viewing choices, not an established speedup.
+
 ## Sources
 
 Accessed September 22, 2026. These are research or original author/standards

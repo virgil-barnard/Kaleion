@@ -61,7 +61,12 @@ same exact construction. The [short-rule guide](docs/RELATION_NOTATION.md)
 explains the syntax and cross-lesson checks.
 
 [Open a worked canvas](examples/canvases/README.md) to explore the lesson
-constructions. Follow an input or contributor to its saved source, then return
+constructions. **Open** now lists ten examples and a blank canvas; choose a title,
+then **Load example**. **Open → Start walkthrough** guides you from a blank grid
+to a relation, reusable counts, your first recorded motion, and an exact finite
+comparison. The [canvas tutorial](docs/CANVAS_TUTORIAL.md) continues through packing,
+three measured plane lifts, and the box-of-ones identity with its counterexample.
+Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;
 **Canvas and view** also preserves appearance and layout. New tuple-only captures
 use workspace schema 2; existing integer captures remain compatible with schema 1.

@@ -97,6 +97,13 @@ expected-domain choice and attaches captured references for inspection. This
 extraction serves two clients without moving rendering or evaluator policy into
 the comparison module. See [the comparison guide](KEYED_COMPARISON.md).
 
+The [canvas walkthrough](CANVAS_TUTORIAL.md) now makes the complete introductory
+loop reproducible through those controls and exposes a placement-visibility bug:
+new coordinates must actually become the displayed chart. Five additional
+worked captures cover first motion, measured packing, three planar lifts and
+per-cell box ownership with a failed assumption. The tutorial and catalog remain
+presentation modules; the existing comparison and measurement contracts suffice.
+
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the
 diagnostic fell from roughly 0.50 s to 0.027 s on this host. Its motion fixture now

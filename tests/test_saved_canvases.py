@@ -9,11 +9,14 @@ from unittest.mock import patch
 import numpy as np
 
 from examples.studio.adapter import Studio
+from examples.studio.catalog import EXAMPLES, example_text
 
 
 CANVASES = Path(__file__).resolve().parents[1] / "examples" / "canvases"
 LAST_OBJECT = {"02_floor_sums": "Pieces", "05_radon_reconstruction": "Image heights",
-               "06_young_layers": "Cells", "07_equal_sums": "Moving pairs"}
+               "06_young_layers": "Cells", "07_equal_sums": "Moving pairs",
+               "00_first_motion": "Markers", "01_triangle_packing": "Moving cells",
+               "04_measured_plane": "Lifted plane"}
 
 
 def opened(name):
@@ -23,6 +26,100 @@ def opened(name):
 
 
 class SavedCanvasTests(unittest.TestCase):
+    def test_catalog_opens_only_registered_captures_without_evaluation(self):
+        self.assertEqual(len(EXAMPLES), len({e['id'] for e in EXAMPLES}))
+        with patch("kaleion.evaluate.Evaluator.get", side_effect=AssertionError("execution")):
+            for entry in EXAMPLES:
+                with self.subTest(example=entry['id']):
+                    text = example_text(entry['id'])
+                    self.assertEqual(text, (CANVASES / (entry['id'] + '.json')).read_bytes())
+                    studio = Studio()
+                    studio.reopen(text.decode(), 0)
+                    self.assertFalse(studio.workspace.state.errors)
+                    if entry['focus'] is not None:
+                        self.assertIn(entry['focus'], studio.workspace.state.results)
+                    else:
+                        self.assertFalse(studio.workspace.state.roots)
+        for path in ('../studio/server', '%2e%2e/studio/server', '00_blank.json', 'missing', '00_blank?x'):
+            with self.subTest(path=path), self.assertRaises(KeyError):
+                example_text(path)
+
+    def test_first_motion_uses_count_keys_and_keeps_labels_separate(self):
+        studio = opened('00_first_motion')
+        r = studio.workspace.state.results
+        self.assertEqual(r['Counts'].values.tolist(), [4, 3, 2, 1, 0])
+        self.assertEqual(r['Formula'].values.tolist(), [4, 3, 2, 1, 0])
+        self.assertEqual(r['Markers'].values.tolist(), [0]*5)
+        np.testing.assert_array_equal(r['Markers'].positions, [[i, 4-i] for i in range(5)])
+        marker = r['Markers']
+        read = studio.inspect('Markers', [marker.node, marker.ids[2]], studio.revision)['bindings'][0]
+        self.assertEqual((read['site'], read['value']), ('y', '2'))
+        receipt = studio.contributors(read['driver'], studio.revision)['measurement']
+        self.assertEqual(receipt['contributor_count'], '2')
+        self.assertEqual([(c['item']['fields']['i'], c['item']['fields']['j'])
+                          for c in receipt['contributors']], [('2', '0'), ('2', '1')])
+        preview = studio.preview_case({'n': '0'}, studio.revision)
+        studio.commit(preview['token'], studio.revision)
+        self.assertEqual(studio.workspace.state.results['Counts'].values.tolist(), [0])
+        self.assertEqual(studio.workspace.state.results['Formula'].values.tolist(), [0])
+
+    def test_triangle_packing_reuses_ordered_measurements_without_collisions(self):
+        studio = opened('01_triangle_packing')
+        r = studio.workspace.state.results
+        self.assertEqual(r['Row weights'].values.tolist(), [6, 6, 5, 3, 0])
+        self.assertEqual(r['Offsets'].values.tolist(), [0, 4, 7, 9, 10])
+        self.assertEqual(r['Area'].values.tolist(), [10])
+        cells = r['Moving cells']
+        self.assertEqual(sorted(cells.positions[:, 0].tolist()), list(range(10)))
+        self.assertEqual(cells.positions[:, 1].tolist(), [0]*10)
+        offset = r['Offsets']
+        receipt = studio.contributors([offset.node, offset.ids[2]], studio.revision)['measurement']
+        self.assertEqual([c['weight'] for c in receipt['contributors']], ['4', '3'])
+
+    def test_measured_plane_is_flat_then_exposes_a_shared_column(self):
+        studio = opened('04_measured_plane')
+        r = studio.workspace.state.results
+        self.assertEqual(r['Lifted plane'].values.tolist(), [2]*12)
+        np.testing.assert_array_equal(r['Lifted plane'].positions[:, 2], [2]*12)
+        for _ in range(3):
+            studio.history('undo', studio.revision, 'Lifted plane')
+        self.assertEqual(studio.workspace.state.results['Lifted plane'].values.tolist(), [0]*12)
+        for _ in range(3):
+            studio.history('redo', studio.revision, 'Lifted plane')
+        preview = studio.preview_case({'a': '6', 'b': '4', 'c': '5'}, studio.revision)
+        studio.commit(preview['token'], studio.revision)
+        report = studio.compare('Lifted plane', ['i', 'j'], 'value',
+                                'Expected height', ['i', 'j'], 'value',
+                                'Footprint', ['i', 'j'], studio.revision)
+        different = [row for row in report['rows'] if row['status'] == 'different']
+        self.assertEqual([(row['key'], row['left'], row['right'], row['residual'])
+                          for row in different], [(['2', '1'], '6', '4', '2')])
+
+    def test_cellwise_comparison_exposes_exact_shared_cell_witnesses(self):
+        for name, equal, counted, box in [('03_cell_coverage', True, 24, 24),
+                                         ('03_tied_coverage', False, 62, 60)]:
+            with self.subTest(canvas=name):
+                studio = opened(name)
+                saved = studio.workspace.to_json()
+                with patch('kaleion.evaluate.Evaluator.get', side_effect=AssertionError('execution')):
+                    report = studio.compare('Cell owners', ['i', 'j', 'k'], 'value',
+                                            'One per cell', ['i', 'j', 'k'], 'value',
+                                            'Box', ['i', 'j', 'k'], studio.revision)
+                self.assertEqual(report['passed'], equal)
+                self.assertEqual(studio.workspace.to_json(), saved)
+                r = studio.workspace.state.results
+                self.assertEqual(r['Counted volume'].values.tolist(), [counted])
+                self.assertEqual(r['Box volume'].values.tolist(), [box])
+                self.assertEqual(r['One per cell'].values.tolist(), [1]*box)
+                if not equal:
+                    witnesses = [row for row in report['rows'] if row['status'] == 'different']
+                    self.assertEqual([(row['key'], row['left'], row['right']) for row in witnesses],
+                                     [(['2', '1', '0'], '2', '1'), (['2', '1', '1'], '2', '1')])
+                    cell = r['Cell owners']
+                    index = next(i for i in range(len(cell)) if int(cell.values[i]) == 2)
+                    reads = studio.inspect('Cell owners', [cell.node, cell.ids[index]], studio.revision)['bindings']
+                    self.assertEqual([read['value'] for read in reads], ['1', '1', '0'])
+
     def test_all_canvases_reopen_inspect_and_reverse_saved_motion_without_evaluation(self):
         for name, active in LAST_OBJECT.items():
             with self.subTest(canvas=name), patch("kaleion.evaluate.Evaluator.get", side_effect=AssertionError("execution")):

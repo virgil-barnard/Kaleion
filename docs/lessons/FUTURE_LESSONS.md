@@ -71,6 +71,28 @@ Before adding more abstraction, compare weighted prefixes in 06, case-family evi
 replay in 11. The inspector does not yet explain scalar/positional reads or nested
 bindings within binding keys/reads; future lessons should name these gaps explicitly.
 
+## Canvas transfer · From finite equality to a conjecture
+
+The [canvas tutorial](../CANVAS_TUTORIAL.md) now links three exact comparisons:
+triangle counts against `n-i`, summed box-column heights against `c-1`, and
+singleton ownership against a field of ones. Five new worked examples plus a
+blank start join the existing Open catalog; the guided path creates the first
+movement with ordinary controls. These are bounded studio adaptations, not new
+numbered notebooks or proof-assistant integration.
+
+Next capture the *question* as an observation: object definitions, selected value
+fields, ordered keys, expected domain, finite cases, residual witnesses, candidate
+variable bindings and assumptions. A missing-key case must remain distinct from
+a numerical counterexample. Reuse the `(6,4,5)` ownership failure to test that
+joint gcd one cannot silently substitute for pairwise coprimality. Only then
+translate a supported statement to a proof assistant and distinguish checked,
+failed and unresolved goals. Keep the algebraic explanation visible even when
+translation is unavailable. Automatic generalization and proof are future work.
+
+The immediate human transfer task remains: build a new relation, derive counts,
+and move a separate arrangement without loading its answer. The smaller 3D
+capture is also a useful real-device orbit test; no speedup is yet established.
+
 ## Next UI transfer experiment · Meaning before more notation
 
 The [workspace survey](../COMPARABLE_WORKSPACES.md) compares twelve relevant tools
