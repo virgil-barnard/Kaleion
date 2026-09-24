@@ -50,7 +50,8 @@ without numeric contents, or fill locations with an index formula such as
 
 Select an object; **Details**, right-click or long-hold opens its construction
 beside the canvas. There is one working scene. **Relation**, **Sum / count** and
-**Combine** create further objects while retaining their inputs. Specialist tools
+**Arrange / move** records exact coordinates and movement; dragging the object's
+name organizes only the view. **Combine** creates further objects while retaining their inputs. Specialist tools
 remain under **More tools**; Cells/Points, charts and slices live in **Appearance**.
 Orbit and Connect stay available on the board. Replay shows a saved movement on
 that board; **Parameters** explicitly calculates new results.

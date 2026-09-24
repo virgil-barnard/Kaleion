@@ -106,6 +106,7 @@ function workspaceControls(){
   const selected=object(),ready=selected?.status==='ready';
   $('quick-lens').hidden=selected?.kind==='incidence';
   $('reuse-lens').hidden=selected?.kind!=='incidence';
+  $('arrange').hidden=selected?.kind==='incidence';
   for(const id of ['quick-lens','axis-total','reuse-lens','combine'])$(id).disabled=busy||drafting||!ready;
   $('object-tools').querySelectorAll('[data-action]').forEach(b=>b.disabled=busy||drafting);
   document.querySelectorAll('[data-create]').forEach(b=>b.disabled=busy||drafting);
@@ -164,6 +165,7 @@ function render(){
 $('quick-lens').onclick=()=>editor('lens',{workspace:true,scene:true,quick:true});
 $('axis-total').onclick=()=>editor('total',{workspace:true,scene:true});
 $('reuse-lens').onclick=()=>editor('reuse_lens',{workspace:true,scene:true});
+$('arrange').onclick=()=>editor('place',{source:active});
 $('objects').onchange=()=>{if($('objects').value)selectObject($('objects').value)};
 $('combine').onclick=()=>combinePanel(active,null);
 $('options').onclick=()=>inspectObject();
@@ -396,7 +398,7 @@ function editor(action,seed=null){
     const value=expressionControl('Value supplied by the unique match',field('value'));
     args=()=>({...seed,value:value.read(),field:assigned.value});
   }else if(action==='place'){
-    controls.append(el('p','Change this object’s placement. Use a Keyed read to let a measurement supply a coordinate. Existing derived objects keep their earlier input definitions.',{class:'help'}));
+    controls.append(el('p','Give this object exact coordinates and record the change as motion. Use a Keyed read to let a measurement supply a coordinate. Dragging its name on the canvas changes only the view.',{class:'help'}));
     const dimensions=labeled(controls,'Number of coordinates',options(['1','2','3'],String(Math.max(2,source.dimension||source.axes.length))));
     const coordinates=['x','y','z'].map((axis,i)=>expressionControl(`${axis} coordinate`,seed?.coordinates?.[i]||((source.axes[i]||i===0)?field(source.axes[i]||'key'):i===1&&fields.includes('value')?field('value'):number(0))));
     function showCoordinates(){coordinates.forEach((card,i)=>{card.box.hidden=card.box.previousElementSibling.hidden=i>=Number(dimensions.value)})}

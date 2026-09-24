@@ -103,6 +103,9 @@ new coordinates must actually become the displayed chart. Five additional
 worked captures cover first motion, measured packing, three planar lifts and
 per-cell box ownership with a failed assumption. The tutorial and catalog remain
 presentation modules; the existing comparison and measurement contracts suffice.
+The same construction exposed placement discoverability rather than a missing
+primitive: **Arrange / move** now opens the existing coordinate editor directly
+from a selected collection, without duplicating it in More tools.
 
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the

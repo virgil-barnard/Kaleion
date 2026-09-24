@@ -50,8 +50,8 @@ still be a parameter in a size formula, where item fields do not exist.
 | Header | Create, history, files, parameter values | The permanent case summary and separate source shortcut |
 | Background menu | Vector, Grid, Cube | Actions inherited from the last selection |
 | Selected object strip | Name, Details, Appearance | Separate Workspace and Focus surfaces |
-| Details drawer | Construction, Relation, Sum/count, Combine | A second copy of source creation tools |
-| More tools | Values, named fields, coordinates, groups, ordered measurements, coverage, comparison; Keep matches for a relation | An unrestricted top-level menu |
+| Details drawer | Construction, Relation, Sum/count, Arrange/move, Combine | A second copy of source creation tools |
+| More tools | Values, named fields, groups, ordered measurements, coverage, comparison; Keep matches for a relation | An unrestricted top-level menu; duplicate coordinate action |
 | Appearance | Cells/points, displayed coordinates, axis projection, slices, exact item chooser | Permanent chart and slice rows above the scene |
 | View | Fit, zoom, pan buttons, plane presets, rotation buttons | Several always-visible camera rows |
 
@@ -111,6 +111,11 @@ first acquires coordinates (including Redo), its chart becomes Placement. Otherw
 an explicit logical-chart choice survives inspection and replay; Cancel restores
 the pre-preview view. This fixes the tutorial failure where a successful move
 returned to the old logical grid and appeared to have done nothing.
+**Arrange / move** now exposes that existing coordinate editor beside Relation and
+Sum/count for any ready collection. Its form says that exact coordinates create
+recorded motion, while dragging an object name changes only presentation. The
+advanced menu no longer duplicates the same command. Incidences remain lenses;
+select their matches before arranging those occurrences.
 
 The core adds `Collection.tuples(*shape, axes=...)`, a finite indexed domain whose
 `Snapshot.values` is **None**. `F.value` is absent, including on an empty domain.

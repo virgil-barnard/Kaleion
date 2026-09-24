@@ -51,7 +51,7 @@ occurrences. Follow a keyed read, then **View measurement and contributors**.
 Inspect a zero count as well as a nonzero count. Details, evidence and the main
 canvas retain their distinct meanings.
 
-To make your own motion, apply **Set coordinates**, or use **Combine → Use source
+To make your own motion, choose **Details → Arrange / move**, or use **Combine → Use source
 values as destination height** with explicit matching keys. Dragging an object
 name only moves its view. **Parameters** evaluates a new mathematical case; the
 playback scrubber interpolates an already recorded path and never supplies inputs.

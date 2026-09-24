@@ -74,7 +74,7 @@ selection, select Markers and use Undo then Redo immediately after this move.
 History is workspace-wide: after further edits, Undo reverses the most recent
 edit, not necessarily the selected object's movement.
 
-For a different shape, **Details → More tools → Set coordinates** offers one,
+For a different shape, **Details → Arrange / move** offers one,
 two or three coordinates. Each can read a field, expression or uniquely keyed
 measurement. You can explicitly choose **Appearance → Logical axes** again;
 ordinary browsing and replay do not change that choice. Coordinate Preview is
@@ -149,7 +149,7 @@ to inspect completed ranks/prefixes and reverse its packing movement.
 | Keep the pieces | Triangle → More tools → Keep matches | Ten selected occurrences; future grouping of this new domain no longer includes the empty fiber |
 | Order each group | Selected pieces → More tools → Measure with keys and order → rank; group `i`, order `j`, unique item key `key` | Ranks start at zero in each fiber; equal order keys must be resolved |
 | Accumulate group widths | Counts → Measure with keys and order → Prefix sum; no group keys, order `i`, unique item key `i`, weight `value` | Offsets `[0,4,7,9,10]`; offset 7 reads earlier counts 4 and 3 |
-| Pack with two measurements | Selected pieces → Set coordinates; x = a keyed read of Offsets (`i` to `i`) plus a keyed read of Ranks (`key` to `key`), y = 0 | Ten distinct locations `0,...,9`; two composed measurements determine placement |
+| Pack with two measurements | Selected pieces → Arrange / move; x = a keyed read of Offsets (`i` to `i`) plus a keyed read of Ranks (`key` to `key`), y = 0 | Ten distinct locations `0,...,9`; two composed measurements determine placement |
 | Check correspondence | Counts → More tools → Check coverage; match source `i` to Formula's `i` | Exactly one measured item per expected key, including the zero; **Use unique matches** can attach its value as a named field on a copy of Formula |
 | Make a named quantity | Numbers → More tools → Add a named field; name `total`, formula terms `i + j` | Field and contents stay distinct; a new relation may read `total` |
 | Reuse a rule | Triangle → Reuse rule; choose another suitable grid and map `value` to its chosen field | An explicit copied predicate; the reuse panel states which parameter values are captured |
