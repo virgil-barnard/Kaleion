@@ -1,5 +1,39 @@
 # Validation · 0.1.0
 
+## Residue fibers and measured repetition · September 25, 2026
+
+- `python3 -m unittest discover -s tests -v`: **260 tests pass**, no skips.
+  The venv now has the already-declared optional notebook dependencies, so the
+  four Plotly contracts run too. Six new lesson tests independently check fiber
+  multiplicities, gcd/lcm counts, zero witnesses, guarded inverses, rank receipts,
+  copied ancestry, group addition with a carry, and captured reversal. Three new
+  adapter tests check live singleton repeat counts, zero/multiple/unvalued/negative
+  inputs, changed parameter arity, failure isolation and save/reopen.
+- `python3 examples/discovery.py --out build/example-output` passes.
+- `check-residue-fibers.cjs` builds a kernel count, period, rank-driven 3D
+  placement and cyclic action from blank, then drives unrelated repetition with
+  the measured total. It checks coprime case changes, invalid multiple drivers,
+  both keyed comparisons, saved three-step replay, and 360px layout. The existing
+  `check-reindexing.cjs` also passes. Chromium **153.0.8010.0**, no page errors;
+  desktop and phone captures reviewed. Test development corrected selectors for
+  the second parameter and the comparison instrument's retained key choices.
+- Lesson 12's **10 code cells** execute in fresh in-process IPython sessions for
+  `(6,4)` and `(7,5)`. Source outputs remain cleared. Normal `nbconvert --execute`
+  fails at kernel startup because this host denies network-interface/socket
+  access; the fallback does not establish a live JupyterLab session.
+- Five default Plotly exports render in Chromium, and both exported animations
+  traverse to their last frames. HTML conversion and `export_gallery.py --only
+  12-residue-fibers` pass; the 960×600 Plotly PNG is visually reviewed. Each case's
+  MP4 independently decodes **100 frames**, H.264, 960×640, 20 fps, five seconds.
+  [Notebook evidence and limits](notebooks/VALIDATION.md) record the scope.
+
+No installed-core operation, dependency declaration or capture schema changes.
+The new optional Repeat argument lowers to the existing scalar expression;
+old formula commands remain valid. Pointwise inspection does not yet explain
+scalar-constructor reads. General standalone ordering, physical-touch usability
+and novice discovery remain open. The witness domain has `(a*b)^2` items and
+uses the existing 2,000-item studio budget.
+
 ## Copying, periodic extension and guarded addresses · September 25, 2026
 
 - `python3 -m unittest discover -s tests -v`: **251 tests run, 247 pass,

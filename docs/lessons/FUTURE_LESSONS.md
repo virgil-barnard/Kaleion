@@ -1,5 +1,28 @@
 # Future Kaleion lessons
 
+## Delivered · Remainder fibers, quotient groups and carries
+
+[Lesson 12](12_residue_fibers.md) folds an integer domain by two residues, measures
+its kernel and all fibers, drives rank separation and a cyclic action, then copies
+one period using a measured repeat count. The notebook explains the compatible-pair
+fiber product and the carry in a nonsplit additive extension. Its saved canvas and
+from-blank controls transfer Count/Rank/Bind/Tile/Roll without a group-specific tool.
+
+**Next: orbit lattices and Smith normal form.** Construct two commuting shifts,
+measure their orbits, and carry an explicit integer generator basis through
+unimodular row/column operations. Compare two finite quotients with the same
+cardinality but different element orders. Preserve quotient classes separately
+from coincident positions and from copied occurrences. A concrete first target
+is the contrast `Z/24` versus `Z/12 × Z/2`, already exposed by lesson 12's carry.
+Keep a missing-source counterexample and a declared coordinate dictionary.
+Start with recipes; no matrix-normal-form primitive is yet justified.
+
+**UI follow-up:** the new Repeat input accepts a whole singleton object. Test
+the same arity choice in source extents, and test a standalone ordering action
+after a user deliberately permutes the first period. Scalar read receipts need
+a separate inspection contract; a driver is visible in the construction graph
+today, but it is not yet a pointwise binding receipt.
+
 ## Delivered canvas investigation · Division and modular relations
 
 [Division in motion](../DIVISION_MOTION.md) reconstructs the two Icarus papers

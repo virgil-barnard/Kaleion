@@ -39,6 +39,12 @@ These images come from the working notebooks. Follow a preview to its constructi
 </tr>
 </table>
 
+[![Remainder fibers form two measured sheets, with copied labels 0 through 23](docs/images/lessons/12-residue-fibers.png)](notebooks/12_residue_fibers.ipynb)
+
+[12 · Remainder fibers and hidden carries](notebooks/12_residue_fibers.ipynb)
+uses measured counts to drive both motion and copying. Discover a quotient group,
+then see why its layers still need a carry when adding.
+
 The images are static previews; selected motion frames show presentation states. [Preview sources and regeneration](docs/images/lessons/README.md).
 
 ## Build on a canvas
@@ -68,7 +74,7 @@ remain distinct, including groups with zero matches. The [field guide](docs/FIEL
 also follows a keyed read to its driver without changing your construction.
 
 [Open a worked canvas](examples/canvases/README.md) to explore the lesson
-constructions. **Open** now lists sixteen examples and a blank canvas; choose a title,
+constructions. **Open** now lists seventeen examples and a blank canvas; choose a title,
 then **Load example**. **Open → Start walkthrough** guides you from a blank grid
 to a relation, reusable counts, your first recorded motion, and an exact finite
 comparison. The [canvas tutorial](docs/CANVAS_TUTORIAL.md) continues through packing,
@@ -81,6 +87,10 @@ transformation** supplies a keyed input to any of the three transform choices.
 **More tools → Reindex / extend** repeats, takes an ordered address list, or joins
 explicit domains. The new **Repeat, truncate and pad** and **A relation supplies
 addresses** canvases demonstrate copied provenance and guarded address maps.
+**Remainder fibers and hidden carries** extends those choices into quotient
+groups: **Repeat count from → A single value from an object** lets a measured
+cardinality control copying. The [lesson guide](docs/lessons/12_residue_fibers.md)
+includes from-blank motion instructions and remaining authoring gaps.
 
 [![Counted quotients displace each fiber of the modular residue table](docs/images/division-motion.png)](docs/DIVISION_MOTION.md)
 
@@ -177,7 +187,7 @@ Then open [Two incidences fill a rectangle](notebooks/02_floor_sum_proof.ipynb).
 
 [A code becomes a projective plane](notebooks/11_cyclic_code_plane.ipynb) begins with a cyclic Hamming-code polynomial, unfolds its generator matrix, derives its dual, and finds the Fano plane among the codeword supports. The same cubic constructs an eight-element field. An explicit coordinate dictionary connects the field and projective incidences, while synchronized charts show field multiplication as a cyclic shift and a motion of projective lines. It includes measured single-error correction, four counterexamples, captured undo, and two MP4s.
 
-The [lesson guide](docs/lessons/README.md) provides educational notes for all eleven notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, further coding theory, Hermitian investigations, and earlier extensions.
+The [lesson guide](docs/lessons/README.md) provides educational notes for all twelve notebooks. [Review notes](docs/lessons/REVIEW_NOTES.md) collect concrete findings about notation, provenance, ordering, and repeated construction recipes. [UI discovery notes](docs/lessons/UI_DISCOVERY_NOTES.md) identify declarative choices and module responsibilities. [Future lessons](docs/lessons/FUTURE_LESSONS.md) preserve plans for symmetry, further coding theory, Hermitian investigations, and earlier extensions.
 
 The [core refinement plan](docs/CORE_REFINEMENT_PLAN.md) examines the implementation through Parnas's information-hiding criterion. Parameter-bound incidence composition, independent field interpretation, one-pass contributors, and prepared motion are implemented. The core shares unchanged owned snapshot buffers and centralizes address and grouping rules. Explicit grouping, member order, coverage checks, and named placement simplify lessons 07 and 10. Weighted prefixes now simplify lesson 06; measured case families remain planned.
 

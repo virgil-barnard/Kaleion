@@ -25,7 +25,18 @@ def reindex(args, roots, captured, parse):
     if args["placement"] not in ("unplaced", "indices"):
         raise ValueError("Choose Unplaced or Index chart for the result")
     if kind == "tile":
-        result = source.tile(parse(args["times"]), axis=axis)
+        times = args["times"]
+        if isinstance(times, dict) and set(times) == {"object"}:
+            # A constructor takes one value, not one keyed read per source item.
+            # scalar() checks this again in every parameter case, including empty
+            # or multiple measurements. Never freeze the current displayed total.
+            driver = captured.results.get(times["object"])
+            if not isinstance(driver, Snapshot):
+                raise ValueError("Choose a ready object supplying one integer value")
+            times = roots[times["object"]].scalar()
+        else:
+            times = parse(times)
+        result = source.tile(times, axis=axis)
     elif kind == "concat":
         other = captured.results.get(args["other"])
         if not isinstance(other, Snapshot):

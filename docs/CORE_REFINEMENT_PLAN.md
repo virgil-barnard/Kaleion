@@ -1,5 +1,12 @@
 # Kaleion core refinement plan
 
+The later [residue-fiber investigation](lessons/12_residue_fibers.md) reuses
+existing primitives to expose quotient groups and carries. Its concrete UI gap
+is the difference between a scalar constructor argument and a read per occurrence.
+Repeat now accepts a measured singleton through existing `scalar()`, with live
+arity checks. This does not justify another evaluator operation. Standalone
+ordering and scalar-constructor inspection remain explicit follow-up contracts.
+
 September 19, 2026 · Accepted plan following lessons 01–08; stages A–B delivered, C–D started
 
 **Recommendation:** retain the public mathematical vocabulary and refactor the

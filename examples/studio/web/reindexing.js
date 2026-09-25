@@ -11,9 +11,14 @@ export function reindexControls(source,objects){
   const placement=labeled(box,'Result placement',options([['indices','Index chart'],['unplaced','Unplaced · arrange later']],'reindex-placement'));
   const explanation=el('p',undefined,{class:'help',id:'reindex-meaning'});box.append(explanation);
   const panels={};for(const mode of ['tile','gather','concat']){panels[mode]=el('div');box.append(panels[mode])}
-  const times=labeled(panels.tile,'Number of repeats',el('input',undefined,{id:'reindex-times',value:'2',inputmode:'text'}));
-  panels.tile.append(el('p','A nonnegative integer or parameter formula. Zero repeats gives an empty domain.',{class:'help'}));
   const candidates=objects.filter(o=>o.status==='ready'&&o.kind!=='incidence');
+  const repeatMode=labeled(panels.tile,'Repeat count from',options([['formula','A number or parameter formula'],['object','A single value from an object']],'reindex-repeat-mode'));
+  const formulaBox=el('div'),objectBox=el('div');panels.tile.append(formulaBox,objectBox);
+  const times=labeled(formulaBox,'Number of repeats',el('input',undefined,{id:'reindex-times',value:'2',inputmode:'text'}));
+  const repeatSource=labeled(objectBox,'Count object',options(candidates.filter(o=>o.fields.includes('value')).map(o=>[o.name,o.name]),'reindex-repeat-source'));
+  panels.tile.append(el('p','One nonnegative integer is required. An object must contain exactly one value; that dependency is retained when parameters change. Zero repeats gives an empty domain.',{class:'help'}));
+  function repeatChoice(){formulaBox.hidden=repeatMode.value!=='formula';objectBox.hidden=repeatMode.value!=='object'}
+  repeatMode.onchange=repeatChoice;repeatChoice();
   const addresses=labeled(panels.gather,'Address object',options(candidates.map(o=>[o.name,o.name]),'reindex-addresses'));
   const fields=labeled(panels.gather,'Read addresses from',options([],'reindex-field'));
   const order=labeled(panels.gather,'Order address rows by',options([],'reindex-order'));
@@ -31,5 +36,5 @@ export function reindexControls(source,objects){
   }
   kind.onchange=axis.onchange=placement.onchange=show;show();
   return {box,read:()=>({source:source.name,kind:kind.value,axis:axis.value||null,placement:placement.value,
-    ...(kind.value==='tile'?{times:{formula:times.value}}:kind.value==='concat'?{other:other.value}:{addresses:addresses.value,field:fields.value,order:order.value,bijective:claim.value==='bijective'})})};
+    ...(kind.value==='tile'?{times:repeatMode.value==='object'?{object:repeatSource.value}:{formula:times.value}}:kind.value==='concat'?{other:other.value}:{addresses:addresses.value,field:fields.value,order:order.value,bijective:claim.value==='bijective'})})};
 }

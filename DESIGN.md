@@ -160,6 +160,13 @@ special inverse-map code. Value assignment shares the scalar editor, so measured
 fields can supply contents. Arbitrary-group cyclic shifts and per-fiber address
 lists retain separate, currently unimplemented UI contracts.
 
+[Lesson 12](docs/lessons/12_residue_fibers.md) distinguishes a single constructor
+argument from a pointwise driver. Repeat can now take an object whose one exact
+value is required by `scalar()` on every evaluation. The adapter owns that input
+choice; arity, nonnegativity, allocation budget, and copying remain existing core
+contracts. The counted kernel drives both repetition and a cyclic action, without
+embedding group theory in the control. No saved-schema migration is needed.
+
 For an evaluated arrangement with N items:
 
 | Quantity | Representation | Meaning |

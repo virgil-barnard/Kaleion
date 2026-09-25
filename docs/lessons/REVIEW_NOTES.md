@@ -1,5 +1,15 @@
 # Evidence for the next Kaleion review
 
+[Lesson 12](12_residue_fibers.md) adds a useful distinction: a measurement can be
+a value per target item, or a single argument controlling the target's domain.
+Its kernel count supplies both a live Repeat count and a period for Roll.
+The studio now exposes that singleton choice rather than freezing a displayed
+number. No new core operation is needed. A zero-valued singleton is valid;
+an empty or multi-value driver is not. This contract survives parameter changes.
+Measured ranks and repeated sheets also show why a set decomposition is not a
+group-product claim: the carry remains visible in exact addition comparisons.
+General ordering and scalar read receipts remain concrete UI/evidence gaps.
+
 The [division/modular relation transfer](../DIVISION_MOTION.md) adds a further
 test of the interaction grammar: position, displacement and cyclic slot movement
 are separate choices within one instrument. Count/Sum/Bind already express the

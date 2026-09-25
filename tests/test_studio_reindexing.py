@@ -129,6 +129,39 @@ class ReindexTests(unittest.TestCase):
         self.assertIn("Address order must be unique",s.workspace.state.errors["Result"])
         self.assertEqual(s.workspace.state.results["Source"].values.tolist(),[0,1,2,10,11,12])
 
+    def test_repeat_count_is_a_live_single_measurement_including_zero(self):
+        s = self.studio
+        total = Collection.grid(4, values=F.i).where(F.i < param("limit")).count()
+        s.workspace = Workspace({"Source": self.source, "Total": total}, {"limit": 2})
+        self.apply("tile", times={"object": "Total"})
+        self.assertEqual(s.workspace.state.results["Result"].shape, (2, 6))
+        restored = Workspace.from_json(s.workspace.to_json())
+        restored.set_parameters(limit=0)
+        self.assertEqual(restored.state.results["Result"].shape, (2, 0))
+        restored.set_parameters(limit=3)
+        self.assertEqual(restored.state.results["Result"].shape, (2, 9))
+
+    def test_repeat_requires_one_value_after_every_parameter_change(self):
+        s = self.studio
+        driver = Collection.grid(param("length"), values=2)
+        s.workspace = Workspace({"Source": self.source, "Driver": driver}, {"length": 1})
+        self.apply("tile", times={"object": "Driver"})
+        for length in (0, 2):
+            s.workspace.set_parameters(length=length)
+            self.assertEqual(set(s.workspace.state.errors), {"Result"})
+            self.assertEqual(len(s.workspace.state.results["Source"]), 6)
+        s.workspace.set_parameters(length=1)
+        self.assertFalse(s.workspace.state.errors)
+
+    def test_repeat_rejects_unvalued_negative_and_multiple_drivers_without_commit(self):
+        s = self.studio
+        for driver in (Collection.tuples(1), Collection.literal([-1]), Collection.literal([2, 2])):
+            s.workspace.set("Invalid driver", driver)
+            before = s.workspace.to_json()
+            with self.assertRaises(ValueError):
+                self.apply("tile", times={"object": "Invalid driver"})
+            self.assertEqual(s.workspace.to_json(), before)
+
 
 class PaperExtensionTests(unittest.TestCase):
     def test_periodic_factor_and_padding_have_independent_formulas(self):

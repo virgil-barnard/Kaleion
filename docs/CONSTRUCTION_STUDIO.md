@@ -15,6 +15,13 @@ Two further investigations now exercise Reindex / extend: repeat, ordered addres
 lists with optional bijection, and explicit joins. Scalar editing also assigns
 contents through keyed reads; copied occurrences have inspectable source links.
 
+[Remainder fibers](lessons/12_residue_fibers.md) now transfers those same choices
+to kernels, quotient groups and carries. Repeat adds **A single value from an
+object**, lowered to existing `scalar()`; it is a live constructor dependency,
+not a per-item keyed read or a frozen displayed count. Old formula declarations
+remain compatible. The guide records from-blank controls, the absence of a
+standalone order action, and the scalar-inspection boundary.
+
 
 **Status:** working experimental authoring study. It composes new finite
 constructions in the Python core; it does not choose from prerecorded lessons.
