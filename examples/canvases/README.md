@@ -7,7 +7,7 @@ source .venv/bin/activate
 python3 -m examples.studio
 ```
 
-Open http://127.0.0.1:8765. **Open** lists ten worked examples and a blank canvas.
+Open http://127.0.0.1:8765. **Open** lists fourteen worked examples and a blank canvas.
 Choose a title to read what it demonstrates, then **Load example**. Loading replaces
 the current workspace, so save work you want to keep first. **Choose a file** still
 opens your own JSON. These committed files need no generation step. The older
@@ -26,6 +26,10 @@ controls to do the work.
 | Title in Open | File | What to try |
 | --- | --- | --- |
 | Blank canvas | [00_blank.json](00_blank.json) | An empty workspace for your own construction or the walkthrough. |
+| Division in motion | [12_division_motion.json](12_division_motion.json) | Carry counts displace fibers, which wrap and take their derived remainder positions. Undo/Redo three stages on Moving table. |
+| Quotient and remainder relations | [12_relation_matrices.json](12_relation_matrices.json) | Weighted extraction drives a cyclic shift. Compare composed/direct Q by `(n,q)`; `(12,8)` produces 36 extra matches. |
+| Euclidean step · 3 and 4 become 7 and 4 | [12_euclidean_step.json](12_euclidean_step.json) | An explicit domain extension, shear and reassembly; 28 exact values agree by declared destination keys. |
+| Euclidean step · 4 and 7 become 11 and 7 | [12_euclidean_next.json](12_euclidean_next.json) | The same two stages after exchanging generator roles. Try `q=2`. |
 | First motion · counts become heights | [00_first_motion.json](00_first_motion.json) | Counts `[4,3,2,1,0]` move five zero-labeled Markers. Undo, Redo, inspect a height's contributors. |
 | Pack a triangle | [01_triangle_packing.json](01_triangle_packing.json) | Ten selected cells pack into a strip using ranks and offsets `[0,4,7,9,10]`. Follow an offset to earlier measured counts. |
 | Three measurements lift a plane | [04_measured_plane.json](04_measured_plane.json) | Three saved lifts bring 12 points to height two. Undo three times, then Redo each lift. Change to `(6,4,5)` and compare the nonflat result with Expected height. |
@@ -39,7 +43,7 @@ controls to do the work.
 
 ## Motion and evidence
 
-The chooser selects the movement target for each of the seven motion examples.
+The chooser selects the movement target for each of the eleven motion examples.
 Use **Undo**, then **Redo** to expose **Replay saved movement**. Young layers and
 Equal sums have two saved edits; Measured plane has three. Select their target
 before traversing those edits. History is workspace-wide, not a separate stack
@@ -51,8 +55,10 @@ occurrences. Follow a keyed read, then **View measurement and contributors**.
 Inspect a zero count as well as a nonzero count. Details, evidence and the main
 canvas retain their distinct meanings.
 
-To make your own motion, choose **Details → Arrange / move**, or use **Combine → Use source
-values as destination height** with explicit matching keys. Dragging an object
+To make your own motion, choose **Details → Arrange / move**, or use **Combine → Drive a
+transformation** with explicit matching keys. Choose coordinates, displacement
+or a cyclic shift; [Division in motion](../../docs/DIVISION_MOTION.md) builds
+these from a blank canvas. Dragging an object
 name only moves its view. **Parameters** evaluates a new mathematical case; the
 playback scrubber interpolates an already recorded path and never supplies inputs.
 The [continuous-canvas guide](../../docs/CONTINUOUS_CANVAS.md) describes these controls.
@@ -102,7 +108,8 @@ and 40 retained history edits.
 
 ## Reproduce or customize
 
-[save_canvases.py](../save_canvases.py) contains the ordinary construction recipes.
+[save_canvases.py](../save_canvases.py) and [division_relations.py](../division_relations.py)
+contain the ordinary construction recipes.
 There is no viewer-specific operation or saved-format addition. Generate copies
 without overwriting the committed examples:
 

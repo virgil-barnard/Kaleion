@@ -29,6 +29,12 @@ Lesson 11 connects coding theory to a projective plane through an explicit field
 coordinate dictionary; it includes a first syndrome-correction construction.
 Every notebook includes its own definitions and can run in a fresh kernel.
 
+The [Division in motion canvas investigation](../DIVISION_MOTION.md) develops
+the two Icarus papers through counted quotients, remainder ordering, relation
+composition and Euclidean shears. Four saved canvases and from-blank instructions
+exercise the shared transformation controls; this is a canvas investigation,
+not a twelfth notebook.
+
 The [future lessons](FUTURE_LESSONS.md) preserve the original briefs and remaining
 investigations, with delivery status made explicit. [Review notes](REVIEW_NOTES.md)
 collect concrete findings from the notebooks for our next architecture and

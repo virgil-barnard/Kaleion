@@ -13,6 +13,14 @@ delayed parse responses. It accepts the same optional runtime configuration.
 
 `check-scene-model.mjs` checks pure geometry and lossless view documents offline.
 
+`check-field-guide.cjs` checks current captured-field exploration and draft
+retention. `check-canvas-tutorial.cjs` builds the introductory workflow and opens
+the original eleven catalog entries. `check-division-motion.cjs` builds a measured
+displacement, cyclic reindexing and Euclidean shear from blank, opens the four
+division canvases, checks the modular composition counterexample, and exercises
+replay, invalid drafts, syntax conversion and a narrow emulated-touch layout.
+These current-shell gates use the same runtime options above.
+
 The remaining `.cjs` scripts record earlier authoring, evidence and spatial UI
 experiments. They target the controls at commit `19928e6`, including the now
 removed Focus surface and mode toolbar. Use a checkout of that commit to reproduce

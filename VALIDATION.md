@@ -1,5 +1,43 @@
 # Validation · 0.1.0
 
+## Quotient/remainder motion and shared transformations · September 25, 2026
+
+- `python3 -m unittest discover -s tests -v`: **241 tests run, 237 pass,
+  4 optional Plotly tests skipped** because this environment lacks Plotly.
+  Nine new tests cover quotient reconstruction, noncoprime collisions, Q/R
+  extraction with a contributing zero, modular factor composition and its
+  counterexample, Euclidean extension/reassembly, keyed displacement versus
+  cyclic addressing, large signed integer shifts, missing keys and invalid axes,
+  empty 1D and scattered 3D inputs, and captured reverse paths after reopening
+  with evaluation disabled. No core operation or schema changes.
+- `python3 examples/discovery.py --out build/example-output` passes with the
+  existing counts, drivers, sieve and history exports. Work uses a Python 3
+  virtual environment and existing dependencies. No notebooks or video exports
+  are changed by this increment.
+- `node docs/studies/check-division-motion.cjs` passes in Chromium
+  **153.0.8010.0**. It builds a counted displacement, cyclic shift and Euclidean
+  shear from blank through public controls; checks Preview/Cancel, syntax
+  round trips, failed-fiber isolation, exact integer comparison, the `(12,8)`
+  modular counterexample, all four saved investigations and reversed stages;
+  and exercises the arithmetic editor at 360px with emulated touch. Read-only
+  API calls supply outcome checks. Desktop and phone screenshots were reviewed.
+- The current `check-canvas-tutorial.cjs`, `check-field-guide.cjs`, and
+  `check-relation-notation.cjs` browser gates also pass, with no uncaught page
+  errors. The original tutorial's measured-height connection still works through
+  **Drive a transformation → Coordinates**. The new gate covers the same
+  connection's Displacement and Cyclic shift choices.
+- The README image is the new browser gate's applied measured-shear endpoint.
+  Test captures and temporary exports remain under ignored `build/`; only the
+  four deliberate worked canvases and that preview are committed.
+
+Finite checks accompany the mathematical arguments in
+[Division in motion](docs/DIVISION_MOTION.md); they are not automatic universal
+proofs. Browser automation does not establish unprompted novice usability or
+physical-touch comfort. Cyclic cells still follow captured linear paths and can
+overlap in transit. Domain extension is explicitly constructed, not animated as
+a bijection between different cardinalities. General periodic extension/gather
+controls and synchronized multi-object replay remain future work.
+
 ## Continuous canvas and tuple domains · September 23, 2026
 
 - **219 offline Python tests pass**. Seven new tests exercise optional contents,

@@ -24,7 +24,7 @@ let origin=process.argv[2],server;
   async function compare(left,right,expected,keys){await details(left);await page.locator('#advanced-tools summary').click();await page.locator('[data-action="compare"]').click();for(const k of keys)await page.getByLabel('Add left key fields',{exact:true}).selectOption(k);await page.locator('#comparison-right').selectOption(right);for(const k of keys)await page.getByLabel('Add right key fields',{exact:true}).selectOption(k);await page.locator('#comparison-expected').selectOption(expected);for(const k of keys)await page.getByLabel('Add expected key fields',{exact:true}).selectOption(k);await page.locator('#check-comparison').click();await idle()}
   await page.goto(origin);await page.waitForFunction(()=>!document.getElementById('add').disabled);
   const initial=await exported(),requests=mutations.length;
-  await page.locator('#open').click();await page.locator('[data-example="00_blank"]').waitFor();assert.equal(await page.locator('[data-example]').count(),11);
+  await page.locator('#open').click();await page.locator('[data-example="00_blank"]').waitFor();assert.equal(await page.locator('[data-example]').count(),(await(await page.request.get(origin+'/api/examples')).json()).length);
   await page.locator('[data-example="04_measured_plane"]').click();assert.equal(await exported(),initial);assert.equal(mutations.length,requests);
   await page.screenshot({path:path.join(output,'example-chooser.png')});
   await page.locator('[data-start-tutorial]').click();await next();await page.locator('[data-tutorial-previous]').click();assert.equal(await exported(),initial);assert.equal(mutations.length,requests);

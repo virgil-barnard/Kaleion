@@ -15,6 +15,17 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
 
 ## Delivery status
 
+- **Division and modular relation transfer:** the [paper investigation](DIVISION_MOTION.md)
+  exposes existing Move and Roll through a shared transform instrument, and
+  shares arithmetic text/term editing with coordinates and weights. Counted
+  quotients drive a shear, a wrap and remainder placement; singleton incidence
+  measurements compose two relations into a quotient with inspectable witnesses.
+  Euclidean shears declare enlarged domains explicitly. Coprimality failures
+  separate correct counts from bijective placement and unique composition.
+  No new evaluator operation is justified by these constructions. A guarded
+  relation-to-address recipe and explicit periodic extension are the next
+  concrete questions; do not conflate these with displacement or general motion.
+
 - **UI contract experiment:** the [construction studio](CONSTRUCTION_STUDIO.md)
   constructs additive and modular investigations from blank inputs with one
   contextual action model and a language-neutral adapter. It retains exact previews

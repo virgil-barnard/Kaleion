@@ -37,8 +37,8 @@ def serve(port=8765):
                     self.reply(example_text(self.path.removeprefix("/api/examples/")))
                 except (KeyError, OSError):
                     self.reply({"error": "Example unavailable"}, 404)
-            elif self.path == "/learning.js":
-                self.reply((ASSETS / "learning.js").read_bytes(), mime="text/javascript")
+            elif self.path in ("/learning.js", "/transforms.js"):
+                self.reply((ASSETS / self.path[1:]).read_bytes(), mime="text/javascript")
             elif self.path == "/api/state":
                 self.reply(studio.state())
             elif self.path == "/api/export":
@@ -87,6 +87,8 @@ def serve(port=8765):
                     result = studio.construction(body["name"], body.get("path", []), revision)
                 elif self.path == "/api/parse-relation":
                     result = studio.parse_relation(body["name"], body["text"], revision)
+                elif self.path == "/api/parse-formula":
+                    result = studio.parse_formula(body["name"], body["text"], revision)
                 elif self.path == "/api/contributors":
                     result = studio.contributors(body["ref"], revision)
                 elif self.path == "/api/groups":

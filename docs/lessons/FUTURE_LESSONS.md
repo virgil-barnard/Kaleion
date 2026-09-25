@@ -1,5 +1,23 @@
 # Future Kaleion lessons
 
+## Delivered canvas investigation · Division and modular relations
+
+[Division in motion](../DIVISION_MOTION.md) reconstructs the two Icarus papers
+with four worked canvases and instructions from blank. Measured displacements,
+cyclic contents, weighted quotient/remainder extraction, relation composition
+and Euclidean shears use existing primitives and shared transform controls.
+No numbered notebook is added in this UI-focused increment.
+
+Next: obtain a guarded address map from a relation, apply it to an unrelated
+arrangement, and retain the failure witnesses when coverage is not one. Exercise
+periodic extension in both Euclidean table growth and the paper's truncated or
+zero-padded remainder factors before designing its shared control. Explicitly
+declare copy identity, new values, finite extent and retained keys. Compare still
+endpoints with synchronized forward/reverse views before adding another animation
+path policy. A general recurrence language is not yet justified.
+
+## Previously proposed investigations
+
 The five investigations in the preceding plan now have notebooks: lessons
 [04](04_measured_motion.md), [05](05_finite_radon.md), [06](06_young_layers.md),
 [07](07_additive_structure.md), and [08](08_ehrhart_counts.md). This document preserves

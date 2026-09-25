@@ -10,6 +10,10 @@ import json
 from pathlib import Path
 
 from kaleion import Collection, F, Motion, Product, Workspace, choose, param
+if __package__:
+    from .division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next
+else:
+    from division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next
 
 
 def floor_sums():
@@ -215,7 +219,9 @@ BUILDERS = {"00_blank": blank_canvas, "00_first_motion": first_motion,
             "02_floor_sums": floor_sums, "03_incidence_box": incidence_box,
             "03_cell_coverage": cell_coverage, "03_tied_coverage": tied_coverage,
             "04_measured_plane": measured_plane, "05_radon_reconstruction": radon,
-            "06_young_layers": young_layers, "07_equal_sums": equal_sums}
+            "06_young_layers": young_layers, "07_equal_sums": equal_sums,
+            "12_division_motion": division_motion, "12_relation_matrices": relation_matrices,
+            "12_euclidean_step": euclidean_step, "12_euclidean_next": euclidean_next}
 
 
 def main():

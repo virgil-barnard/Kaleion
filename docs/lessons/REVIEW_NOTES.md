@@ -1,5 +1,14 @@
 # Evidence for the next Kaleion review
 
+The [division/modular relation transfer](../DIVISION_MOTION.md) adds a further
+test of the interaction grammar: position, displacement and cyclic slot movement
+are separate choices within one instrument. Count/Sum/Bind already express the
+quotient and remainder drivers, including composition through incidence witnesses.
+The Euclidean step exposes domain extension as a distinct decision. It does not
+justify a new mathematical superclass or a general-purpose animation-as-input
+mechanism. Nonunit parameters preserve valid quotient counts while breaking
+the bijection and unique-factor assumptions; these failures should stay visible.
+
 These are observations from [lessons 01–11](README.md). Their authoring code
 shows where a clearer notation, reusable recipe, or faster evaluator might help.
 The delivery note below distinguishes implemented changes from remaining ideas.

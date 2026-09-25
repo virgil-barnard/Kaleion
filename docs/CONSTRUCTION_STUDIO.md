@@ -5,6 +5,13 @@ The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
 The contracts and dated implementation record below remain useful; use the new
 guide for current control names and the current browser gate.
 
+[Division in motion](DIVISION_MOTION.md) now transfers the same interface to the
+two Icarus papers. Arrange / move chooses coordinates, displacement or cyclic
+contents; Combine → Drive a transformation supplies a keyed read to that editor.
+Arithmetic notation is shared with named fields and weights. Four loadable
+investigations include from-blank construction, factor composition, explicit
+Euclidean extensions and non-coprime counterexamples.
+
 
 **Status:** working experimental authoring study. It composes new finite
 constructions in the Python core; it does not choose from prerecorded lessons.
@@ -360,7 +367,7 @@ Most existing mathematics is already expressible in the Python core.
 
 | Lessons | Shared controls exercised here | What is still needed to recreate the full investigation |
 | --- | --- | --- |
-| 01 · Discovery workbench | Integer/sequence/grid sources, relations, grouped counts, driver placement, inspect/undo, exact parameter cases | Spiral/Young constructor sheets, structural-field vocabulary, roll/gather/tile/pad |
+| 01 · Discovery workbench | Integer/sequence/grid sources, relations, grouped counts, driver placement/displacement, rectangular cyclic shifts, inspect/undo, exact parameter cases | Spiral/Young constructor sheets, structural-field vocabulary, gather/tile/pad |
 | 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements, shared 3D capture camera and view slices | Composite Boolean lens authoring, union/intersection/coverage comparisons, 3D placement editing, packed placement and explanatory annotations |
 | 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection, shared integer case editor; generic keyed comparison available | Three-component placements and complete notebook composition through controls |
 | 05 · Finite Radon | Parameterized prime/composite reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, nested evidence and exact keyed comparison | Explicit arithmetic assumptions and complete notebook parity |

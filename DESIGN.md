@@ -142,6 +142,19 @@ products for a documented lesson need. Its UI has no lesson-specific recipe.
 
 ## Four different things an arrangement contains
 
+The studio's [division investigation](docs/DIVISION_MOTION.md) now exposes
+coordinates, displacement and cyclic reindexing through one transform editor.
+`transforms.js` owns the quantity choice; `notation.js` shares scalar/relation
+syntax views; the adapter lowers `move` and `roll` to their existing builders.
+Geometry changes keep logical keys; Roll transports occurrences and carried
+fields through fixed logical slots. A keyed measurement can supply either kind
+of argument. The exact address fields used for a comparison are constructed
+before rendering, never recovered from interpolated coordinates.
+The Euclidean examples explicitly create a larger domain before reassembly.
+No core primitive, dependency or saved-schema change is needed. Existing place
+commands and captures remain valid. Arbitrary-group cyclic permutations and
+periodic extension retain separate, currently unimplemented UI contracts.
+
 For an evaluated arrangement with N items:
 
 | Quantity | Representation | Meaning |

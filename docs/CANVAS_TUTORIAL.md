@@ -56,7 +56,8 @@ and their captured inputs.
 1. **Create → Vector**: name `Markers`, size `n + 1`, **Values from a formula**
    `0`, then **Create**. These are five distinct occurrences whose labels are zero.
 2. **Counts → Details → Combine**: choose `Markers` as Destination, then
-   **Use source values as destination height**.
+   **Drive a transformation**. Keep **Coordinates**; the source read initially
+   supplies y. The same instrument can also drive displacement or cyclic shifts.
 3. Review `x = i` and the y-coordinate's **Keyed read**. Keep source and target
    keys as `key`, and supplied value as `value`. Both constructions use keys
    `0,...,n`, so each marker has exactly one measured driver. **Preview**, then
