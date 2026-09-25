@@ -82,6 +82,16 @@ scene supplies cell/point marks, camera orbit and view slices; this helper owns
 only the construction. It does not replace the notebook's proof, full comparison
 cases or packing animation, and does not change the notebook function counts.
 
+The recipe now shares `ownership_regions()` with lesson 04's saved adaptation and
+two cell-ownership canvases. `cell_coverage()` retains `(i,j,k)` when counting
+each relation, adds the zero/one memberships through exact keyed reads, and
+independently counts Box singletons to derive **One per cell**. Its `(5,4,3)`
+case has 24 unit counts. `tied_coverage()` chooses `(6,4,5)`, exposing two counts
+of two and total 62 versus volume 60. The [canvas tutorial](../CANVAS_TUTORIAL.md)
+states the pointwise equality and its scalar quotient identity, explains why a
+joint gcd of one is insufficient, and checks it with the existing comparison
+controls. That statement is written narrative, not generated or machine-proved.
+
 **Inline scaffolding.** Box construction, the three inequalities, intersections,
 section counts, and displacement targets remain visible declarations. The lesson
 also assembles staged edits, undo and sampling loops, alternative parameter

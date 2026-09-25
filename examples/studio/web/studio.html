@@ -5,6 +5,7 @@
   <header class="app-header"><a class="wordmark" href="/" aria-label="Kaleion canvas">Kaleion<span>MAKE · CONNECT · DISCOVER</span></a>
     <nav aria-label="Canvas"><button id="add" class="primary">+ Create</button><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="open">Open</button><button id="save">Save</button><button id="cases">Parameters</button><input id="file" type="file" accept=".json" hidden></nav>
   </header>
+  <details id="tutorial-guide" class="tutorial-guide" hidden aria-label="Canvas walkthrough"></details>
   <section id="draft-tray" aria-label="Unfinished construction" hidden><strong id="draft-title"></strong><div class="row"><button id="resume-draft">Resume draft</button><button id="discard-draft">Discard</button></div></section>
   <section class="workbench">
     <div class="picture" id="scene" tabindex="-1">
@@ -20,7 +21,7 @@
       <p id="status" role="status" aria-live="polite">Start with a Vector, Grid, or Cube.</p>
     </div>
     <aside id="panel" aria-label="Inspector" tabindex="-1" hidden><div class="panel-heading"><span id="panel-title">Details</span><button id="close-panel" aria-label="Close inspector">✕</button></div>
-      <nav id="object-tools" aria-label="Create from this object"><button id="quick-lens">Relation</button><button id="reuse-lens" hidden>Reuse rule</button><button id="axis-total">Sum / count</button><button id="combine">Combine</button><details id="advanced-tools"><summary>More tools</summary><div id="advanced-actions"></div></details></nav>
+      <nav id="object-tools" aria-label="Create from this object"><button id="quick-lens">Relation</button><button id="reuse-lens" hidden>Reuse rule</button><button id="axis-total">Sum / count</button><button id="arrange" data-action="place">Arrange / move</button><button id="combine">Combine</button><details id="advanced-tools"><summary>More tools</summary><div id="advanced-actions"></div></details></nav>
       <section id="construction" aria-labelledby="construction-title" hidden></section>
       <section id="activity" tabindex="-1"></section>
       <section id="object-view" hidden><h2>Appearance</h2><p class="help">These choices change the picture. They do not change the mathematics.</p><section data-scene-selection class="scene-selection" aria-label="Selected object view" hidden></section></section>
@@ -29,4 +30,9 @@
   </section>
   <dialog id="menu"><div class="menuhead"><strong id="menu-title">Create a shape</strong><button id="close-menu" aria-label="Close creation menu">Close</button></div><div id="menu-actions"></div></dialog>
   <dialog id="save-menu"><div class="menuhead"><strong>Save your canvas</strong><button id="close-save">Close</button></div><p>Applied work, construction details and undo history are included. Drafts stay in this tab.</p><button id="save-canvas">Canvas and view</button><p class="help">Also keep object offsets, appearance, selection and camera.</p><button id="save-math">Mathematics only</button><p class="help">Export for Python and other Kaleion clients.</p></dialog>
+  <dialog id="open-menu" aria-labelledby="open-title"><div class="menuhead"><strong id="open-title">Open a canvas</strong><button data-close-library>Close</button></div>
+    <div class="row"><button data-open-file>Choose a file</button><button data-start-tutorial>Start walkthrough</button></div>
+    <p class="help">Build a moving measurement from scratch, or explore an example with the same tools.</p>
+    <div class="example-browser"><div data-example-list aria-label="Example canvases"></div><section><div data-example-detail></div><p data-example-status role="status" aria-live="polite"></p><button data-example-load class="primary" disabled>Load example</button></section></div>
+  </dialog>
 </main><script type="module" src="/studio.js"></script></body></html>

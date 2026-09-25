@@ -27,7 +27,9 @@ Run `python3 -m examples.studio` and open the printed local address.
    remain on the board. **More tools → Set values from a formula** assigns contents
    to a new child of a tuple object without erasing the original.
 5. Open a saved lesson canvas. Follow an input in **How this is made**, then Back.
-   Select a cell to follow its value and contributors. Saved evidence opens in the
+   **Open → Start walkthrough** gives a complete first-motion path using these
+   same controls; the [full tutorial](CANVAS_TUTORIAL.md) develops exact comparison
+   and the box identity. Select a cell to follow its value and contributors. Saved evidence opens in the
    drawer while the working scene stays visible.
 
 A Vector also offers **Values I type**. Formulas accept integer constants, index
@@ -48,8 +50,8 @@ still be a parameter in a size formula, where item fields do not exist.
 | Header | Create, history, files, parameter values | The permanent case summary and separate source shortcut |
 | Background menu | Vector, Grid, Cube | Actions inherited from the last selection |
 | Selected object strip | Name, Details, Appearance | Separate Workspace and Focus surfaces |
-| Details drawer | Construction, Relation, Sum/count, Combine | A second copy of source creation tools |
-| More tools | Values, named fields, coordinates, groups, ordered measurements, coverage, comparison; Keep matches for a relation | An unrestricted top-level menu |
+| Details drawer | Construction, Relation, Sum/count, Arrange/move, Combine | A second copy of source creation tools |
+| More tools | Values, named fields, groups, ordered measurements, coverage, comparison; Keep matches for a relation | An unrestricted top-level menu; duplicate coordinate action |
 | Appearance | Cells/points, displayed coordinates, axis projection, slices, exact item chooser | Permanent chart and slice rows above the scene |
 | View | Fit, zoom, pan buttons, plane presets, rotation buttons | Several always-visible camera rows |
 
@@ -103,6 +105,17 @@ selected object's appearance. No camera fit or parameter evaluation occurs while
 scrubbing. Replay is still offered after a captured edit or Undo/Redo; this is not
 a general timeline/library of all past transformations. Parameters explicitly
 calculate new results and do not advance replay time.
+
+Coordinate Preview/Apply explicitly displays placement. When an unplaced object
+first acquires coordinates (including Redo), its chart becomes Placement. Otherwise
+an explicit logical-chart choice survives inspection and replay; Cancel restores
+the pre-preview view. This fixes the tutorial failure where a successful move
+returned to the old logical grid and appeared to have done nothing.
+**Arrange / move** now exposes that existing coordinate editor beside Relation and
+Sum/count for any ready collection. Its form says that exact coordinates create
+recorded motion, while dragging an object name changes only presentation. The
+advanced menu no longer duplicates the same command. Incidences remain lenses;
+select their matches before arranging those occurrences.
 
 The core adds `Collection.tuples(*shape, axes=...)`, a finite indexed domain whose
 `Snapshot.values` is **None**. `F.value` is absent, including on an empty domain.

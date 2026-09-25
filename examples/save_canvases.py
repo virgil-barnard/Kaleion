@@ -1,7 +1,7 @@
 """Generate small, ordinary saved workspaces for the existing studio's Open button.
 
 Run from the repository root: python3 examples/save_canvases.py
-These are focused adaptations of lessons 02, 03, 05, 06 and 07, not notebook exports.
+These are small tutorial constructions and lesson adaptations, not notebook exports.
 There is no viewer code, new saved format, or lesson dispatch in the studio.
 """
 
@@ -33,8 +33,8 @@ def floor_sums():
     return workspace
 
 
-def incidence_box():
-    """Lesson 03: a three-dimensional domain and three inspectable incidences."""
+def ownership_regions():
+    """The lesson's three weak largest-normalized-coordinate predicates."""
     a, b, c = param("a"), param("b"), param("c")
     box = (Collection.grid(a - 1, b - 1, c - 1, values=1)
            .annotate(u=F.i + 1, v=F.j + 1, w=F.k + 1)
@@ -42,11 +42,97 @@ def incidence_box():
     x = box.where((a * F.v <= b * F.u) & (a * F.w <= c * F.u))
     y = box.where((b * F.u <= a * F.v) & (b * F.w <= c * F.v))
     z = box.where((c * F.u <= a * F.w) & (c * F.v <= b * F.w))
+    return box, x, y, z
+
+
+def incidence_box():
+    """Lesson 03: a three-dimensional domain and three inspectable incidences."""
+    box, x, y, z = ownership_regions()
     return Workspace({"Box": box, "X region": x, "Y region": y,
                       "Z region": z, "X sections": x.count(by=F.u),
                       "X volume": x.count(), "Y volume": y.count(),
                       "Z volume": z.count(), "Shared cells": (x & y) | (x & z) | (y & z)},
                      {"a": 11, "b": 7, "c": 5}, max_items=2000, max_history=40)
+
+
+def blank_canvas():
+    return Workspace({}, max_items=2000, max_history=40)
+
+
+def triangle_parts():
+    """A common recipe for the introductory motion and packing investigations."""
+    n = param("n")
+    grid = Collection.grid(n + 1, n + 1, values=F.i + F.j)
+    triangle = grid.where(F.value < n)
+    counts = triangle.count(by=F.i)
+    formula = Collection.grid(n + 1, values=n - F.i)
+    return grid, triangle, counts, formula
+
+
+def first_motion():
+    """A complete blank-canvas tutorial: a count supplies a marker's height."""
+    grid, triangle, counts, formula = triangle_parts()
+    markers = Collection.grid(param("n") + 1, values=0)
+    workspace = Workspace({"Numbers": grid, "Triangle": triangle,
+                           "Counts": counts, "Formula": formula, "Markers": markers},
+                          {"n": 4}, max_items=2000, max_history=40)
+    workspace.set("Markers", markers.arrange(F.i, counts.bind(on=F.key)))
+    return workspace
+
+
+def triangle_packing():
+    """Ordered measurements turn a triangular region into a ten-cell strip."""
+    grid, triangle, counts, formula = triangle_parts()
+    cells = triangle.select()
+    ranks = cells.group_by(F.i).order_by(F.j).ranks(key=F.key)
+    offsets = counts.group_by().order_by(F.i).prefix_sums(key=F.i)
+    workspace = Workspace({
+        "Numbers": grid, "Triangle": triangle, "Counts": counts, "Formula": formula,
+        "Row weights": triangle.sum(by=F.i, value=F.value),
+        "Ranks": ranks, "Offsets": offsets, "Area": triangle.count(), "Moving cells": cells,
+    }, {"n": 4}, max_items=2000, max_history=40)
+    packed = cells.arrange(offsets.bind(on=F.i, key=F.i) + ranks.bind(on=F.key), 0)
+    workspace.set("Moving cells", packed, motion=Motion.arc(height=.6))
+    return workspace
+
+
+def measured_plane():
+    """Lesson 04: three captured measurements lift a separate plane in stages."""
+    box, x, y, z = ownership_regions()
+    heights = [region.count(by=(F.i, F.j)) for region in (x, y, z)]
+    plane = Collection.grid(param("a") - 1, param("b") - 1, values=0).arrange(F.i + 1, F.j + 1, 0)
+    reference = plane.with_values(param("c") - 1).arrange(F.i + 1, F.j + 1, F.value)
+    workspace = Workspace({
+        "Box": box, "X region": x, "Y region": y, "Z region": z,
+        "X heights": heights[0], "Y heights": heights[1], "Z heights": heights[2],
+        "Footprint": plane, "Expected height": reference, "Lifted plane": plane,
+    }, {"a": 5, "b": 4, "c": 3}, max_items=2000, max_history=40)
+    lifted = plane
+    for height in heights:
+        lifted = lifted.with_values(F.value + height.bind(on=(F.i, F.j), key=(F.i, F.j)))
+        lifted = lifted.arrange(F.i + 1, F.j + 1, F.value)
+        workspace.set("Lifted plane", lifted)
+    return workspace
+
+
+def cell_coverage(*, tied=False):
+    """Compare derived singleton counts, with pairwise coprimality explicit."""
+    box, x, y, z = ownership_regions()
+    keys = (F.i, F.j, F.k)
+    counts = [region.count(by=keys) for region in (x, y, z)]
+    owners = box.with_values(sum(count.bind(on=keys, key=keys) for count in counts))
+    one_per_cell = box.count(by=keys).arrange(F.i + 1, F.j + 1, F.k + 1)
+    return Workspace({
+        "Box": box, "X region": x, "Y region": y, "Z region": z,
+        "X membership": counts[0], "Y membership": counts[1], "Z membership": counts[2],
+        "One per cell": one_per_cell, "Counted volume": owners.sum(),
+        "Box volume": box.count(), "Cell owners": owners,
+    }, {"a": 6, "b": 4, "c": 5} if tied else {"a": 5, "b": 4, "c": 3},
+       max_items=2000, max_history=40)
+
+
+def tied_coverage():
+    return cell_coverage(tied=True)
 
 
 def radon():
@@ -124,20 +210,25 @@ def equal_sums():
     return workspace
 
 
-BUILDERS = {"02_floor_sums": floor_sums, "03_incidence_box": incidence_box, "05_radon_reconstruction": radon,
+BUILDERS = {"00_blank": blank_canvas, "00_first_motion": first_motion,
+            "01_triangle_packing": triangle_packing,
+            "02_floor_sums": floor_sums, "03_incidence_box": incidence_box,
+            "03_cell_coverage": cell_coverage, "03_tied_coverage": tied_coverage,
+            "04_measured_plane": measured_plane, "05_radon_reconstruction": radon,
             "06_young_layers": young_layers, "07_equal_sums": equal_sums}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=Path("examples/canvases"))
+    parser.add_argument("--only", nargs="+", choices=BUILDERS, help="Generate only the named canvases")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
-    for name, build in BUILDERS.items():
-        workspace = build()
+    for name in args.only or BUILDERS:
+        workspace = BUILDERS[name]()
         if workspace.state.errors:
             raise ValueError(dict(workspace.state.errors))
-        # Ordinary schema 1, losslessly compacted. No new application envelope.
+        # Ordinary captured workspace, losslessly compacted. No viewer envelope.
         text = json.dumps(json.loads(workspace.to_json()), separators=(",", ":"), allow_nan=False) + "\n"
         path = args.out / (name + ".json")
         path.write_text(text)

@@ -106,3 +106,14 @@ It still knows this construction has three paired value-update/move stages, so i
 is a lesson narrative adapter, not an automatic explanation of any graph.
 The [exploration workflow](../EXPLORATION_WORKFLOW.md) compares this boundary with
 05's weighted backprojection and names the remaining unsupported read kinds.
+
+**Saved-canvas adaptation.** `measured_plane()` in
+[save_canvases.py](../../examples/save_canvases.py) reuses `ownership_regions()`
+from the lesson-03 adaptation, reduces X/Y/Z along `k` retaining `(i,j)`, and
+records three lifts of an independent footprint. It uses `(5,4,3)` to keep the
+interactive case small: twelve points reach height two. **Expected height** and
+**Footprint** supply independent value/domain inputs to the existing comparison
+instrument. Changing to `(6,4,5)` exposes a residual two at logical key `(2,1)`.
+The [walkthrough](../CANVAS_TUTORIAL.md) connects this to singleton ownership;
+the shared studio supplies the 3D scene, captured reverse paths and receipts.
+This adds no notebook functions, video export helper, or new backend primitive.

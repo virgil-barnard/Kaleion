@@ -221,6 +221,21 @@ The deferred [conjecture workflow](docs/PROVENANCE_CONJECTURES.md) separates
 selected constant abstraction, explicit hypotheses, finite witnesses and checked
 proofs. It adds no current operation or schema.
 
+The [canvas walkthrough](docs/CANVAS_TUTORIAL.md) separates teaching from execution.
+`examples/save_canvases.py` owns small mathematical recipes; `studio/catalog.py`
+owns trusted example identifiers, titles and file lookup; `learning.js` owns the
+chooser and instructional steps. Selecting a title or changing a tutorial step
+does not edit a workspace. Loading uses the existing validated import contract;
+the guide invokes no construction commands. Coordinate previews/applies explicitly
+show placement, and a first placement becomes visible on Redo. Cancel restores
+the prior view; browsing and replay preserve an explicitly chosen logical chart.
+The selected collection's **Arrange / move** action opens the same generic
+coordinate declaration formerly disclosed only as an advanced command. The
+context module owns eligibility, while the editor continues to own coordinate
+expressions and the core continues to own exact placement/history. Canvas-name
+dragging remains a presentation offset.
+No core primitive, dependency or saved-format migration is required.
+
 ## Snapshot ownership
 
 Public snapshot construction copies and validates incoming buffers, even if a

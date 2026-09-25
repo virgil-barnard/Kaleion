@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from .adapter import Studio
+from .catalog import EXAMPLES, example_text
 
 
 ASSETS = Path(__file__).parent / "web"
@@ -29,7 +30,16 @@ def serve(port=8765):
             if self.headers.get("Host") != f"127.0.0.1:{self.server.server_port}":
                 self.reply({"error": "Use this studio's local address"}, 403)
                 return
-            if self.path == "/api/state":
+            if self.path == "/api/examples":
+                self.reply(EXAMPLES)
+            elif self.path.startswith("/api/examples/"):
+                try:
+                    self.reply(example_text(self.path.removeprefix("/api/examples/")))
+                except (KeyError, OSError):
+                    self.reply({"error": "Example unavailable"}, 404)
+            elif self.path == "/learning.js":
+                self.reply((ASSETS / "learning.js").read_bytes(), mime="text/javascript")
+            elif self.path == "/api/state":
                 self.reply(studio.state())
             elif self.path == "/api/export":
                 self.reply(studio.workspace.to_json().encode())

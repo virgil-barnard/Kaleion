@@ -196,7 +196,7 @@ state; **medium** adds substantial friction or an untested interpretation;
 | A10 | No novice task or physical tablet trial has been conducted | Available evidence consists of code, deterministic fixtures, and emulated Chromium | Open · run the formative protocol below |
 | A11 | The first object-tab click after editing a number can disappear | Input blur triggers a render that replaces the tab before its click arrives; reproduced in the baseline probe | Addressed · unchanged controls survive render; one-click navigation regression |
 | A12 | Value comparison requires manual inspection; missing-both keys have no comparison report | Still absent at the `bba8b19` reevaluation baseline | Addressed · exact selected fields, independent expected domain and inspectable residual/missing/outside witnesses |
-| A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the current studio hides replay until a recent movement | Open · four saved canvases and an existing-controls walkthrough provide material for feedback; no UI redesign in this increment |
+| A13 | The starting point and replay control are hard to discover | Project owner's desktop feedback; the studio hides replay until a recent movement | Partly addressed · Open offers ten examples plus a blank canvas and a twelve-step walkthrough; Arrange/move exposes the generic coordinate instrument. Unprompted transfer and history discovery remain untested |
 | A14 | Selecting an object does not adequately reveal how it was constructed | Maintainer feedback after PR #29; now checked through all four saved canvases plus earlier/local/failed inputs | Implemented · selection reveals actual constructor, arguments, scoped inputs and result status; Back restores context and captured results lead to occurrence evidence. Human interpretation remains untested |
 | A15 | Simultaneous preview panels still fall short of directly manipulating mathematical objects | PR #29 used independent XY previews; shared-scene and relation-workbench gates exercise marks, 3D, canvas-side pattern previews and derived objects | Partly implemented · common scale/local frames, explicit charts, Sequence/pattern construction and reviewed combinations. Direct mathematical manipulators and human ease remain open |
 | A16 | Reusable rules and live dependencies lack a complete visible authoring contract | The relation workbench copies saved scalar predicates with explicit field mappings and captured constants; Connections remains an immutable definition map | Partly implemented · predicate transfer retains source/destination and survives core save/undo. Standalone rule tokens, support, dependency bindings and editable recipe ports remain open |
@@ -680,6 +680,45 @@ remain planned.
    reach, scrolling, alternative input, and ability to see the effect while editing.
    Shared camera buttons and focus-moving phone links are now the baseline, not
    evidence that the larger proximity problem is solved.
+
+## Follow-up · Learning to create motion
+
+September 24, 2026. The maintainer's brief trial found the reset cleaner and easier
+to read, successfully loaded all examples and played their recorded motion, and
+liked the 3D view. Orbit felt somewhat laggy. They had not found how to create
+motion from scratch. This is useful direct feedback from one short trial; it
+does not establish ease of learning, performance or accessibility more generally.
+
+The response adds [an Open catalog and a walkthrough](CANVAS_TUTORIAL.md), keeping
+the same controls for every investigation. The guide is collapsible and does not
+execute a lesson or change mathematical history. The completed first-motion
+capture and blank start permit worked-example and independent-construction trials.
+Further captures transfer the same measurement/placement contract to triangle
+packing, three planar lifts, and a pointwise box equality with a counterexample.
+
+Walking the public controls also exposed a real feedback failure: after applying
+coordinates, the view could keep displaying logical indices and make the move
+look ineffective. Coordinate preview/apply now shows placement; Undo/Redo handles
+the first placement, while Cancel restores the earlier appearance. Ordinary
+browsing and replay retain an explicit chart choice. This follows the instrument
+principle without turning view offsets into mathematical coordinates.
+
+The same walkthrough showed that documentation alone left the creation instrument
+buried. **Arrange / move** now sits with the selected collection's common actions
+and opens the existing generic coordinate editor. The form states the semantic
+boundary between exact coordinate history and presentation-only name dragging.
+The advanced menu no longer repeats the action. This is one polymorphic instrument,
+not a triangle-specific motion button or a second placement implementation.
+
+The browser gate constructs the tutorial from blank, follows contributors,
+compares independent fields, changes parameters including zero, saves/reopens,
+loads every catalog entry, checks failed loads, and tests keyboard/emulated-touch
+navigation. It verifies the placement feedback fix and cancelled-preview recovery.
+These are observable software checks. Next observe a new author doing the same
+task without loading the finished answer, then transferring it to another relation.
+Measure time-to-first-motion and where help was needed. Profile orbit separately
+on an actual device; the compact 24-cell example and Points/slices are available
+viewing choices, not an established speedup.
 
 ## Sources
 

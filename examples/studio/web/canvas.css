@@ -58,6 +58,19 @@ main {max-width:none;height:100dvh;padding:0;display:flex;flex-direction:column;
 .form-actions button {flex:1}
 #draft-tray {flex-shrink:0;margin:0;padding:7px 20px;border:0;border-bottom:1px solid var(--line);border-radius:0;font-size:12px;justify-content:space-between}
 #draft-tray .row button {font-size:12px;min-height:34px}
+.tutorial-guide {flex-shrink:0;margin:0;padding:4px 20px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:var(--paper);max-height:29vh;overflow:auto;overscroll-behavior:contain}
+.tutorial-guide summary {padding:10px 0;font-size:13px;min-height:44px}
+.tutorial-body {max-width:980px;font-size:14px;line-height:1.5;padding-bottom:10px}
+.tutorial-body p {margin:4px 0 10px}
+.tutorial-body button {min-height:44px;font-size:12px}
+#open-menu {width:780px;max-width:calc(100vw - 28px);max-height:88dvh;overflow:auto}
+.example-browser {display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr);gap:20px;margin-top:15px}
+[data-example-list] {display:flex;flex-direction:column;gap:6px}
+[data-example-list] button {text-align:left;font-size:13px;min-height:44px}
+[data-example-list] button[aria-pressed="true"] {border-color:var(--green);background:#bfd8cb35;color:inherit}
+[data-example-detail] {font-size:14px;line-height:1.5}
+[data-example-status] {font-size:12px;line-height:1.5}
+@media(max-width:600px){.example-browser{grid-template-columns:1fr;gap:10px}[data-example-list]{max-height:28vh;overflow:auto}.tutorial-guide{padding-inline:12px}.tutorial-body{font-size:13px}}
 #status {margin:0;padding:8px 20px;min-height:34px;border-top:1px solid var(--line);background:var(--paper);font-size:11px;flex-shrink:0}
 #replay {margin:0;padding:10px 20px;background:var(--paper);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 #replay label {flex:1;min-width:150px;margin:0}#replay input {width:100%}

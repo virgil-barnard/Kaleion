@@ -44,7 +44,7 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
     models.clear();
     for(const obj of state.objects){const settings=drawingSettings(obj);models.set(obj.name,geometry(presented(obj),settings))}
   }
-  function ensureLayout(){
+  function ensureLayout(newPlacements=new Set()){
     const present=new Set(state.objects.map(o=>o.name));for(const name of layout.keys())if(!present.has(name))layout.delete(name);
     for(const obj of state.objects){
       if(!layout.has(obj.name)){
@@ -58,6 +58,7 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
       }
       const settings=layout.get(obj.name),available=[...new Set([...(obj.axes||[]),'index'])];
       if(settings.axes.some(a=>!available.includes(a)))settings.axes=available.slice(0,3);
+      if(newPlacements.has(obj.name)){settings.chart='placement';settings.slice=null}
       if(!obj.placed&&settings.chart==='placement')settings.chart='logical';
     }
     rebuildModels();
@@ -199,7 +200,10 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   }
   function update(next,selectionName){
     if(next===state&&selectionName===active&&initialized)return;
-    presentation=null;state=next;active=selectionName;ensureLayout();
+    // The first declared placement (including Redo) should be visible. Existing
+    // placed objects retain an author's explicit logical-chart choice.
+    const newlyPlaced=new Set(next.objects.filter(o=>o.placed&&!state.objects.find(p=>p.name===o.name)?.placed).map(o=>o.name));
+    presentation=null;state=next;active=selectionName;ensureLayout(newlyPlaced);
     if(chosen&&!state.objects.find(o=>o.name===chosen.name)?.rows?.some(r=>refKey(r.ref)===refKey(chosen.ref)))chosen=null;
     syncTools();syncSettings();connectionText();
     if(!initialized&&state.objects.length){initialized=true;if(state.objects.some(o=>o.dimension===3||o.axes?.length>=3))[view.yaw,view.pitch]=planes.space;draw();fit();if(canvas.getBoundingClientRect().width<500)centerSelected()}
@@ -254,6 +258,10 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   }
   new ResizeObserver(()=>{if(!drag)draw()}).observe(canvas);
   return {update,cancel,save,load,fit,center:centerSelected,refresh:draw,
+    showPlacement(name=active){
+      if(!state.objects.find(o=>o.name===name)?.placed)return;
+      const s=layout.get(name);s.chart='placement';s.slice=null;rebuildModels();syncSettings();draw();
+    },
     frame(sample){presentation=sample;rebuildModels();draw()},
     highlight(group){highlighted=group;draw()},
     emphasize(field){emphasis=field;draw();return !field||state.objects.some(o=>o.name===field.name&&o.capture===field.capture)},

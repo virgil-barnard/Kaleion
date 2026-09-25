@@ -1,3 +1,4 @@
+import {learningShelf} from './learning.js';
 import {creationActions,advancedActions,labels} from './context.js';
 import {canvasShell} from './shell.js';
 import {shapeControls,shapes} from './creation.js';
@@ -107,6 +108,7 @@ function workspaceControls(){
   const selected=object(),ready=selected?.status==='ready';
   $('quick-lens').hidden=selected?.kind==='incidence';
   $('reuse-lens').hidden=selected?.kind!=='incidence';
+  $('arrange').hidden=selected?.kind==='incidence';
   for(const id of ['quick-lens','axis-total','reuse-lens','combine'])$(id).disabled=busy||drafting||!ready;
   $('object-tools').querySelectorAll('[data-action]').forEach(b=>b.disabled=busy||drafting);
   document.querySelectorAll('[data-create]').forEach(b=>b.disabled=busy||drafting);
@@ -167,6 +169,7 @@ function render(){
 $('quick-lens').onclick=()=>editor('lens',{workspace:true,scene:true,quick:true});
 $('axis-total').onclick=()=>editor('total',{workspace:true,scene:true});
 $('reuse-lens').onclick=()=>editor('reuse_lens',{workspace:true,scene:true});
+$('arrange').onclick=()=>editor('place',{source:active});
 $('objects').onchange=()=>{if($('objects').value)selectObject($('objects').value)};
 $('combine').onclick=()=>combinePanel(active,null);
 $('options').onclick=()=>inspectObject();
@@ -400,7 +403,7 @@ function editor(action,seed=null){
     const value=expressionControl('Value supplied by the unique match',field('value'));
     args=()=>({...seed,value:value.read(),field:assigned.value});
   }else if(action==='place'){
-    controls.append(el('p','Change this object’s placement. Use a Keyed read to let a measurement supply a coordinate. Existing derived objects keep their earlier input definitions.',{class:'help'}));
+    controls.append(el('p','Give this object exact coordinates and record the change as motion. Use a Keyed read to let a measurement supply a coordinate. Dragging its name on the canvas changes only the view.',{class:'help'}));
     const dimensions=labeled(controls,'Number of coordinates',options(['1','2','3'],String(Math.max(2,source.dimension||source.axes.length))));
     const coordinates=['x','y','z'].map((axis,i)=>expressionControl(`${axis} coordinate`,seed?.coordinates?.[i]||((source.axes[i]||i===0)?field(source.axes[i]||'key'):i===1&&fields.includes('value')?field('value'):number(0))));
     function showCoordinates(){coordinates.forEach((card,i)=>{card.box.hidden=card.box.previousElementSibling.hidden=i>=Number(dimensions.value)})}
@@ -442,6 +445,7 @@ function editor(action,seed=null){
       if(editorRevision!==state.revision)throw Error('The workspace changed. Open this tool again.');
       const command=getCommand();preview=null;message('evaluating','Checking your current choices…');render();
       const result=await request('preview',{command});preview=result;render();apply.disabled=false;
+      if(action==='place')board.showPlacement(preview.name);
       board.fit();
       const object=result.objects.find(o=>o.name===result.name),count=object?.rows?.filter(r=>r.match).length;
       message('ready',`${object?.kind==='incidence'?`${count} of ${object.rows.length} match. `:''}Exact preview ready. Apply keeps it; changing a choice requires another preview.`);status('Exact preview ready. Apply keeps this capture; Cancel leaves history unchanged.');
@@ -453,6 +457,7 @@ function editor(action,seed=null){
       if(!preview&&shape){preview=await request('preview',{command:getCommand()});render()}
       if(!preview)return;
       const next=await request('commit',{token:preview.token});draft.clear();adopt(next);
+      if(action==='place')board.showPlacement(active);
       shell.open('details',active);$('activity').replaceChildren();
       board.fit();
       await animate(next.motion);status('Saved on the canvas. Undo returns to the previous result.');
@@ -511,7 +516,26 @@ for(const choice of ['canvas','math'])$('save-'+choice).onclick=()=>{$('save-men
   const content=choice==='canvas'?canvasDocument(text,sceneBeforePreview||board.save()):text;
   const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=el('a',undefined,{href:url,download:choice==='canvas'?'kaleion-canvas.json':'kaleion-workspace.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved ${choice==='canvas'?'canvas and view':'mathematics'}, captured evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
 })};
-$('open').onclick=()=>{if(!draft.current)$('file').click()};$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(!file)return;const document=readDocument(await file.text());const next=await request('import',{capture:document.workspace});comparisonChoices=null;board.reset();adopt(next);if(document.scene){if(next.objects.some(o=>o.name===document.scene.selected?.name)){active=document.scene.selected.name;construction.select(active);render()}board.load(document.scene);selectedPoint=board.save().selected?.ref||null} $('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Captured definitions and history are restored. A canvas document also restores its scene view.'));status('Reopened captured workspace.');$('file').value=''})};
+async function openCapture(text,focus=null){
+  const document=readDocument(text),next=await request('import',{capture:document.workspace});
+  comparisonChoices=null;board.reset();adopt(next);
+  const selection=document.scene?.selected?.name||focus;
+  if(selection&&next.objects.some(o=>o.name===selection)){active=selection;construction.select(active);render()}
+  if(document.scene){board.load(document.scene);selectedPoint=board.save().selected?.ref||null}
+  $('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Captured definitions and history are restored. A canvas document also restores its scene view.'));
+  status('Reopened captured workspace.');$('file').value='';
+}
+const learning=learningShelf({dialog:$('open-menu'),guide:$('tutorial-guide'),
+  allowed:()=>!busy&&!draft.current,status,chooseFile:()=>$('file').click(),
+  returnFocus:()=>$('open').focus({preventScroll:true}),
+  load:async entry=>{
+    setBusy(true);
+    try{const response=await fetch('/api/examples/'+encodeURIComponent(entry.id));if(!response.ok)throw Error('Example unavailable');await openCapture(await response.text(),entry.focus)}
+    finally{setBusy(false)}
+  },
+});
+$('open').onclick=()=>learning.open();
+$('file').onchange=()=>{if(draft.current)return;run(async()=>{const file=$('file').files[0];if(file)await openCapture(await file.text())})};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented&&e.target.tagName!=='SELECT'&&!$('menu').open&&draft.current&&!busy){parkDraft();render()}});
 new ResizeObserver(()=>document.querySelector('.workbench').style.setProperty('--transport-clearance',`${$('replay').getBoundingClientRect().height+44}px`)).observe($('replay'));
 adopt(await (await fetch('/api/state')).json());

@@ -50,7 +50,8 @@ without numeric contents, or fill locations with an index formula such as
 
 Select an object; **Details**, right-click or long-hold opens its construction
 beside the canvas. There is one working scene. **Relation**, **Sum / count** and
-**Combine** create further objects while retaining their inputs. Specialist tools
+**Arrange / move** records exact coordinates and movement; dragging the object's
+name organizes only the view. **Combine** creates further objects while retaining their inputs. Specialist tools
 remain under **More tools**; Cells/Points, charts and slices live in **Appearance**.
 Orbit and Connect stay available on the board. Replay shows a saved movement on
 that board; **Parameters** explicitly calculates new results.
@@ -66,7 +67,12 @@ remain distinct, including groups with zero matches. The [field guide](docs/FIEL
 also follows a keyed read to its driver without changing your construction.
 
 [Open a worked canvas](examples/canvases/README.md) to explore the lesson
-constructions. Follow an input or contributor to its saved source, then return
+constructions. **Open** now lists ten examples and a blank canvas; choose a title,
+then **Load example**. **Open → Start walkthrough** guides you from a blank grid
+to a relation, reusable counts, your first recorded motion, and an exact finite
+comparison. The [canvas tutorial](docs/CANVAS_TUTORIAL.md) continues through packing,
+three measured plane lifts, and the box-of-ones identity with its counterexample.
+Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;
 **Canvas and view** also preserves appearance and layout. New tuple-only captures
 use workspace schema 2; existing integer captures remain compatible with schema 1.
