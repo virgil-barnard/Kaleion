@@ -163,20 +163,11 @@ header nav button {
   padding:8px 10px}
 }
 
-@media(prefers-color-scheme:dark) {
-  :root {
-  color:#dce6dc;
-  background:#17221e;
-  --paper:#1c2b24;
-  --line:#3b5143;
-  --muted:#a7b7aa;
-  --green:#397b58;
-  --amber:#edb37b}
-svg text {
-  fill:#dce6dc}
-pre {
-  background:#142018}
-}
+:root[data-theme=dark] {
+  color:#dce6dc;background:#17221e;--paper:#1c2b24;--line:#3b5143;
+  --muted:#a7b7aa;--green:#75b895;--amber:#edb37b}
+:root[data-theme=dark] svg text {fill:#dce6dc}
+:root[data-theme=dark] pre {background:#142018}
 /* One readable formula; only the selected subtree opens an inspector. */
 .expression {
   min-width:0;
@@ -341,15 +332,15 @@ pre {
 .scene-axis {stroke-width:1.8;pointer-events:none}
 .axis-0 {stroke:#a35631}.axis-1 {stroke:#347253}.axis-2 {stroke:#526fc2}
 svg .scene-axis-label {font-size:10px;stroke:none;fill:var(--muted)}
-.scene-mark {cursor:pointer;fill:#e4b97e;stroke:var(--paper);stroke-width:.8;opacity:.65}
+.scene-mark {cursor:pointer;fill:var(--mark-fill,#e4b97e);stroke:var(--paper);stroke-width:.8;opacity:1}
 .scene-mark.active {opacity:1}
-.scene-mark circle {fill:var(--amber)}
-.scene-mark .face-1 {fill:#c99053}.scene-mark .face-2 {fill:#edcea5}
-.scene-mark.outside {fill:var(--line);opacity:.12}
+.scene-mark circle {fill:var(--mark-fill,var(--amber))}
+.scene-mark .face-1 {fill:var(--mark-shade,#c99053)}.scene-mark .face-2 {fill:var(--mark-light,#edcea5)}
+.scene-mark.outside {opacity:.18;stroke-dasharray:3 2}
 .scene-mark.active.outside {opacity:.25}
-.scene-mark.outside .scene-face {fill:var(--line)}
+.scene-mark.outside circle,.scene-mark.outside polygon {vector-effect:non-scaling-stroke}
 .scene-mark.chosen {stroke:var(--green);stroke-width:3;opacity:1}
-svg .scene-value {fill:#3c321f;stroke:none;font-size:11px;pointer-events:none}
+svg .scene-value {fill:var(--mark-text,#3c321f);stroke:none;font-size:11px;pointer-events:none}
 svg .scene-empty {font-size:12px;fill:var(--muted)}
 svg .scene-drop-label {fill:var(--green);font-size:14px;paint-order:stroke;stroke:var(--paper);stroke-width:4}
 .scene-selection {border-top:1px solid var(--line);margin:12px 0;padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
@@ -409,12 +400,10 @@ svg .workspace-welcome {font-size:20px}
 .construction-canonical pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:360px; overflow:auto }
 #activity:empty { display:none }
 .linked-cards.single-capture { grid-template-columns:minmax(0,1fr) }
-@media(prefers-color-scheme:dark) {
-  .construction-arguments dd {background:#243b30;border-color:#799e82}
-  .construction-read {background:#22382c}
-  .construction-summary,#construction-details > summary,.construction-inputs button span {color:#b8d7c0}
-  .construction-status[data-definition-status=failed] {color:#f7b09f}
-}
+:root[data-theme=dark] .construction-arguments dd {background:#243b30;border-color:#799e82}
+:root[data-theme=dark] .construction-read {background:#22382c}
+:root[data-theme=dark] :is(.construction-summary,#construction-details > summary,.construction-inputs button span) {color:#b8d7c0}
+:root[data-theme=dark] .construction-status[data-definition-status=failed] {color:#f7b09f}
 .draft-source {margin:0 0 12px;text-align:left;font-size:13px}
 .pattern-controls {display:grid;gap:12px}
 .pattern-controls label {margin:6px 0}

@@ -74,7 +74,7 @@ remain distinct, including groups with zero matches. The [field guide](docs/FIEL
 also follows a keyed read to its driver without changing your construction.
 
 [Open a worked canvas](examples/canvases/README.md) to explore the lesson
-constructions. **Open** now lists seventeen examples and a blank canvas; choose a title,
+constructions. **Open** now lists eighteen examples and a blank canvas; choose a title,
 then **Load example**. **Open → Start walkthrough** guides you from a blank grid
 to a relation, reusable counts, your first recorded motion, and an exact finite
 comparison. The [canvas tutorial](docs/CANVAS_TUTORIAL.md) continues through packing,
@@ -96,6 +96,22 @@ includes from-blank motion instructions and remaining authoring gaps.
 
 This canvas was constructed from blank using the shared controls. The quotient
 measurement supplies the displacement; its source remains inspectable.
+
+Color any object's integer field through **Appearance → Color**. Choose a palette,
+automatic or fixed exact min–max limits, or a uniform object color. **View → Theme**
+changes the canvas scheme. [The color guide](docs/VALUE_COLORS.md) explains shared
+scales, zero/missing values, and replay.
+
+[![A fixed color range reveals the double-owned quotient cell](docs/images/quotient-equality.png)](docs/QUOTIENT_EQUALITY.md)
+
+Open **Two quotient fields make one** to build a finite equality from independent
+starting points. Two measured lifts meet a separately constructed field of ones;
+changing the coprime parameters exposes one double-owned cell.
+**Compare exact fields → Save this comparison** preserves the declared question,
+exact case, construction graphs and view. Open checks that saved case again.
+The [investigation](docs/QUOTIENT_EQUALITY.md) includes from-blank instructions and
+the floor-sum explanation. Automatic algebraic expansion and proof assistance
+remain future work.
 
 Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;

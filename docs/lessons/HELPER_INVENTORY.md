@@ -40,9 +40,9 @@ are included. Imports alone do not establish use.
 
 ## Keep different responsibilities visible
 
-Seventeen [saved studio examples and one blank canvas](../../examples/canvases/README.md)
+Eighteen [saved studio examples and one blank canvas](../../examples/canvases/README.md)
 adapt lessons 02–07 and the introductory triangle for exploration with Open.
-Their generator, [save_canvases.py](../../examples/save_canvases.py), has eighteen
+Their generator, [save_canvases.py](../../examples/save_canvases.py), has nineteen
 registered builders, two local shared construction recipes, and one export entry point.
 `triangle_parts()` supplies a common domain, incidence, counts and independent
 formula to first motion and packing. `ownership_regions()` supplies the box and
@@ -56,6 +56,15 @@ Export losslessly compacts schema-1 JSON. Inspection, preview/apply and renderin
 remain shared studio responsibilities. `studio/catalog.py` owns trusted example
 choices and descriptions, while `web/learning.js` owns non-executing instructions.
 These functions are outside the unchanged notebook/helper counts above.
+
+The [quotient equality canvas](../QUOTIENT_EQUALITY.md#scaffolding-ownership-and-limits)
+adds one function, `examples.quotient_equality.quotient_equality`, for independently
+indexed domains, singleton/axis/total measurements, keyed sums, a constructed
+residual and two captured lifts. It reuses the studio comparator. The new
+`comparison-record.js` owns finite-question serialization and generic notation;
+`colors.js` and `color-controls.js` own rendering choices. None is lesson-local
+arithmetic, proof logic or a new core primitive. Numbered notebook counts above
+are unchanged.
 
 Lesson 12 adds three canvas recipe functions in `examples/residue_fibers.py`:
 `residue_definitions`, `copied_period`, and `residue_fibers`. The first declares

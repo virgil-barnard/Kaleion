@@ -1,9 +1,10 @@
 import {fieldKeys} from './groups.js';
 import {caseLabel} from './cases.js';
+import {finiteStatement} from './comparison-record.js';
 
 // Declares a finite equality question. Python owns alignment, arithmetic, and witnesses.
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
-export function comparisonInspector({source,objects,initial,remember,run,check,inspect,link,clearLink,chooseLink}){
+export function comparisonInspector({source,objects,initial,remember,run,check,inspect,link,clearLink,chooseLink,save,captured=null,title=''}){
   const ready=objects.filter(o=>o.status==='ready'&&o.kind!=='incidence');
   const box=el('div',undefined,{id:'comparison-tool'}),choices=el('details'),heading=el('summary','Comparison inputs');choices.open=true;choices.append(heading);
   const labeled=(parent,text,control)=>{const label=el('label',text);label.append(control);parent.append(label);return control};
@@ -40,14 +41,21 @@ export function comparisonInspector({source,objects,initial,remember,run,check,i
   test.onclick=()=>run(async()=>{
     clearLink();results.replaceChildren();message.textContent='Comparing captured fields…';message.dataset.phase='checking';
     try{
-      const declaration=spec();remember(declaration);const report=await check(declaration),s=report.summary;
-      message.dataset.phase=report.passed?'passed':'failed';
-      message.textContent=`${report.passed?'Finite equality holds.':'Finite equality fails.'} ${s.equal} equal, ${s.different} different; missing left ${s.missing_left}, right ${s.missing_right}; outside left ${s.outside_left}, right ${s.outside_right}.${report.empty?' Empty expected domain: no item equality is asserted.':''}`;
-      choices.open=false;heading.textContent=`Inputs · ${report.name}.${report.left_value} ↔ ${report.right}.${report.right_value}`;
-      render(report);
+      const declaration=spec();remember(declaration);show(await check(declaration));
     }catch(error){message.dataset.phase='error';message.textContent=`Could not compare: ${error.message}`;choices.open=true}
   });
+  function show(report){
+    const s=report.summary;message.dataset.phase=report.passed?'passed':'failed';
+    message.textContent=`${report.passed?'Finite equality holds.':'Finite equality fails.'} ${s.equal} equal, ${s.different} different; missing left ${s.missing_left}, right ${s.missing_right}; outside left ${s.outside_left}, right ${s.outside_right}.${report.empty?' Empty expected domain: no item equality is asserted.':''}`;
+    choices.open=false;heading.textContent=`Inputs · ${report.name}.${report.left_value} ↔ ${report.right}.${report.right_value}`;render(report);
+  }
   function render(report){
+    const statement=el('details',undefined,{class:'finite-statement'});statement.open=true;
+    statement.append(el('summary','Declared finite equality'),el('pre',finiteStatement(report)),el('p','This statement names captured integer fields and their key domain. The saved construction graphs explain L and R. Replacing constants by variables and deriving a general formula are later steps.',{class:'help'}));
+    const titleInput=el('input',undefined,{type:'text',maxlength:'160','aria-label':'Comparison title'});titleInput.value=(title||`${report.name} = ${report.right}`).slice(0,160);
+    const titleLabel=el('label','Record title');titleLabel.append(titleInput);
+    const saveButton=el('button','Save this comparison',{type:'button',id:'save-comparison'});saveButton.onclick=()=>run(()=>save(report,titleInput.value));
+    statement.append(titleLabel,saveButton,el('p','Saves the question, exact case, definitions, evidence, history and view. Open checks the captured values again. A failed comparison is also worth keeping.',{class:'help'}));results.append(statement);
     results.append(el('p',`Captured case · ${caseLabel(report.parameters)}`,{class:'help'}),
       el('p',`Left: ${report.name}.${report.left_value} by (${report.left_by.join(', ')}). Right: ${report.right}.${report.right_value} by (${report.right_by.join(', ')}). Expected: ${report.expected} by (${report.expected_by.join(', ')}).`,{class:'help'}));
     const filter=picker(results,'Show comparison keys',['all','different','missing','outside','equal'],report.passed?'all':'different','comparison-filter');
@@ -77,5 +85,6 @@ export function comparisonInspector({source,objects,initial,remember,run,check,i
     if(!rows.some(row=>row.status===filter.value))filter.value='all';populate();
     results.append(el('p','A captured finite equality compares the declared fields and domain. It is not a universal identity or a correspondence of geometric structures.',{class:'help'}));
   }
+  if(captured)show(captured);
   return box;
 }

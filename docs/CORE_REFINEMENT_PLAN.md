@@ -22,6 +22,14 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
 
 ## Delivery status
 
+- **Independent quotient equality:** two differently ordered source domains,
+  singleton counts and keyed measured lifts meet an independently constructed
+  unit field. A portable finite question retains exact definitions/captures,
+  without introducing another evaluator or statement superclass. Color ranges
+  and palettes belong to a separate view module; the new view version accepts
+  old canvases. [Contracts and next translation target](QUOTIENT_EQUALITY.md).
+
+
 - **Division and modular relation transfer:** the [paper investigation](DIVISION_MOTION.md)
   exposes existing Move and Roll through a shared transform instrument, and
   shares arithmetic text/term editing with coordinates and weights. Counted

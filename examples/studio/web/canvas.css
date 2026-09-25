@@ -110,9 +110,23 @@ main {max-width:none;height:100dvh;padding:0;display:flex;flex-direction:column;
   .canvas-footer{font-size:10px;left:12px;right:12px}#status{padding:7px 12px}.form-actions{bottom:-16px}.shape-meaning{font-size:11px}
   #draft-tray{padding:6px 12px;gap:6px}#draft-tray strong{max-width:160px}#draft-tray .row button{padding:5px 8px}
 }
-@media(prefers-color-scheme:dark){#workspace-canvas{background:#17221e}.shape-meaning{background:#243b30}}
+:root[data-theme=dark] #workspace-canvas{background:#17221e}
+:root[data-theme=dark] .shape-meaning{background:#243b30}
 @media(prefers-reduced-motion:reduce){.shape-choices button:hover{transform:none}}
 
 .workbench:has(#replay:not([hidden])) #panel {bottom:var(--transport-clearance,145px)}
 .scene-outline,.scene-handle {vector-effect:non-scaling-stroke}
 @media(max-width:600px){.app-header{display:grid;grid-template-columns:1fr}.app-header nav{margin:0;justify-content:space-between;flex-wrap:nowrap}.app-header nav button{padding:6px;min-height:44px}.app-header nav #add{padding:6px 10px}.wordmark{font-size:23px}.camera-menu{max-width:90vw}.workspace-toolbar{gap:5px}.object-picker{margin-left:auto}.camera-menu{margin-left:0}}
+
+.color-controls label{display:flex;flex-direction:column;gap:5px;margin-block:10px}
+.color-controls label:has(input[type=checkbox]){flex-direction:row;align-items:center;justify-content:space-between;min-height:44px}
+.color-controls input[type=checkbox]{min-height:24px;width:24px;accent-color:var(--green)}
+.color-controls input[type=color]{width:100%;padding:4px}
+.color-gradient{height:14px;border:1px solid var(--line);border-radius:6px;margin-top:12px}
+[data-color-note],[data-color-status]{overflow-wrap:anywhere}
+:root[data-theme=dark] svg .scene-value{fill:var(--mark-text,#000)}
+.scene-color-legend{position:absolute;left:20px;bottom:110px;max-width:240px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:11px;pointer-events:none}
+.scene-color-legend strong,.scene-color-legend>div:last-child{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scene-color-legend .color-gradient{margin:6px 0}
+.finite-statement pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.65}
+.finite-statement label{display:block}.finite-statement input{width:100%}

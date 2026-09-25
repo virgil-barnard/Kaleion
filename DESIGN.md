@@ -129,9 +129,24 @@ Missing keys, outside keys, duplicate keys, and nonzero residuals remain distinc
 absence is never filled with zero. The adapter attaches scoped occurrence
 references to a read-only report. Linked views label the selected fields, while
 receipts retain the occurrence's own value and measurement evidence. Reports are
-tab-local views of the applied capture; new cases require a new check. The notebook
+read-only views of the applied capture; new cases require a new check. The studio
+can now export a portable finite question with its three capture identifiers and
+the original workspace text. Reopening validates the identifiers and rechecks the
+captured fields, without evaluating definitions or trusting a stored verdict. The notebook
 module reexports its old names. No evaluator operation or saved schema changes.
 Shared camera controls and phone focus links change presentation state only.
+
+[Value colors](docs/VALUE_COLORS.md) live in a separate presentation module:
+exact integer min/max and normalization precede bounded color interpolation.
+Automatic ranges include the entire captured domain; fixed ranges are explicit
+per-object choices. Membership, missing fields and equality keep independent
+meanings. Canvas envelope/view version 2 adds theme and color settings, while
+version 1 remains readable and mathematical exports remain unchanged.
+[Portable comparisons](docs/QUOTIENT_EQUALITY.md) use a separate version-1
+question envelope, retaining the workspace JSON as text. They display a generic
+keyed-field statement; neither that statement nor color mapping expands the
+construction into a theorem or assigns proof status.
+
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted
 exclusive prefixes through the existing Measure controls. The shared strict

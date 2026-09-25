@@ -15,7 +15,8 @@ same order. Geometric positions and equal labels never infer correspondence.
 
 **Compare captured values** reads the current captures. It creates no arrangement,
 preview, evaluation, or history entry. The last declaration stays in the browser
-tab for reuse after a parameter change; the old verdict does not. After **Cases →
+tab for reuse after a parameter change; the old verdict does not. **Save this
+comparison** also exports the question and its captured case for later reopening. After **Cases →
 Evaluate case → Apply**, reopen Compare and check the newly captured case.
 Replay remains a presentation of an already recorded transformation.
 
@@ -82,8 +83,11 @@ restricting only the expected domain reports an outside key on each operand.
 `notebooks/snapshot_views.py` reexports the comparison helpers so lessons 04–05
 keep their imports. Rectangular plotting remains notebook presentation support.
 There is no new evaluator operation, runtime dependency, or saved-format change.
-Reports and their choices are view state, not persisted workspace claims or
-reusable residual arrangements. Support, totals, isomorphism, and geometric
+Reports remain read-only, and are not reusable residual arrangements. A separate
+`kaleion-comparison` document now persists the question, exact workspace text,
+three capture IDs and view. It adds no claim to the core workspace schema; Open
+validates those IDs and checks the captured values again. Both successful and
+failed comparisons can be saved. See [the quotient investigation](QUOTIENT_EQUALITY.md). Support, totals, isomorphism, and geometric
 equality require separate contracts. This check does not prove a universal law.
 
 ## Verification and open questions

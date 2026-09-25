@@ -13,7 +13,8 @@ import {replayControls} from './replay.js';
 import {comparisonInspector} from './comparison.js';
 import {spatialWorkspace} from './workspace.js';
 import {constructionInspector} from './construction.js';
-import {canvasDocument,readDocument} from './document.js';
+import {canvasDocument,comparisonDocument,readDocument} from './document.js';
+import {comparisonRecord,requireComparisonCaptures} from './comparison-record.js';
 import {lensControls,totalControls,reuseControls} from './patterns.js';
 import {fieldGuide} from './field-guide.js';
 import {scalarNotation} from './notation.js';
@@ -307,7 +308,7 @@ function coveragePanel(){
 function expr(initial,fields){
   return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'),Object.keys(state.parameters||{}));
 }
-function comparisonPanel(){
+function comparisonPanel(captured=null,title=''){
   shell.open('edit','Compare');construction.collapse();
   linked.close();replay.clear();parkDraft();const source=object();
   async function inspect(ref,trigger,note){
@@ -320,6 +321,13 @@ function comparisonPanel(){
   }
   const box=comparisonInspector({source,objects:state.objects,initial:comparisonChoices,
     remember:spec=>{comparisonChoices=spec},run,check:spec=>request('compare',spec),inspect,
+    captured,title,save:async(report,title)=>{
+      if(report.revision!==state.revision)throw Error('The case changed. Compare again before saving.');
+      const declaration=comparisonRecord(report,title);requireComparisonCaptures(declaration,state.objects);
+      const saved=await request('export-capture');
+      downloadCapture(comparisonDocument(saved.workspace,sceneBeforePreview||board.save(),declaration),'kaleion-comparison.json');
+      status('Saved this finite question and its captured case. Open will check the saved values again.');
+    },
     clearLink:()=>linked.close(),chooseLink:index=>linked.choose(index,false),
     link:async(report,rows,index,onChoose)=>{
       const note=(row,side)=>`Compared ${side} field ${report[`${side}_value`]} = ${row[side]}. Residual ${row.residual??'unavailable'}.`;
@@ -514,20 +522,28 @@ async function animate(frames){
 $('play-replay').onclick=()=>run(()=>replay.play());
 for(const direction of ['undo','redo'])$(direction).onclick=()=>{if(draft.current)return;run(async()=>{const next=await request(direction,{active});adopt(next);$('activity').replaceChildren(el('h2',direction==='undo'?'Earlier capture restored':'Capture restored again'),el('p',next.change==='case'?`Exact case · ${caseLabel(next.parameters)}. No construction was evaluated; no intermediate cases were created.`:'Playback uses recorded endpoints. No construction was evaluated.'));await animate(next.motion);status(direction==='undo'?'Undone.':'Redone.')})};
 function showReceipt(receipt,heading='Value',back=null){receipts.show(receipt,{heading,back:back?{label:'Back to coverage',restore:back}:null})}
+function downloadCapture(content,filename){
+  const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=el('a',undefined,{href:url,download:filename});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 $('save').onclick=()=>$('save-menu').showModal();$('close-save').onclick=()=>$('save-menu').close();
 for(const choice of ['canvas','math'])$('save-'+choice).onclick=()=>{$('save-menu').close();run(async()=>{
-  const response=await fetch('/api/export');const text=await response.text();
+  const {workspace:text}=await request('export-capture');
   const content=choice==='canvas'?canvasDocument(text,sceneBeforePreview||board.save()):text;
-  const url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=el('a',undefined,{href:url,download:choice==='canvas'?'kaleion-canvas.json':'kaleion-workspace.json'});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status(`Saved ${choice==='canvas'?'canvas and view':'mathematics'}, captured evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
+  downloadCapture(content,choice==='canvas'?'kaleion-canvas.json':'kaleion-workspace.json');status(`Saved ${choice==='canvas'?'canvas and view':'mathematics'}, captured evidence, and undo/redo.${draft.current?' The unfinished draft stays in this tab only.':''}`);
 })};
 async function openCapture(text,focus=null){
   const document=readDocument(text),next=await request('import',{capture:document.workspace});
   comparisonChoices=null;board.reset();adopt(next);
-  const selection=document.scene?.selected?.name||focus;
+  const selection=document.comparison?.spec.name||document.scene?.selected?.name||focus;
   if(selection&&next.objects.some(o=>o.name===selection)){active=selection;construction.select(active);render()}
   if(document.scene){board.load(document.scene);selectedPoint=board.save().selected?.ref||null}
   $('activity').replaceChildren(el('h2','Saved workspace opened'),el('p','Captured definitions and history are restored. A canvas document also restores its scene view.'));
   status('Reopened captured workspace.');$('file').value='';
+  if(document.comparison){
+    requireComparisonCaptures(document.comparison,next.objects);comparisonChoices=document.comparison.spec;
+    const report=await request('compare',comparisonChoices);comparisonPanel(report,document.comparison.title);
+    status('Saved question reopened and checked against its captured case. No construction was evaluated.');
+  }
 }
 const learning=learningShelf({dialog:$('open-menu'),guide:$('tutorial-guide'),
   allowed:()=>!busy&&!draft.current,status,chooseFile:()=>$('file').click(),

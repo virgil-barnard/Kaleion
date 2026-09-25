@@ -37,7 +37,7 @@ def serve(port=8765):
                     self.reply(example_text(self.path.removeprefix("/api/examples/")))
                 except (KeyError, OSError):
                     self.reply({"error": "Example unavailable"}, 404)
-            elif self.path in ("/learning.js", "/transforms.js", "/reindexing.js"):
+            elif self.path in ("/learning.js", "/transforms.js", "/reindexing.js", "/colors.js", "/color-controls.js", "/comparison-record.js"):
                 self.reply((ASSETS / self.path[1:]).read_bytes(), mime="text/javascript")
             elif self.path == "/api/state":
                 self.reply(studio.state())
@@ -101,6 +101,8 @@ def serve(port=8765):
                                             body["expected"], body["expected_by"], revision)
                 elif self.path == "/api/import":
                     result = studio.reopen(body["capture"], revision)
+                elif self.path == "/api/export-capture":
+                    result = studio.export_capture(revision)
                 else:
                     self.reply({"error": "Unknown command"}, 404)
                     return

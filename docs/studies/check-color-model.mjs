@@ -1,0 +1,36 @@
+// Offline exact-range and view-format contracts; no browser/server required.
+import assert from 'node:assert/strict';
+import {colorDefaults,colorScale,validateColor,paletteColor} from '../../examples/studio/web/colors.js';
+import {canvasDocument,readDocument,validateScene} from '../../examples/studio/web/document.js';
+const obj=values=>({fields:['value'],rows:values.map(value=>({fields:{value}}))});
+const settings={...colorDefaults(),mode:'field'};
+const huge=10n**400n,values=[huge,huge+1n,huge+2n].map(String),source=obj(values),before=JSON.stringify(source);
+const scale=colorScale(source,settings);
+assert.deepEqual([scale.min,scale.max],[values[0],values[2]]);
+assert.deepEqual(values.map(scale.at),[0,.5,1].map(t=>paletteColor('ocean',t)));
+assert.equal(JSON.stringify(source),before);
+const signed=colorScale(obj(['-10','0','10']),settings);
+assert.equal(signed.at('0'),paletteColor('ocean',.5));
+const fixed=colorScale(obj(['0','1']),{...settings,range:'fixed',min:'-10',max:'10',reverse:true});
+assert.equal(fixed.at('-20'),paletteColor('ocean',1));assert.equal(fixed.at('20'),paletteColor('ocean',0));
+assert.equal(fixed.at('0'),paletteColor('ocean',.5));
+assert.equal(colorScale(obj(['0','0']),settings).at('0'),paletteColor('ocean',.5));
+const single=colorScale(obj(['-1','0','1']),{...settings,range:'fixed',min:'0',max:'0'});
+assert.deepEqual(['-1','0','1'].map(single.at),[0,.5,1].map(t=>paletteColor('ocean',t)));
+assert.equal(colorScale(obj(['123']),{...colorDefaults(),solid:'#3a7bd5'}).at('123'),'#3a7bd5');
+assert.equal(colorScale(obj([]),settings).min,null);
+const missing=colorScale({fields:['i'],rows:[{fields:{i:'0'}}]},settings);
+assert.equal(missing.available,false);assert.equal(missing.at(undefined),'#8d9698');
+assert.equal(colorScale(obj(['true']),settings).min,null);
+assert.equal(scale.at(true),'#8d9698');
+// Every frame sees both captured endpoint label sets, never an interpolated value.
+const replay=colorScale(obj(['10']),settings,[['-10','10']]);
+assert.equal(replay.min,'-10');assert.equal(replay.max,'10');
+for(const c of [{...settings,min:'2',max:'1'},{...settings,min:'Infinity'},{...settings,palette:'__proto__'},{...settings,reverse:1},{...settings,solid:'url(x)'},{...settings,extra:true}])assert.throws(()=>validateColor(c));
+const scene={version:2,theme:'dark',camera:{x:0,y:0,w:900,h:600,yaw:0,pitch:0},objects:[{name:'Exact',pose:[0,0,0],marks:'cells',chart:'logical',axes:['i'],slice:null,color:{...settings,range:'fixed',min:values[0],max:values[2]}}],selected:{name:'Exact',ref:null},tool:'move'};
+const workspace='{"schema":1,"exact":'+values[0]+'}',saved=readDocument(canvasDocument(workspace,scene));
+assert.equal(saved.workspace,workspace);assert.deepEqual(saved.scene,scene);
+const legacy={...scene,version:1};delete legacy.theme;delete legacy.objects;legacy.objects=scene.objects.map(({color,...s})=>s);
+assert.deepEqual(readDocument(canvasDocument(workspace,legacy)).scene,legacy);
+for(const bad of [{...scene,version:3},{...scene,theme:'other'},{...scene,objects:[{...scene.objects[0],color:{...settings,min:'1.5'}}]}])assert.throws(()=>validateScene(bad));
+console.log('Exact color scales and version 1/2 view persistence passed.');

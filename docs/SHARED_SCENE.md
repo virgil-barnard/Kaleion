@@ -2,7 +2,9 @@
 
 **Current interface:** see [One canvas, fewer decisions](CONTINUOUS_CANVAS.md).
 The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
-The contracts and dated implementation record below remain useful; use the new
+Color settings and version-2 view persistence are now described in
+[Value colors](VALUE_COLORS.md). The contracts and dated implementation record
+below remain useful; use the new
 guide for current control names and the current browser gate.
 
 

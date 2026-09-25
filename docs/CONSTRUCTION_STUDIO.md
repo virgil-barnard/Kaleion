@@ -1,5 +1,12 @@
 # A shared interaction grammar, tested from a blank canvas
 
+[Value colors](VALUE_COLORS.md) now apply to every captured object, with uniform
+colors, integer-field palettes, exact automatic/fixed limits and a canvas theme.
+The [quotient equality investigation](QUOTIENT_EQUALITY.md) adds a worked
+independent-construction comparison and portable finite-question records.
+These are view/document capabilities; they do not add evaluator primitives.
+
+
 **Current interface:** see [One canvas, fewer decisions](CONTINUOUS_CANVAS.md).
 The continuous-canvas refactor replaces Focus and the earlier menu/tool layout.
 The contracts and dated implementation record below remain useful; use the new

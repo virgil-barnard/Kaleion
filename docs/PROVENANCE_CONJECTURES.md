@@ -1,6 +1,6 @@
 # From an observed equality to a conjecture
 
-September 23, 2026 · Deferred design goal; no proof integration implemented
+September 23, 2026 · Updated September 25 · No proof integration implemented
 
 An author should eventually be able to select two constructions that agree in
 the finite case on the canvas, choose which constants become variables, state
@@ -8,6 +8,12 @@ assumptions, and ask a proof assistant to attempt a general proof. The original
 observation and its provenance must remain inspectable throughout. The current
 priority is the general construction UI; this note preserves the goal without
 adding proof controls or selecting a proof system prematurely.
+
+The [quotient equality investigation](QUOTIENT_EQUALITY.md) now implements a
+bounded prerequisite: a portable finite question with explicit keys/domain,
+original captured workspace and three capture identifiers. Its generic statement
+names the compared fields; Open rechecks those captures. It neither expands the
+graph algebraically nor generalizes constants or supplies formal assumptions.
 
 ## The proposed authoring sequence
 

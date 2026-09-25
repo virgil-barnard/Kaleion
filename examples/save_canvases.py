@@ -11,9 +11,11 @@ from pathlib import Path
 
 from kaleion import Collection, F, Motion, Product, Workspace, choose, param
 if __package__:
+    from .quotient_equality import quotient_equality
     from .residue_fibers import residue_fibers
     from .division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next, periodic_extension, guarded_remainder_addresses
 else:
+    from quotient_equality import quotient_equality
     from residue_fibers import residue_fibers
     from division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next, periodic_extension, guarded_remainder_addresses
 
@@ -226,7 +228,8 @@ BUILDERS = {"00_blank": blank_canvas, "00_first_motion": first_motion,
             "12_euclidean_step": euclidean_step, "12_euclidean_next": euclidean_next,
             "12_periodic_extension": periodic_extension,
             "12_guarded_addresses": guarded_remainder_addresses,
-            "12_residue_fibers": residue_fibers}
+            "12_residue_fibers": residue_fibers,
+            "13_quotient_equality": quotient_equality}
 
 
 def main():
