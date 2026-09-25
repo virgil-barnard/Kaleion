@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Add per-object uniform colors and integer-field palettes with exact automatic
+  or fixed limits, a selected-object legend, and System/Light/Dark canvas themes.
+  Canvas/view version 2 reads version 1; mathematical formats remain unchanged.
+- Add a quotient-cover canvas from independently indexed incidences, two measured
+  lifts, a separate unit field and a non-coprime overlap witness. Export a finite
+  comparison question with original captures/definitions and recheck it on Open;
+  show its generic keyed-field statement without claiming symbolic proof.
+
+
 - Refactor the studio around one continuous canvas: three background constructors,
   contextual details, progressive disclosure, and shared-scene replay. Remove the
   Focus surface and its duplicate gesture/renderer controls. Create vectors,

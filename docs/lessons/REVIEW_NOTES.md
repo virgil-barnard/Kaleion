@@ -1,5 +1,14 @@
 # Evidence for the next Kaleion review
 
+The [independent quotient equality](../QUOTIENT_EQUALITY.md) now exercises two
+source domains and opposite reduction orders against a separate unit field.
+Its overlap counterexample shows why a fixed color range is useful evidence
+presentation but cannot decide equality. Exact comparisons still need declared
+keys and an expected domain. Saving the finite question alongside its original
+workspace makes the next algebraic translation concrete; a new theorem class
+or evaluator primitive is not yet justified.
+
+
 [Lesson 12](12_residue_fibers.md) adds a useful distinction: a measurement can be
 a value per target item, or a single argument controlling the target's domain.
 Its kernel count supplies both a live Repeat count and a period for Roll.

@@ -300,6 +300,15 @@ class Studio:
                     parameters=exact_wire(dict(self.workspace.state.parameters)),
                     undo=self.workspace.can_undo, redo=self.workspace.can_redo)
 
+    def export_capture(self, revision):
+        """Export the requested revision atomically in the single-session host.
+
+        A comparison's capture IDs must not be paired with a newer workspace
+        if another client committed between checking and saving the question.
+        """
+        self.check(revision)
+        return dict(workspace=self.workspace.to_json())
+
     def construction(self, name, path, revision):
         self.check(revision)
         return describe_construction(self.workspace.state, name, path)

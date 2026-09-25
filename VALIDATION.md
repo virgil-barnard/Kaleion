@@ -1,5 +1,36 @@
 # Validation · 0.1.0
 
+## Value colors and portable finite equality · September 25, 2026
+
+- Required venv gates: **265 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/example-output` passes. Four new
+  tests check seven exact quotient cases against floor sums and the gcd overlap
+  correction, reversed source/reduction order, independently created occurrences,
+  zero and nonzero contributors, saved evidence and captured reverse motion
+  with evaluator execution disabled. The saved-example catalog gate opens the
+  new 13-root capture without evaluation. A revisioned-export regression rejects
+  a save after another client changes the captured session.
+- Offline JavaScript: `check-color-model.mjs`, `check-comparison-record.mjs` and
+  `check-scene-model.mjs` pass. Cases include neighboring 401-digit integers,
+  signed/constant/empty ranges, unavailable fields, fixed-range clamping,
+  replay endpoint bounds, invalid view declarations, exact original workspace
+  text, v1/v2 compatibility, and stale/mismatched comparison capture IDs.
+- Browser: `check-colors-equality.cjs` and the existing
+  `check-continuous-canvas.cjs` pass in **Chromium 153.0.8010.0**, no page errors.
+  The new gate uses actual controls for palettes/ranges/theme, exact exports,
+  passing and failed questions, saved-case reopening, contributor inspection,
+  history/replay, 91-digit neighboring values, keyboard actions and phone-width
+  layout. Color edits leave revision and mathematical export unchanged. Browser
+  screenshots were inspected; the new README preview is a rendered counterexample.
+- No notebooks or Plotly/video exports changed. The new motion is native canvas
+  replay, checked separately at start/middle/end and against retained mathematics.
+  This does not establish physical tablet, screen-reader, color-vision or novice
+  usability. Automatic algebraic expansion and proof assistance remain unimplemented.
+
+Only the presentation document gains a new version. Existing core workspace
+schemas, evaluator vocabulary, dependencies and notebook outputs are unchanged.
+
+
 ## Residue fibers and measured repetition · September 25, 2026
 
 - `python3 -m unittest discover -s tests -v`: **260 tests pass**, no skips.

@@ -1,0 +1,19 @@
+import assert from 'node:assert/strict';
+import {comparisonRecord,validateComparison,requireComparisonCaptures,finiteStatement} from '../../examples/studio/web/comparison-record.js';
+import {comparisonDocument,readDocument} from '../../examples/studio/web/document.js';
+const report={name:'Counts',left_by:['i','j'],left_value:'weight',right:'Formula',right_by:['x','y'],right_value:'value',expected:'Domain',expected_by:['u','v'],left_capture:'old-left',right_capture:'old-right',expected_capture:'old-domain',passed:true};
+const declaration=comparisonRecord(report,'One finite question');
+assert.equal(declaration.passed,undefined);
+const objects=['left','right','expected'].map((k,i)=>({name:['Counts','Formula','Domain'][i],capture:report[k+'_capture'],status:'ready'}));
+requireComparisonCaptures(declaration,objects);
+assert.throws(()=>requireComparisonCaptures(declaration,[{...objects[0],capture:'new-left'},...objects.slice(1)]));
+assert.throws(()=>requireComparisonCaptures(declaration,[{...objects[0],status:'failed'},...objects.slice(1)]));
+for(const c of [{...declaration,version:2},{...declaration,passed:true},{...declaration,spec:{...declaration.spec,left_by:['i','i']}},{...declaration,spec:{...declaration.spec,expected_by:['u']}},{...declaration,captures:{...declaration.captures,left:null}}])assert.throws(()=>validateComparison(c));
+const workspace='{"exact":1267650600228229401496703205377}',scene={version:2,theme:'system',camera:{x:0,y:0,w:900,h:600,yaw:0,pitch:0},objects:[],selected:null,tool:'move'};
+const saved=readDocument(comparisonDocument(workspace,scene,declaration));
+assert.equal(saved.workspace,workspace);assert.deepEqual(saved.comparison,declaration);
+assert.match(finiteStatement(report),/dom\(L\) = dom\(R\) = D/);
+assert.match(finiteStatement(report),/"Counts".weight by \(i, j\)/);
+const failed=comparisonRecord({...report,passed:false},'Counterexample');
+assert.deepEqual(failed.captures,declaration.captures); // Failure has the same export contract.
+console.log('Finite comparison declarations: exact capture retention, validation and stale-capture checks passed.');

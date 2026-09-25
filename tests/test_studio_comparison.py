@@ -9,6 +9,16 @@ from test_studio_weighted import radon
 
 
 class StudioComparisonTests(unittest.TestCase):
+    def test_export_keeps_the_checked_revision_and_rejects_a_later_case(self):
+        studio = self.studio(left=Collection.literal([2**100+3]))
+        original = studio.workspace.to_json()
+        with patch("kaleion.evaluate.Evaluator.get", side_effect=AssertionError("execution")):
+            self.assertEqual(studio.export_capture(0)["workspace"], original)
+            studio.reopen(original, 0)  # Another client can change the session.
+            with self.assertRaisesRegex(ValueError, "out of date"):
+                studio.export_capture(0)
+            self.assertEqual(studio.export_capture(studio.revision)["workspace"], original)
+
     def studio(self, **roots):
         studio = Studio()
         studio.workspace = Workspace(roots, max_items=2000, max_history=40)

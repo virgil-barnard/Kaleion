@@ -1,6 +1,8 @@
 // Common scene: captured geometry × object view offset × one camera.
 import {UNIT,projection,planes,chartDefaults,geometry,corners,projectedBounds,cellFaces,refKey} from './scene.js';
 import {cameraControls} from './camera.js';
+import {colorDefaults,colorScale,markColors} from './colors.js';
+import {colorControls} from './color-controls.js';
 
 const NS='http://www.w3.org/2000/svg',BUDGET=6000;
 const svgNode=(tag,attrs={},text)=>{const n=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);if(text!==undefined)n.textContent=text;return n};
@@ -11,9 +13,17 @@ const initialCamera=()=>({x:-80,y:-500,w:900,h:600,yaw:0,pitch:0});
 export function spatialWorkspace(host,{select,details,settings,options,combine,inspect,create,locked,status}){
   const canvas=host.querySelector('svg'),grid=svgNode('g',{'aria-hidden':'true',class:'scene-grid'}),wires=svgNode('g',{'aria-hidden':'true'}),frames=svgNode('g'),marks=svgNode('g'),labels=svgNode('g');
   canvas.append(grid,wires,frames,marks,labels);
-  const layout=new Map(),cards=new Map(),bounds=new Map(),models=new Map(),pointers=new Set();
+  const layout=new Map(),cards=new Map(),bounds=new Map(),models=new Map(),scales=new Map(),pointers=new Set();
+  let theme='system';
+  const dark=matchMedia('(prefers-color-scheme: dark)'),themeSelect=el('select',undefined,{'aria-label':'Canvas theme'}),themeLabel=el('label','Theme ');
+  for(const [value,label] of [['system','System'],['light','Light'],['dark','Dark']])themeSelect.append(el('option',label,{value}));
+  themeLabel.append(themeSelect);host.querySelector('[data-scene-planes]').append(themeLabel);
+  function applyTheme(){document.documentElement.dataset.theme=theme==='system'?(dark.matches?'dark':'light'):theme;themeSelect.value=theme}
+  themeSelect.onchange=()=>{theme=themeSelect.value;applyTheme()};dark.addEventListener('change',applyTheme);applyTheme();
   let state={objects:[]},active=null,tool='move',drag=null,view=initialCamera(),initialized=false,holdClick=false,chosen=null,drawn=[],presentation=null,highlighted=null,emphasis=null;
   const help=host.querySelector('[data-spatial-help]'),list=host.querySelector('[data-connection-list]'),caption=host.querySelector('[data-scene-caption]');
+  const colorLegend=el('aside',undefined,{class:'scene-color-legend',hidden:'','aria-label':'Selected object color scale'}),legendTitle=el('strong'),legendGradient=el('div',undefined,{class:'color-gradient','aria-hidden':'true'}),legendLimits=el('div');
+  colorLegend.append(legendTitle,legendGradient,legendLimits);host.append(colorLegend);
   const controls=cameraControls({name:'workspace',fit,zoom:factor=>zoom(factor),pan:(x,y)=>{view.x-=x*view.w/700;view.y-=y*view.h/450;draw()}});
   function button(text,label,fn){const b=el('button',text,{type:'button','aria-label':label});b.onclick=fn;return b}
   controls.prepend(button('Selected','Center selected object',centerSelected));host.querySelector('[data-spatial-camera]').append(controls);
@@ -41,8 +51,8 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   }
   function drawingSettings(obj){const s=layout.get(obj.name);return presentation&&obj.name===active?{...s,chart:'placement',slice:null}:s}
   function rebuildModels(){
-    models.clear();
-    for(const obj of state.objects){const settings=drawingSettings(obj);models.set(obj.name,geometry(presented(obj),settings))}
+    models.clear();scales.clear();
+    for(const obj of state.objects){const settings=drawingSettings(obj);models.set(obj.name,geometry(presented(obj),settings));scales.set(obj.name,colorScale(obj,settings.color,presentation&&obj.name===active?presentation.labels:[]))}
   }
   function ensureLayout(newPlacements=new Set()){
     const present=new Set(state.objects.map(o=>o.name));for(const name of layout.keys())if(!present.has(name))layout.delete(name);
@@ -123,6 +133,9 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
     for(const item of drawn){
       const {name,row,local,world,screen,settings,model}=item,isChosen=chosen?.name===name&&refKey(chosen.ref)===refKey(row.ref);
       const group=svgNode('g',{'data-scene-owner':name,'data-scene-mark':refKey(row.ref),'data-scene-depth':screen[2],class:`scene-mark ${name===active?'active':''} ${row.match?'':'outside'} ${isChosen?'chosen':''}`});
+      const color=settings.color||colorDefaults(),fill=scales.get(name).at(row.fields[color.field]),paint=markColors(fill);
+      for(const [key,value] of Object.entries(paint))group.style.setProperty(`--mark-${key}`,value);
+      group.dataset.color=fill;
       if(settings.marks==='points')group.append(svgNode('circle',{cx:screen[0],cy:screen[1],r:isChosen?6:4}));
       else cellFaces(world,model.dimension,project).forEach((face,i)=>group.append(svgNode('polygon',{points:face.map(p=>p.slice(0,2).join(',')).join(' '),class:`scene-face face-${i}`})));
       if(settings.marks==='cells'&&readable&&model.dimension<3&&row.fields.value!==undefined){const value=String(row.fields.value);group.append(svgNode('text',{x:screen[0],y:screen[1]+4,'text-anchor':'middle',class:'scene-value'},value.length>6?value.slice(0,5)+'…':value))}
@@ -137,6 +150,16 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
       group.append(svgNode('title',{},`${name} · item ${row.fields.index}${row.fields.value===undefined?' · tuple only':` · value ${row.fields.value}`} · ${model.axes.map((a,i)=>`${a}=${local[i]}`).join(', ')}${row.match?'':' · outside relation'}`));marks.append(group);
     }
     connections();syncSelection(project);caption.textContent=`Shared scale · view offsets only · ${drawn.length} marks${budget===0?' · drawing limit reached; select an object to prioritize it':''}${focus?` · ${focus.name}: ${focus.label}`:''}`;
+    const activeColor=layout.get(active)?.color,activeScale=scales.get(active);
+    colorLegend.hidden=activeColor?.mode!=='field'||!activeScale;
+    if(activeScale){
+      colors.legend(activeColor||colorDefaults(),activeScale,!!presentation);
+      legendTitle.textContent=`${active} · ${activeColor?.field||'value'}`;
+      legendGradient.style.background=colors.box.querySelector('.color-gradient').style.background;
+      legendGradient.hidden=!activeScale.hasValues;
+      legendLimits.textContent=!activeScale.available?'Field unavailable':!activeScale.hasValues?'No integer values':`${activeScale.min} → ${activeScale.max}`;
+      colorLegend.title=activeScale.note;
+    }
     if(focused)cards.get(focused)?.focus({preventScroll:true});
   }
   function connections(){
@@ -160,6 +183,7 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   }
   // Selected-object representation choices are independent of authoring tools.
   const shelf=settings.querySelector('[data-scene-selection]'),markButtons=el('div',undefined,{class:'modes','aria-label':'Selected object marks'});
+  const colors=colorControls(color=>change(s=>{s.color={...color}}));
   for(const value of ['cells','points']){const b=button(value==='cells'?'Cells':'Points',`Show ${value}`,()=>change(s=>{s.marks=value}));b.dataset.sceneMarks=value;markButtons.append(b)}
   const chart=el('select',undefined,{id:'scene-chart','aria-label':'Coordinates to display'});chart.append(el('option','Logical axes',{value:'logical'}),el('option','Placement',{value:'placement'}));
   const detail=el('details'),detailSummary=el('summary','Chart and slice'),axesBox=el('div',undefined,{class:'scene-axes'}),sliceAxis=el('select',undefined,{id:'scene-slice-axis','aria-label':'View slice axis'}),sliceValue=el('select',undefined,{id:'scene-slice-value','aria-label':'View slice value'}),note=el('p',undefined,{class:'help',id:'scene-chart-note'});
@@ -167,7 +191,7 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   const selection=el('select',undefined,{id:'scene-occurrence','aria-label':'Scene occurrence, front to back'}),inspectButton=button('Inspect item','Inspect scene item',()=>{if(chosen&&!locked())inspect(chosen.name,chosen.ref)}),selectionNote=el('p',undefined,{class:'help',id:'scene-selection-note'});
   const chartLabel=el('label','Coordinates ');chartLabel.append(chart);
   const chooser=el('details',undefined,{id:'scene-chooser'});chooser.append(el('summary','Choose an item'),el('label','Item · front to back'),selection,inspectButton,selectionNote);
-  shelf.append(markButtons,chartLabel,detail,chooser);
+  shelf.append(markButtons,colors.box,chartLabel,detail,chooser);
   chart.onchange=()=>change(s=>{s.chart=chart.value;s.slice=null});
   sliceAxis.onchange=()=>change(s=>{const m=models.get(active);s.slice=sliceAxis.value?{axis:sliceAxis.value,value:m.positions[0]?.[m.axes.indexOf(sliceAxis.value)]||0}:null});
   sliceValue.onchange=()=>change(s=>{s.slice.value=Number(sliceValue.value)});
@@ -175,6 +199,7 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   function change(fn){if(locked()||!active)return;cancel();fn(layout.get(active));rebuildModels();syncSettings();draw()}
   function syncSettings(){
     const obj=state.objects.find(o=>o.name===active),s=layout.get(active);shelf.hidden=!obj;if(!obj)return;
+    colors.sync(obj,s.color||colorDefaults(),scales.get(active));
     shelf.querySelectorAll('[data-scene-marks]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sceneMarks===s.marks)));
     chart.value=s.chart;chart.querySelector('[value=placement]').disabled=!obj.placed;axesBox.replaceChildren();
     const available=[...new Set([...(obj.axes||[]),'index'])];
@@ -249,9 +274,10 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
   document.addEventListener('pointerdown',()=>{holdClick=false},true);document.addEventListener('pointercancel',()=>{holdClick=false},true);
   document.addEventListener('click',e=>{const block=holdClick&&e.detail>0;holdClick=false;if(block){e.preventDefault();e.stopImmediatePropagation()}},true);
   window.addEventListener('blur',()=>{cancel();pointers.clear()});document.addEventListener('keydown',e=>{if(e.key==='Escape')cancel()});
-  function save(){return {version:1,camera:{...view},objects:[...layout.values()].map(s=>({...s,pose:[...s.pose],axes:[...s.axes],slice:s.slice?{...s.slice}:null})),selected:active?{name:active,ref:chosen?.name===active?chosen.ref:null}:null,tool}}
+  function save(){return {version:2,theme,camera:{...view},objects:[...layout.values()].map(s=>({...s,...(s.color?{color:{...s.color}}:{}),pose:[...s.pose],axes:[...s.axes],slice:s.slice?{...s.slice}:null})),selected:active?{name:active,ref:chosen?.name===active?chosen.ref:null}:null,tool}}
   function load(scene){
-    cancel();layout.clear();for(const s of scene.objects)if(state.objects.some(o=>o.name===s.name))layout.set(s.name,{...s,pose:[...s.pose],axes:[...s.axes]});
+    cancel();layout.clear();for(const s of scene.objects)if(state.objects.some(o=>o.name===s.name))layout.set(s.name,{...s,...(s.color?{color:{...s.color}}:{}),pose:[...s.pose],axes:[...s.axes]});
+    theme=scene.theme||'system';applyTheme();
     ensureLayout();view={...scene.camera};tool=scene.tool;chosen=scene.selected?.ref?scene.selected:null;
     if(chosen&&!state.objects.find(o=>o.name===chosen.name)?.rows?.some(r=>refKey(r.ref)===refKey(chosen.ref)))chosen=null;
     initialized=true;syncTools();syncSettings();connectionText();draw();
@@ -267,6 +293,6 @@ export function spatialWorkspace(host,{select,details,settings,options,combine,i
     emphasize(field){emphasis=field;draw();return !field||state.objects.some(o=>o.name===field.name&&o.capture===field.capture)},
     remember:()=>({camera:{...view},tool,inputsOpen:list.open,chosen}),
     restore(saved){cancel();view={...saved.camera};tool=saved.tool;chosen=saved.chosen;list.open=saved.inputsOpen;syncTools();syncSettings();draw()},
-    reset(){cancel();state={objects:[]};active=null;presentation=null;highlighted=null;emphasis=null;layout.clear();models.clear();chosen=null;initialized=false;view=initialCamera();draw()},
+    reset(){cancel();state={objects:[]};active=null;presentation=null;highlighted=null;emphasis=null;layout.clear();models.clear();scales.clear();theme='system';applyTheme();chosen=null;initialized=false;view=initialCamera();draw()},
   };
 }

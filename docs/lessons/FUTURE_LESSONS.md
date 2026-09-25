@@ -123,9 +123,17 @@ blank start join the existing Open catalog; the guided path creates the first
 movement with ordinary controls. These are bounded studio adaptations, not new
 numbered notebooks or proof-assistant integration.
 
-Next capture the *question* as an observation: object definitions, selected value
-fields, ordered keys, expected domain, finite cases, residual witnesses, candidate
-variable bindings and assumptions. A missing-key case must remain distinct from
+The [independent quotient investigation](../QUOTIENT_EQUALITY.md) now saves the
+finite *question*: selected fields, ordered keys, expected domain, three capture
+identifiers, original workspace and view. Reopening checks the retained case;
+failed questions are exportable too. The UI displays the finite field statement,
+while its documentation explains the expanded incidence/floor-sum formulas.
+
+Next translate those actual retained definitions, with explicit unsupported
+operators, into the pointwise identity `L+U=1` and its stronger correction
+`L+U=1+[au=bv]`. Keep the domain and parameter scopes attached. Then capture
+candidate variable bindings and assumptions alongside the retained definitions,
+finite cases and residual witnesses. A missing-key case must remain distinct from
 a numerical counterexample. Reuse the `(6,4,5)` ownership failure to test that
 joint gcd one cannot silently substitute for pairwise coprimality. Only then
 translate a supported statement to a proof assistant and distinguish checked,
@@ -154,8 +162,9 @@ value and 3D browser tasks exercise that shared interaction. Test with authors
 that it helps before adding more syntax. The bit-expanded Fano rule remains cumbersome and is
 a concrete candidate for a reusable authoring recipe, not a new evaluator node.
 
-Later, pin a captured case and a counterexample as an observation, then investigate
-user-defined recipes and motion choices. These remain proposed UI experiments;
+Next, organize the individual finite comparison records into a browsable
+observation collection, then investigate user-defined recipes and motion choices.
+These remain proposed UI experiments;
 finite evidence does not prove a general identity or incidence isomorphism.
 
 ## Later · Turn a finite observation into a conjecture

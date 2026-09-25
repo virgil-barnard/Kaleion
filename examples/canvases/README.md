@@ -25,6 +25,7 @@ controls to do the work.
 
 | Title in Open | File | What to try |
 | --- | --- | --- |
+| Two quotient fields make one | [13_quotient_equality.json](13_quotient_equality.json) | Independently ordered quotient incidences lift another grid to ones; compare and save the finite question. Try `(6,4)` with fixed colors 0–2. [Construction and explanation](../../docs/QUOTIENT_EQUALITY.md). |
 | Blank canvas | [00_blank.json](00_blank.json) | An empty workspace for your own construction or the walkthrough. |
 | Remainder fibers and hidden carries | [12_residue_fibers.json](12_residue_fibers.json) | Fold 24 integers, separate them by measured ranks, cycle within fibers by measured period. Compare zeros/twos with a unit field; try `(7,5)`. [Lesson and from-blank instructions](../../docs/lessons/12_residue_fibers.md). |
 | Repeat, truncate and pad | [12_periodic_extension.json](12_periodic_extension.json) | Moving factor copies one measured period, then truncates by an explicit address list. Padded R joins declared zeros. |

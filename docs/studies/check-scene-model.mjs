@@ -34,6 +34,6 @@ assert.equal(readDocument(workspace).workspace,workspace);
 // A supported wide logical domain must remain saveable after Fit and shelf layout.
 const wide={...scene,camera:{...camera,w:1e9*UNIT*2,h:1e9*UNIT},objects:[{...scene.objects[0],pose:[1e10,0,0]}]};
 assert.deepEqual(readDocument(canvasDocument(workspace,wide)).scene,wide);
-for(const invalid of [null,{...scene,version:2},{...scene,objects:[...scene.objects,...scene.objects]},{...scene,camera:{...camera,w:Infinity}},{...scene,objects:[{...scene.objects[0],axes:['i','i']}]}])assert.throws(()=>validateScene(invalid));
+for(const invalid of [null,{...scene,version:3},{...scene,objects:[...scene.objects,...scene.objects]},{...scene,camera:{...camera,w:Infinity}},{...scene,objects:[{...scene.objects[0],axes:['i','i']}]}])assert.throws(()=>validateScene(invalid));
 assert.throws(()=>readDocument(JSON.stringify({format:'kaleion-studio',version:2,workspace,scene})));
 console.log('Scene geometry and document contracts passed.');
