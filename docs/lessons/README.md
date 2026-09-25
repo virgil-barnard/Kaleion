@@ -31,7 +31,7 @@ Every notebook includes its own definitions and can run in a fresh kernel.
 
 The [Division in motion canvas investigation](../DIVISION_MOTION.md) develops
 the two Icarus papers through counted quotients, remainder ordering, relation
-composition and Euclidean shears. Four saved canvases and from-blank instructions
+composition and Euclidean shears. Six saved canvases and from-blank instructions
 exercise the shared transformation controls; this is a canvas investigation,
 not a twelfth notebook.
 

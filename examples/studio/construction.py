@@ -35,6 +35,9 @@ NOTES = {
     "prefix_sum": "One result per item: sum earlier weights within its group. The current item is excluded. Zero and negative weights still contribute; ties and duplicate item keys fail.",
     "case": "Bindings apply to the whole wrapped definition. The definition input uses this local case; binding expressions use the surrounding case.",
     "roll": "Contents move cyclically through fixed logical slots and positions.",
+    "gather": "Each declared source address creates a new occurrence with a captured source link. Logical axis fields become destination slots; placement is declared separately.",
+    "tile": "Repeat source occurrences along a logical axis or flattened sequence. Copies have distinct identities and retain their original source links.",
+    "concat": "Join explicit domains with compatible fields. No padding values or copies are inferred; each result occurrence retains its supplying source.",
 }
 SIGNS = dict(add="+", sub="−", mul="×", div="/", floordiv="//", mod="%",
              pow="**", eq="=", ne="≠", lt="<", le="≤", gt=">", ge="≥",

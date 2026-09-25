@@ -7,7 +7,7 @@ source .venv/bin/activate
 python3 -m examples.studio
 ```
 
-Open http://127.0.0.1:8765. **Open** lists fourteen worked examples and a blank canvas.
+Open http://127.0.0.1:8765. **Open** lists sixteen worked examples and a blank canvas.
 Choose a title to read what it demonstrates, then **Load example**. Loading replaces
 the current workspace, so save work you want to keep first. **Choose a file** still
 opens your own JSON. These committed files need no generation step. The older
@@ -26,6 +26,8 @@ controls to do the work.
 | Title in Open | File | What to try |
 | --- | --- | --- |
 | Blank canvas | [00_blank.json](00_blank.json) | An empty workspace for your own construction or the walkthrough. |
+| Repeat, truncate and pad | [12_periodic_extension.json](12_periodic_extension.json) | Moving factor copies one measured period, then truncates by an explicit address list. Padded R joins declared zeros. |
+| A relation supplies addresses | [12_guarded_addresses.json](12_guarded_addresses.json) | Inverse remainder addresses reorder unrelated identical labels in 3D. Try `a=14`; guarded consumers fail while the source relation remains. |
 | Division in motion | [12_division_motion.json](12_division_motion.json) | Carry counts displace fibers, which wrap and take their derived remainder positions. Undo/Redo three stages on Moving table. |
 | Quotient and remainder relations | [12_relation_matrices.json](12_relation_matrices.json) | Weighted extraction drives a cyclic shift. Compare composed/direct Q by `(n,q)`; `(12,8)` produces 36 extra matches. |
 | Euclidean step · 3 and 4 become 7 and 4 | [12_euclidean_step.json](12_euclidean_step.json) | An explicit domain extension, shear and reassembly; 28 exact values agree by declared destination keys. |
@@ -43,7 +45,7 @@ controls to do the work.
 
 ## Motion and evidence
 
-The chooser selects the movement target for each of the eleven motion examples.
+The chooser selects the movement target for each of the thirteen motion examples.
 Use **Undo**, then **Redo** to expose **Replay saved movement**. Young layers and
 Equal sums have two saved edits; Measured plane has three. Select their target
 before traversing those edits. History is workspace-wide, not a separate stack

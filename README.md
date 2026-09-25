@@ -68,16 +68,19 @@ remain distinct, including groups with zero matches. The [field guide](docs/FIEL
 also follows a keyed read to its driver without changing your construction.
 
 [Open a worked canvas](examples/canvases/README.md) to explore the lesson
-constructions. **Open** now lists fourteen examples and a blank canvas; choose a title,
+constructions. **Open** now lists sixteen examples and a blank canvas; choose a title,
 then **Load example**. **Open → Start walkthrough** guides you from a blank grid
 to a relation, reusable counts, your first recorded motion, and an exact finite
 comparison. The [canvas tutorial](docs/CANVAS_TUTORIAL.md) continues through packing,
 three measured plane lifts, and the box-of-ones identity with its counterexample.
 The [division-in-motion investigation](docs/DIVISION_MOTION.md) reconstructs the
 Icarus papers through measured displacements, quotient/remainder incidences,
-cyclic shifts, relation composition and Euclidean shears. Four new canvases and
+cyclic shifts, relation composition and Euclidean shears. Six new canvases and
 from-blank instructions use the same shared controls. **Combine → Drive a
 transformation** supplies a keyed input to any of the three transform choices.
+**More tools → Reindex / extend** repeats, takes an ordered address list, or joins
+explicit domains. The new **Repeat, truncate and pad** and **A relation supplies
+addresses** canvases demonstrate copied provenance and guarded address maps.
 
 [![Counted quotients displace each fiber of the modular residue table](docs/images/division-motion.png)](docs/DIVISION_MOTION.md)
 

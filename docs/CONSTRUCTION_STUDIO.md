@@ -11,6 +11,9 @@ contents; Combine → Drive a transformation supplies a keyed read to that edito
 Arithmetic notation is shared with named fields and weights. Four loadable
 investigations include from-blank construction, factor composition, explicit
 Euclidean extensions and non-coprime counterexamples.
+Two further investigations now exercise Reindex / extend: repeat, ordered address
+lists with optional bijection, and explicit joins. Scalar editing also assigns
+contents through keyed reads; copied occurrences have inspectable source links.
 
 
 **Status:** working experimental authoring study. It composes new finite
@@ -367,7 +370,7 @@ Most existing mathematics is already expressible in the Python core.
 
 | Lessons | Shared controls exercised here | What is still needed to recreate the full investigation |
 | --- | --- | --- |
-| 01 · Discovery workbench | Integer/sequence/grid sources, relations, grouped counts, driver placement/displacement, rectangular cyclic shifts, inspect/undo, exact parameter cases | Spiral/Young constructor sheets, structural-field vocabulary, gather/tile/pad |
+| 01 · Discovery workbench | Integer/sequence/grid sources, relations, grouped counts, driver placement/displacement, rectangular cyclic shifts, axis/flat gather, repeat, explicit joins/padding, inspect/undo, exact parameter cases | Spiral/Young constructor sheets, structural-field vocabulary, independent per-fiber maps |
 | 02–03 · Reciprocal incidences | Finite grid, arithmetic predicates, grouped measurements, shared 3D capture camera and view slices | Composite Boolean lens authoring, union/intersection/coverage comparisons, 3D placement editing, packed placement and explanatory annotations |
 | 04 · Measured motion | Quotient fixture, independent driver placement, zero/contributor inspection, shared integer case editor; generic keyed comparison available | Three-component placements and complete notebook composition through controls |
 | 05 · Finite Radon | Parameterized prime/composite reconstruction through products, sums, ordered tuple reads, remainder fields, driven placement, nested evidence and exact keyed comparison | Explicit arithmetic assumptions and complete notebook parity |

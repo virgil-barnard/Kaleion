@@ -37,7 +37,7 @@ def serve(port=8765):
                     self.reply(example_text(self.path.removeprefix("/api/examples/")))
                 except (KeyError, OSError):
                     self.reply({"error": "Example unavailable"}, 404)
-            elif self.path in ("/learning.js", "/transforms.js"):
+            elif self.path in ("/learning.js", "/transforms.js", "/reindexing.js"):
                 self.reply((ASSETS / self.path[1:]).read_bytes(), mime="text/javascript")
             elif self.path == "/api/state":
                 self.reply(studio.state())

@@ -39,9 +39,9 @@ are included. Imports alone do not establish use.
 
 ## Keep different responsibilities visible
 
-Fourteen [saved studio examples and one blank canvas](../../examples/canvases/README.md)
+Sixteen [saved studio examples and one blank canvas](../../examples/canvases/README.md)
 adapt lessons 02–07 and the introductory triangle for exploration with Open.
-Their generator, [save_canvases.py](../../examples/save_canvases.py), has fifteen
+Their generator, [save_canvases.py](../../examples/save_canvases.py), has seventeen
 registered builders, two local shared construction recipes, and one export entry point.
 `triangle_parts()` supplies a common domain, incidence, counts and independent
 formula to first motion and packing. `ownership_regions()` supplies the box and
@@ -57,13 +57,18 @@ choices and descriptions, while `web/learning.js` owns non-executing instruction
 These functions are outside the unchanged notebook/helper counts above.
 
 The [division investigation's inventory](../DIVISION_MOTION.md#functions-and-authoring-scaffolding)
-adds five functions in `examples/division_relations.py`: a shared `division_parts`
+adds eight functions in `examples/division_relations.py`: a shared `division_parts`
 recipe, `division_motion`, `relation_matrices`, `euclidean_step`, and the next-case
-wrapper `euclidean_next`. Four builders are registered with the same exporter.
+wrapper `euclidean_next`, shared `periodic_factor`, `periodic_extension`, and
+`guarded_remainder_addresses`. Six builders are registered with the same exporter.
 They compose existing Count/Sum/Bind/Move/Roll/Arrange and explicit domains;
 there is no local matrix kernel or renderer. Singleton counts let composition
 read actual incidence-derived 0/1 fields instead of duplicating predicates.
 Shared transform/notation controls belong to the studio, not to those recipes.
+The copying sheet and `studio.reindexing.reindex` separately own declaration
+choices and lowering; copied identities and lineage remain core responsibilities.
+The existing guarded `studio.coverage.unique_assignment` recipe is reused directly.
+There is no lesson-local inverse calculation, copying kernel or receipt renderer.
 
 | Responsibility | Typical input → output | Boundary to preserve |
 | --- | --- | --- |

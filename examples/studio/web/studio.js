@@ -18,6 +18,7 @@ import {lensControls,totalControls,reuseControls} from './patterns.js';
 import {fieldGuide} from './field-guide.js';
 import {scalarNotation} from './notation.js';
 import {transformControls} from './transforms.js';
+import {reindexControls} from './reindexing.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -357,9 +358,11 @@ function editor(action,seed=null){
   if(action==='shape'){
     shape=shapeControls(seed.shape,state.parameters);controls.append(shape.box);
   }else if(action==='values'){
-    const value=labeled(controls,'Value at each location',input(source?.axes?.join(' + ')||'index'));value.id='values-formula';
-    controls.append(el('p','Use index fields, integer constants, + − * // %, and parentheses. The source stays available.',{class:'help'}));
-    args=()=>({source:sourceName,value:{formula:value.value}});
+    const initial=source.axes.length?source.axes.map(field).reduce((a,b)=>operation('+',a,b)):field('index');
+    const value=expressionControl('Value at each location',initial);
+    value.box.querySelector('textarea').id='values-formula';value.box.querySelector('[data-rule-write]').click();
+    controls.append(el('p','Use a formula or switch to controls for a keyed read from another object. Values change; positions and item identities remain. The source stays available.',{class:'help'}));
+    args=()=>({source:sourceName,value:value.read()});
   }else if(action==='product'){
     const sources=state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'), choices=[];
     for(const role of ['left','right']){
@@ -408,6 +411,8 @@ function editor(action,seed=null){
     args=()=>({...seed,value:value.read(),field:assigned.value});
   }else if(action==='place'){
     transform=transformControls(source,scalar,seed);controls.append(transform.box);
+  }else if(action==='reindex'){
+    const copies=reindexControls(source,state.objects);controls.append(copies.box);args=copies.read;
   }else if(action==='select'){
     controls.append(el('p','Keep matching items as a new finite universe. Its later groups may differ from the original relation’s zero groups.',{class:'help'}));args=()=>({source:sourceName});
   }else if(action==='group_lens'){
@@ -444,7 +449,7 @@ function editor(action,seed=null){
       if(editorRevision!==state.revision)throw Error('The workspace changed. Open this tool again.');
       const command=getCommand();preview=null;message('evaluating','Checking your current choices…');render();
       const result=await request('preview',{command});preview=result;render();apply.disabled=false;
-      if(action==='place')board.showPlacement(preview.name);
+      if(action==='place'||action==='reindex')board.showPlacement(preview.name);
       board.fit();
       const object=result.objects.find(o=>o.name===result.name),count=object?.rows?.filter(r=>r.match).length;
       message('ready',`${object?.kind==='incidence'?`${count} of ${object.rows.length} match. `:''}Exact preview ready. Apply keeps it; changing a choice requires another preview.`);status('Exact preview ready. Apply keeps this capture; Cancel leaves history unchanged.');
@@ -456,7 +461,7 @@ function editor(action,seed=null){
       if(!preview&&shape){preview=await request('preview',{command:getCommand()});render()}
       if(!preview)return;
       const next=await request('commit',{token:preview.token});draft.clear();adopt(next);
-      if(action==='place')board.showPlacement(active);
+      if(action==='place'||action==='reindex')board.showPlacement(active);
       shell.open('details',active);$('activity').replaceChildren();
       board.fit();
       await animate(next.motion);status('Saved on the canvas. Undo returns to the previous result.');

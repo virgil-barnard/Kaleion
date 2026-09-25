@@ -22,9 +22,12 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   measurements compose two relations into a quotient with inspectable witnesses.
   Euclidean shears declare enlarged domains explicitly. Coprimality failures
   separate correct counts from bijective placement and unique composition.
-  No new evaluator operation is justified by these constructions. A guarded
-  relation-to-address recipe and explicit periodic extension are the next
-  concrete questions; do not conflate these with displacement or general motion.
+  Reindex / extend now exposes Tile/Gather/Concat and a checked address order;
+  unique assignment derives inverse addresses for unrelated 3D occurrences.
+  The periodic factor uses actual copies of measured cells, while zero padding
+  joins an explicit zero grid. No new evaluator operation is justified. Next test
+  Euclidean raw-value extension, modulus changes and per-fiber maps; keep these
+  decisions separate from copied domains and presentation paths.
 
 - **UI contract experiment:** the [construction studio](CONSTRUCTION_STUDIO.md)
   constructs additive and modular investigations from blank inputs with one

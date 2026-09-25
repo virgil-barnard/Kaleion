@@ -5,6 +5,10 @@ measurement and exact comparison input remains a separate inspectable object.
 """
 
 from kaleion import Collection, F, Workspace, param, vector
+if __package__:
+    from .studio.coverage import unique_assignment
+else:
+    from studio.coverage import unique_assignment
 
 
 def division_parts():
@@ -15,6 +19,18 @@ def division_parts():
     quotient = carry.count(by=F.i)
     remainder = quotient.with_values(a * F.i - b * F.value)
     return table, carry, quotient, remainder
+
+
+def periodic_factor(a, b):
+    """One measured b-by-b period, repeated and truncated to a rows."""
+    domain = Collection.grid(b, b, axes=("r", "q"), values=0)
+    relation = domain.where((a * F.q + F.r) % b == 0)
+    cells = relation.count(by=(F.r, F.q))
+    seed = domain.with_values(cells.bind(on=(F.r, F.q), key=(F.r, F.q))).arrange(F.q, F.r)
+    addresses = Collection.grid(a, values=F.i)
+    repeated = seed.tile((a + b - 1) // b, axis="r").arrange(F.q, F.r)
+    prefix = repeated.gather(addresses, axis="r").arrange(F.q, F.r)
+    return relation, seed, addresses, repeated, prefix
 
 
 def division_motion():
@@ -60,7 +76,7 @@ def relation_matrices():
     first_relation = first.where(F.r == (b * F.n) % a)
     second_relation = second.where((a * F.q + F.r) % b == 0)
     first_cells = first_relation.count(by=(F.n, F.r))
-    second_cells = second_relation.count(by=(F.r, F.q))
+    _, period, addresses, _, second_cells = periodic_factor(a, b)
     triples = Collection.grid(a, a, b, axes=("n", "r", "q"), values=1)
     witnesses = triples.where(
         (first_cells.bind(on=(F.n, F.r), key=(F.n, F.r)) == 1)
@@ -74,6 +90,7 @@ def relation_matrices():
         "Q extraction": q_read, "R extraction": r_read,
         "R column coverage": r_relation.count(by=F.j),
         "First factor": first_relation, "Periodic factor": second_relation,
+        "Factor period": period, "Factor row addresses": addresses,
         "First factor cells": first_cells, "Periodic factor cells": second_cells,
         "Composition witnesses": witnesses, "Composed Q": composed,
         "Direct Q": direct, "Comparison domain": expected_domain,
@@ -112,3 +129,44 @@ def euclidean_step(*, r=3, b=4, q=1):
 def euclidean_next():
     """The paper's next step, after exchanging the generator roles."""
     return euclidean_step(r=4, b=7)
+
+
+def periodic_extension():
+    """The paper's finite periodic factor and an explicit zero-column join."""
+    a, b = param("a"), param("b")
+    relation, seed, addresses, repeated, prefix = periodic_factor(a, b)
+    direct_domain = Collection.grid(a, b, axes=("r", "q"), values=0)
+    counts = direct_domain.where((a * F.q + F.r) % b == 0).count(by=(F.r, F.q))
+    direct = direct_domain.with_values(counts.bind(on=(F.r, F.q), key=(F.r, F.q)))
+    square = Collection.grid(b, b, axes=("r", "q"), values=0)
+    remainder_counts = square.where(F.q == (a * F.r) % b).count(by=(F.r, F.q))
+    remainder = square.with_values(remainder_counts.bind(on=(F.r, F.q), key=(F.r, F.q)))
+    zeros = Collection.grid(b, a - b, axes=("r", "q"), values=0)
+    workspace = Workspace({
+        "Period relation": relation, "One period": seed, "Row addresses": addresses,
+        "Moving factor": seed, "Direct factor": direct.arrange(F.q, F.r),
+        "R square": remainder.arrange(F.q, F.r), "Zero columns": zeros,
+        "Padded R": remainder.concat(zeros, axis="q").arrange(F.q, F.r),
+    }, {"a": 11, "b": 7}, max_items=2000, max_history=40)
+    workspace.set("Moving factor", repeated)
+    workspace.set("Moving factor", prefix)
+    return workspace
+
+
+def guarded_remainder_addresses():
+    """A relation becomes addresses only under a retained uniqueness guard."""
+    a, b = param("a"), param("b")
+    domain = Collection.grid(b, b, values=0)
+    relation = domain.where(F.j == (a * F.i) % b)
+    slots = Collection.grid(b, axes=("j",), values=0)
+    addresses = unique_assignment(relation, ["j"], slots, ["j"], F.i, "address")
+    # All labels agree. Only the explicit addresses identify the source items.
+    points = Collection.grid(b, values=9).annotate(original=F.i).arrange(F.i, (F.i * F.i) % b, (2 * F.i) % b)
+    ordered = addresses.order_by(F.j).with_values(F.address)
+    target = points.permute(ordered).arrange(F.index, 0, 0)
+    workspace = Workspace({
+        "R relation": relation, "Expected slots": slots, "Guarded addresses": addresses,
+        "Scattered source": points, "Moving copies": points,
+    }, {"a": 11, "b": 7}, max_items=2000, max_history=40)
+    workspace.set("Moving copies", target)
+    return workspace

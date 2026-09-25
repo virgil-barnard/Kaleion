@@ -21,6 +21,11 @@ division canvases, checks the modular composition counterexample, and exercises
 replay, invalid drafts, syntax conversion and a narrow emulated-touch layout.
 These current-shell gates use the same runtime options above.
 
+`check-reindexing.cjs` constructs measured 0/1 contents, repeats, truncates and
+joins domains, follows copied parents, and derives a guarded address map for
+unrelated 3D occurrences from blank. It also checks nonunit failure isolation,
+both added saved canvases, copy-split reversal and a 360px emulated-touch sheet.
+
 The remaining `.cjs` scripts record earlier authoring, evidence and spatial UI
 experiments. They target the controls at commit `19928e6`, including the now
 removed Focus surface and mode toolbar. Use a checkout of that commit to reproduce

@@ -11,9 +11,9 @@ from pathlib import Path
 
 from kaleion import Collection, F, Motion, Product, Workspace, choose, param
 if __package__:
-    from .division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next
+    from .division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next, periodic_extension, guarded_remainder_addresses
 else:
-    from division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next
+    from division_relations import division_motion, relation_matrices, euclidean_step, euclidean_next, periodic_extension, guarded_remainder_addresses
 
 
 def floor_sums():
@@ -221,7 +221,9 @@ BUILDERS = {"00_blank": blank_canvas, "00_first_motion": first_motion,
             "04_measured_plane": measured_plane, "05_radon_reconstruction": radon,
             "06_young_layers": young_layers, "07_equal_sums": equal_sums,
             "12_division_motion": division_motion, "12_relation_matrices": relation_matrices,
-            "12_euclidean_step": euclidean_step, "12_euclidean_next": euclidean_next}
+            "12_euclidean_step": euclidean_step, "12_euclidean_next": euclidean_next,
+            "12_periodic_extension": periodic_extension,
+            "12_guarded_addresses": guarded_remainder_addresses}
 
 
 def main():

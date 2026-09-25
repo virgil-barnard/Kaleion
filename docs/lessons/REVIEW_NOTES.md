@@ -8,6 +8,13 @@ The Euclidean step exposes domain extension as a distinct decision. It does not
 justify a new mathematical superclass or a general-purpose animation-as-input
 mechanism. Nonunit parameters preserve valid quotient counts while breaking
 the bijection and unique-factor assumptions; these failures should stay visible.
+The follow-up constructs the periodic factor by repeating and truncating measured
+cells, and transfers guarded inverse-remainder addresses onto unrelated identical
+labels in 3D. These reuse Tile/Gather/Concat/Require and existing unique assignment.
+The UI gap was choosing addresses, their order, a coverage claim and a result
+chart; value assignment also needed the same keyed-read editor as placement.
+Copy ancestry is now navigable directly. Periodicity survives a nonunit case even
+when its inverse address map fails: a useful task for the next human UI review.
 
 These are observations from [lessons 01–11](README.md). Their authoring code
 shows where a clearer notation, reusable recipe, or faster evaluator might help.

@@ -152,8 +152,13 @@ of argument. The exact address fields used for a comparison are constructed
 before rendering, never recovered from interpolated coordinates.
 The Euclidean examples explicitly create a larger domain before reassembly.
 No core primitive, dependency or saved-schema change is needed. Existing place
-commands and captures remain valid. Arbitrary-group cyclic permutations and
-periodic extension retain separate, currently unimplemented UI contracts.
+commands and captures remain valid. The separate Reindex / extend sheet now
+exposes Tile/Gather/Concat with explicit source addresses, checked ordering,
+optional bijection and result placement. Every copy has a new occurrence identity
+and a captured parent. Guarded unique assignment supplies an address field without
+special inverse-map code. Value assignment shares the scalar editor, so measured
+fields can supply contents. Arbitrary-group cyclic shifts and per-fiber address
+lists retain separate, currently unimplemented UI contracts.
 
 For an evaluated arrangement with N items:
 

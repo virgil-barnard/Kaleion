@@ -1,5 +1,40 @@
 # Validation · 0.1.0
 
+## Copying, periodic extension and guarded addresses · September 25, 2026
+
+- `python3 -m unittest discover -s tests -v`: **251 tests run, 247 pass,
+  4 optional Plotly tests skipped** because Plotly remains unavailable. Ten new
+  tests cover copied identities/ancestry, recorded split/truncation reversal,
+  address ordering independent of storage, persistent tie guards, optional
+  bijections, invalid and very large addresses, explicit zero joins, incompatible
+  sources, empty/tuple-only/3D copies, retained zero measurement receipts,
+  periodic-factor identities, nonunit guarded addresses and failure isolation.
+- `python3 examples/discovery.py --out build/example-output` passes. The virtual
+  environment and existing dependencies are reused; no core operation or saved
+  schema changes. No notebooks or video exports are changed.
+- `node docs/studies/check-reindexing.cjs` passes in **Chromium 153.0.8010.0**:
+  from blank, construct singleton measurements and read them as grid contents,
+  repeat and truncate, explicitly join zeros, follow copied parents, derive
+  guarded addresses through coverage and apply them to identical labels in 3D.
+  A nonunit parameter case fails dependent constructions and leaves independent
+  ones usable. Both new saved canvases restore and reverse; a 360px emulated-touch
+  sheet fits without horizontal overflow. Desktop and phone screenshots reviewed;
+  no uncaught page errors. The first run exposed an always-toggle assumption in
+  the test's item chooser; the helper now opens it only when closed.
+- `check-continuous-canvas.cjs` and `check-division-motion.cjs` pass again, covering
+  the changed value editor and the earlier motion/composition constructions.
+  Three canvas files were deliberately generated with `--only`: the existing
+  relation factor now depends on actual copies; two additional investigations
+  capture copy/truncation and guarded addressing. Temporary evidence stays in
+  ignored `build/reindex-check`.
+
+Limits: the chosen axis uses one shared address list across its fibers; order is
+one uniquely identifying scalar field. Per-fiber maps can be explicitly flattened
+but have no dedicated editor. Linear copy paths can overlap. Index charts are
+declared placements, not proof evidence; general arguments accompany finite
+checks in [Division in motion](docs/DIVISION_MOTION.md). Physical-touch comfort
+and novice comprehension still require human trials.
+
 ## Quotient/remainder motion and shared transformations · September 25, 2026
 
 - `python3 -m unittest discover -s tests -v`: **241 tests run, 237 pass,

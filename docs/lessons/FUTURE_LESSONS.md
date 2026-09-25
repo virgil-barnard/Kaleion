@@ -3,16 +3,18 @@
 ## Delivered canvas investigation · Division and modular relations
 
 [Division in motion](../DIVISION_MOTION.md) reconstructs the two Icarus papers
-with four worked canvases and instructions from blank. Measured displacements,
+with six worked canvases and instructions from blank. Measured displacements,
 cyclic contents, weighted quotient/remainder extraction, relation composition
 and Euclidean shears use existing primitives and shared transform controls.
+Periodic copying, address truncation and zero-column joins now share Reindex /
+extend. A guarded inverse-remainder address map drives unrelated 3D points with
+identical labels; a nonunit case fails its consumers while retaining the relation.
 No numbered notebook is added in this UI-focused increment.
 
-Next: obtain a guarded address map from a relation, apply it to an unrelated
-arrangement, and retain the failure witnesses when coverage is not one. Exercise
-periodic extension in both Euclidean table growth and the paper's truncated or
-zero-padded remainder factors before designing its shared control. Explicitly
-declare copy identity, new values, finite extent and retained keys. Compare still
+Next: recreate Euclidean growth from explicitly copied raw values and a new
+modulus. Test independent per-fiber maps against a flattened address construction
+before introducing another operation. Ask a new user to predict which data keys
+survive Repeat, Gather and Roll. Compare still
 endpoints with synchronized forward/reverse views before adding another animation
 path policy. A general recurrence language is not yet justified.
 
