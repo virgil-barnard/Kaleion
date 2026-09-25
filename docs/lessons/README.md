@@ -20,6 +20,7 @@ support an educational page or a touch interface.
 | [09 · A field changes its clothes](09_norm_fibers.md) | Can multiplication become a turn? | Norm fibers → counts → phase coordinates → cyclic action and undo |
 | [10 · One curve, two ways to gather it](10_hermitian_partitions.md) | How can the same 28 points form different partitions? | Projective quotient → polars → coverage → measured owners and ranks |
 | [11 · A code becomes a projective plane](11_cyclic_code_plane.md) | How does a cyclic code reveal a field and a moving plane? | Polynomial → generator/dual → Fano supports → field trace → Singer cycle |
+| [12 · Remainder fibers and hidden carries](12_residue_fibers.md) | Can measured fibers reveal a quotient group and its extension? | Kernel count → period → rank → cyclic action → copied sheets and carry |
 
 Read 01 as a reference tour. The mathematical sequence is 02 → 03 → 04.
 Lesson 05 opens a second path through finite geometry and imaging. Lessons 06 → 07
@@ -28,6 +29,13 @@ quasipolynomials. Lessons 09 → 10 develop finite-field motion and Hermitian ge
 Lesson 11 connects coding theory to a projective plane through an explicit field
 coordinate dictionary; it includes a first syndrome-correction construction.
 Every notebook includes its own definitions and can run in a fresh kernel.
+
+The [Division in motion canvas investigation](../DIVISION_MOTION.md) develops
+the two Icarus papers through counted quotients, remainder ordering, relation
+composition and Euclidean shears. Six saved canvases and from-blank instructions
+exercise the shared transformation controls; this is a canvas investigation,
+separate from the numbered notebooks. Lesson 12 continues its ideas into kernels,
+the generalized CRT and a nontrivial additive group extension, with a new canvas.
 
 The [future lessons](FUTURE_LESSONS.md) preserve the original briefs and remaining
 investigations, with delivery status made explicit. [Review notes](REVIEW_NOTES.md)

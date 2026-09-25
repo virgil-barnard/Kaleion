@@ -21,6 +21,7 @@ from .connections import definition_connections
 from .construction import describe_construction
 from .relations import describe_rule, reuse_rule, reduce_axes, reduction_fields
 from .formulas import formula
+from .reindexing import reindex
 from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
 
@@ -40,6 +41,9 @@ ARGUMENTS = {
     "total": {"source", "axes", "reducer", "weight"},
     "measure": {"source", "by", "reducer", "weight", "order", "key"},
     "place": {"source", "coordinates"},
+    "move": {"source", "displacement"},
+    "roll": {"source", "axis", "shift"},
+    "reindex": {"source", "kind", "axis", "placement", "times", "addresses", "field", "order", "bijective", "other"},
     "group_lens": {"source", "capture", "by", "group"},
     "assignment": {"source", "by", "expected", "expected_by", "capture", "expected_capture", "value", "field"},
 }
@@ -120,11 +124,13 @@ def build(command, roots, *, captured=None):
     if action not in ARGUMENTS or set(args) - ARGUMENTS[action]:
         raise ValueError("Unsupported action or argument")
     required = ARGUMENTS[action] - ({"weight", "order", "key"} if action == "measure" else set())
+    if action == "reindex":
+        required = {"source", "kind", "axis", "placement"}
     if required - set(args):
         raise ValueError("The declaration is missing required choices")
     if len(roots) >= 60 and name not in roots:
         raise ValueError("The study supports at most 60 objects in one workspace")
-    if name in roots and (action != "place" or args.get("source") != name):
+    if name in roots and (action not in {"place", "move", "roll", "reindex"} or args.get("source") != name):
         raise ValueError("Choose a new name; existing constructions are retained")
     def ex(value, fields=(), *, relation=False):
         if isinstance(value, dict) and set(value) == {"formula"}:
@@ -170,6 +176,10 @@ def build(command, roots, *, captured=None):
             domain = Collection.tuples(*(roots[entry["source"]].count().scalar()
                                          for entry in factors.values()), axes=tuple(factors), name=name)
         result = domain.annotate(**fields)
+    elif action == "reindex":
+        if captured is None:
+            raise ValueError("Choose captured inputs before reindexing")
+        result = reindex(args, roots, captured, ex)
     elif action in ("reuse_lens", "total"):
         if captured is None:
             raise ValueError("Choose a captured input before reusing a lens or taking a total")
@@ -206,6 +216,19 @@ def build(command, roots, *, captured=None):
             # Placement edits one view root. Existing derived roots keep their
             # immutable input definitions; this study does not rewrite a DAG.
             result = source.arrange(*(ex(c) for c in args["coordinates"]))
+        elif action == "move":
+            if source.node.kind != "arrangement":
+                raise ValueError("Set coordinates before displacing an object")
+            parts = args["displacement"]
+            if not isinstance(parts, list) or not 1 <= len(parts) <= 3:
+                raise ValueError("Give one displacement per spatial coordinate")
+            result = source.move(vector(*(ex(c) for c in parts)))
+        elif action == "roll":
+            if source.node.kind != "arrangement":
+                raise ValueError("Set coordinates before cycling contents")
+            if not isinstance(args["axis"], str):
+                raise ValueError("Choose a declared logical axis")
+            result = source.roll(axis=args["axis"], shift=ex(args["shift"]))
         elif action == "group_lens":
             if captured is None or args["source"] not in captured.results:
                 raise ValueError("Choose a ready captured source for this group")
@@ -289,6 +312,17 @@ class Studio:
             raise ValueError("Choose a ready collection or arrangement")
         spec = formula(text, self.workspace.state.parameters, source.context(), relation=True)
         expression(spec, self.workspace.state.roots)  # Validate protocol budgets too.
+        return dict(expression=spec)
+
+    def parse_formula(self, name, text, revision):
+        """Syntax only, in a captured receiver's field/parameter context."""
+        self.check(revision)
+        source = self.workspace.state.results.get(name)
+        if source is None:
+            raise ValueError("Choose a ready captured source")
+        source = source.source if isinstance(source, IncidenceSnapshot) else source
+        spec = formula(text, self.workspace.state.parameters, source.context())
+        expression(spec, self.workspace.state.roots)
         return dict(expression=spec)
 
     def preview(self, command, revision):

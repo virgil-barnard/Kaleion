@@ -5,7 +5,7 @@ export function advancedActions(object){
   if(object?.status!=='ready')return [];
   return object.kind==='incidence'
     ? ['select','measure','group_options','coverage']
-    : ['values','field','measure','group_options','coverage','compare'];
+    : ['values','field','reindex','measure','group_options','coverage','compare'];
 }
 export const labels={
   vector:'Vector',grid:'Grid',cube:'Cube',shape:'Create a shape',
@@ -14,4 +14,5 @@ export const labels={
   reuse_lens:'Reuse this rule',total:'Sum or count',product:'Make every pair',select:'Keep matches',
   explain:'Explain this item',fit:'Fit view',group_options:'Browse groups',group_lens:'Make a group relation',
   coverage:'Check coverage',assignment:'Use unique matches',compare:'Compare exact fields',
+  reindex:'Reindex / extend',
 };

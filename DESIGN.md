@@ -142,6 +142,31 @@ products for a documented lesson need. Its UI has no lesson-specific recipe.
 
 ## Four different things an arrangement contains
 
+The studio's [division investigation](docs/DIVISION_MOTION.md) now exposes
+coordinates, displacement and cyclic reindexing through one transform editor.
+`transforms.js` owns the quantity choice; `notation.js` shares scalar/relation
+syntax views; the adapter lowers `move` and `roll` to their existing builders.
+Geometry changes keep logical keys; Roll transports occurrences and carried
+fields through fixed logical slots. A keyed measurement can supply either kind
+of argument. The exact address fields used for a comparison are constructed
+before rendering, never recovered from interpolated coordinates.
+The Euclidean examples explicitly create a larger domain before reassembly.
+No core primitive, dependency or saved-schema change is needed. Existing place
+commands and captures remain valid. The separate Reindex / extend sheet now
+exposes Tile/Gather/Concat with explicit source addresses, checked ordering,
+optional bijection and result placement. Every copy has a new occurrence identity
+and a captured parent. Guarded unique assignment supplies an address field without
+special inverse-map code. Value assignment shares the scalar editor, so measured
+fields can supply contents. Arbitrary-group cyclic shifts and per-fiber address
+lists retain separate, currently unimplemented UI contracts.
+
+[Lesson 12](docs/lessons/12_residue_fibers.md) distinguishes a single constructor
+argument from a pointwise driver. Repeat can now take an object whose one exact
+value is required by `scalar()` on every evaluation. The adapter owns that input
+choice; arity, nonnegativity, allocation budget, and copying remain existing core
+contracts. The counted kernel drives both repetition and a cyclic action, without
+embedding group theory in the control. No saved-schema migration is needed.
+
 For an evaluated arrangement with N items:
 
 | Quantity | Representation | Meaning |

@@ -1,5 +1,48 @@
 # Future Kaleion lessons
 
+## Delivered · Remainder fibers, quotient groups and carries
+
+[Lesson 12](12_residue_fibers.md) folds an integer domain by two residues, measures
+its kernel and all fibers, drives rank separation and a cyclic action, then copies
+one period using a measured repeat count. The notebook explains the compatible-pair
+fiber product and the carry in a nonsplit additive extension. Its saved canvas and
+from-blank controls transfer Count/Rank/Bind/Tile/Roll without a group-specific tool.
+
+**Next: orbit lattices and Smith normal form.** Construct two commuting shifts,
+measure their orbits, and carry an explicit integer generator basis through
+unimodular row/column operations. Compare two finite quotients with the same
+cardinality but different element orders. Preserve quotient classes separately
+from coincident positions and from copied occurrences. A concrete first target
+is the contrast `Z/24` versus `Z/12 × Z/2`, already exposed by lesson 12's carry.
+Keep a missing-source counterexample and a declared coordinate dictionary.
+Start with recipes; no matrix-normal-form primitive is yet justified.
+
+**UI follow-up:** the new Repeat input accepts a whole singleton object. Test
+the same arity choice in source extents, and test a standalone ordering action
+after a user deliberately permutes the first period. Scalar read receipts need
+a separate inspection contract; a driver is visible in the construction graph
+today, but it is not yet a pointwise binding receipt.
+
+## Delivered canvas investigation · Division and modular relations
+
+[Division in motion](../DIVISION_MOTION.md) reconstructs the two Icarus papers
+with six worked canvases and instructions from blank. Measured displacements,
+cyclic contents, weighted quotient/remainder extraction, relation composition
+and Euclidean shears use existing primitives and shared transform controls.
+Periodic copying, address truncation and zero-column joins now share Reindex /
+extend. A guarded inverse-remainder address map drives unrelated 3D points with
+identical labels; a nonunit case fails its consumers while retaining the relation.
+No numbered notebook is added in this UI-focused increment.
+
+Next: recreate Euclidean growth from explicitly copied raw values and a new
+modulus. Test independent per-fiber maps against a flattened address construction
+before introducing another operation. Ask a new user to predict which data keys
+survive Repeat, Gather and Roll. Compare still
+endpoints with synchronized forward/reverse views before adding another animation
+path policy. A general recurrence language is not yet justified.
+
+## Previously proposed investigations
+
 The five investigations in the preceding plan now have notebooks: lessons
 [04](04_measured_motion.md), [05](05_finite_radon.md), [06](06_young_layers.md),
 [07](07_additive_structure.md), and [08](08_ehrhart_counts.md). This document preserves

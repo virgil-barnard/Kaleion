@@ -1,5 +1,48 @@
 # Notebook viewer validation
 
+## Lesson 12 · Remainder fibers and hidden carries
+
+September 25, 2026; appended to PR #37 from `bb0090d`. Python 3.12, Plotly 6.9.0,
+IPython 9.17.1, imageio-ffmpeg 0.6.0 in the project virtual environment. Optional
+dependencies already declared in `pyproject.toml` were installed; no declarations
+changed.
+
+- Fresh in-process IPython execution runs all **10 code cells** at `(6,4)` and
+  `(7,5)`. The first has kernel size 2, period 12, twelve zero fibers and twelve
+  two-element fibers; the second has kernel size 1, period 35 and 35 ones.
+  All pair-domain comparisons are exact and independently declared. Empty-fiber
+  and rank receipts, copied identities, saved readback, and forward/reverse path
+  samples pass. The missing carry has **264 discrepancies among 576 additions**
+  in the default case; the corrected formula agrees on every pair. The inverse
+  guard fails at `(6,4)` and passes at `(7,5)` without hiding independent evidence.
+- Each run writes **five** standalone Plotly HTML figures, workspace/movie
+  captures, a finite evidence JSON, and one MP4. The default figures render in
+  Chromium 153.0.8010.0: two heatmaps, two 3D animations (31 and 50 frames), and
+  the exact copied-sheet chart. Both animations reach their final frames without
+  a page error. The new gallery selection exports the reviewed 960×600 PNG from
+  the captured Plotly output. Its axes use independent screen scales for clarity.
+- Both MP4s independently decode all **100 RGB frames** at 960×640, H.264,
+  20 fps, five seconds. The 2D movie uses an explicitly constructed representative/
+  rank chart and recorded transitions; it is not a recording of the 3D Plotly view.
+- `nbconvert --to html` converts the executed default notebook. Source notebook
+  outputs/counts remain cleared. A normal `nbconvert --execute` attempt fails
+  before cell execution when this host blocks Jupyter's socket/interface startup.
+  Fresh-process IPython execution captures rich outputs as the existing fallback;
+  live JupyterLab behavior was not verified here.
+- **260 unit tests pass** and the discovery example passes. Six lesson tests
+  cover independent arithmetic at `(7,5)`, `(6,4)`, `(6,6)`, `(1,5)`, `(5,1)`,
+  and `(1,1)`, exact contributor identities, the kernel action, and undo from
+  JSON with evaluation disabled. Three adapter tests exercise measured repeats.
+  Two browser gates check the new from-blank workflow and earlier copying tools.
+
+The generalized CRT and carry statements have separate elementary arguments in
+the notebook and [lesson guide](../docs/lessons/12_residue_fibers.md). Finite cases,
+pixels and smooth frames do not prove them. `(a*b)^2` candidate witnesses limit
+this small studio recipe to `a*b <= 44`; larger/sparse evaluation is future work.
+No physical tablet or unprompted novice testing is claimed. Scalar constructor
+dependencies are visible in the graph, but scalar binding receipts remain future
+work; the notebook inspects the kernel measurement itself.
+
 ## Lesson 06 · Ordered weighted prefixes
 
 September 23, 2026; based on merged `91a6e33`. The Young notebook now uses

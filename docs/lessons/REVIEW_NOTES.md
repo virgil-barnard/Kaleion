@@ -1,5 +1,31 @@
 # Evidence for the next Kaleion review
 
+[Lesson 12](12_residue_fibers.md) adds a useful distinction: a measurement can be
+a value per target item, or a single argument controlling the target's domain.
+Its kernel count supplies both a live Repeat count and a period for Roll.
+The studio now exposes that singleton choice rather than freezing a displayed
+number. No new core operation is needed. A zero-valued singleton is valid;
+an empty or multi-value driver is not. This contract survives parameter changes.
+Measured ranks and repeated sheets also show why a set decomposition is not a
+group-product claim: the carry remains visible in exact addition comparisons.
+General ordering and scalar read receipts remain concrete UI/evidence gaps.
+
+The [division/modular relation transfer](../DIVISION_MOTION.md) adds a further
+test of the interaction grammar: position, displacement and cyclic slot movement
+are separate choices within one instrument. Count/Sum/Bind already express the
+quotient and remainder drivers, including composition through incidence witnesses.
+The Euclidean step exposes domain extension as a distinct decision. It does not
+justify a new mathematical superclass or a general-purpose animation-as-input
+mechanism. Nonunit parameters preserve valid quotient counts while breaking
+the bijection and unique-factor assumptions; these failures should stay visible.
+The follow-up constructs the periodic factor by repeating and truncating measured
+cells, and transfers guarded inverse-remainder addresses onto unrelated identical
+labels in 3D. These reuse Tile/Gather/Concat/Require and existing unique assignment.
+The UI gap was choosing addresses, their order, a coverage claim and a result
+chart; value assignment also needed the same keyed-read editor as placement.
+Copy ancestry is now navigable directly. Periodicity survives a nonunit case even
+when its inverse address map fails: a useful task for the next human UI review.
+
 These are observations from [lessons 01–11](README.md). Their authoring code
 shows where a clearer notation, reusable recipe, or faster evaluator might help.
 The delivery note below distinguishes implemented changes from remaining ideas.

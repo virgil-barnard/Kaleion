@@ -16,16 +16,20 @@ These PNGs are exported from Plotly figures in the executed notebooks with their
 | `10-hermitian-partitions.png` | [10 · Hermitian partitions](../../../notebooks/10_hermitian_partitions.ipynb) | Seven groups of four, frame `49`; fitted axes with independent screen scales |
 | `11-code-and-dual.png` | [11 · A code becomes a projective plane](../../../notebooks/11_cyclic_code_plane.ipynb) | Seven weight-three codewords and their weight-four dual complements |
 | `11-field-and-plane.png` | [11 · A code becomes a projective plane](../../../notebooks/11_cyclic_code_plane.ipynb) | One completed multiplication by alpha in two charts, frame `16`; packed field labels |
+| `12-residue-fibers.png` | [12 · Remainder fibers](../../../notebooks/12_residue_fibers.ipynb) | Exact copied sheets at `(6,4)`; labels reconstruct `0,...,23`, color distinguishes sheets; independent display scales |
 
 ## Regenerate
 
-First execute all eleven notebooks with default parameters, following the [notebook instructions](../../../notebooks/README.md#execute-without-the-ui). Their populated copies belong in `build/notebooks/*.executed.ipynb`; the source notebooks remain cleared. Lesson 11 supplies two previews of its code/dual and field/plane correspondence.
+First execute the selected notebooks with default parameters, following the [notebook instructions](../../../notebooks/README.md#execute-without-the-ui). Their populated copies belong in `build/notebooks/*.executed.ipynb`; the source notebooks remain cleared. Lesson 11 supplies two previews of its code/dual and field/plane correspondence.
 
 From the repository root, with the notebook environment activated:
 
 ```sh
 python3 notebooks/export_gallery.py
 ```
+
+Use `python3 notebooks/export_gallery.py --only 12-residue-fibers` to export just
+the new preview without requiring the other eleven executed notebooks.
 
 Open the resulting `build/readme-gallery/*.html` files in a browser. Each plot's **Download plot as png** camera button exports the correct filename and dimensions. Replace the corresponding PNG here. The HTML files share an adjacent `plotly.min.js` and work offline when kept together. This path uses only the existing notebook dependencies.
 

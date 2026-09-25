@@ -36,13 +36,14 @@ are included. Imports alone do not establish use.
 | [09 · Norm fibers](09_norm_fibers.md#functions-and-authoring-scaffolding) | 3 + 0 | Arithmetic/phase recipes, placement, orbit validation, frame projection | `lesson_views`, `quadratic_coordinates` |
 | [10 · Hermitian partitions](10_hermitian_partitions.md#functions-and-authoring-scaffolding) | 4 + 0 | Canonical representatives, incidence, guarded owners, ordered packing | `lesson_views`, `quadratic_coordinates` |
 | [11 · Cyclic code and plane](11_cyclic_code_plane.md#functions-and-authoring-scaffolding) | 22 + 1 | Binary arithmetic, product/reduction recipes, field dictionary, paths, coordinated replay | `lesson_views`, `code_views` |
+| [12 · Remainder fibers](12_residue_fibers.md#functions-and-authoring-scaffolding) | 0 + 0 | Inline fiber/kernel domains, measured period and ranks, copied sheets, carry, guarded inverse, sampling and exports | `lesson_views.style/save_figures`, `snapshot_views.rectangular_values`; existing studio `unique_assignment`; public inspection/comparison/viewers |
 
 ## Keep different responsibilities visible
 
-Ten [saved studio examples and one blank canvas](../../examples/canvases/README.md)
+Seventeen [saved studio examples and one blank canvas](../../examples/canvases/README.md)
 adapt lessons 02–07 and the introductory triangle for exploration with Open.
-Their generator, [save_canvases.py](../../examples/save_canvases.py), has eleven
-registered builders, two shared construction recipes, and one export entry point.
+Their generator, [save_canvases.py](../../examples/save_canvases.py), has eighteen
+registered builders, two local shared construction recipes, and one export entry point.
 `triangle_parts()` supplies a common domain, incidence, counts and independent
 formula to first motion and packing. `ownership_regions()` supplies the box and
 three predicates to the original box, cell-ownership comparison and planar lifts.
@@ -55,6 +56,30 @@ Export losslessly compacts schema-1 JSON. Inspection, preview/apply and renderin
 remain shared studio responsibilities. `studio/catalog.py` owns trusted example
 choices and descriptions, while `web/learning.js` owns non-executing instructions.
 These functions are outside the unchanged notebook/helper counts above.
+
+Lesson 12 adds three canvas recipe functions in `examples/residue_fibers.py`:
+`residue_definitions`, `copied_period`, and `residue_fibers`. The first declares
+domains/measurements, the second owns representative ordering and copied labels,
+and the last owns workspace registration and recorded edits. Its notebook keeps
+the short construction inline. No additional notebook helper module is introduced.
+Count/Rank/Bind repeats 07 and 10; guarded inversion repeats 11 and the division
+investigation. The concrete UI addition is a live singleton for Repeat, lowered
+to existing `scalar()`, separate from a pointwise keyed read. General standalone
+ordering and scalar-constructor inspection remain named gaps.
+
+The [division investigation's inventory](../DIVISION_MOTION.md#functions-and-authoring-scaffolding)
+adds eight functions in `examples/division_relations.py`: a shared `division_parts`
+recipe, `division_motion`, `relation_matrices`, `euclidean_step`, and the next-case
+wrapper `euclidean_next`, shared `periodic_factor`, `periodic_extension`, and
+`guarded_remainder_addresses`. Six builders are registered with the same exporter.
+They compose existing Count/Sum/Bind/Move/Roll/Arrange and explicit domains;
+there is no local matrix kernel or renderer. Singleton counts let composition
+read actual incidence-derived 0/1 fields instead of duplicating predicates.
+Shared transform/notation controls belong to the studio, not to those recipes.
+The copying sheet and `studio.reindexing.reindex` separately own declaration
+choices and lowering; copied identities and lineage remain core responsibilities.
+The existing guarded `studio.coverage.unique_assignment` recipe is reused directly.
+There is no lesson-local inverse calculation, copying kernel or receipt renderer.
 
 | Responsibility | Typical input → output | Boundary to preserve |
 | --- | --- | --- |

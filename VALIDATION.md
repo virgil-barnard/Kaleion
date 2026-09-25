@@ -1,5 +1,112 @@
 # Validation · 0.1.0
 
+## Residue fibers and measured repetition · September 25, 2026
+
+- `python3 -m unittest discover -s tests -v`: **260 tests pass**, no skips.
+  The venv now has the already-declared optional notebook dependencies, so the
+  four Plotly contracts run too. Six new lesson tests independently check fiber
+  multiplicities, gcd/lcm counts, zero witnesses, guarded inverses, rank receipts,
+  copied ancestry, group addition with a carry, and captured reversal. Three new
+  adapter tests check live singleton repeat counts, zero/multiple/unvalued/negative
+  inputs, changed parameter arity, failure isolation and save/reopen.
+- `python3 examples/discovery.py --out build/example-output` passes.
+- `check-residue-fibers.cjs` builds a kernel count, period, rank-driven 3D
+  placement and cyclic action from blank, then drives unrelated repetition with
+  the measured total. It checks coprime case changes, invalid multiple drivers,
+  both keyed comparisons, saved three-step replay, and 360px layout. The existing
+  `check-reindexing.cjs` also passes. Chromium **153.0.8010.0**, no page errors;
+  desktop and phone captures reviewed. Test development corrected selectors for
+  the second parameter and the comparison instrument's retained key choices.
+- Lesson 12's **10 code cells** execute in fresh in-process IPython sessions for
+  `(6,4)` and `(7,5)`. Source outputs remain cleared. Normal `nbconvert --execute`
+  fails at kernel startup because this host denies network-interface/socket
+  access; the fallback does not establish a live JupyterLab session.
+- Five default Plotly exports render in Chromium, and both exported animations
+  traverse to their last frames. HTML conversion and `export_gallery.py --only
+  12-residue-fibers` pass; the 960×600 Plotly PNG is visually reviewed. Each case's
+  MP4 independently decodes **100 frames**, H.264, 960×640, 20 fps, five seconds.
+  [Notebook evidence and limits](notebooks/VALIDATION.md) record the scope.
+
+No installed-core operation, dependency declaration or capture schema changes.
+The new optional Repeat argument lowers to the existing scalar expression;
+old formula commands remain valid. Pointwise inspection does not yet explain
+scalar-constructor reads. General standalone ordering, physical-touch usability
+and novice discovery remain open. The witness domain has `(a*b)^2` items and
+uses the existing 2,000-item studio budget.
+
+## Copying, periodic extension and guarded addresses · September 25, 2026
+
+- `python3 -m unittest discover -s tests -v`: **251 tests run, 247 pass,
+  4 optional Plotly tests skipped** because Plotly remains unavailable. Ten new
+  tests cover copied identities/ancestry, recorded split/truncation reversal,
+  address ordering independent of storage, persistent tie guards, optional
+  bijections, invalid and very large addresses, explicit zero joins, incompatible
+  sources, empty/tuple-only/3D copies, retained zero measurement receipts,
+  periodic-factor identities, nonunit guarded addresses and failure isolation.
+- `python3 examples/discovery.py --out build/example-output` passes. The virtual
+  environment and existing dependencies are reused; no core operation or saved
+  schema changes. No notebooks or video exports are changed.
+- `node docs/studies/check-reindexing.cjs` passes in **Chromium 153.0.8010.0**:
+  from blank, construct singleton measurements and read them as grid contents,
+  repeat and truncate, explicitly join zeros, follow copied parents, derive
+  guarded addresses through coverage and apply them to identical labels in 3D.
+  A nonunit parameter case fails dependent constructions and leaves independent
+  ones usable. Both new saved canvases restore and reverse; a 360px emulated-touch
+  sheet fits without horizontal overflow. Desktop and phone screenshots reviewed;
+  no uncaught page errors. The first run exposed an always-toggle assumption in
+  the test's item chooser; the helper now opens it only when closed.
+- `check-continuous-canvas.cjs` and `check-division-motion.cjs` pass again, covering
+  the changed value editor and the earlier motion/composition constructions.
+  Three canvas files were deliberately generated with `--only`: the existing
+  relation factor now depends on actual copies; two additional investigations
+  capture copy/truncation and guarded addressing. Temporary evidence stays in
+  ignored `build/reindex-check`.
+
+Limits: the chosen axis uses one shared address list across its fibers; order is
+one uniquely identifying scalar field. Per-fiber maps can be explicitly flattened
+but have no dedicated editor. Linear copy paths can overlap. Index charts are
+declared placements, not proof evidence; general arguments accompany finite
+checks in [Division in motion](docs/DIVISION_MOTION.md). Physical-touch comfort
+and novice comprehension still require human trials.
+
+## Quotient/remainder motion and shared transformations · September 25, 2026
+
+- `python3 -m unittest discover -s tests -v`: **241 tests run, 237 pass,
+  4 optional Plotly tests skipped** because this environment lacks Plotly.
+  Nine new tests cover quotient reconstruction, noncoprime collisions, Q/R
+  extraction with a contributing zero, modular factor composition and its
+  counterexample, Euclidean extension/reassembly, keyed displacement versus
+  cyclic addressing, large signed integer shifts, missing keys and invalid axes,
+  empty 1D and scattered 3D inputs, and captured reverse paths after reopening
+  with evaluation disabled. No core operation or schema changes.
+- `python3 examples/discovery.py --out build/example-output` passes with the
+  existing counts, drivers, sieve and history exports. Work uses a Python 3
+  virtual environment and existing dependencies. No notebooks or video exports
+  are changed by this increment.
+- `node docs/studies/check-division-motion.cjs` passes in Chromium
+  **153.0.8010.0**. It builds a counted displacement, cyclic shift and Euclidean
+  shear from blank through public controls; checks Preview/Cancel, syntax
+  round trips, failed-fiber isolation, exact integer comparison, the `(12,8)`
+  modular counterexample, all four saved investigations and reversed stages;
+  and exercises the arithmetic editor at 360px with emulated touch. Read-only
+  API calls supply outcome checks. Desktop and phone screenshots were reviewed.
+- The current `check-canvas-tutorial.cjs`, `check-field-guide.cjs`, and
+  `check-relation-notation.cjs` browser gates also pass, with no uncaught page
+  errors. The original tutorial's measured-height connection still works through
+  **Drive a transformation → Coordinates**. The new gate covers the same
+  connection's Displacement and Cyclic shift choices.
+- The README image is the new browser gate's applied measured-shear endpoint.
+  Test captures and temporary exports remain under ignored `build/`; only the
+  four deliberate worked canvases and that preview are committed.
+
+Finite checks accompany the mathematical arguments in
+[Division in motion](docs/DIVISION_MOTION.md); they are not automatic universal
+proofs. Browser automation does not establish unprompted novice usability or
+physical-touch comfort. Cyclic cells still follow captured linear paths and can
+overlap in transit. Domain extension is explicitly constructed, not animated as
+a bijection between different cardinalities. General periodic extension/gather
+controls and synchronized multi-object replay remain future work.
+
 ## Continuous canvas and tuple domains · September 23, 2026
 
 - **219 offline Python tests pass**. Seven new tests exercise optional contents,

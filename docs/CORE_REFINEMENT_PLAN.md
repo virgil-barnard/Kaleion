@@ -1,5 +1,12 @@
 # Kaleion core refinement plan
 
+The later [residue-fiber investigation](lessons/12_residue_fibers.md) reuses
+existing primitives to expose quotient groups and carries. Its concrete UI gap
+is the difference between a scalar constructor argument and a read per occurrence.
+Repeat now accepts a measured singleton through existing `scalar()`, with live
+arity checks. This does not justify another evaluator operation. Standalone
+ordering and scalar-constructor inspection remain explicit follow-up contracts.
+
 September 19, 2026 · Accepted plan following lessons 01–08; stages A–B delivered, C–D started
 
 **Recommendation:** retain the public mathematical vocabulary and refactor the
@@ -14,6 +21,20 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
 [baseline results](reviews/2026-09-core-design-probes.json) preserve the audit evidence.
 
 ## Delivery status
+
+- **Division and modular relation transfer:** the [paper investigation](DIVISION_MOTION.md)
+  exposes existing Move and Roll through a shared transform instrument, and
+  shares arithmetic text/term editing with coordinates and weights. Counted
+  quotients drive a shear, a wrap and remainder placement; singleton incidence
+  measurements compose two relations into a quotient with inspectable witnesses.
+  Euclidean shears declare enlarged domains explicitly. Coprimality failures
+  separate correct counts from bijective placement and unique composition.
+  Reindex / extend now exposes Tile/Gather/Concat and a checked address order;
+  unique assignment derives inverse addresses for unrelated 3D occurrences.
+  The periodic factor uses actual copies of measured cells, while zero padding
+  joins an explicit zero grid. No new evaluator operation is justified. Next test
+  Euclidean raw-value extension, modulus changes and per-fiber maps; keep these
+  decisions separate from copied domains and presentation paths.
 
 - **UI contract experiment:** the [construction studio](CONSTRUCTION_STUDIO.md)
   constructs additive and modular investigations from blank inputs with one

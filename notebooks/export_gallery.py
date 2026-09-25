@@ -39,6 +39,8 @@ PREVIEWS = (
      "11-code-and-dual", "A code and its dual · seven projective lines and their complements"),
     ("11_cyclic_code_plane", "One action · cyclic shift and projective motion", "16",
      "11-field-and-plane", "Field multiplication · one cyclic turn moves a projective line"),
+    ("12_residue_fibers", "A new copy for each representative and sheet", None,
+     "12-residue-fibers", "Remainder fibers · one period, two copies"),
 )
 
 
@@ -95,6 +97,12 @@ def preview(notebook, title_prefix, frame_name, caption):
         )
     if notebook.name.startswith("09_"):
         figure.update_layout(scene_zaxis_title="Norm")
+    if notebook.name.startswith("12_"):
+        # Independent display scales separate the two exact integer sheets.
+        figure.update_layout(scene_aspectmode="manual",
+                             scene_aspectratio=dict(x=1.5, y=1.1, z=1),
+                             scene_camera_eye=dict(x=1.4, y=-1.9, z=1.3),
+                             scene_xaxis_dtick=1, scene_yaxis_dtick=1, scene_zaxis_dtick=1)
     if notebook.name.startswith("10_"):
         # Fit the selected partition, rather than the bounds of the whole path.
         figure.update_xaxes(
@@ -113,11 +121,15 @@ def main():
     parser.add_argument("--executed-dir", type=Path, default=Path("build/notebooks"))
     parser.add_argument("--output-dir", type=Path, default=Path("build/readme-gallery"))
     parser.add_argument("--png-dir", type=Path, help="Also export PNGs; requires Kaleido and Chrome")
+    parser.add_argument("--only", nargs="+", choices=[p[3] for p in PREVIEWS],
+                        help="Export only these preview filenames")
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     if args.png_dir:
         args.png_dir.mkdir(parents=True, exist_ok=True)
     for name, prefix, frame, filename, caption in PREVIEWS:
+        if args.only and filename not in args.only:
+            continue
         notebook = args.executed_dir / f"{name}.executed.ipynb"
         figure = preview(notebook, prefix, frame, caption)
         destination = args.output_dir / f"{filename}.html"

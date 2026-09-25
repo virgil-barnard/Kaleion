@@ -1,5 +1,20 @@
 # Kaleion notebooks
 
+[12_residue_fibers.ipynb](12_residue_fibers.ipynb) continues the division canvases
+into quotient groups and the generalized Chinese remainder theorem. Counts
+derive a kernel size and period; ranks separate fibers; the measured period
+drives a cyclic action. Copying one period reconstructs the set, while a carry
+counterexample prevents mistaking its layers for a direct product of groups.
+The notebook exports five interactive HTML views and a 100-frame 2D MP4.
+Its [lesson guide](../docs/lessons/12_residue_fibers.md) includes a saved canvas,
+from-blank controls, elementary proofs, and a scaffolding inventory.
+
+With the notebook environment active, execute it independently:
+
+```sh
+python3 -m jupyter nbconvert --to notebook --execute notebooks/12_residue_fibers.ipynb --output-dir build/notebooks --output 12_residue_fibers.executed.ipynb --ExecutePreprocessor.timeout=180
+```
+
 Start with [01_discovery_workbench.ipynb](01_discovery_workbench.ipynb). It is an editable walkthrough of the module, with interactive 2D/3D plots, parameter-case scrubbers, recorded motion and undo, and two embedded MP4 videos. It uses finite constructions and no external datasets.
 
 [02_floor_sum_proof.ipynb](02_floor_sum_proof.ipynb) is a self-contained construction page for reciprocal floor sums. It places readable notation beside two incidences on a shared integer rectangle, checks their grouped counts and union/intersection, and animates packing and undo. The written argument proves the identity for all positive coprime parameters greater than one; exact finite examples also expose the `gcd(a, b) - 1` overlap correction. "Area" here counts unit cells, with explicit integer summation bounds. This notebook uses the existing symbolic Python API and does not introduce a text-language parser or proof assistant.

@@ -15,6 +15,18 @@ export function receiptInspector({panel,run,query,linked,beforeShow}){
         show(receipt,{heading,back,contribution});
       }};
     }
+    if(receipt.item.parents.length===1){
+      const parent=receipt.item.parents[0],button=el('button','Follow source occurrence',{type:'button',id:'follow-source-occurrence'});
+      button.onclick=()=>run(async()=>{
+        const previous=returnHere('Back to derived occurrence'),source=await query('inspect-driver',{ref:parent});
+        await linked.open({title:'An occurrence and its captured source',
+          detail:'This link was recorded by the construction. Equal labels and coincident positions do not establish identity.',
+          left:{capture:receipt.item.ref[0],label:'Derived occurrence'},right:{capture:parent[0],label:'Source occurrence'},
+          links:[{label:'Recorded source',left:[{ref:receipt.item.ref}],right:[{ref:parent}]}],
+          inspect:ref=>run(async()=>show(await query('inspect-driver',{ref}),{back:previous}))});
+        show(source,{heading:'Source value',back:previous});
+      });panel.append(button);
+    }
     function readButton(read,{weight=false}={}){
       const button=el('button',`${weight?'Follow weight read':'Follow keyed read'} · ${read.value}`,{type:'button'});
       button.onclick=()=>run(async()=>{

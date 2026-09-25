@@ -16,6 +16,9 @@ import {constructionInspector} from './construction.js';
 import {canvasDocument,readDocument} from './document.js';
 import {lensControls,totalControls,reuseControls} from './patterns.js';
 import {fieldGuide} from './field-guide.js';
+import {scalarNotation} from './notation.js';
+import {transformControls} from './transforms.js';
+import {reindexControls} from './reindexing.js';
 
 const $ = id => document.getElementById(id);
 const el = (tag, text, attrs={}) => {
@@ -110,7 +113,7 @@ function workspaceControls(){
   $('reuse-lens').hidden=selected?.kind!=='incidence';
   $('arrange').hidden=selected?.kind==='incidence';
   for(const id of ['quick-lens','axis-total','reuse-lens','combine'])$(id).disabled=busy||drafting||!ready;
-  $('object-tools').querySelectorAll('[data-action]').forEach(b=>b.disabled=busy||drafting);
+  $('object-tools').querySelectorAll('[data-action]').forEach(b=>b.disabled=busy||drafting||!ready);
   document.querySelectorAll('[data-create]').forEach(b=>b.disabled=busy||drafting);
   $('draft-tray').hidden=!drafting;
   if(drafting){
@@ -224,7 +227,7 @@ function combinePanel(from,to){
   const panel=$('activity');panel.replaceChildren(el('span','CONNECT / REVIEW / PREVIEW',{class:'eyebrow'}),el('h2','Combine objects'));
   const source=labeled(panel,'Source object',options(state.objects.map(o=>o.name),from));source.id='combine-source';
   const target=labeled(panel,'Destination object',options(state.objects.map(o=>o.name),to||state.objects.find(o=>o.name!==from)?.name||from));target.id='combine-target';
-  const product=el('button','Make every pair',{id:'combine-product',type:'button'}),place=el('button','Use source values as destination height',{id:'combine-place',type:'button'});
+  const product=el('button','Make every pair',{id:'combine-product',type:'button'}),place=el('button','Drive a transformation',{id:'combine-place',type:'button'});
   const reuse=el('button','Use lens on destination',{id:'combine-lens',type:'button'});
   const choices=el('div',undefined,{class:'combine-choices'}),reason=el('p',undefined,{class:'help',id:'combine-reason'});choices.append(product,place,reuse);panel.append(choices,reason);
   panel.append(el('p','Choose an operation, review its roles or matching keys, then Preview and Apply. Connecting never applies a change by itself.',{class:'help'}));
@@ -233,14 +236,15 @@ function combinePanel(from,to){
     const ready=a?.status==='ready'&&b?.status==='ready',collections=a?.kind!=='incidence'&&b?.kind!=='incidence';
     product.disabled=!ready||!collections;place.disabled=product.disabled||!a?.fields.includes('value');
     reuse.hidden=a?.kind!=='incidence';reuse.disabled=!ready||b?.kind==='incidence'||!a?.reusable_rule?.available;
-    reason.textContent=!ready?'Both objects need a successful captured result.':a?.kind==='incidence'?(a.reusable_rule?.available?'Map this lens’s inputs to destination fields. Preview shows its incidence; the original stays in place.':a.reusable_rule?.reason):!collections?'Choose a lens as source and a collection or arrangement as destination to reuse its rule.':`Every pair creates ${a.rows.length} × ${b.rows.length} item tuples. Height reads need a unique source key for each destination key; the next editor shows both. The scene uses one scale; object offsets only organize the view.`;
+    reason.textContent=!ready?'Both objects need a successful captured result.':a?.kind==='incidence'?(a.reusable_rule?.available?'Map this lens’s inputs to destination fields. Preview shows its incidence; the original stays in place.':a.reusable_rule?.reason):!collections?'Choose a lens as source and a collection or arrangement as destination to reuse its rule.':`Every pair creates ${a.rows.length} × ${b.rows.length} item tuples. A transformation reads a unique source key for each destination key. Choose coordinates, displacement or cyclic shift in the next editor, and review the matching keys.`;
   }
   source.onchange=target.onchange=eligibility;eligibility();
   product.onclick=()=>editor('product',{scene:true,factors:{left:source.value,right:target.value}});
   reuse.onclick=()=>editor('reuse_lens',{workspace:true,scene:true,source:source.value,target:target.value});
   place.onclick=()=>{
     const destination=state.objects.find(o=>o.name===target.value);active=target.value;
-    editor('place',{source:target.value,coordinates:[field(destination.fields.includes('i')?'i':'key'),{read:{object:source.value,on:field('key'),key:field('key'),value:field('value')}}]});
+    const driver={read:{object:source.value,on:field('key'),key:field('key'),value:field('value')}};
+    editor('place',{source:target.value,driver,coordinates:[field(destination.fields.includes('i')?'i':'key'),driver]});
   };
   status(`Proposing a connection from ${from}${to?` to ${to}`:''}. Applied work is unchanged.`);
   panel.focus({preventScroll:true});panel.scrollIntoView({block:'nearest'});
@@ -348,14 +352,17 @@ function editor(action,seed=null){
   if(source&&!['shape','integers','sequence','grid'].includes(action)){const inspectSource=el('button',`On ${sourceName} · inspect source`,{type:'button',class:'draft-source'});inspectSource.onclick=()=>selectObject(sourceName);form.before(inspectSource)}
   const name=labeled(controls,'Result name',input(action==='place'?sourceName:`${action==='shape'?shapes[seed.shape].title:labels[action]} ${state.objects.length+1}`));
   name.id='result-name';if(action==='place')name.readOnly=true;
-  let args,shape;
-  function expressionControl(label,spec,fs=fields){const card=expr(spec,fs);card.box.setAttribute('role','group');card.box.setAttribute('aria-label',label);controls.append(el('label',label),card.box);return card}
+  let args,shape,transform;
+  const scalar=(spec,fs=fields)=>scalarNotation(spec,fs,Object.keys(state.parameters||{}),expr,async text=>(await request('parse-formula',{name:sourceName,text,revision:editorRevision})).expression);
+  function expressionControl(label,spec,fs=fields){const card=(action==='lens'?expr:scalar)(spec,fs);card.box.setAttribute('role','group');card.box.setAttribute('aria-label',label);controls.append(el('label',label),card.box);return card}
   if(action==='shape'){
     shape=shapeControls(seed.shape,state.parameters);controls.append(shape.box);
   }else if(action==='values'){
-    const value=labeled(controls,'Value at each location',input(source?.axes?.join(' + ')||'index'));value.id='values-formula';
-    controls.append(el('p','Use index fields, integer constants, + − * // %, and parentheses. The source stays available.',{class:'help'}));
-    args=()=>({source:sourceName,value:{formula:value.value}});
+    const initial=source.axes.length?source.axes.map(field).reduce((a,b)=>operation('+',a,b)):field('index');
+    const value=expressionControl('Value at each location',initial);
+    value.box.querySelector('textarea').id='values-formula';value.box.querySelector('[data-rule-write]').click();
+    controls.append(el('p','Use a formula or switch to controls for a keyed read from another object. Values change; positions and item identities remain. The source stays available.',{class:'help'}));
+    args=()=>({source:sourceName,value:value.read()});
   }else if(action==='product'){
     const sources=state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'), choices=[];
     for(const role of ['left','right']){
@@ -403,12 +410,9 @@ function editor(action,seed=null){
     const value=expressionControl('Value supplied by the unique match',field('value'));
     args=()=>({...seed,value:value.read(),field:assigned.value});
   }else if(action==='place'){
-    controls.append(el('p','Give this object exact coordinates and record the change as motion. Use a Keyed read to let a measurement supply a coordinate. Dragging its name on the canvas changes only the view.',{class:'help'}));
-    const dimensions=labeled(controls,'Number of coordinates',options(['1','2','3'],String(Math.max(2,source.dimension||source.axes.length))));
-    const coordinates=['x','y','z'].map((axis,i)=>expressionControl(`${axis} coordinate`,seed?.coordinates?.[i]||((source.axes[i]||i===0)?field(source.axes[i]||'key'):i===1&&fields.includes('value')?field('value'):number(0))));
-    function showCoordinates(){coordinates.forEach((card,i)=>{card.box.hidden=card.box.previousElementSibling.hidden=i>=Number(dimensions.value)})}
-    dimensions.onchange=showCoordinates;showCoordinates();
-    args=()=>({source:sourceName,coordinates:coordinates.slice(0,Number(dimensions.value)).map(card=>card.read())});
+    transform=transformControls(source,scalar,seed);controls.append(transform.box);
+  }else if(action==='reindex'){
+    const copies=reindexControls(source,state.objects);controls.append(copies.box);args=copies.read;
   }else if(action==='select'){
     controls.append(el('p','Keep matching items as a new finite universe. Its later groups may differ from the original relation’s zero groups.',{class:'help'}));args=()=>({source:sourceName});
   }else if(action==='group_lens'){
@@ -430,11 +434,11 @@ function editor(action,seed=null){
     });
   }
   const feedback=el('p',undefined,{id:'draft-status',role:'status','aria-live':'polite','aria-atomic':'true'});form.append(feedback);
-  const effect=action==='place'?`Change placement of ${sourceName}`:action==='assignment'?`Create a new field on a copy of ${seed.expected}`:action==='product'?'Create a new object from the chosen factors':`Create a new object${sourceName&&!['integers','grid'].includes(action)?` from ${sourceName}`:''}`;
+  const effect=action==='place'?`Transform ${sourceName}. Existing derived objects retain their earlier inputs. Undo restores this captured step.`:action==='assignment'?`Create a new field on a copy of ${seed.expected}`:action==='product'?'Create a new object from the chosen factors':`Create a new object${sourceName&&!['integers','grid'].includes(action)?` from ${sourceName}`:''}`;
   form.append(el('p',effect,{class:'help',id:'draft-effect'}));
   const bar=el('div',undefined,{class:'form-actions'}), test=el('button','Preview',{type:'submit',class:'primary',id:'preview'}), apply=el('button','Apply',{type:'button',id:'apply'}),cancel=el('button','Cancel',{type:'button',id:'cancel'});apply.disabled=true;bar.append(test,apply,cancel);form.append(bar);
   const detail=el('details'), summary=el('summary','Read the declaration'),code=el('pre',undefined,{id:'declaration'});detail.append(summary,code);panel.append(detail);
-  const getCommand=()=>shape?{...shape.read(),name:name.value}:{action,name:name.value,args:args()};
+  const getCommand=()=>shape?{...shape.read(),name:name.value}:transform?{...transform.read(),name:name.value}:{action,name:name.value,args:args()};
   function message(phase,text){feedback.dataset.phase=phase;feedback.textContent=text}
   function invalidate(){preview=null;apply.disabled=!shape;message('editing','Not previewed. Preview checks your current choices; Apply records them.')}
   function changed(){invalidate();try{code.textContent=JSON.stringify(getCommand(),null,2)}catch(e){code.textContent=e.message}status('Draft changed. Preview again before applying.');render()}
@@ -445,7 +449,7 @@ function editor(action,seed=null){
       if(editorRevision!==state.revision)throw Error('The workspace changed. Open this tool again.');
       const command=getCommand();preview=null;message('evaluating','Checking your current choices…');render();
       const result=await request('preview',{command});preview=result;render();apply.disabled=false;
-      if(action==='place')board.showPlacement(preview.name);
+      if(action==='place'||action==='reindex')board.showPlacement(preview.name);
       board.fit();
       const object=result.objects.find(o=>o.name===result.name),count=object?.rows?.filter(r=>r.match).length;
       message('ready',`${object?.kind==='incidence'?`${count} of ${object.rows.length} match. `:''}Exact preview ready. Apply keeps it; changing a choice requires another preview.`);status('Exact preview ready. Apply keeps this capture; Cancel leaves history unchanged.');
@@ -457,7 +461,7 @@ function editor(action,seed=null){
       if(!preview&&shape){preview=await request('preview',{command:getCommand()});render()}
       if(!preview)return;
       const next=await request('commit',{token:preview.token});draft.clear();adopt(next);
-      if(action==='place')board.showPlacement(active);
+      if(action==='place'||action==='reindex')board.showPlacement(active);
       shell.open('details',active);$('activity').replaceChildren();
       board.fit();
       await animate(next.motion);status('Saved on the canvas. Undo returns to the previous result.');
