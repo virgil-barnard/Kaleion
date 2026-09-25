@@ -209,8 +209,17 @@ into the existing structured expression protocol; it runs no Python code and
 does not guess ambiguous bindings. `notation.js` switches between short relation
 text and term controls without evaluating it. A read-only adapter endpoint parses
 text; Preview alone calculates the proposal. See [relation notation](docs/RELATION_NOTATION.md).
+`field-guide.js` consumes existing captured groups to expose a field's values and
+members. Editors declare field context through an event; `studio.js` binds it to
+the draft's source or named driver. `workspace.js` outlines supplied occurrence
+references scoped by object name and capture, without regrouping or evaluation.
+Inspection does not invalidate a preview or enter saved history; draft parking
+still requires a fresh preview. See the [field guide](docs/FIELD_GUIDE.md).
 See [the refactor contracts](docs/CONTINUOUS_CANVAS.md) for command ownership,
 proof-provenance boundaries, compatibility and task-based validation.
+The deferred [conjecture workflow](docs/PROVENANCE_CONJECTURES.md) separates
+selected constant abstraction, explicit hypotheses, finite witnesses and checked
+proofs. It adds no current operation or schema.
 
 ## Snapshot ownership
 

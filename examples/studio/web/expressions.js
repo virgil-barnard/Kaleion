@@ -1,4 +1,5 @@
 // A structured formula editor. This module edits syntax; it never calculates it.
+import {inspectField} from './field-guide.js';
 const symbols={'+':'+','-':'−','*':'×','//':'div','%':'mod','=':'=','≠':'≠','<':'<','≤':'≤','>':'>','≥':'≥',and:'∧',or:'∨'};
 const clone=value=>structuredClone(value);
 const field=name=>({field:name}), number=value=>({integer:String(value)});
@@ -24,15 +25,16 @@ function replaced(tree,path,replacement){
   const next=clone(tree);at(next,path.slice(0,-1))[path.at(-1)]=clone(replacement);return next;
 }
 function contextAt(tree,path,fields,sources){
-  let part=tree, context=fields;
+  let part=tree, context=fields, object=null;
   for(let i=0;i<path.length;i++){
     const key=path[i];
     if(key==='read'&&['key','value'].includes(path[i+1])){
       context=sources.find(source=>source.name===part.read.object)?.fields||[];
+      object=part.read.object;
     }
     part=part[key];
   }
-  return context;
+  return {fields:context,object};
 }
 
 export function expressionEditor(initial,fields,sources=[],parameters=[]){
@@ -103,7 +105,7 @@ export function expressionEditor(initial,fields,sources=[],parameters=[]){
     undo.disabled=!past.length;
   }
   function renderSheet(){
-    sheet.replaceChildren();const spec=at(tree,selected), available=contextAt(tree,selected,fields,sources);
+    sheet.replaceChildren();const spec=at(tree,selected), context=contextAt(tree,selected,fields,sources),available=context.fields;
     const heading=node('div',undefined,{class:'row'}),done=node('button','Done',{type:'button','data-expression-done':''});
     heading.append(node('strong','Edit selected part'),done);sheet.append(heading);
     done.onclick=close;
@@ -129,7 +131,8 @@ export function expressionEditor(initial,fields,sources=[],parameters=[]){
     if(kind==='Field'){
       const value=labeled('Field in this context',optionList(available,spec.field,'Field'));
       if(!available.includes(spec.field))sheet.append(node('p','This field is unavailable in the selected context. Choose another field.',{class:'help'}));
-      value.onchange=()=>update(field(value.value));
+      value.onchange=()=>{update(field(value.value));inspectField(box,value.value,context.object)};
+      inspectField(box,spec.field,context.object);
     }else if(kind==='Number'){
       const value=node('input',undefined,{type:'text',inputmode:'numeric','aria-label':'Exact integer'});value.value=spec.integer;
       labeled('Exact integer',value);value.oninput=()=>update(number(value.value));

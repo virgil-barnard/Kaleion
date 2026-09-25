@@ -42,6 +42,11 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   Boolean combinations to the same expression protocol, with reversible syntax
   views and exact previews. The [comparable-workspaces survey](COMPARABLE_WORKSPACES.md)
   prioritizes visible expression scope and measurement reuse before new primitives.
+  The [field guide](FIELD_GUIDE.md) now links field terms and grouping controls
+  to captured fibers on that same canvas, including zero-match candidates and
+  driver context. It reuses the group endpoint; no core primitive is required.
+  The [deferred conjecture workflow](PROVENANCE_CONJECTURES.md) preserves the
+  longer-term proof goal while keeping statement/proof policy outside evaluation.
 
 - **Stage A delivered:** bound and nested-case incidences compose and select with
   their original scopes. `Incidence.universe` exposes the inspected collection or

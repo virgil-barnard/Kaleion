@@ -1,4 +1,5 @@
 // Shared key declaration widget. Selection state and backend query policy live elsewhere.
+import {inspectField} from './field-guide.js';
 export function fieldKeys(fields,initial=[],label='Group keys',emptyLabel='Whole domain · no retained keys'){
   let keys=[...initial];
   const box=document.createElement('div');box.className='field-keys';box.setAttribute('role','group');box.setAttribute('aria-label',label);
@@ -15,6 +16,6 @@ export function fieldKeys(fields,initial=[],label='Group keys',emptyLabel='Whole
     add.replaceChildren(new Option('Add a field…',''));
     for(const field of fields.filter(f=>!keys.includes(f)))add.append(new Option(field,field));
   }
-  add.onchange=()=>{if(add.value){keys.push(add.value);render();box.dispatchEvent(new Event('change',{bubbles:true}))}};
+  add.onchange=()=>{if(add.value){const key=add.value;keys.push(key);render();box.dispatchEvent(new Event('change',{bubbles:true}));inspectField(box,key)}};
   render();return {box,read:()=>[...keys]};
 }
