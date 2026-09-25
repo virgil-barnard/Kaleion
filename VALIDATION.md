@@ -1,5 +1,31 @@
 # Validation · 0.1.0
 
+## Optional proof-assistance boundary · September 25, 2026
+
+- Required venv gates: **287 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/proof-example-output` passes. Ten
+  focused tests exercise the generic indicator-order lemma, decomposed quotient
+  coverage/value/obligation goals, an independently replayed exact countermodel,
+  inconsistent assumptions, timeout/input budgets, rejected term payloads,
+  deliberately unsupported gcd/floor-division semantics, and lazy optional-backend
+  loading, and validated statement sections/fingerprints.
+- `python3 -m examples.proof_assistance --out build/proof-assistance.json` passes
+  with Z3 4.16.0. The indicator identity, both independent key domains, extent
+  requirements, and keyed-read obligations are `solver_valid`. With coprimality
+  deliberately omitted, the pointwise quotient equality returns an exact tied-cell
+  `counterexample` that the neutral Kaleion term evaluator independently reproduces.
+  Adding `gcd(a,b)=1` reports `unsupported`; the assumption is never discarded.
+- `python3 -m pip wheel --no-deps . --wheel-dir dist` builds
+  `kaleion-0.1.0-py3-none-any.whl`. Z3 remains in the optional `proof` extra;
+  importing ordinary statement support does not import it. The core runtime and
+  workspace schemas are unchanged.
+
+No notebooks, browser UI, animation/video exports, core operations, or saved
+formats changed. Existing Plotly contracts run in the complete optional environment.
+No browser or physical-device check was needed for this programmatic adapter. An
+SMT `unsat` result is backend validation in the supported fragment, not a
+kernel-checked proof or formal verification of Kaleion's translator.
+
 ## Construction statements and assumptions · September 25, 2026
 
 - Required venv gates: **277 tests pass**, no skips;

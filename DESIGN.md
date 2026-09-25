@@ -158,8 +158,15 @@ the comparison-to-conjecture request and fingerprint. `statement.js` owns contro
 and disclosure. Unsupported operators block expansion without affecting captured
 comparison, inspection or history. Numerical evaluation has no dependency on this
 experimental adapter. Placement-only projection excludes geometry validity and
-host budgets; a geometry read is unsupported. A future proof backend must justify
-the translation as well as check its mathematical conclusion.
+host budgets; a geometry read is unsupported. The optional
+`examples/statements/solver.py` adapter consumes the regenerated neutral report,
+owns Z3 translation and result taxonomy, and never changes the graph evaluator or
+saved question. It checks assumptions before implication, separates coverage,
+value equality and construction obligations, and independently replays any model.
+Solver validity is not a checked proof. A future checked-proof backend must
+justify the translation as well as check its mathematical conclusion. The first
+Z3 adapter deliberately stops at floor division, modulus, gcd, bounded sums and
+literal tables until their semantic contracts have dedicated encodings.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted
@@ -274,8 +281,9 @@ proof-provenance boundaries, compatibility and task-based validation.
 The [conjecture workflow](docs/PROVENANCE_CONJECTURES.md) separates
 selected constant abstraction, explicit hypotheses, finite witnesses and checked
 proofs. Named global parameter selection, explicit hypotheses and a supported
-integer expansion are delivered; selected literal abstraction and prover
-integration remain future work. No core operation or workspace schema changes.
+integer expansion are delivered; selected literal abstraction and proof
+integration beyond the optional Z3 counterexample/obligation adapter remain
+future work. No core operation or workspace schema changes.
 
 The [canvas walkthrough](docs/CANVAS_TUTORIAL.md) separates teaching from execution.
 `examples/save_canvases.py` owns small mathematical recipes; `studio/catalog.py`

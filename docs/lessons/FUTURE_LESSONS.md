@@ -132,9 +132,11 @@ parameters, hypotheses and construction obligations. The
 [statement guide](../ALGEBRAIC_STATEMENTS.md) records the delivered boundary;
 the floor-sum rewrite is still a mathematical explanation rather than a prover step.
 
-Next check the indicator identity `L+U=1+[au=bv]`, then a coprime-interior lemma
-and the keyed-read coverage obligations in a separate proof adapter. Keep missing
-keys distinct from numerical discrepancies and check `(6,4,5)` against pairwise
+The optional Z3 adapter now checks the indicator identity `L+U=1+[au=bv]`, exact
+key-domain obligations and keyed-read coverage. With coprimality omitted it finds
+and independently replays a tied-cell counterexample; with `gcd(a,b)=1` it stops
+as unsupported instead of discarding the hypothesis. Next formalize the
+coprime-interior lemma in a checked backend and check `(6,4,5)` against pairwise
 assumptions. [Candidate backends and experiments](../PROOF_ASSISTANCE.md) compare
 Python-friendly counterexample search, algebra and durable checked proofs.
 Selected literal abstraction, observed group-domain translation and formal
@@ -173,9 +175,9 @@ finite evidence does not prove a general identity or incidence isomorphism.
 The [provenance-to-conjecture design](../PROVENANCE_CONJECTURES.md) preserves the
 goal of selecting two objects, choosing an equality meaning, promoting selected
 constants to variables, declaring assumptions and asking a proof assistant for
-an automatic proof attempt. Named global parameter choices, explicit assumptions
-and bounded integer expansion are now implemented; literal selection and actual
-proof attempts remain future contracts.
+an automatic proof attempt. Named global parameter choices, explicit assumptions,
+bounded integer expansion and an optional first solver attempt are now implemented;
+literal selection and kernel-checked proof attempts remain future contracts.
 
 Start with lesson 02's coprime floor sums at `(a,b) = (11,7)`. Keep its domains
 and measurement provenance; explicitly generalize those definitions rather than

@@ -26,10 +26,15 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   follows grid/sequence/literal domains, predicates, native-axis reductions and
   keyed/scalar reads. Scoped bindings and unchanged literals remain explicit;
   geometry and proof search stay separate. Quotient and 3D ownership constructions
-  exercise the same translator. No new core operation is justified. Next prove
-  one substitution/domain rule through an optional adapter before widening the
-  operation vocabulary; observed grouping and arbitrary reindexing need their own
-  coverage contracts. [Proof-assistance recommendation](PROOF_ASSISTANCE.md).
+  exercise the same translator. No new core operation is justified. The optional
+  Z3 adapter now returns solver validation for the small indicator-order lemma
+  and keyed/domain obligations, and independently replays a non-coprime
+  counterexample. It keeps
+  solver validity distinct from checked proof and stops explicitly at gcd,
+  division, bounded sums and tables. Next formalize the coprime-interior lemma in
+  a checked backend before widening the operation vocabulary; observed grouping
+  and arbitrary reindexing need their own coverage contracts.
+  [Proof-assistance boundary](PROOF_ASSISTANCE.md).
 
 - **Independent quotient equality:** two differently ordered source domains,
   singleton counts and keyed measured lifts meet an independently constructed

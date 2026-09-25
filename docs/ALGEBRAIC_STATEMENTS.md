@@ -1,6 +1,6 @@
 # Expand a construction into a statement
 
-September 25, 2026 · Experimental integer translation; no prover installed
+September 25, 2026 · Experimental integer translation; optional solver adapter
 
 After a finite comparison, **Expand construction** exposes the arithmetic that
 produced the selected fields. Choose which named parameters vary over integers,
@@ -123,7 +123,8 @@ code, supported by finite regression cases, not a formally verified compiler.
 | `examples/studio/statements.py` | Comparison request, author assumptions, source identities, statement fingerprint |
 | `web/statement.js` | Parameter/assumption controls and progressive disclosure |
 | Existing comparison/evidence/history modules | Finite key comparison, contributor references, captured restoration |
-| Future proof adapters | Solver syntax, tactics, budgets, certificate checking and dependency versions |
+| `examples/statements/solver.py` | Optional Z3 lowering, explicit goals, budgets, result taxonomy and exact model replay |
+| Future checked-proof adapters | Proof source/certificates, permitted axioms and independent checker versions |
 
 These are experimental authoring adapters, not new core operations or an
 arrangement superclass. Numerical evaluation and replay do not import them.
@@ -162,5 +163,6 @@ print(render(value))
 
 `examples.studio.statements.comparison_statement` adds both operands, independent
 domain, hypotheses and fingerprint. It returns a JSON-safe typed report; integer
-literals are strings. Neither entry point runs a prover. See the
-[proof-assistance recommendation](PROOF_ASSISTANCE.md) for the next boundary.
+literals are strings. Neither entry point runs a prover. The optional
+[proof-assistance adapter](PROOF_ASSISTANCE.md) consumes that report without
+changing the construction or saved comparison.
