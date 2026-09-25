@@ -143,9 +143,23 @@ per-object choices. Membership, missing fields and equality keep independent
 meanings. Canvas envelope/view version 2 adds theme and color settings, while
 version 1 remains readable and mathematical exports remain unchanged.
 [Portable comparisons](docs/QUOTIENT_EQUALITY.md) use a separate version-1
-question envelope, retaining the workspace JSON as text. They display a generic
-keyed-field statement; neither that statement nor color mapping expands the
-construction into a theorem or assigns proof status.
+question envelope, retaining the workspace JSON as text. Question version 2 adds
+explicit parameter/assumption choices and a translator version; version 1 remains
+readable. [Algebraic expansion](docs/ALGEBRAIC_STATEMENTS.md) follows supported
+integer constructions into typed terms, bounded sums and domains. Author
+hypotheses remain separate from construction obligations and finite evidence.
+Obligations must be established under the hypotheses, not silently assumed.
+Neither expansion nor color mapping invokes a prover.
+
+`examples/statements/terms.py` owns neutral integer/predicate terms, serialization,
+notation and bounded finite interpretation; `expansion.py` owns supported lowering
+rules, lexical scope and projected domains. `examples/studio/statements.py` owns
+the comparison-to-conjecture request and fingerprint. `statement.js` owns controls
+and disclosure. Unsupported operators block expansion without affecting captured
+comparison, inspection or history. Numerical evaluation has no dependency on this
+experimental adapter. Placement-only projection excludes geometry validity and
+host budgets; a geometry read is unsupported. A future proof backend must justify
+the translation as well as check its mathematical conclusion.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted
@@ -257,9 +271,11 @@ Inspection does not invalidate a preview or enter saved history; draft parking
 still requires a fresh preview. See the [field guide](docs/FIELD_GUIDE.md).
 See [the refactor contracts](docs/CONTINUOUS_CANVAS.md) for command ownership,
 proof-provenance boundaries, compatibility and task-based validation.
-The deferred [conjecture workflow](docs/PROVENANCE_CONJECTURES.md) separates
+The [conjecture workflow](docs/PROVENANCE_CONJECTURES.md) separates
 selected constant abstraction, explicit hypotheses, finite witnesses and checked
-proofs. It adds no current operation or schema.
+proofs. Named global parameter selection, explicit hypotheses and a supported
+integer expansion are delivered; selected literal abstraction and prover
+integration remain future work. No core operation or workspace schema changes.
 
 The [canvas walkthrough](docs/CANVAS_TUTORIAL.md) separates teaching from execution.
 `examples/save_canvases.py` owns small mathematical recipes; `studio/catalog.py`

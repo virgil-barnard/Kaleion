@@ -1,5 +1,41 @@
 # Validation · 0.1.0
 
+## Construction statements and assumptions · September 25, 2026
+
+- Required venv gates: **277 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/example-output` passes. Twelve new
+  tests cover quotient indicators/independent floor sums at seven cases, the same
+  translation in 3D, native zero groups and empty-axis totals, lexical case
+  isolation, fixed literals, exact large integers, signed floor division and
+  positive moduli, scalar versus column divisor checks, keyed coverage, recorded
+  requirements, and unsupported operations. A matching pair of zero fields still
+  fails coverage when the independent domain has a key missing from both.
+  A small shared graph that would expand exponentially stops at a term budget.
+- Read-only adapter checks disable construction evaluation, preserve the exact
+  workspace bytes, distinguish failed coprimality from failed finite equality,
+  reject stale requests/invalid assumptions, and keep fingerprints stable across
+  save/open and parameter storage order. These are finite translation checks,
+  not a formal verification of the translator or a universal theorem.
+- `node docs/studies/check-comparison-record.mjs` passes for question versions
+  1 and 2, exact workspace preservation, saved parameter/assumption choices,
+  unknown translator versions, stale captures and rejected proof-status fields.
+- `check-statements.cjs` and the existing `check-colors-equality.cjs` pass in
+  **Chromium 153.0.8010.0**, with no page errors. Real controls cover expansion of
+  quotient indicators and total sums, transfer to the 3D ownership example,
+  saved choices/re-expansion, invalid-formula recovery, retaining a finite-only
+  question, the non-coprime case, return from contributor inspection, keyboard
+  activation and phone-width layout. Mathematical exports remain unchanged by
+  expansion. Screenshots were inspected separately from numerical tests.
+- The programmatic documentation example executes and changed local document
+  links resolve. Proof-tool recommendations use primary documentation checked
+  September 25. No external prover was installed or executed.
+
+No notebook, Plotly/video export, dependency, core operation, or core workspace
+schema changes. No physical tablet, screen-reader or novice usability study was
+performed. Gather/Tile/Roll, observed grouping and other unsupported definitions
+remain explicit expansion limits; their finite captures are still usable.
+
+
 ## Value colors and portable finite equality · September 25, 2026
 
 - Required venv gates: **265 tests pass**, no skips;

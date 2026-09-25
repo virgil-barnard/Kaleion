@@ -110,8 +110,12 @@ changing the coprime parameters exposes one double-owned cell.
 **Compare exact fields → Save this comparison** preserves the declared question,
 exact case, construction graphs and view. Open checks that saved case again.
 The [investigation](docs/QUOTIENT_EQUALITY.md) includes from-blank instructions and
-the floor-sum explanation. Automatic algebraic expansion and proof assistance
-remain future work.
+the floor-sum explanation. **Expand construction** now derives supported integer
+formulas from those definitions. Choose varying parameters, retain the exact key
+domain, and declare assumptions such as coprimality. The same controls expand
+3D ownership and total sums. [Try the statement workflow](docs/ALGEBRAIC_STATEMENTS.md).
+[Proof-assistance options](docs/PROOF_ASSISTANCE.md) remain a separate, planned step;
+no proof engine is installed.
 
 Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;

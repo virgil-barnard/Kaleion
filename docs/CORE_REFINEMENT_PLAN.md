@@ -22,6 +22,15 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
 
 ## Delivery status
 
+- **Construction-to-statement projection:** [bounded integer expansion](ALGEBRAIC_STATEMENTS.md)
+  follows grid/sequence/literal domains, predicates, native-axis reductions and
+  keyed/scalar reads. Scoped bindings and unchanged literals remain explicit;
+  geometry and proof search stay separate. Quotient and 3D ownership constructions
+  exercise the same translator. No new core operation is justified. Next prove
+  one substitution/domain rule through an optional adapter before widening the
+  operation vocabulary; observed grouping and arbitrary reindexing need their own
+  coverage contracts. [Proof-assistance recommendation](PROOF_ASSISTANCE.md).
+
 - **Independent quotient equality:** two differently ordered source domains,
   singleton counts and keyed measured lifts meet an independently constructed
   unit field. A portable finite question retains exact definitions/captures,

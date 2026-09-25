@@ -5,15 +5,21 @@ September 23, 2026 · Updated September 25 · No proof integration implemented
 An author should eventually be able to select two constructions that agree in
 the finite case on the canvas, choose which constants become variables, state
 assumptions, and ask a proof assistant to attempt a general proof. The original
-observation and its provenance must remain inspectable throughout. The current
-priority is the general construction UI; this note preserves the goal without
-adding proof controls or selecting a proof system prematurely.
+observation and its provenance must remain inspectable throughout. The general
+construction UI now implements a bounded portion of this sequence, without
+coupling the canvas or evaluator to a proof engine.
 
 The [quotient equality investigation](QUOTIENT_EQUALITY.md) now implements a
 bounded prerequisite: a portable finite question with explicit keys/domain,
 original captured workspace and three capture identifiers. Its generic statement
-names the compared fields; Open rechecks those captures. It neither expands the
-graph algebraically nor generalizes constants or supplies formal assumptions.
+names the compared fields; Open rechecks those captures.
+[Construction expansion](ALGEBRAIC_STATEMENTS.md) now follows supported integer
+definitions, retains domains and local scopes, and records chosen global
+parameters and explicit author assumptions. Construction obligations must follow
+from those assumptions. Arbitrary literal promotion, broader operation/domain
+translation, and machine-checked proofs remain future work. The
+[proof-assistance study](PROOF_ASSISTANCE.md) recommends separate Python-friendly
+search/algebra adapters and a durable checked-proof path.
 
 ## The proposed authoring sequence
 
@@ -64,9 +70,9 @@ animation, floating coincidence, and successful finite checks cannot cross it.
 ## Information-hiding boundaries
 
 The construction graph continues to own mathematical definitions and scope.
-Captured inspection owns finite witnesses and contributor references. A future
-statement layer would own comparison meaning, selected abstractions and
-assumptions. A separate proof adapter would own supported translation and
+Captured inspection owns finite witnesses and contributor references. The bounded
+statement adapter owns comparison meaning, selected parameter abstractions and
+assumptions. A separate proof adapter would own backend translation and
 checker interaction. Presentation would display those results without assigning
 proof status itself. Neither the UI nor core evaluation should import a
 particular assistant's tactics or wire format.

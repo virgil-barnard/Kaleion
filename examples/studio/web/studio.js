@@ -308,22 +308,28 @@ function coveragePanel(){
 function expr(initial,fields){
   return expressionEditor(initial,fields,state.objects.filter(o=>o.kind!=='incidence'&&o.status==='ready'),Object.keys(state.parameters||{}));
 }
-function comparisonPanel(captured=null,title=''){
+function comparisonPanel(captured=null,title='',expansion=null){
   shell.open('edit','Compare');construction.collapse();
   linked.close();replay.clear();parkDraft();const source=object();
   async function inspect(ref,trigger,note){
     const saved=linked.remember(),receipt=await request('inspect-driver',{ref});
     receipts.show(receipt,{heading:'Source value',back:{label:'Back to comparison',restore:async()=>{
       if(saved)await linked.open(saved.spec,saved);else linked.close();
+      shell.open('edit','Compare');
       $('activity').replaceChildren(box);(trigger.isConnected?trigger:$('view-comparison')).focus({preventScroll:true});
     }}});
     if(note)$('activity').insertBefore(el('p',note,{class:'comparison-context'}),$('activity').querySelector('pre'));
   }
   const box=comparisonInspector({source,objects:state.objects,initial:comparisonChoices,
     remember:spec=>{comparisonChoices=spec},run,check:spec=>request('compare',spec),inspect,
-    captured,title,save:async(report,title)=>{
+    captured,title,expansion,expand:async(report,options)=>{
+      if(report.revision!==state.revision)throw Error('The case changed. Compare again before expanding.');
+      const spec=comparisonRecord(report).spec;
+      return request('expand-comparison',{spec,options});
+    },save:async(report,title,expansion)=>{
       if(report.revision!==state.revision)throw Error('The case changed. Compare again before saving.');
-      const declaration=comparisonRecord(report,title);requireComparisonCaptures(declaration,state.objects);
+      const declaration=comparisonRecord(report,title,expansion);requireComparisonCaptures(declaration,state.objects);
+      if(expansion)await request('expand-comparison',{spec:declaration.spec,options:expansion});
       const saved=await request('export-capture');
       downloadCapture(comparisonDocument(saved.workspace,sceneBeforePreview||board.save(),declaration),'kaleion-comparison.json');
       status('Saved this finite question and its captured case. Open will check the saved values again.');
@@ -541,7 +547,8 @@ async function openCapture(text,focus=null){
   status('Reopened captured workspace.');$('file').value='';
   if(document.comparison){
     requireComparisonCaptures(document.comparison,next.objects);comparisonChoices=document.comparison.spec;
-    const report=await request('compare',comparisonChoices);comparisonPanel(report,document.comparison.title);
+    if(document.comparison.expansion)await request('expand-comparison',{spec:comparisonChoices,options:document.comparison.expansion});
+    const report=await request('compare',comparisonChoices);comparisonPanel(report,document.comparison.title,document.comparison.expansion||null);
     status('Saved question reopened and checked against its captured case. No construction was evaluated.');
   }
 }
