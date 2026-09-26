@@ -11,6 +11,9 @@ requires-python = ">=3.11"
 dependencies = ["numpy>=1.26,<3"]
 
 [project.optional-dependencies]
+proof = [
+    "z3-solver>=4.13,<5",
+]
 notebooks = [
     "jupyterlab>=4,<5",
     "ipykernel>=6.29,<8",

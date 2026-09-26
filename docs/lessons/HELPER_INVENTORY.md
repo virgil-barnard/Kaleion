@@ -66,6 +66,16 @@ residual and two captured lifts. It reuses the studio comparator. The new
 arithmetic, proof logic or a new core primitive. Numbered notebook counts above
 are unchanged.
 
+The [algebraic statement adapter](../ALGEBRAIC_STATEMENTS.md#module-ownership-and-compatibility)
+adds shared `Term`/`Expansion` helpers outside the notebook counts. They own typed
+notation, lexical substitution, supported domain/reduction/read translations and
+well-definedness obligations. `comparison_statement` adds explicit assumptions,
+both operand domains, independent coverage, source IDs and a versioned fingerprint;
+`statementEditor` presents those choices. Quotient and 3D ownership investigations
+use the same rules, without lesson names in the translator. Finite interpretation
+checks translations and condition cases; it is not a proof engine. No local lesson
+helper is replaced by a hidden specialized theorem formula.
+
 Lesson 12 adds three canvas recipe functions in `examples/residue_fibers.py`:
 `residue_definitions`, `copied_period`, and `residue_fibers`. The first declares
 domains/measurements, the second owns representative ordering and copied labels,

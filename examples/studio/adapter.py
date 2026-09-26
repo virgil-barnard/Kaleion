@@ -21,6 +21,7 @@ from .connections import definition_connections
 from .construction import describe_construction
 from .relations import describe_rule, reuse_rule, reduce_axes, reduction_fields
 from .formulas import formula
+from .statements import comparison_statement
 from .reindexing import reindex
 from .views import exact_wire, snapshot_view, captured_view, measurement_evidence
 
@@ -494,6 +495,13 @@ class Studio:
         """Read one retained version, without substituting a current named root."""
         self.check(revision)
         return dict(revision=revision, **captured_view(self.workspace.state, capture))
+
+    def expand_comparison(self, spec, options, revision):
+        """Read-only translation, separately scoped from the exact finite check."""
+        self.check(revision)
+        finite = self.compare(**spec, revision=revision)
+        result = comparison_statement(self.workspace.state.roots, self.workspace.state.parameters, spec, options)
+        return dict(revision=revision, finite_passed=finite["passed"], **result)
 
     def contributors(self, ref, revision):
         self.check(revision)

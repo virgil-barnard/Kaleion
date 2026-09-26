@@ -1,5 +1,90 @@
 # Validation · 0.1.0
 
+## Named coprime assistance rules · September 26, 2026
+
+- Required venv gates: **291 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/bezout-example-output` passes. Four
+  focused additions check signed/zero Bézout equivalence against Python's exact
+  gcd, the shared coprime-interior lemma, the actual fingerprinted quotient
+  comparison, and an assumption-breaking boundary-inclusive rectangle.
+- `python3 -m examples.proof_assistance --out build/bezout-proof-report.json`
+  passes with Z3 4.16.0. Seventeen goals are `solver_valid`: the order and
+  coprime-interior lemmas plus all coverage, value and construction-obligation
+  goals for the actual coprime statement. Each attempt records
+  `bezout-coprime/1` and, only for the exact open rectangle,
+  `coprime-interior/1` when used.
+- The stronger statement without coprimality returns one exact `counterexample`,
+  independently replayed by the neutral evaluator. Enlarging the domain to
+  include its far corner also returns a replayed common-corner counterexample;
+  the interior rule is not applied. General gcd claims remain `unsupported`.
+
+No notebook, browser UI, animation/video export, dependency, core operation, or
+saved-format changes. The named rules are reviewed adapter code and remain part
+of the solver trust boundary; these results are not Lean-kernel-checked proofs or
+formal verification of the construction translator.
+
+## Optional proof-assistance boundary · September 25, 2026
+
+- Required venv gates: **287 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/proof-example-output` passes. Ten
+  focused tests exercise the generic indicator-order lemma, decomposed quotient
+  coverage/value/obligation goals, an independently replayed exact countermodel,
+  inconsistent assumptions, timeout/input budgets, rejected term payloads,
+  deliberately unsupported gcd/floor-division semantics, and lazy optional-backend
+  loading, and validated statement sections/fingerprints.
+- `python3 -m examples.proof_assistance --out build/proof-assistance.json` passes
+  with Z3 4.16.0. The indicator identity, both independent key domains, extent
+  requirements, and keyed-read obligations are `solver_valid`. With coprimality
+  deliberately omitted, the pointwise quotient equality returns an exact tied-cell
+  `counterexample` that the neutral Kaleion term evaluator independently reproduces.
+  Adding `gcd(a,b)=1` reports `unsupported`; the assumption is never discarded.
+- `python3 -m pip wheel --no-deps . --wheel-dir dist` builds
+  `kaleion-0.1.0-py3-none-any.whl`. Z3 remains in the optional `proof` extra;
+  importing ordinary statement support does not import it. The core runtime and
+  workspace schemas are unchanged.
+
+No notebooks, browser UI, animation/video exports, core operations, or saved
+formats changed. Existing Plotly contracts run in the complete optional environment.
+No browser or physical-device check was needed for this programmatic adapter. An
+SMT `unsat` result is backend validation in the supported fragment, not a
+kernel-checked proof or formal verification of Kaleion's translator.
+
+## Construction statements and assumptions · September 25, 2026
+
+- Required venv gates: **277 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/example-output` passes. Twelve new
+  tests cover quotient indicators/independent floor sums at seven cases, the same
+  translation in 3D, native zero groups and empty-axis totals, lexical case
+  isolation, fixed literals, exact large integers, signed floor division and
+  positive moduli, scalar versus column divisor checks, keyed coverage, recorded
+  requirements, and unsupported operations. A matching pair of zero fields still
+  fails coverage when the independent domain has a key missing from both.
+  A small shared graph that would expand exponentially stops at a term budget.
+- Read-only adapter checks disable construction evaluation, preserve the exact
+  workspace bytes, distinguish failed coprimality from failed finite equality,
+  reject stale requests/invalid assumptions, and keep fingerprints stable across
+  save/open and parameter storage order. These are finite translation checks,
+  not a formal verification of the translator or a universal theorem.
+- `node docs/studies/check-comparison-record.mjs` passes for question versions
+  1 and 2, exact workspace preservation, saved parameter/assumption choices,
+  unknown translator versions, stale captures and rejected proof-status fields.
+- `check-statements.cjs` and the existing `check-colors-equality.cjs` pass in
+  **Chromium 153.0.8010.0**, with no page errors. Real controls cover expansion of
+  quotient indicators and total sums, transfer to the 3D ownership example,
+  saved choices/re-expansion, invalid-formula recovery, retaining a finite-only
+  question, the non-coprime case, return from contributor inspection, keyboard
+  activation and phone-width layout. Mathematical exports remain unchanged by
+  expansion. Screenshots were inspected separately from numerical tests.
+- The programmatic documentation example executes and changed local document
+  links resolve. Proof-tool recommendations use primary documentation checked
+  September 25. No external prover was installed or executed.
+
+No notebook, Plotly/video export, dependency, core operation, or core workspace
+schema changes. No physical tablet, screen-reader or novice usability study was
+performed. Gather/Tile/Roll, observed grouping and other unsupported definitions
+remain explicit expansion limits; their finite captures are still usable.
+
+
 ## Value colors and portable finite equality · September 25, 2026
 
 - Required venv gates: **265 tests pass**, no skips;

@@ -105,13 +105,14 @@ summing the independently measured quotient profiles gives
 =(a-1)(b-1)+\gcd(a,b)-1.
 \]
 
-These paragraphs supply a mathematical argument. The software currently checks
-finite captured fields; it does **not** derive this expanded formula, infer the
-gcd assumption, or submit a universal statement to a proof assistant. The named
-finite statement and its saved construction graphs make that future translation
-concrete, with its domain and both starting points preserved. The stronger
-correction identity is a useful next translation target because it tests the
-assumption explicitly instead of hiding the failed case.
+These paragraphs supply a mathematical argument. **Expand construction** now
+derives the actual two indicators and their bounded total sums from the graph,
+with both starting domains and key order preserved. Authors can vary `a,b` and
+declare `a > 1 and b > 1` and their coprimality. The software does not infer those
+hypotheses, perform the floor-sum/gcd rewrite above, or attempt a universal proof.
+The [statement guide](ALGEBRAIC_STATEMENTS.md) gives the controls and contracts.
+The stronger correction identity is the next proof target because it explains
+the failed case rather than discarding it.
 
 ## Scaffolding, ownership and limits
 
@@ -122,10 +123,14 @@ assumption explicitly instead of hiding the failed case.
 | `comparison-record.js` | Versioned portable question, selected fields/keys, three capture identifiers and generic finite notation; no arithmetic or proof status |
 | `document.js` | Lossless original workspace text plus view and question; accepts existing canvas versions |
 | `colors.js` / `color-controls.js` | Palette, exact limits and presentation controls, independently of construction/equality |
+| `examples/statements/terms.py` / `expansion.py` | Shared typed integer translation, scoped substitution, retained domains, sums and obligations; also used for 3D ownership |
+| `studio/statements.py` / `web/statement.js` | Explicit generalization/assumptions, versioned statement identity and shared controls; no theorem solver |
 
 The portable format is `kaleion-comparison`, version 1. The complete existing
 workspace JSON is carried as original text. The question's kind is
-`keyed-integer-equality`, version 1. All three capture identifiers must match the
+`keyed-integer-equality`, version 1 for a finite-only question or version 2 with
+parameter/assumption choices and a pinned translator identifier. Both are readable;
+older readers reject version 2. All three capture identifiers must match the
 named roots on reopen; a mismatch prevents a verdict. Saving also checks the
 server revision atomically, so a newer case cannot be paired with an old question. A saved verdict is not
 trusted or even stored: the existing comparator checks the restored captures
@@ -134,7 +139,8 @@ remain available even if the live authoring logic later changes. This is an
 inspectable local record, not a tamper-evident proof certificate.
 
 The study retains the 2000-item intermediate budget. Large field displays still
-have finite pixel resolution. No arbitrary set equality, isomorphism, automatic
-symbolic expansion or proof integration is implied. The next implementation
-should translate these two actual captured derivations into supported symbolic
-operators, with explicit unsupported cases, before adding a prover-specific API.
+have finite pixel resolution. No arbitrary set equality, isomorphism, unrestricted
+symbolic translation or proof integration is implied. Unsupported construction
+operators block expansion explicitly while finite comparison stays usable. Next
+check an indicator lemma and keyed-read domain obligation through a separate
+proof adapter before widening the supported translation rules.
