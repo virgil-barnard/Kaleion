@@ -165,8 +165,14 @@ saved question. It checks assumptions before implication, separates coverage,
 value equality and construction obligations, and independently replays any model.
 Solver validity is not a checked proof. A future checked-proof backend must
 justify the translation as well as check its mathematical conclusion. The first
-Z3 adapter deliberately stops at floor division, modulus, gcd, bounded sums and
-literal tables until their semantic contracts have dedicated encodings.
+Z3 adapter deliberately stops at floor division, modulus, general gcd terms,
+bounded sums and literal tables until their semantic contracts have dedicated
+encodings. The one narrow gcd exception is a hypothesis exactly shaped as
+`gcd(x,y)=1`: the adapter
+records `bezout-coprime/1`, introduces hidden integer Bézout witnesses, and can
+record `coprime-interior/1` only for the exact open rectangle with extents
+`b-1,a-1`. General gcd terms and boundary-inclusive rectangles remain outside
+that rule.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted

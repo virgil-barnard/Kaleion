@@ -133,10 +133,12 @@ parameters, hypotheses and construction obligations. The
 the floor-sum rewrite is still a mathematical explanation rather than a prover step.
 
 The optional Z3 adapter now checks the indicator identity `L+U=1+[au=bv]`, exact
-key-domain obligations and keyed-read coverage. With coprimality omitted it finds
-and independently replays a tied-cell counterexample; with `gcd(a,b)=1` it stops
-as unsupported instead of discarding the hypothesis. Next formalize the
-coprime-interior lemma in a checked backend and check `(6,4,5)` against pairwise
+key-domain obligations and keyed-read coverage. It exposes named Bézout and
+open-rectangle rules for a `gcd(a,b)=1` hypothesis, making the actual pointwise
+coprime construction solver-valid. With coprimality omitted it independently
+replays a tied-cell counterexample; a boundary-inclusive rectangle also exposes
+the common corner. Next formalize the same coprime-interior rule in a checked
+backend and check `(6,4,5)` against pairwise
 assumptions. [Candidate backends and experiments](../PROOF_ASSISTANCE.md) compare
 Python-friendly counterexample search, algebra and durable checked proofs.
 Selected literal abstraction, observed group-domain translation and formal

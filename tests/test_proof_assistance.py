@@ -1,12 +1,14 @@
 """Optional Z3 adapter: explicit goals, exact witnesses, and honest statuses."""
 
+from math import gcd
 import subprocess
 import sys
 import unittest
 
 from examples.proof_assistance import SPEC
 from examples.quotient_equality import quotient_equality
-from examples.statements import Goal, Z3Assistant, goals_from_statement, indicator_order_goal
+from examples.statements import (Goal, Z3Assistant, coprime_interior_goal,
+                                 goals_from_statement, indicator_order_goal)
 from examples.statements.solver import decode_term
 from examples.statements.terms import Term, literal, term
 from examples.studio.statements import comparison_statement
@@ -71,12 +73,64 @@ class ProofAssistanceTests(unittest.TestCase):
         self.assertGreater(values[("parameter", "a")], 1)
         self.assertGreater(values[("parameter", "b")], 1)
 
-    def test_coprime_goal_is_explicitly_unsupported_until_gcd_has_a_sound_encoding(self):
+    def test_coprime_statement_uses_named_bezout_rule_for_every_goal(self):
         goals = goals_from_statement(self.statement(coprime=(("a", "b"),)))
         results = [self.assistant.check(goal) for goal in goals]
         self.assertTrue(results)
-        self.assertTrue(all(result.status == "unsupported" for result in results))
-        self.assertTrue(all("gcd" in result.reason for result in results))
+        self.assertTrue(all(result.status == "solver_valid" for result in results))
+        self.assertTrue(all("bezout-coprime/1" in result.rules for result in results))
+        comparison = next(result for goal, result in zip(goals, results)
+                          if goal.source == "comparison")
+        self.assertEqual(comparison.rules,
+                         ("bezout-coprime/1", "coprime-interior/1"))
+
+    def test_coprime_interior_lemma_is_solver_valid_but_not_checked_proof(self):
+        result = self.assistant.check(coprime_interior_goal())
+        self.assertEqual(result.status, "solver_valid")
+        self.assertEqual(result.rules,
+                         ("bezout-coprime/1", "coprime-interior/1"))
+        self.assertNotEqual(result.status, "checked_proof")
+
+    def test_bezout_rule_matches_neutral_gcd_for_signed_and_zero_cases(self):
+        a, b = Term("parameter", ("a",)), Term("parameter", ("b",))
+        coprime = term("eq", term("gcd", a, b), literal(1))
+        for left, right in ((7, 5), (-7, 5), (0, 1), (0, -1),
+                            (6, 4), (0, 0)):
+            goal = Goal(
+                f"gcd case {left},{right}", Term("literal", (True,), "boolean"),
+                (term("eq", a, literal(left)), term("eq", b, literal(right)),
+                 coprime),
+            )
+            result = self.assistant.check(goal)
+            expected = ("solver_valid" if gcd(left, right) == 1
+                        else "inconsistent_assumptions")
+            with self.subTest(left=left, right=right):
+                self.assertEqual(result.status, expected)
+                self.assertEqual(result.rules, ("bezout-coprime/1",))
+
+    def test_general_gcd_claim_remains_unsupported(self):
+        a, b = Term("parameter", ("a",)), Term("parameter", ("b",))
+        proposition = term("eq", term("gcd", a, b), literal(2))
+        result = self.assistant.check(Goal("general gcd", proposition))
+        self.assertEqual(result.status, "unsupported")
+        self.assertIn("gcd", result.reason)
+
+    def test_coprime_interior_rule_does_not_cover_the_rectangle_boundary(self):
+        a, b = Term("parameter", ("a",)), Term("parameter", ("b",))
+        i, j = Term("bound", ("i",)), Term("bound", ("j",))
+        one = literal(1)
+        goal = Goal(
+            "closed rectangle includes the common corner",
+            term("ne", term("mul", a, term("add", i, one)),
+                 term("mul", b, term("add", j, one))),
+            (term("gt", a, one), term("gt", b, one),
+             term("eq", term("gcd", a, b), one)),
+            ((i, b), (j, a)),
+        )
+        result = self.assistant.check(goal)
+        self.assertEqual(result.status, "counterexample")
+        self.assertTrue(result.independently_reproduced)
+        self.assertEqual(result.rules, ("bezout-coprime/1",))
 
     def test_floor_sum_translation_stops_before_backend_division_semantics_can_change(self):
         n, d = Term("parameter", ("n",)), Term("parameter", ("d",))

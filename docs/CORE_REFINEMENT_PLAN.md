@@ -29,10 +29,12 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
   exercise the same translator. No new core operation is justified. The optional
   Z3 adapter now returns solver validation for the small indicator-order lemma
   and keyed/domain obligations, and independently replays a non-coprime
-  counterexample. It keeps
-  solver validity distinct from checked proof and stops explicitly at gcd,
-  division, bounded sums and tables. Next formalize the coprime-interior lemma in
-  a checked backend before widening the operation vocabulary; observed grouping
+  counterexample. A second increment now lowers only `gcd(x,y)=1` hypotheses
+  through named Bézout witnesses and applies a narrowly matched open-rectangle
+  lemma, so the actual pointwise coprime statement is solver-valid. It keeps
+  solver validity distinct from checked proof; general gcd, division, bounded
+  sums and tables remain unsupported. Next formalize the same named lemma in a
+  checked backend before widening the operation vocabulary; observed grouping
   and arbitrary reindexing need their own coverage contracts.
   [Proof-assistance boundary](PROOF_ASSISTANCE.md).
 

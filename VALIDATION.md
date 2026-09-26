@@ -1,5 +1,28 @@
 # Validation · 0.1.0
 
+## Named coprime assistance rules · September 26, 2026
+
+- Required venv gates: **291 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/bezout-example-output` passes. Four
+  focused additions check signed/zero Bézout equivalence against Python's exact
+  gcd, the shared coprime-interior lemma, the actual fingerprinted quotient
+  comparison, and an assumption-breaking boundary-inclusive rectangle.
+- `python3 -m examples.proof_assistance --out build/bezout-proof-report.json`
+  passes with Z3 4.16.0. Seventeen goals are `solver_valid`: the order and
+  coprime-interior lemmas plus all coverage, value and construction-obligation
+  goals for the actual coprime statement. Each attempt records
+  `bezout-coprime/1` and, only for the exact open rectangle,
+  `coprime-interior/1` when used.
+- The stronger statement without coprimality returns one exact `counterexample`,
+  independently replayed by the neutral evaluator. Enlarging the domain to
+  include its far corner also returns a replayed common-corner counterexample;
+  the interior rule is not applied. General gcd claims remain `unsupported`.
+
+No notebook, browser UI, animation/video export, dependency, core operation, or
+saved-format changes. The named rules are reviewed adapter code and remain part
+of the solver trust boundary; these results are not Lean-kernel-checked proofs or
+formal verification of the construction translator.
+
 ## Optional proof-assistance boundary · September 25, 2026
 
 - Required venv gates: **287 tests pass**, no skips;

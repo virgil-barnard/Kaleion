@@ -115,9 +115,10 @@ formulas from those definitions. Choose varying parameters, retain the exact key
 domain, and declare assumptions such as coprimality. The same controls expand
 3D ownership and total sums. [Try the statement workflow](docs/ALGEBRAIC_STATEMENTS.md).
 An optional [proof-assistance adapter](docs/PROOF_ASSISTANCE.md) checks the small
-order lemma and construction obligations, or returns an independently replayed
-counterexample. It remains separate from the canvas and does not claim a
-kernel-checked proof.
+order lemma, applies named Bézout/coprime-interior rules, and validates the
+pointwise coprime construction and its obligations. Removing coprimality returns
+an independently replayed counterexample. The adapter remains separate from the
+canvas and does not claim a kernel-checked proof.
 
 Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;
@@ -184,9 +185,9 @@ python3 -m pip install -e '.[proof]'
 python3 -m examples.proof_assistance
 ```
 
-The report distinguishes solver validation, exact replayed counterexamples,
-inconsistent assumptions, unsupported terms, and timeouts. It never labels a
-solver result as a checked proof.
+The report distinguishes solver validation, named rules, exact replayed
+counterexamples, inconsistent assumptions, unsupported terms, and timeouts. It
+never labels a solver result as a checked proof.
 
 ## Explore in Jupyter
 

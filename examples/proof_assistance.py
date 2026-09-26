@@ -9,7 +9,8 @@ import json
 from pathlib import Path
 
 from examples.quotient_equality import quotient_equality
-from examples.statements import Z3Assistant, goals_from_statement, indicator_order_goal
+from examples.statements import (Z3Assistant, coprime_interior_goal,
+                                 goals_from_statement, indicator_order_goal)
 from examples.studio.statements import comparison_statement
 
 
@@ -22,18 +23,38 @@ SPEC = {
 
 def run():
     workspace = quotient_equality()
-    # Deliberately omit coprimality. This lets the solver find the overlap that
-    # the finite 6,4 canvas also reveals; adding gcd is currently unsupported.
-    statement = comparison_statement(
+    choices = {"vary": ["a", "b"], "assumptions": "a > 1 and b > 1"}
+    coprime_statement = comparison_statement(
         workspace.state.roots, workspace.state.parameters, SPEC,
-        {"vary": ["a", "b"], "assumptions": "a > 1 and b > 1", "coprime": []},
+        {**choices, "coprime": [["a", "b"]]},
+    )
+    # The stronger statement deliberately omits coprimality so the same adapter
+    # must return a replayable tied-cell witness rather than a proof-shaped result.
+    stronger_statement = comparison_statement(
+        workspace.state.roots, workspace.state.parameters, SPEC,
+        {**choices, "coprime": []},
     )
     assistant = Z3Assistant()
-    goals = goals_from_statement(statement)
-    attempts = [assistant.check(indicator_order_goal()).data()]
-    attempts.extend(assistant.check(goal).data() for goal in goals)
-    return {"statement_fingerprint": statement["fingerprint"],
-            "backend": assistant.backend, "attempts": attempts}
+    attempts = []
+
+    def record(case, goal):
+        attempts.append({"case": case, **assistant.check(goal).data()})
+
+    record("shared lemma", indicator_order_goal())
+    record("shared lemma", coprime_interior_goal())
+    for goal in goals_from_statement(coprime_statement):
+        record("coprime construction", goal)
+    stronger_goal = next(goal for goal in goals_from_statement(stronger_statement)
+                         if goal.source == "comparison")
+    record("stronger claim without coprimality", stronger_goal)
+    return {
+        "statement_fingerprints": {
+            "coprime": coprime_statement["fingerprint"],
+            "without_coprimality": stronger_statement["fingerprint"],
+        },
+        "backend": assistant.backend,
+        "attempts": attempts,
+    }
 
 
 def main():

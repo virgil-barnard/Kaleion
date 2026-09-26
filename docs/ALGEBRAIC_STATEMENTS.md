@@ -123,7 +123,7 @@ code, supported by finite regression cases, not a formally verified compiler.
 | `examples/studio/statements.py` | Comparison request, author assumptions, source identities, statement fingerprint |
 | `web/statement.js` | Parameter/assumption controls and progressive disclosure |
 | Existing comparison/evidence/history modules | Finite key comparison, contributor references, captured restoration |
-| `examples/statements/solver.py` | Optional Z3 lowering, explicit goals, budgets, result taxonomy and exact model replay |
+| `examples/statements/solver.py` | Optional Z3 lowering, named arithmetic rules, explicit goals, budgets, result taxonomy and exact model replay |
 | Future checked-proof adapters | Proof source/certificates, permitted axioms and independent checker versions |
 
 These are experimental authoring adapters, not new core operations or an
@@ -166,3 +166,11 @@ domain, hypotheses and fingerprint. It returns a JSON-safe typed report; integer
 literals are strings. Neither entry point runs a prover. The optional
 [proof-assistance adapter](PROOF_ASSISTANCE.md) consumes that report without
 changing the construction or saved comparison.
+
+The solver adapter recognizes one deliberately narrow number-theory hypothesis:
+`gcd(x,y)=1`. It records `bezout-coprime/1` and introduces hidden integer
+coefficients for Bézout's identity. When the goal domain is exactly the open
+rectangle `0 <= i < y-1`, `0 <= j < x-1`, it may also record
+`coprime-interior/1`, excluding `x(i+1)=y(j+1)`. A rectangle including the far
+corner does not match and yields a replayable counterexample. General gcd values,
+bounded sums and division remain unsupported by this backend.
