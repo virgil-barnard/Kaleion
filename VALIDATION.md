@@ -1,5 +1,28 @@
 # Validation · 0.1.0
 
+## Backend-neutral named-rule plans · September 27, 2026
+
+- The named Bézout and coprime-interior pattern recognition has moved from the
+  Z3 adapter into `examples/statements/rules.py`. Each recognized step now exports
+  exact neutral premises, semantic bindings, introduced witnesses, consequence,
+  dependencies and readable explanation. Importing the planner does not import Z3.
+- The Z3 adapter consumes this plan and retains it in each attempt while preserving
+  the existing rule identifiers, hidden backend witnesses, independent countermodel
+  replay and status taxonomy. The boundary-inclusive rectangle still receives only
+  the Bézout step and returns its exact common-corner counterexample.
+- Targeted proof-assistance tests: **15 pass**. The required full suite has **292
+  passing tests**, no skips. `python3 examples/discovery.py --out
+  build/rule-plan-example-output`, compilation, and `git diff --check` pass.
+- `python3 -m examples.proof_assistance --out
+  build/rule-plan-proof-report.json` retains the prior mathematical result: 17
+  `solver_valid` attempts and one independently replayed `counterexample`. Sixteen
+  attempts carry neutral rule plans; a separate report check validates their rule
+  identifiers, witnesses, dependencies and status counts.
+
+No dependency, browser UI, notebook, animation/video export, core operation,
+workspace schema or saved proof status changes. A neutral rule plan is still
+trusted application output, not a checked proof certificate.
+
 ## Named coprime assistance rules · September 26, 2026
 
 - Required venv gates: **291 tests pass**, no skips;

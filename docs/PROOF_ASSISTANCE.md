@@ -1,6 +1,6 @@
 # Proof assistance for Kaleion
 
-Research checked September 25, 2026 · Named coprime rule added September 26
+Research checked September 25, 2026 · Backend-neutral rule plans added September 27
 
 Keep the user-facing statement and orchestration Pythonic. Use separate adapters
 for algebraic manipulation, counterexample search, and checked mathematical
@@ -55,6 +55,10 @@ Do not infer security or proof integrity from an exit code alone.
    with questions. A future checked result must also record translation and
    arithmetic versions, assumptions/axioms, proof source, and checker result;
    editing the claim invalidates that association.
+6. **Describe mathematical rules before translating them.** A neutral rule plan
+   records exact premises, semantic bindings, introduced witnesses, consequence,
+   dependencies and explanation. Z3 consumes this plan, but does not own how an
+   open-rectangle pattern is recognized or how that step is explained.
 
 The first useful goal is smaller than the whole floor-sum theorem. The optional
 adapter now establishes the following identity in its supported integer fragment:
@@ -92,7 +96,9 @@ python3 -m examples.proof_assistance
 The report regenerates both the coprime quotient statement and the stronger claim
 without coprimality. It decomposes coverage, pointwise equality, and every
 construction obligation into separate `Goal` objects, and retains the statement
-fingerprint and applied rule names on each attempt. The coprime statement is
+fingerprint, applied rule names, and backend-neutral `rule_steps` on each attempt.
+Each step contains its exact premises, bindings, witnesses, consequence, rule
+dependencies and readable explanation. The coprime statement is
 solver-valid. The stronger claim yields an exact tied cell that
 `examples.statements.terms.evaluate` independently reconstructs before the
 counterexample is accepted.
@@ -116,6 +122,13 @@ attempts = [assistant.check(goal) for goal in goals_from_statement(statement)]
 | `unsupported` | The term needs a semantic rule the adapter does not implement |
 
 ## Named rule boundary
+
+`examples/statements/rules.py` owns recognition and explanation. Calling
+`named_rule_plan(goal.hypotheses, goal.domain)` imports no solver and returns only
+neutral terms plus bounded text. `examples/statements/solver.py` owns the separate
+decision of how those steps become Z3 constraints. A future Lean adapter should
+consume the same semantic bindings, then produce and independently check its own
+theorem rather than trust the Z3 lowering.
 
 The result reports every rule used. `bezout-coprime/1` is allowed only for a
 top-level hypothesis exactly equal to `gcd(x,y)=1`. It introduces fresh hidden
@@ -143,7 +156,7 @@ if equality held, multiply `xu+yv=1` by `i+1` and substitute
 the common corner becomes an exact counterexample. General gcd predicates,
 arbitrary domain inference, and sum exchange remain unsupported.
 
-These rules are reviewed adapter code, not externally checked theorem
+These rules and their recognition are reviewed adapter code, not externally checked theorem
 certificates. Their names make the additional trust visible and give a future
 Lean adapter precise lemmas to replace. A solver result using them remains
 `solver_valid`, never `checked_proof`.
@@ -195,8 +208,9 @@ assumptions with no untracked holes or added theorem axioms. UI controls should
 offer **Explain**, **Find a failing case**, and eventually **Attempt proof**,
 while solver choice and budgets stay in an advanced pane.
 
-Next experiment: formalize `bezout-coprime/1` and `coprime-interior/1` in Lean and
-lower the indicator identity into the same checked theorem, then compare the
-readable steps, assumptions, trust boundary and failure reporting with Z3. A separate
+Next experiment: export the neutral rule plan as a small Lean theorem request,
+formalize `bezout-coprime/1` and `coprime-interior/1` in mathlib, and attach the
+checker result to the same statement fingerprint. Compare the generated readable
+steps, assumptions, trust boundary and failure reporting with Z3. A separate
 bounded witness service can later reconnect countermodels to captured canvas
 contributors without turning animation frames into mathematical inputs.

@@ -12,6 +12,7 @@ from dataclasses import dataclass
 import importlib
 import re
 
+from .rules import RuleStep, named_rule_plan
 from .terms import Term, evaluate, term
 
 
@@ -118,6 +119,7 @@ class Attempt:
     reason: str | None = None
     independently_reproduced: bool | None = None
     rules: tuple[str, ...] = ()
+    rule_steps: tuple[RuleStep, ...] = ()
 
     def data(self):
         value = {
@@ -134,6 +136,8 @@ class Attempt:
             value["independently_reproduced"] = self.independently_reproduced
         if self.rules:
             value["rules"] = list(self.rules)
+        if self.rule_steps:
+            value["rule_steps"] = [step.data() for step in self.rule_steps]
         return value
 
 
@@ -198,71 +202,18 @@ class Z3Assistant:
         solver.set(timeout=timeout_ms)
         return solver
 
-    @staticmethod
-    def _coprime_operands(value):
-        """Recognize only the neutral predicate ``gcd(x, y) = 1``."""
-        if value.op != "eq":
-            return None
-        left, right = value.args
-        for candidate, one in ((left, right), (right, left)):
-            if (candidate.op == "gcd" and one.op == "literal"
-                    and one.sort == "integer" and one.args == (1,)):
-                return candidate.args
-        return None
-
-    def _lower_hypothesis(self, value, symbols, auxiliaries, rules):
-        operands = self._coprime_operands(value)
-        if operands is None:
-            return self._lower(value, symbols)
-        left, right = (self._lower(operand, symbols) for operand in operands)
+    def _lower_bezout(self, step, symbols, auxiliaries):
+        bindings = dict(step.bindings)
+        left, right = (self._lower(bindings[name], symbols)
+                       for name in ("left", "right"))
         index = len(auxiliaries) // 2
         u = self.z3.Int(f"aux:bezout:{index}:u")
         v = self.z3.Int(f"aux:bezout:{index}:v")
         auxiliaries.extend((u, v))
-        rules.add("bezout-coprime/1")
         # Bezout's identity is equivalent to gcd(x, y) = 1 over the integers.
         # The fresh coefficients are solver witnesses, not Kaleion parameters,
         # and therefore never appear in a returned mathematical assignment.
         return left * u + right * v == 1
-
-    @staticmethod
-    def _one_less_parameter(value):
-        if value.op != "sub":
-            return None
-        parameter, one = value.args
-        if (parameter.op == "parameter" and one.op == "literal"
-                and one.sort == "integer" and one.args == (1,)):
-            return parameter
-        return None
-
-    def _domain_lemmas(self, goal, symbols, rules):
-        """Return named arithmetic consequences for an exact rectangle domain."""
-        coordinates = {}
-        for variable, extent in goal.domain:
-            parameter = self._one_less_parameter(extent)
-            if parameter is not None and parameter.args[0] not in coordinates:
-                coordinates[parameter.args[0]] = variable
-        lemmas = []
-        one = Term("literal", (1,))
-        for hypothesis in goal.hypotheses:
-            operands = self._coprime_operands(hypothesis)
-            if (operands is None or any(value.op != "parameter" for value in operands)
-                    or operands[0] == operands[1]):
-                continue
-            left, right = operands
-            # The coordinate paired with a parameter is bounded by the other
-            # parameter: 0 <= i < b-1 and 0 <= j < a-1. Coprimality therefore
-            # excludes a(i+1) = b(j+1). This named lemma avoids asking an SMT
-            # heuristic to rediscover the divisibility proof on every goal.
-            left_coordinate = coordinates.get(right.args[0])
-            right_coordinate = coordinates.get(left.args[0])
-            if left_coordinate is None or right_coordinate is None:
-                continue
-            left_multiple = term("mul", left, term("add", left_coordinate, one))
-            right_multiple = term("mul", right, term("add", right_coordinate, one))
-            lemmas.append(self._lower(term("ne", left_multiple, right_multiple), symbols))
-            rules.add("coprime-interior/1")
-        return lemmas
 
     def check(self, goal, *, timeout_ms=1000):
         """Look for a counterexample, then replay any model with neutral semantics."""
@@ -270,21 +221,31 @@ class Z3Assistant:
             raise TypeError("Z3 assistance needs an explicit Goal")
         symbols = {}
         auxiliaries = []
-        rules = set()
+        rule_steps = named_rule_plan(goal.hypotheses, goal.domain)
+        bezout_by_premise = {
+            step.premises[0]: step for step in rule_steps
+            if step.rule == "bezout-coprime/1"
+        }
         try:
-            hypotheses = [self._lower_hypothesis(value, symbols, auxiliaries, rules)
-                          for value in goal.hypotheses]
+            hypotheses = [
+                self._lower_bezout(bezout_by_premise[value], symbols, auxiliaries)
+                if value in bezout_by_premise else self._lower(value, symbols)
+                for value in goal.hypotheses
+            ]
             for variable, extent in goal.domain:
                 coordinate = self._lower(variable, symbols)
                 size = self._lower(extent, symbols)
                 hypotheses.append(self.z3.And(coordinate >= 0, coordinate < size))
             proposition = self._lower(goal.proposition, symbols)
-            derived = self._domain_lemmas(goal, symbols, rules)
+            derived = [self._lower(step.conclusion, symbols) for step in rule_steps
+                       if step.rule == "coprime-interior/1"]
         except _Unsupported as error:
+            applied_rules = tuple(sorted({step.rule for step in rule_steps}))
             return Attempt("unsupported", goal.name, self.backend, goal.statement_fingerprint,
-                           reason=str(error), rules=tuple(sorted(rules)))
+                           reason=str(error), rules=applied_rules,
+                           rule_steps=rule_steps)
 
-        applied_rules = tuple(sorted(rules))
+        applied_rules = tuple(sorted({step.rule for step in rule_steps}))
 
         consistency = self._solver(timeout_ms)
         consistency.add(*hypotheses)
@@ -292,26 +253,27 @@ class Z3Assistant:
         if state == self.z3.unknown:
             return Attempt("unknown", goal.name, self.backend, goal.statement_fingerprint,
                            reason=f"Assumption check: {consistency.reason_unknown()}",
-                           rules=applied_rules)
+                           rules=applied_rules, rule_steps=rule_steps)
         if state == self.z3.unsat:
             return Attempt("inconsistent_assumptions", goal.name, self.backend,
                            goal.statement_fingerprint,
                            reason="No assignment satisfies the displayed hypotheses and goal domain",
-                           rules=applied_rules)
+                           rules=applied_rules, rule_steps=rule_steps)
 
         solver = self._solver(timeout_ms)
         solver.add(*hypotheses, *derived, self.z3.Not(proposition))
         state = solver.check()
         if state == self.z3.unknown:
             return Attempt("unknown", goal.name, self.backend, goal.statement_fingerprint,
-                           reason=solver.reason_unknown(), rules=applied_rules)
+                           reason=solver.reason_unknown(), rules=applied_rules,
+                           rule_steps=rule_steps)
         if state == self.z3.unsat:
             reason = "Negated goal is unsatisfiable in the supported Z3 integer fragment"
             if applied_rules:
                 reason += " after applying the recorded named rules"
             return Attempt("solver_valid", goal.name, self.backend, goal.statement_fingerprint,
                            reason=reason,
-                           rules=applied_rules)
+                           rules=applied_rules, rule_steps=rule_steps)
 
         model = solver.model()
         assignments = []
@@ -322,7 +284,7 @@ class Z3Assistant:
                 return Attempt("invalid_counterexample", goal.name, self.backend,
                                goal.statement_fingerprint,
                                reason=f"Model value for {kind} {name!r} is not an exact integer",
-                               rules=applied_rules)
+                               rules=applied_rules, rule_steps=rule_steps)
             value = interpreted.as_long()
             assignments.append((kind, name, str(value)))
             (parameters if kind == "parameter" else coordinates)[name] = value
@@ -343,7 +305,8 @@ class Z3Assistant:
             reason = ("Exact model independently violates the goal"
                       if reproduced else "Backend model did not violate the neutral Kaleion goal")
         return Attempt(status, goal.name, self.backend, goal.statement_fingerprint,
-                       tuple(assignments), reason, reproduced, applied_rules)
+                       tuple(assignments), reason, reproduced, applied_rules,
+                       rule_steps)
 
 
 def _domain(data):

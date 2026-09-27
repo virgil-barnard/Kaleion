@@ -186,8 +186,10 @@ python3 -m examples.proof_assistance
 ```
 
 The report distinguishes solver validation, named rules, exact replayed
-counterexamples, inconsistent assumptions, unsupported terms, and timeouts. It
-never labels a solver result as a checked proof.
+counterexamples, inconsistent assumptions, unsupported terms, and timeouts. Each
+recognized rule carries readable premises, witnesses, consequence, and explanation
+from a backend-neutral plan; Z3 only translates that plan. It never labels a
+solver result as a checked proof.
 
 ## Explore in Jupyter
 

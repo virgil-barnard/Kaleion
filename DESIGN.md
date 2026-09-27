@@ -158,11 +158,13 @@ the comparison-to-conjecture request and fingerprint. `statement.js` owns contro
 and disclosure. Unsupported operators block expansion without affecting captured
 comparison, inspection or history. Numerical evaluation has no dependency on this
 experimental adapter. Placement-only projection excludes geometry validity and
-host budgets; a geometry read is unsupported. The optional
-`examples/statements/solver.py` adapter consumes the regenerated neutral report,
-owns Z3 translation and result taxonomy, and never changes the graph evaluator or
-saved question. It checks assumptions before implication, separates coverage,
-value equality and construction obligations, and independently replays any model.
+host budgets; a geometry read is unsupported. The optional proof adapter consumes
+the regenerated neutral report and never changes the graph evaluator or saved
+question. `examples/statements/rules.py` owns exact named-rule recognition,
+readable steps, witnesses and derived consequences. `solver.py` owns Z3
+translation, budgets, result taxonomy and exact model replay. It checks
+assumptions before implication, separates coverage, value equality and
+construction obligations, and independently replays any model.
 Solver validity is not a checked proof. A future checked-proof backend must
 justify the translation as well as check its mathematical conclusion. The first
 Z3 adapter deliberately stops at floor division, modulus, general gcd terms,
@@ -172,7 +174,9 @@ encodings. The one narrow gcd exception is a hypothesis exactly shaped as
 records `bezout-coprime/1`, introduces hidden integer Bézout witnesses, and can
 record `coprime-interior/1` only for the exact open rectangle with extents
 `b-1,a-1`. General gcd terms and boundary-inclusive rectangles remain outside
-that rule.
+that rule. Rule plans are stable neutral data rather than Z3 objects, so a later
+explanation view or Lean adapter can consume them without importing the backend.
+They are still reviewed application code, not proof certificates.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted

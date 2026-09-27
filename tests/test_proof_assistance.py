@@ -8,7 +8,8 @@ import unittest
 from examples.proof_assistance import SPEC
 from examples.quotient_equality import quotient_equality
 from examples.statements import (Goal, Z3Assistant, coprime_interior_goal,
-                                 goals_from_statement, indicator_order_goal)
+                                 goals_from_statement, indicator_order_goal,
+                                 named_rule_plan)
 from examples.statements.solver import decode_term
 from examples.statements.terms import Term, literal, term
 from examples.studio.statements import comparison_statement
@@ -91,6 +92,22 @@ class ProofAssistanceTests(unittest.TestCase):
                          ("bezout-coprime/1", "coprime-interior/1"))
         self.assertNotEqual(result.status, "checked_proof")
 
+    def test_named_rule_plan_is_backend_neutral_and_readable(self):
+        goal = coprime_interior_goal()
+        steps = named_rule_plan(goal.hypotheses, goal.domain)
+        self.assertEqual([step.rule for step in steps],
+                         ["bezout-coprime/1", "coprime-interior/1"])
+        self.assertEqual(steps[0].witnesses, ("u", "v"))
+        self.assertIn("Choose u and v in ℤ", steps[0].statement)
+        self.assertEqual(steps[1].uses, ("bezout-coprime/1",))
+        self.assertIn("≠", steps[1].statement)
+        result = self.assistant.check(goal)
+        self.assertEqual(result.rule_steps, steps)
+        payload = result.data()
+        self.assertEqual([step["rule"] for step in payload["rule_steps"]],
+                         ["bezout-coprime/1", "coprime-interior/1"])
+        self.assertIn("conclusion", payload["rule_steps"][0])
+
     def test_bezout_rule_matches_neutral_gcd_for_signed_and_zero_cases(self):
         a, b = Term("parameter", ("a",)), Term("parameter", ("b",))
         coprime = term("eq", term("gcd", a, b), literal(1))
@@ -131,6 +148,8 @@ class ProofAssistanceTests(unittest.TestCase):
         self.assertEqual(result.status, "counterexample")
         self.assertTrue(result.independently_reproduced)
         self.assertEqual(result.rules, ("bezout-coprime/1",))
+        self.assertEqual([step.rule for step in result.rule_steps],
+                         ["bezout-coprime/1"])
 
     def test_floor_sum_translation_stops_before_backend_division_semantics_can_change(self):
         n, d = Term("parameter", ("n",)), Term("parameter", ("d",))
@@ -181,6 +200,12 @@ class ProofAssistanceTests(unittest.TestCase):
             check=False, capture_output=True, text=True,
         )
         self.assertEqual(probe.returncode, 0, probe.stderr)
+        neutral_probe = subprocess.run(
+            [sys.executable, "-c",
+             "import sys; import examples.statements.rules; assert 'z3' not in sys.modules"],
+            check=False, capture_output=True, text=True,
+        )
+        self.assertEqual(neutral_probe.returncode, 0, neutral_probe.stderr)
 
 
 if __name__ == "__main__":

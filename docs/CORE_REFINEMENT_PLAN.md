@@ -157,6 +157,14 @@ The same construction exposed placement discoverability rather than a missing
 primitive: **Arrange / move** now opens the existing coordinate editor directly
 from a selected collection, without duplicating it in More tools.
 
+The optional proof experiment now applies the same information-hiding criterion.
+`examples/statements/rules.py` owns recognition and explanation of the exact
+Bézout and open-rectangle steps; `solver.py` owns only their Z3 realization,
+resource limits, result taxonomy and model replay. The neutral rule plan can be
+shown by a future UI or translated by a checked backend without importing Z3.
+This extraction adds no core operation or proof claim: the planner remains trusted
+application code until an external checker verifies the corresponding theorem.
+
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the
 diagnostic fell from roughly 0.50 s to 0.027 s on this host. Its motion fixture now
