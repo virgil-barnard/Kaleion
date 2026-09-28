@@ -10,101 +10,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import importlib
-import re
 
+# Keep these neutral names importable from this former home for existing callers;
+# solver-specific behavior begins with Attempt and Z3Assistant below.
+from .goals import (Goal, coprime_interior_goal, decode_term,
+                    goals_from_statement, indicator_order_goal)
 from .rules import RuleStep, named_rule_plan
-from .terms import Term, evaluate, term
-
-
-_INTEGER = re.compile(r"-?(0|[1-9][0-9]*)")
-_FINGERPRINT = re.compile(r"[0-9a-f]{64}")
-_DECIMAL_DIGITS = 1235
-_BINARY = {"add", "sub", "mul", "floordiv", "mod", "gcd",
-           "eq", "ne", "lt", "le", "gt", "ge", "and", "or"}
-_UNARY = {"neg", "abs", "indicator", "not"}
-
-
-def decode_term(data):
-    """Validate and reconstruct the version-1 neutral term wire format."""
-    if not isinstance(data, dict) or set(data) != {"op", "sort", "args"}:
-        raise ValueError("A solver term needs exactly op, sort, and args")
-    op, sort, args = data["op"], data["sort"], data["args"]
-    if sort not in ("integer", "boolean") or not isinstance(op, str) or not isinstance(args, list):
-        raise ValueError("Invalid term operation, sort, or arguments")
-    if op == "literal":
-        if len(args) != 1:
-            raise ValueError("A literal needs one value")
-        if sort == "boolean":
-            if type(args[0]) is not bool:
-                raise ValueError("A Boolean literal needs true or false")
-            value = args[0]
-        else:
-            if (not isinstance(args[0], str) or len(args[0]) > _DECIMAL_DIGITS
-                    or not _INTEGER.fullmatch(args[0])):
-                raise ValueError("An integer literal needs a bounded decimal string")
-            value = int(args[0])
-        return Term(op, (value,), sort)
-    if op in ("parameter", "bound"):
-        if sort != "integer" or len(args) != 1 or not isinstance(args[0], str) or not 0 < len(args[0]) <= 80:
-            raise ValueError("A symbol needs one bounded name and integer sort")
-        return Term(op, (args[0],), sort)
-    if op == "sum":
-        if sort != "integer" or len(args) != 3 or not all(isinstance(value, dict) for value in args):
-            raise ValueError("A bounded sum needs a variable, extent, and integer body")
-        variable, extent, body = (decode_term(value) for value in args)
-        if variable.op != "bound" or extent.sort != "integer" or body.sort != "integer":
-            raise ValueError("Invalid bounded sum sorts")
-        return Term(op, (variable, extent, body), sort)
-    if op == "table":
-        if (sort != "integer" or len(args) != 2 or not isinstance(args[0], list)
-                or not isinstance(args[1], dict) or len(args[0]) > 20_000
-                or any(not isinstance(value, str) or len(value) > _DECIMAL_DIGITS
-                       or not _INTEGER.fullmatch(value)
-                       for value in args[0])):
-            raise ValueError("A table term needs bounded exact integer entries and an address")
-        index = decode_term(args[1])
-        if index.sort != "integer":
-            raise ValueError("A table address must be integer")
-        return Term(op, (tuple(map(int, args[0])), index), sort)
-    expected = 2 if op in _BINARY else 1 if op in _UNARY else None
-    if expected is None:
-        # Keep the rejection at the backend boundary explicit. A statement may
-        # still contain a sound neutral term that this first adapter cannot use.
-        raise ValueError(f"Z3 assistance does not support term operation {op!r}")
-    if len(args) != expected or not all(isinstance(value, dict) for value in args):
-        raise ValueError(f"{op} needs {expected} term argument(s)")
-    decoded = tuple(decode_term(value) for value in args)
-    rebuilt = term(op, *decoded)
-    if rebuilt.sort != sort:
-        raise ValueError(f"Declared sort for {op} does not match its operands")
-    return rebuilt
-
-
-@dataclass(frozen=True)
-class Goal:
-    """One universally quantified implication checked by counterexample search."""
-
-    name: str
-    proposition: Term
-    hypotheses: tuple[Term, ...] = ()
-    domain: tuple[tuple[Term, Term], ...] = ()
-    statement_fingerprint: str | None = None
-    source: str = "derived"
-
-    def __post_init__(self):
-        if not isinstance(self.name, str) or not 0 < len(self.name) <= 160:
-            raise ValueError("A proof-assistance goal needs a bounded name")
-        if self.proposition.sort != "boolean" or any(value.sort != "boolean" for value in self.hypotheses):
-            raise ValueError("A goal and all hypotheses must be Boolean")
-        if len(self.hypotheses) > 64 or len(self.domain) > 16:
-            raise ValueError("Goal exceeds the hypothesis or domain budget")
-        seen = set()
-        for variable, extent in self.domain:
-            if variable.op != "bound" or variable.sort != "integer" or extent.sort != "integer":
-                raise ValueError("Goal domains need integer bound variables and extents")
-            if variable.args[0] in seen:
-                raise ValueError("Goal domain variables must be distinct")
-            seen.add(variable.args[0])
+from .terms import evaluate
 
 
 @dataclass(frozen=True)
@@ -120,6 +32,7 @@ class Attempt:
     independently_reproduced: bool | None = None
     rules: tuple[str, ...] = ()
     rule_steps: tuple[RuleStep, ...] = ()
+    goal_fingerprint: str | None = None
 
     def data(self):
         value = {
@@ -127,6 +40,7 @@ class Attempt:
             "goal": self.goal,
             "backend": self.backend,
             "statement_fingerprint": self.statement_fingerprint,
+            "goal_fingerprint": self.goal_fingerprint,
             "assignments": [{"kind": kind, "name": name, "value": value}
                             for kind, name, value in self.assignments],
         }
@@ -219,6 +133,11 @@ class Z3Assistant:
         """Look for a counterexample, then replay any model with neutral semantics."""
         if not isinstance(goal, Goal):
             raise TypeError("Z3 assistance needs an explicit Goal")
+
+        def attempt(status, **values):
+            return Attempt(status=status, goal=goal.name, backend=self.backend,
+                           statement_fingerprint=goal.statement_fingerprint,
+                           goal_fingerprint=goal.fingerprint, **values)
         symbols = {}
         auxiliaries = []
         rule_steps = named_rule_plan(goal.hypotheses, goal.domain)
@@ -241,8 +160,7 @@ class Z3Assistant:
                        if step.rule == "coprime-interior/1"]
         except _Unsupported as error:
             applied_rules = tuple(sorted({step.rule for step in rule_steps}))
-            return Attempt("unsupported", goal.name, self.backend, goal.statement_fingerprint,
-                           reason=str(error), rules=applied_rules,
+            return attempt("unsupported", reason=str(error), rules=applied_rules,
                            rule_steps=rule_steps)
 
         applied_rules = tuple(sorted({step.rule for step in rule_steps}))
@@ -251,12 +169,11 @@ class Z3Assistant:
         consistency.add(*hypotheses)
         state = consistency.check()
         if state == self.z3.unknown:
-            return Attempt("unknown", goal.name, self.backend, goal.statement_fingerprint,
+            return attempt("unknown",
                            reason=f"Assumption check: {consistency.reason_unknown()}",
                            rules=applied_rules, rule_steps=rule_steps)
         if state == self.z3.unsat:
-            return Attempt("inconsistent_assumptions", goal.name, self.backend,
-                           goal.statement_fingerprint,
+            return attempt("inconsistent_assumptions",
                            reason="No assignment satisfies the displayed hypotheses and goal domain",
                            rules=applied_rules, rule_steps=rule_steps)
 
@@ -264,16 +181,14 @@ class Z3Assistant:
         solver.add(*hypotheses, *derived, self.z3.Not(proposition))
         state = solver.check()
         if state == self.z3.unknown:
-            return Attempt("unknown", goal.name, self.backend, goal.statement_fingerprint,
-                           reason=solver.reason_unknown(), rules=applied_rules,
-                           rule_steps=rule_steps)
+            return attempt("unknown", reason=solver.reason_unknown(),
+                           rules=applied_rules, rule_steps=rule_steps)
         if state == self.z3.unsat:
             reason = "Negated goal is unsatisfiable in the supported Z3 integer fragment"
             if applied_rules:
                 reason += " after applying the recorded named rules"
-            return Attempt("solver_valid", goal.name, self.backend, goal.statement_fingerprint,
-                           reason=reason,
-                           rules=applied_rules, rule_steps=rule_steps)
+            return attempt("solver_valid", reason=reason, rules=applied_rules,
+                           rule_steps=rule_steps)
 
         model = solver.model()
         assignments = []
@@ -281,8 +196,7 @@ class Z3Assistant:
         for (kind, name), symbol in sorted(symbols.items()):
             interpreted = model.eval(symbol, model_completion=True)
             if not self.z3.is_int_value(interpreted):
-                return Attempt("invalid_counterexample", goal.name, self.backend,
-                               goal.statement_fingerprint,
+                return attempt("invalid_counterexample",
                                reason=f"Model value for {kind} {name!r} is not an exact integer",
                                rules=applied_rules, rule_steps=rule_steps)
             value = interpreted.as_long()
@@ -304,103 +218,6 @@ class Z3Assistant:
         if reason is None:
             reason = ("Exact model independently violates the goal"
                       if reproduced else "Backend model did not violate the neutral Kaleion goal")
-        return Attempt(status, goal.name, self.backend, goal.statement_fingerprint,
-                       tuple(assignments), reason, reproduced, applied_rules,
-                       rule_steps)
-
-
-def _domain(data):
-    if not isinstance(data, list) or len(data) > 16:
-        raise ValueError("A statement domain needs at most sixteen dimensions")
-    dimensions = []
-    for pair in data:
-        if not isinstance(pair, list) or len(pair) != 2:
-            raise ValueError("A statement domain needs variable/extent pairs")
-        dimensions.append((decode_term(pair[0]), decode_term(pair[1])))
-    return tuple(dimensions)
-
-
-def goals_from_statement(report):
-    """Decompose one expanded comparison into visible solver-sized goals.
-
-    Construction obligations are conclusions, never added as hypotheses. Domain
-    equality and pointwise equality are separate so missing coverage cannot hide
-    behind a value proof. Every goal retains the statement fingerprint.
-    """
-    if not isinstance(report, dict) or report.get("status") != "conjecture":
-        raise ValueError("Proof assistance needs a supported expanded conjecture")
-    if report.get("translator") != "kaleion-integer-projection/1":
-        raise ValueError("Proof assistance needs an explicitly supported translator version")
-    fingerprint = report.get("fingerprint")
-    if not isinstance(fingerprint, str) or not _FINGERPRINT.fullmatch(fingerprint):
-        raise ValueError("Proof assistance needs the exact statement fingerprint")
-    declarations = report.get("hypotheses")
-    if (not isinstance(declarations, list) or len(declarations) > 64
-            or any(not isinstance(value, dict) or "predicate" not in value
-                   for value in declarations)):
-        raise ValueError("Expanded statement has malformed hypotheses")
-    hypotheses = tuple(decode_term(value["predicate"]) for value in declarations)
-    conclusion = report.get("conclusion")
-    if (not isinstance(conclusion, dict)
-            or not all(name in conclusion for name in ("domains", "left", "right"))
-            or not isinstance(conclusion["domains"], dict)
-            or not all(name in conclusion["domains"] for name in ("left", "right", "expected"))):
-        raise ValueError("Expanded statement has no conclusion")
-    domains = {name: _domain(value) for name, value in conclusion["domains"].items()}
-    expected = domains["expected"]
-    goals = []
-    for side in ("left", "right"):
-        actual = domains[side]
-        if len(actual) != len(expected):
-            proposition = Term("literal", (False,), "boolean")
-        else:
-            equalities = [term("eq", actual_extent, expected_extent)
-                          for (_, actual_extent), (_, expected_extent) in zip(actual, expected)]
-            proposition = Term("literal", (True,), "boolean")
-            for equality in equalities:
-                proposition = term("and", proposition, equality)
-        goals.append(Goal(f"{side} key domain equals expected domain", proposition,
-                          hypotheses, (), fingerprint, "coverage"))
-    equality = term("eq", decode_term(conclusion["left"]), decode_term(conclusion["right"]))
-    goals.append(Goal("compared integer fields are equal", equality, hypotheses,
-                      expected, fingerprint, "comparison"))
-    obligations = report.get("obligations")
-    if not isinstance(obligations, list) or len(obligations) > 256:
-        raise ValueError("Expanded statement has malformed construction obligations")
-    for index, obligation in enumerate(obligations):
-        if not isinstance(obligation, dict) or not isinstance(obligation.get("reason"), str):
-            raise ValueError("Malformed construction obligation")
-        goals.append(Goal(f"obligation {index + 1}: {obligation['reason']}",
-                          decode_term(obligation["predicate"]), hypotheses,
-                          _domain(obligation["domain"]), fingerprint, "obligation"))
-    return tuple(goals)
-
-
-def indicator_order_goal():
-    """The backend-independent order lemma used by quotient ownership fields."""
-    x, y = Term("parameter", ("x",)), Term("parameter", ("y",))
-    left = term("add", term("indicator", term("le", x, y)),
-                term("indicator", term("le", y, x)))
-    right = term("add", Term("literal", (1,)), term("indicator", term("eq", x, y)))
-    return Goal("two weak order indicators count equality twice", term("eq", left, right),
-                source="shared integer-order lemma")
-
-
-def coprime_interior_goal():
-    """Coprime rectangle coordinates cannot meet on the interior diagonal."""
-    a = Term("parameter", ("a",))
-    b = Term("parameter", ("b",))
-    i = Term("bound", ("i",))
-    j = Term("bound", ("j",))
-    one = Term("literal", (1,))
-    hypotheses = (
-        term("gt", a, one),
-        term("gt", b, one),
-        term("eq", term("gcd", a, b), one),
-    )
-    left = term("mul", a, term("add", i, one))
-    right = term("mul", b, term("add", j, one))
-    domain = ((i, term("sub", b, one)), (j, term("sub", a, one)))
-    return Goal("coprime positive rectangle has no interior tie",
-                term("ne", left, right), hypotheses, domain,
-                source="shared coprime-interior lemma")
+        return attempt(status, assignments=tuple(assignments), reason=reason,
+                       independently_reproduced=reproduced, rules=applied_rules,
+                       rule_steps=rule_steps)

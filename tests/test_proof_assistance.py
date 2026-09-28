@@ -5,12 +5,12 @@ import subprocess
 import sys
 import unittest
 
-from examples.proof_assistance import SPEC
+from examples.proof_assistance import SPEC, run
 from examples.quotient_equality import quotient_equality
-from examples.statements import (Goal, Z3Assistant, coprime_interior_goal,
+from examples.statements import (GOAL_SCHEMA, Goal, Z3Assistant, coprime_interior_goal,
                                  goals_from_statement, indicator_order_goal,
                                  named_rule_plan)
-from examples.statements.solver import decode_term
+from examples.statements.goals import decode_goal, decode_term
 from examples.statements.terms import Term, literal, term
 from examples.studio.statements import comparison_statement
 
@@ -61,6 +61,8 @@ class ProofAssistanceTests(unittest.TestCase):
         results = {goal.name: self.assistant.check(goal) for goal in goals}
         self.assertTrue(all(result.statement_fingerprint == report["fingerprint"]
                             for result in results.values()))
+        self.assertTrue(all(result.goal_fingerprint == goal.fingerprint
+                            for goal, result in zip(goals, results.values())))
         self.assertEqual(results["left key domain equals expected domain"].status,
                          "solver_valid")
         keyed = [result for name, result in results.items()
@@ -107,6 +109,38 @@ class ProofAssistanceTests(unittest.TestCase):
         self.assertEqual([step["rule"] for step in payload["rule_steps"]],
                          ["bezout-coprime/1", "coprime-interior/1"])
         self.assertIn("conclusion", payload["rule_steps"][0])
+
+    def test_goal_fingerprint_tracks_theorem_semantics_not_its_display_label(self):
+        goal = indicator_order_goal()
+        renamed = Goal("a different explanation", goal.proposition,
+                       goal.hypotheses, goal.domain,
+                       goal.statement_fingerprint, "different presentation source")
+        changed = Goal(goal.name, term("not", goal.proposition),
+                       goal.hypotheses, goal.domain,
+                       goal.statement_fingerprint, goal.source)
+        self.assertEqual(goal.fingerprint, renamed.fingerprint)
+        self.assertNotEqual(goal.fingerprint, changed.fingerprint)
+        self.assertEqual(len(goal.fingerprint), 64)
+        payload = goal.data()
+        self.assertEqual(payload["schema"], GOAL_SCHEMA)
+        self.assertEqual(payload["goal_fingerprint"], goal.fingerprint)
+        self.assertEqual(decode_goal(payload), goal)
+        with self.assertRaisesRegex(ValueError, "fingerprint"):
+            decode_goal({**payload, "proposition": changed.proposition.data()})
+        # Presentation is intentionally outside request identity.
+        self.assertEqual(decode_goal({**payload, "name": "renamed"}).fingerprint,
+                         goal.fingerprint)
+        self.assertEqual(self.assistant.check(goal).goal_fingerprint,
+                         goal.fingerprint)
+
+    def test_report_pairs_every_attempt_with_the_exact_theorem_request(self):
+        report = run()
+        self.assertEqual(len(report["attempts"]), 18)
+        for row in report["attempts"]:
+            request = decode_goal(row["request"])
+            self.assertEqual(request.fingerprint, row["goal_fingerprint"])
+            self.assertEqual(request.statement_fingerprint,
+                             row["statement_fingerprint"])
 
     def test_bezout_rule_matches_neutral_gcd_for_signed_and_zero_cases(self):
         a, b = Term("parameter", ("a",)), Term("parameter", ("b",))

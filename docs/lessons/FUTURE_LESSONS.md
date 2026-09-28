@@ -138,7 +138,9 @@ open-rectangle rules for a `gcd(a,b)=1` hypothesis, making the actual pointwise
 coprime construction solver-valid. With coprimality omitted it independently
 replays a tied-cell counterexample; a boundary-inclusive rectangle also exposes
 the common corner. Named-rule recognition and readable steps are now neutral data,
-separate from Z3 translation. Next translate that same plan into a checked backend,
+separate from Z3 translation. Every subgoal now carries an exact versioned theorem
+request and semantic fingerprint, rather than only the construction fingerprint
+and a display name. Next translate that same request/plan into a checked backend,
 then check `(6,4,5)` against pairwise
 assumptions. [Candidate backends and experiments](../PROOF_ASSISTANCE.md) compare
 Python-friendly counterexample search, algebra and durable checked proofs.

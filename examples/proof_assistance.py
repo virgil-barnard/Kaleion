@@ -38,7 +38,8 @@ def run():
     attempts = []
 
     def record(case, goal):
-        attempts.append({"case": case, **assistant.check(goal).data()})
+        attempts.append({"case": case, "request": goal.data(),
+                         **assistant.check(goal).data()})
 
     record("shared lemma", indicator_order_goal())
     record("shared lemma", coprime_interior_goal())

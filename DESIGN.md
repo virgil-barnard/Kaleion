@@ -153,7 +153,9 @@ Neither expansion nor color mapping invokes a prover.
 
 `examples/statements/terms.py` owns neutral integer/predicate terms, serialization,
 notation and bounded finite interpretation; `expansion.py` owns supported lowering
-rules, lexical scope and projected domains. `examples/studio/statements.py` owns
+rules, lexical scope and projected domains. `goals.py` owns backend-neutral theorem
+requests, strict wire decoding, decomposition and semantic request identity.
+`examples/studio/statements.py` owns
 the comparison-to-conjecture request and fingerprint. `statement.js` owns controls
 and disclosure. Unsupported operators block expansion without affecting captured
 comparison, inspection or history. Numerical evaluation has no dependency on this
@@ -177,6 +179,10 @@ record `coprime-interior/1` only for the exact open rectangle with extents
 that rule. Rule plans are stable neutral data rather than Z3 objects, so a later
 explanation view or Lean adapter can consume them without importing the backend.
 They are still reviewed application code, not proof certificates.
+Each decomposed theorem request has a SHA-256 fingerprint over its schema, parent
+statement, hypotheses, domain and proposition. Display name/source and backend
+result are deliberately excluded. An external result must return both the parent
+statement fingerprint and exact goal fingerprint before it can be associated.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted

@@ -120,6 +120,7 @@ code, supported by finite regression cases, not a formally verified compiler.
 | --- | --- |
 | `examples/statements/terms.py` | Typed neutral terms, exact serialization, notation, bounded finite interpretation |
 | `examples/statements/expansion.py` | Meaning of supported graph-to-field/domain projections, lexical scope, obligations |
+| `examples/statements/goals.py` | Backend-neutral goal decomposition, strict theorem-request wire format, and semantic goal identity |
 | `examples/studio/statements.py` | Comparison request, author assumptions, source identities, statement fingerprint |
 | `web/statement.js` | Parameter/assumption controls and progressive disclosure |
 | Existing comparison/evidence/history modules | Finite key comparison, contributor references, captured restoration |
@@ -181,3 +182,10 @@ data: rule identifier, exact premises, semantic bindings, introduced witnesses,
 derived consequence, dependencies, and a short explanation. This is suitable for
 a future **Explain** panel or checked-backend adapter, but it is not a proof
 certificate and is never persisted as a verdict.
+
+Each coverage, comparison, or obligation goal is also a versioned theorem request.
+Its fingerprint covers the parent statement identity plus exact hypotheses,
+domain, and proposition. Display names and backend results are excluded, so a
+renamed explanation remains the same request while any mathematical edit does
+not. The CLI pairs every attempt with that request; a future external checker must
+return the same statement and goal fingerprints before Kaleion associates it.

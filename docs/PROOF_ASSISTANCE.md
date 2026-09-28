@@ -59,6 +59,9 @@ Do not infer security or proof integrity from an exit code alone.
    records exact premises, semantic bindings, introduced witnesses, consequence,
    dependencies and explanation. Z3 consumes this plan, but does not own how an
    open-rectangle pattern is recognized or how that step is explained.
+7. **Identify the exact theorem request.** Every decomposed goal has a versioned
+   wire form and SHA-256 fingerprint over its parent statement, hypotheses, domain,
+   and proposition. Its display name/source and backend result are excluded.
 
 The first useful goal is smaller than the whole floor-sum theorem. The optional
 adapter now establishes the following identity in its supported integer fragment:
@@ -98,7 +101,9 @@ without coprimality. It decomposes coverage, pointwise equality, and every
 construction obligation into separate `Goal` objects, and retains the statement
 fingerprint, applied rule names, and backend-neutral `rule_steps` on each attempt.
 Each step contains its exact premises, bindings, witnesses, consequence, rule
-dependencies and readable explanation. The coprime statement is
+dependencies and readable explanation. Each attempt is also paired with the exact
+`kaleion-goal/1` request it evaluated; strict decoding recomputes and checks the
+goal fingerprint. The coprime statement is
 solver-valid. The stronger claim yields an exact tied cell that
 `examples.statements.terms.evaluate` independently reconstructs before the
 counterexample is accepted.
@@ -129,6 +134,13 @@ neutral terms plus bounded text. `examples/statements/solver.py` owns the separa
 decision of how those steps become Z3 constraints. A future Lean adapter should
 consume the same semantic bindings, then produce and independently check its own
 theorem rather than trust the Z3 lowering.
+
+`examples/statements/goals.py` separately owns goal decomposition and the theorem
+request wire format. A checked result cannot be attached by goal name alone: it
+must identify both the construction statement fingerprint and exact goal
+fingerprint. Renaming an explanation leaves this identity unchanged; editing a
+hypothesis, bound, proposition, or parent statement changes it. Rule steps are an
+attempt strategy and therefore do not redefine the theorem being requested.
 
 The result reports every rule used. `bezout-coprime/1` is allowed only for a
 top-level hypothesis exactly equal to `gcd(x,y)=1`. It introduces fresh hidden
@@ -208,9 +220,10 @@ assumptions with no untracked holes or added theorem axioms. UI controls should
 offer **Explain**, **Find a failing case**, and eventually **Attempt proof**,
 while solver choice and budgets stay in an advanced pane.
 
-Next experiment: export the neutral rule plan as a small Lean theorem request,
-formalize `bezout-coprime/1` and `coprime-interior/1` in mathlib, and attach the
-checker result to the same statement fingerprint. Compare the generated readable
+Next experiment: translate one exact `kaleion-goal/1` request and its neutral rule
+plan into a small Lean theorem, formalize `bezout-coprime/1` and
+`coprime-interior/1` in mathlib, and require the checker result to return both
+request fingerprints. Compare the generated readable
 steps, assumptions, trust boundary and failure reporting with Z3. A separate
 bounded witness service can later reconnect countermodels to captured canvas
 contributors without turning animation frames into mathematical inputs.

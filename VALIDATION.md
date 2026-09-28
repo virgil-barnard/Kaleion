@@ -1,5 +1,26 @@
 # Validation · 0.1.0
 
+## Exact theorem-request identity · September 28, 2026
+
+- Backend-neutral goal definition, decomposition, strict decoding and fingerprinting
+  now live in `examples/statements/goals.py`, separate from Z3 translation. The
+  version-1 fingerprint covers the parent statement, exact hypotheses, domain and
+  proposition while excluding mutable display labels and backend results.
+- Every CLI attempt is paired with its full theorem request and returns the same
+  goal fingerprint. Strict decoding recomputes the identity; changed mathematical
+  content is rejected, while a renamed explanation remains the same request.
+- Targeted proof-assistance tests: **17 pass**. The required full suite has **294
+  passing tests**, no skips. `python3 examples/discovery.py --out
+  build/goal-request-example-output`, compilation, and `git diff --check` pass.
+- `python3 -m examples.proof_assistance --out
+  build/goal-request-proof-report.json` retains 17 `solver_valid` attempts and one
+  independently replayed `counterexample`. A separate check strictly decodes all
+  18 theorem requests and verifies both fingerprints against their paired attempts.
+
+Lean/lake is not installed on this host, so no kernel check is claimed. This
+increment prepares an unambiguous request boundary; it does not generate a proof,
+store a verdict, alter the browser UI, or add a dependency/core/schema change.
+
 ## Backend-neutral named-rule plans · September 27, 2026
 
 - The named Bézout and coprime-interior pattern recognition has moved from the
