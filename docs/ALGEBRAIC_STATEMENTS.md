@@ -126,6 +126,7 @@ code, supported by finite regression cases, not a formally verified compiler.
 | Existing comparison/evidence/history modules | Finite key comparison, contributor references, captured restoration |
 | `examples/statements/rules.py` | Exact named-rule recognition, neutral premises/witnesses/consequences, and readable explanations |
 | `examples/statements/solver.py` | Optional Z3 lowering of explicit goals and rule plans, budgets, result taxonomy and exact model replay |
+| `examples/statements/lean.py` | Axiom-free projection of an exact goal into a closed Lean proposition definition, safe symbol bindings and source identity |
 | Future checked-proof adapters | Proof source/certificates, permitted axioms and independent checker versions |
 
 These are experimental authoring adapters, not new core operations or an
@@ -189,3 +190,10 @@ domain, and proposition. Display names and backend results are excluded, so a
 renamed explanation remains the same request while any mathematical edit does
 not. The CLI pairs every attempt with that request; a future external checker must
 return the same statement and goal fingerprints before Kaleion associates it.
+
+The experimental Lean projection adds a third identity: a SHA-256 digest of the
+generated source. It regenerates the source from the full strict goal payload and
+rejects a changed manifest. Parameter and coordinate labels are mapped to generated
+Lean identifiers instead of being inserted as program text. The result is still
+only a proposition definition awaiting elaboration and proof; it contains no
+theorem, axiom or placeholder and cannot produce a proof status.

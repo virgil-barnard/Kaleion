@@ -168,6 +168,11 @@ application code until an external checker verifies the corresponding theorem.
 Goal identity includes mathematical content and the parent statement but excludes
 mutable presentation labels, preventing a future checker result from being
 associated by an ambiguous name.
+The first Lean-facing projection now lives in its own `lean.py` adapter. It turns
+the exact request into a closed proposition with generated safe symbols and a
+source digest, while refusing unresolved arithmetic semantics. It deliberately
+does not own proof tactics, process execution, certificates or trust decisions.
+This is a checked-backend input contract, not a new evaluator operation or proof.
 
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the

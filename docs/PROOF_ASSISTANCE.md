@@ -1,6 +1,6 @@
 # Proof assistance for Kaleion
 
-Research checked September 25, 2026 · Backend-neutral rule plans added September 27
+Research checked September 25, 2026 · Lean request projection added September 29
 
 Keep the user-facing statement and orchestration Pythonic. Use separate adapters
 for algebraic manipulation, counterexample search, and checked mathematical
@@ -62,6 +62,10 @@ Do not infer security or proof integrity from an exit code alone.
 7. **Identify the exact theorem request.** Every decomposed goal has a versioned
    wire form and SHA-256 fingerprint over its parent statement, hypotheses, domain,
    and proposition. Its display name/source and backend result are excluded.
+8. **Generate a proposition before attempting a proof.** The first Lean-facing
+   adapter maps an exact goal to a closed `Prop` definition, safe generated symbol
+   names and a source digest. It emits no theorem, axiom, `sorry` or `admit`, and
+   therefore cannot be mistaken for a checked result.
 
 The first useful goal is smaller than the whole floor-sum theorem. The optional
 adapter now establishes the following identity in its supported integer fragment:
@@ -125,6 +129,30 @@ attempts = [assistant.check(goal) for goal in goals_from_statement(statement)]
 | `inconsistent_assumptions` | No assignment satisfies the displayed hypotheses and domain; do not use vacuity as success |
 | `unknown` | The solver could not decide within its configured resource budget |
 | `unsupported` | The term needs a semantic rule the adapter does not implement |
+
+## Export exact Lean proposition requests
+
+From the same environment, without installing Lean:
+
+```sh
+python3 -m examples.lean_request --out build/lean-requests
+```
+
+The command exports the order-indicator lemma, the coprime-interior lemma, and the
+actual pointwise quotient-comparison goal. Every `kaleion-lean-request/1` manifest
+contains the complete strict `kaleion-goal/1` request, parent statement fingerprint,
+goal fingerprint, generated source SHA-256, and the mapping from Kaleion parameter
+and coordinate labels to generated Lean identifiers. Strict decoding regenerates
+all derived content; a changed proposition, binding, source, or digest is rejected.
+
+The generated file imports Mathlib and defines one closed proposition. It does not
+assert that proposition. This separation is intentional: source generation is a
+reviewable translation decision, while elaboration, tactic execution, proof-term
+checking, permitted axioms and checker-version reporting belong to a separate
+external process. `floordiv`, modulus, bounded sums, tables and absolute value are
+rejected until their Kaleion-to-Lean semantics are explicitly reconciled. A future
+checker receipt must return the statement fingerprint, goal fingerprint, source
+digest, Lean version, Mathlib revision, permitted axioms and kernel outcome.
 
 ## Named rule boundary
 
@@ -220,10 +248,9 @@ assumptions with no untracked holes or added theorem axioms. UI controls should
 offer **Explain**, **Find a failing case**, and eventually **Attempt proof**,
 while solver choice and budgets stay in an advanced pane.
 
-Next experiment: translate one exact `kaleion-goal/1` request and its neutral rule
-plan into a small Lean theorem, formalize `bezout-coprime/1` and
-`coprime-interior/1` in mathlib, and require the checker result to return both
-request fingerprints. Compare the generated readable
+Next experiment: prove one exported proposition in a pinned Lean/mathlib project,
+formalize `bezout-coprime/1` and `coprime-interior/1`, and require the checker
+result to return both request fingerprints plus the source digest. Compare the readable
 steps, assumptions, trust boundary and failure reporting with Z3. A separate
 bounded witness service can later reconnect countermodels to captured canvas
 contributors without turning animation frames into mathematical inputs.

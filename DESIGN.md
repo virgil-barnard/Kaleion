@@ -183,6 +183,12 @@ Each decomposed theorem request has a SHA-256 fingerprint over its schema, paren
 statement, hypotheses, domain and proposition. Display name/source and backend
 result are deliberately excluded. An external result must return both the parent
 statement fingerprint and exact goal fingerprint before it can be associated.
+`examples/statements/lean.py` owns a separate experimental projection of that
+request into a closed Lean proposition definition. It assigns safe generated
+identifiers, retains the exact request plus source digest, and rejects unsettled
+division, modulus, sum, table and absolute-value semantics. It emits no proof or
+axiom. Lean elaboration, proof search, permitted axioms and kernel validation remain
+the responsibility of a future external checker, not the projection module.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted

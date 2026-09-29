@@ -1,5 +1,27 @@
 # Validation · 0.1.0
 
+## Exact Lean proposition requests · September 29, 2026
+
+- `examples/statements/lean.py` maps an exact backend-neutral goal into one closed
+  Lean `Prop` definition. Generated identifiers isolate user labels from Lean code;
+  the manifest retains the complete goal, both request fingerprints, source digest,
+  and reversible symbol map. Strict decoding regenerates and compares every field.
+- The source contains no theorem, axiom, `sorry`, or `admit`. Unsettled floor
+  division, modulus, bounded sums, literal tables and absolute-value semantics are
+  rejected. `python3 -m examples.lean_request --out build/lean-requests` exports
+  three requests: the order lemma, coprime-interior lemma, and actual quotient
+  comparison. Their manifests and emitted files pass independent digest checks.
+- Focused Lean/proof tests: **23 pass**. The required full suite has **300 passing
+  tests**, no skips. `python3 examples/discovery.py --out
+  build/lean-request-example-output`, the existing 18-attempt Z3 report,
+  compilation, and `git diff --check` pass. The Z3 result remains 17
+  `solver_valid` goals and one independently replayed `counterexample`.
+
+Lean and Lake are not installed on this host. The generated source was therefore
+not elaborated or kernel-checked, and no proof is claimed. This increment adds no
+dependency, browser UI, notebook, animation/video export, core operation, saved
+proof status, or workspace-schema change.
+
 ## Exact theorem-request identity · September 28, 2026
 
 - Backend-neutral goal definition, decomposition, strict decoding and fingerprinting

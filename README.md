@@ -193,6 +193,18 @@ with a versioned theorem request and its own semantic fingerprint, rather than
 only the parent statement or a mutable display name. It never labels a solver
 result as a checked proof.
 
+To inspect the exact input intended for a future checked Lean backend, export
+three proposition requests:
+
+```sh
+python3 -m examples.lean_request --out build/lean-requests
+```
+
+Each file is a closed Lean `Prop` definition paired with the full Kaleion goal,
+both fingerprints, a source digest, and safe symbol bindings. It deliberately
+contains no theorem, axiom, `sorry`, or `admit`. Generating this source is not a
+proof; Lean must still elaborate it and a proof term must be checked independently.
+
 ## Explore in Jupyter
 
 With the virtual environment above activated, install the optional notebook dependencies and register its kernel:

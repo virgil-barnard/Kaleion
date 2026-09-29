@@ -140,7 +140,10 @@ replays a tied-cell counterexample; a boundary-inclusive rectangle also exposes
 the common corner. Named-rule recognition and readable steps are now neutral data,
 separate from Z3 translation. Every subgoal now carries an exact versioned theorem
 request and semantic fingerprint, rather than only the construction fingerprint
-and a display name. Next translate that same request/plan into a checked backend,
+and a display name. A first Lean-facing adapter now translates that request into
+an axiom-free closed proposition definition with safe symbol bindings and an exact
+source digest. It does not generate a theorem or run a checker. Next prove one of
+those definitions in an external Lean/mathlib project, return all three identities,
 then check `(6,4,5)` against pairwise
 assumptions. [Candidate backends and experiments](../PROOF_ASSISTANCE.md) compare
 Python-friendly counterexample search, algebra and durable checked proofs.
