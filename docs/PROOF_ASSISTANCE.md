@@ -163,14 +163,21 @@ requires byte equality with `IndicatorOrderChallenge.lean`. The separate
 a second challenge definition or obvious proof holes in that file.
 
 The project pins Lean `v4.35.0-rc3` and Mathlib commit
-`6bd5e549d902323693ddf9128120376848331c85`. Its CI policy performs four distinct
+`6bd5e549d902323693ddf9128120376848331c85`. Its CI policy performs three distinct
 checks:
 
 1. build with warnings treated as failures;
 2. audit declarations under `KaleionProofs`, allowing only Lean's ordinary built-in
    axioms;
-3. recheck compiled declarations with LeanChecker; and
-4. independently check proof terms with Nano-Do, with `sorry` disallowed.
+3. recheck compiled declarations with LeanChecker.
+
+Nano-Do remains deliberately disabled: its current parser rejects exporter streams
+from Lean 4.28 and newer, including this project's pinned Lean 4.35 release candidate
+([lean-action issue 169](https://github.com/leanprover/lean-action/issues/169)). The
+failed compatibility probe reached and exported the correct root module, then failed
+with `invalid digit found in string`; it is not proof evidence. Re-enable it only
+after the upstream checker supports the pinned stream format, without allowing
+`sorry`.
 
 This separation matters more than the tactic used. A proof author may edit the proof
 module, but the challenged proposition remains reproducible from the exact Kaleion

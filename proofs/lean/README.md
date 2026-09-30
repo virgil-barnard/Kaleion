@@ -26,9 +26,10 @@ cd proofs/lean
 lake build --wfail
 ```
 
-The repository workflow adds three checks beyond an ordinary build: an axiom
-audit scoped to `KaleionProofs`, LeanChecker, and Nano-Do with sorry disallowed.
-No proof status is currently written into a Kaleion workspace. A CI pass supports
-the exact committed proposition under the pinned toolchain; it does not elevate
-finite evidence, Z3 results, other exported requests, or the translation layer to
-checked proofs.
+The repository workflow adds an axiom audit scoped to `KaleionProofs` and
+LeanChecker beyond an ordinary build. Nano-Do is not currently a gate because its
+0.3.2 parser rejects Lean 4.28+ exporter streams (lean-action issue 169); it must be
+re-enabled without `sorry` once compatible. No proof status is currently written
+into a Kaleion workspace. A CI pass supports the exact committed proposition under
+the pinned toolchain; it does not elevate finite evidence, Z3 results, other
+exported requests, or the translation layer to checked proofs.
