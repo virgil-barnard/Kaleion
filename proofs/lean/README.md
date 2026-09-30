@@ -8,7 +8,7 @@ The first challenge deliberately has two files:
 - `IndicatorOrderChallenge.lean` is generated from Kaleion goal
   `d86610f8ec97af19ec0140991615020802c3e479d17bf5fc5e43d143a238ebb6`.
   Its source SHA-256 is
-  `f6a1b7f6d504ff46abe36e5e052fb1f97ac9f1381e9b3491316365b29d1e9e66`.
+  `23aa0bfc6d8615613f671b7a3ef40212811dbf2f35d299a49365a70ce86f1491`.
 - `IndicatorOrderProof.lean` imports that challenge and proves its named closed
   proposition. It must not restate the generated definition.
 

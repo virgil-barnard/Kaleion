@@ -179,7 +179,7 @@ def lean_request(goal):
         f"/- Kaleion statement: {statement}\n"
         f"   Kaleion goal: {goal.fingerprint}\n"
         "   This definition states a proposition; it is not a proof. -/\n"
-        f"public def {local_definition} : Prop :=\n"
+        f"public abbrev {local_definition} : Prop :=\n"
         f"  {proposition}\n\n"
         f"end {LEAN_NAMESPACE}\n"
     )
