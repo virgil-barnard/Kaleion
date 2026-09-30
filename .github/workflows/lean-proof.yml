@@ -1,0 +1,34 @@
+name: Lean proof checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "proofs/lean/**"
+      - "examples/statements/lean.py"
+      - "tests/test_lean_requests.py"
+      - ".github/workflows/lean-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leanprover/lean-action@v1
+        env:
+          LEAN_NUM_THREADS: "1"
+        with:
+          lake-package-directory: proofs/lean
+          build: "true"
+          build-args: "--wfail"
+          test: "false"
+          lint: "false"
+          leanchecker: "true"
+          axiom-audit: "true"
+          axiom-audit-root: "KaleionProofs"
+          nanoda: "true"
+          nanoda-allow-sorry: "false"

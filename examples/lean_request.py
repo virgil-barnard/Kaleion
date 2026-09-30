@@ -38,7 +38,7 @@ def export(directory):
     emitted = requests()
     manifest = {"requests": []}
     for request in emitted:
-        filename = f"{request.definition}.lean"
+        filename = f"{request.definition.rsplit('.', 1)[-1]}.lean"
         (directory / filename).write_text(request.source, encoding="utf-8")
         manifest["requests"].append({**request.data(), "filename": filename})
     (directory / "manifest.json").write_text(

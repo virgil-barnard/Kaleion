@@ -18,6 +18,8 @@ class LeanRequestTests(unittest.TestCase):
         request = lean_request(goal)
         self.assertEqual(request.goal.fingerprint, goal.fingerprint)
         self.assertIn("def kaleionGoal_", request.source)
+        self.assertTrue(request.definition.startswith("KaleionProofs."))
+        self.assertIn("namespace KaleionProofs", request.source)
         self.assertIn(": Prop :=", request.source)
         self.assertIn("∀ (p0 p1 : ℤ)", request.source)
         self.assertIn("if (p0 ≤ p1)", request.source)
@@ -28,6 +30,28 @@ class LeanRequestTests(unittest.TestCase):
             sha256(request.source.encode("utf-8")).hexdigest(),
         )
         self.assertEqual(decode_lean_request(request.data()), request)
+
+    def test_committed_challenge_is_the_exact_generated_order_goal(self):
+        request = lean_request(indicator_order_goal())
+        challenge = Path(
+            "proofs/lean/KaleionProofs/IndicatorOrderChallenge.lean"
+        ).read_text("utf-8")
+        self.assertEqual(challenge, request.source)
+        self.assertEqual(
+            request.definition,
+            "KaleionProofs.kaleionGoal_"
+            "d86610f8ec97af19ec0140991615020802c3e479d17bf5fc5e43d143a238ebb6",
+        )
+
+    def test_committed_proof_cannot_hide_a_new_challenge_or_a_hole(self):
+        proof = Path(
+            "proofs/lean/KaleionProofs/IndicatorOrderProof.lean"
+        ).read_text("utf-8")
+        self.assertIn("import KaleionProofs.IndicatorOrderChallenge", proof)
+        self.assertIn("kaleionGoal_d86610f8", proof)
+        lowered = proof.lower()
+        for forbidden in ("def kaleiongoal_", "axiom ", "sorry", "admit"):
+            self.assertNotIn(forbidden, lowered)
 
     def test_presentation_rename_keeps_exact_source_but_math_edits_do_not(self):
         goal = indicator_order_goal()

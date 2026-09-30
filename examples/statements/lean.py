@@ -18,6 +18,7 @@ from .terms import Term
 
 LEAN_REQUEST_SCHEMA = "kaleion-lean-request/1"
 LEAN_TRANSLATOR = "kaleion-to-lean4/1"
+LEAN_NAMESPACE = "KaleionProofs"
 _FINGERPRINT = re.compile(r"[0-9a-f]{64}")
 _BINARY = {
     "add": "+", "sub": "-", "mul": "*", "eq": "=", "ne": "≠",
@@ -167,16 +168,19 @@ def lean_request(goal):
     goal = decode_goal(goal.data())
     parameters, coordinates = _symbols(goal)
     proposition = _closed_proposition(goal, parameters, coordinates)
-    definition = f"kaleionGoal_{goal.fingerprint}"
+    local_definition = f"kaleionGoal_{goal.fingerprint}"
+    definition = f"{LEAN_NAMESPACE}.{local_definition}"
     statement = goal.statement_fingerprint or "none"
     source = (
         "import Mathlib\n\n"
         "set_option autoImplicit false\n\n"
+        f"namespace {LEAN_NAMESPACE}\n\n"
         f"/- Kaleion statement: {statement}\n"
         f"   Kaleion goal: {goal.fingerprint}\n"
         "   This definition states a proposition; it is not a proof. -/\n"
-        f"def {definition} : Prop :=\n"
-        f"  {proposition}\n"
+        f"def {local_definition} : Prop :=\n"
+        f"  {proposition}\n\n"
+        f"end {LEAN_NAMESPACE}\n"
     )
     return LeanRequest(goal, definition, source, parameters, coordinates)
 
