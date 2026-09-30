@@ -60,6 +60,8 @@ class LeanRequestTests(unittest.TestCase):
         mathlib = next(row for row in manifest["packages"]
                        if row["name"] == "mathlib")
         lakefile = (root / "lakefile.lean").read_text("utf-8")
+        self.assertEqual(manifest["name"], "KaleionProofs")
+        self.assertIn("package KaleionProofs where", lakefile)
         self.assertEqual(toolchain, "leanprover/lean4:v4.35.0-rc3")
         self.assertEqual(
             mathlib["rev"], "6bd5e549d902323693ddf9128120376848331c85"

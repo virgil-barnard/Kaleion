@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package kaleionProofs where
+package KaleionProofs where
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4" @
