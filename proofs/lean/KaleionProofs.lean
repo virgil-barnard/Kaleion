@@ -1,3 +1,3 @@
 module
 
-import KaleionProofs.IndicatorOrderProof
+public import KaleionProofs.IndicatorOrderProof
