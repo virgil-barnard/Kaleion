@@ -1,3 +1,5 @@
+module
+
 import KaleionProofs.IndicatorOrderChallenge
 
 set_option autoImplicit false

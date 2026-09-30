@@ -172,6 +172,7 @@ def lean_request(goal):
     definition = f"{LEAN_NAMESPACE}.{local_definition}"
     statement = goal.statement_fingerprint or "none"
     source = (
+        "module\n\n"
         "import Mathlib\n\n"
         "set_option autoImplicit false\n\n"
         f"namespace {LEAN_NAMESPACE}\n\n"
