@@ -205,6 +205,13 @@ both fingerprints, a source digest, and safe symbol bindings. It deliberately
 contains no theorem, axiom, `sorry`, or `admit`. Generating this source is not a
 proof; Lean must still elaborate it and a proof term must be checked independently.
 
+The separate [`proofs/lean`](proofs/lean/README.md) project exercises that boundary
+for the small order-indicator goal. Its committed challenge must exactly equal the
+regenerated source; a different module imports and proves it. Lean, Mathlib and the
+goal identity are pinned, while CI builds the proof, audits axioms, and invokes two
+additional checkers. This establishes one exact proposition only—not the correctness
+of the Kaleion-to-Lean translator or any larger quotient theorem.
+
 ## Explore in Jupyter
 
 With the virtual environment above activated, install the optional notebook dependencies and register its kernel:

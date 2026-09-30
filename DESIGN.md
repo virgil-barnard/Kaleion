@@ -187,8 +187,12 @@ statement fingerprint and exact goal fingerprint before it can be associated.
 request into a closed Lean proposition definition. It assigns safe generated
 identifiers, retains the exact request plus source digest, and rejects unsettled
 division, modulus, sum, table and absolute-value semantics. It emits no proof or
-axiom. Lean elaboration, proof search, permitted axioms and kernel validation remain
-the responsibility of a future external checker, not the projection module.
+axiom. `proofs/lean` owns a separate pinned challenge/proof project: Python tests
+require its first challenge to equal regenerated source exactly, while the proof
+module can only import the challenge. Its workflow owns build, axiom-audit and
+independent-checker policy. Neither module changes the translator, graph evaluator,
+workspace, or canvas. A checked proposition does not by itself verify the
+translation decision that produced it.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted

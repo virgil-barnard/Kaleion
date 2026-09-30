@@ -172,7 +172,11 @@ The first Lean-facing projection now lives in its own `lean.py` adapter. It turn
 the exact request into a closed proposition with generated safe symbols and a
 source digest, while refusing unresolved arithmetic semantics. It deliberately
 does not own proof tactics, process execution, certificates or trust decisions.
-This is a checked-backend input contract, not a new evaluator operation or proof.
+The pinned `proofs/lean` project now owns one proof experiment without broadening
+that adapter: the generated challenge and handwritten proof are different modules,
+and CI owns checker/axiom policy. Exact-source regeneration prevents the proof from
+silently changing its challenge. This remains outside the evaluator and saved
+workspace schema; one checked proposition is not a proof of the translation layer.
 
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the

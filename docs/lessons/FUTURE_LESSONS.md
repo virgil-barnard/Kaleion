@@ -433,6 +433,13 @@ counterexample to a naive universal polynomial claim for rational vertices.
   failures are now available to lessons 04–05. Extend only when a lesson needs a
   separately stated comparison of totals, subsets, occurrences, or a declared
   correspondence. These remain groundwork for later analytical statements and proof aid.
+- **Checked coprime interior rule:** the generic indicator-order proposition now has
+  a separate pinned Lean challenge and proof. Next formalize the open-rectangle
+  nonintersection step used by the quotient lesson, first exposing its Bézout
+  assumptions and strict bounds as readable objects. Include the boundary-inclusive
+  common corner as the assumption-breaking case. Completion evidence is an exact
+  generated challenge, separate proof, strict identity receipt, axiom audit, and
+  independent checker outcomes—not a finite case or animation frame.
 
 ## Further lesson candidates
 

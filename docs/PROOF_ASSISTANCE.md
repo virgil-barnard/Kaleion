@@ -1,6 +1,6 @@
 # Proof assistance for Kaleion
 
-Research checked September 25, 2026 · Lean request projection added September 29
+Research checked September 25, 2026 · First pinned Lean challenge added September 30
 
 Keep the user-facing statement and orchestration Pythonic. Use separate adapters
 for algebraic manipulation, counterexample search, and checked mathematical
@@ -154,6 +154,32 @@ rejected until their Kaleion-to-Lean semantics are explicitly reconciled. A futu
 checker receipt must return the statement fingerprint, goal fingerprint, source
 digest, Lean version, Mathlib revision, permitted axioms and kernel outcome.
 
+## Check one generated challenge without letting the proof redefine it
+
+[`proofs/lean`](../proofs/lean/README.md) is the first deliberately narrow checked
+experiment. The Python regression test regenerates the order-indicator source and
+requires byte equality with `IndicatorOrderChallenge.lean`. The separate
+`IndicatorOrderProof.lean` module imports that definition and proves it; tests reject
+a second challenge definition or obvious proof holes in that file.
+
+The project pins Lean `v4.35.0-rc3` and Mathlib commit
+`6bd5e549d902323693ddf9128120376848331c85`. Its CI policy performs four distinct
+checks:
+
+1. build with warnings treated as failures;
+2. audit declarations under `KaleionProofs`, allowing only Lean's ordinary built-in
+   axioms;
+3. recheck compiled declarations with LeanChecker; and
+4. independently check proof terms with Nano-Do, with `sorry` disallowed.
+
+This separation matters more than the tactic used. A proof author may edit the proof
+module, but the challenged proposition remains reproducible from the exact Kaleion
+goal. The checks establish only the committed closed proposition under the pinned
+toolchain. They do not prove the Kaleion translator correct, do not cover the two
+larger exported goals, and do not convert Z3 validation or finite evidence into a
+kernel result. A future service must return a machine-readable receipt before the UI
+can associate a checked status with an object.
+
 ## Named rule boundary
 
 `examples/statements/rules.py` owns recognition and explanation. Calling
@@ -248,9 +274,10 @@ assumptions with no untracked holes or added theorem axioms. UI controls should
 offer **Explain**, **Find a failing case**, and eventually **Attempt proof**,
 while solver choice and budgets stay in an advanced pane.
 
-Next experiment: prove one exported proposition in a pinned Lean/mathlib project,
-formalize `bezout-coprime/1` and `coprime-interior/1`, and require the checker
-result to return both request fingerprints plus the source digest. Compare the readable
-steps, assumptions, trust boundary and failure reporting with Z3. A separate
+Next experiment: formalize `bezout-coprime/1` and `coprime-interior/1` against the
+second exported goal, then emit a strict checker receipt containing both request
+fingerprints, the source digest, toolchain pins, permitted axioms and checker
+outcomes. Compare the readable steps, assumptions, trust boundary and failure
+reporting with Z3. A separate
 bounded witness service can later reconnect countermodels to captured canvas
 contributors without turning animation frames into mathematical inputs.
