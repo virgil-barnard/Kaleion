@@ -1,5 +1,40 @@
 # Validation · 0.1.0
 
+## Pinned Lean proof boundary · September 30, 2026
+
+- The committed order-indicator challenge is byte-for-byte identical to the source
+  regenerated from goal
+  `d86610f8ec97af19ec0140991615020802c3e479d17bf5fc5e43d143a238ebb6`
+  (source SHA-256
+  `23aa0bfc6d8615613f671b7a3ef40212811dbf2f35d299a49365a70ce86f1491`).
+  It contains only a reducible proposition abbreviation; a separate imported module
+  supplies the theorem and cannot restate the challenge or contain `sorry`, `admit`,
+  a new axiom, or a replacement challenge definition under the Python regression
+  checks.
+- GitHub Actions [Lean proof checks run 11](https://github.com/virgil-barnard/Kaleion/actions/runs/36724051090)
+  passed with pinned Lean `v4.35.0-rc3`, Mathlib commit
+  `6bd5e549d902323693ddf9128120376848331c85`, and a complete transitive Lake lock.
+  `lake build --wfail` completed all 8,980 jobs. Lean reported that
+  `KaleionProofs.indicatorOrderProof` depends only on `propext` and `Quot.sound`.
+  Bundled LeanChecker passed. Axiom-audit v0.1.2 audited all six declarations under
+  `KaleionProofs` and found only the allowlisted `propext`, `Classical.choice`, and
+  `Quot.sound`.
+- The required Python suite has **303 passing tests**, no skips. The discovery
+  example, all three strict Lean-request exports, exact committed-source comparison,
+  Python compilation, and `git diff --check` pass. The separate Z3 report remains
+  17 `solver_valid` goals and one independently replayed `counterexample`; those
+  results are not promoted to Lean proofs.
+
+Nano-Do 0.3.2 is not a passing checker for this toolchain. A compatibility probe
+correctly found and exported `KaleionProofs`, then rejected the Lean 4.35 stream with
+`invalid digit found in string`, matching the open Lean 4.28+ incompatibility in
+[lean-action issue 169](https://github.com/leanprover/lean-action/issues/169). The
+gate is disabled rather than made permissive and should return only when it supports
+the pinned format with `sorry` forbidden. This increment checks one generated lemma;
+it does not prove the translator, the coprime-interior lemma, or the complete quotient
+construction. No browser UI, notebook, animation/video export, core operation, saved
+proof status, runtime dependency, or workspace schema changed.
+
 ## Exact Lean proposition requests · September 29, 2026
 
 - `examples/statements/lean.py` maps an exact backend-neutral goal into one closed
