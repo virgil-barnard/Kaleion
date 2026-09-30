@@ -17,8 +17,9 @@ request and requires exact source equality. That test protects correspondence to
 the current translator; it does not prove that the translator is mathematically
 sound.
 
-The project pins Lean through `lean-toolchain` and Mathlib by commit in
-`lakefile.lean`. With Lean's `lake` available, run:
+The project pins Lean through `lean-toolchain` and locks Mathlib plus every
+transitive package revision in `lake-manifest.json`. With Lean's `lake` available,
+run:
 
 ```sh
 cd proofs/lean

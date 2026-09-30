@@ -18,18 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install pinned Lean toolchain
-        uses: leanprover/lean-action@v1
-        with:
-          lake-package-directory: proofs/lean
-          auto-config: "false"
-          build: "false"
-          test: "false"
-          lint: "false"
-          use-github-cache: "false"
-      - name: Resolve pinned Mathlib dependency
-        working-directory: proofs/lean
-        run: lake update
       - uses: leanprover/lean-action@v1
         env:
           LEAN_NUM_THREADS: "1"

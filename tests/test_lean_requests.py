@@ -53,6 +53,21 @@ class LeanRequestTests(unittest.TestCase):
         for forbidden in ("def kaleiongoal_", "axiom ", "sorry", "admit"):
             self.assertNotIn(forbidden, lowered)
 
+    def test_lean_toolchain_and_mathlib_dependency_are_locked(self):
+        root = Path("proofs/lean")
+        toolchain = (root / "lean-toolchain").read_text("utf-8").strip()
+        manifest = json.loads((root / "lake-manifest.json").read_text("utf-8"))
+        mathlib = next(row for row in manifest["packages"]
+                       if row["name"] == "mathlib")
+        lakefile = (root / "lakefile.lean").read_text("utf-8")
+        self.assertEqual(toolchain, "leanprover/lean4:v4.35.0-rc3")
+        self.assertEqual(
+            mathlib["rev"], "6bd5e549d902323693ddf9128120376848331c85"
+        )
+        self.assertEqual(mathlib["inputRev"], mathlib["rev"])
+        self.assertIn(mathlib["rev"], lakefile)
+        self.assertTrue(all(len(row["rev"]) == 40 for row in manifest["packages"]))
+
     def test_presentation_rename_keeps_exact_source_but_math_edits_do_not(self):
         goal = indicator_order_goal()
         renamed = Goal("new display name", goal.proposition, goal.hypotheses,
