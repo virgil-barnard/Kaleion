@@ -17,7 +17,7 @@ class LeanRequestTests(unittest.TestCase):
         goal = indicator_order_goal()
         request = lean_request(goal)
         self.assertEqual(request.goal.fingerprint, goal.fingerprint)
-        self.assertIn("def kaleionGoal_", request.source)
+        self.assertIn("public def kaleionGoal_", request.source)
         self.assertTrue(request.definition.startswith("KaleionProofs."))
         self.assertIn("namespace KaleionProofs", request.source)
         self.assertIn(": Prop :=", request.source)
