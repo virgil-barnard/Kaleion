@@ -126,19 +126,30 @@ numbered notebooks or proof-assistant integration.
 The [independent quotient investigation](../QUOTIENT_EQUALITY.md) now saves the
 finite *question*: selected fields, ordered keys, expected domain, three capture
 identifiers, original workspace and view. Reopening checks the retained case;
-failed questions are exportable too. The UI displays the finite field statement,
-while its documentation explains the expanded incidence/floor-sum formulas.
+failed questions are exportable too. The UI now also expands supported integer
+definitions into incidence indicators and bounded sums, with explicit varied
+parameters, hypotheses and construction obligations. The
+[statement guide](../ALGEBRAIC_STATEMENTS.md) records the delivered boundary;
+the floor-sum rewrite is still a mathematical explanation rather than a prover step.
 
-Next translate those actual retained definitions, with explicit unsupported
-operators, into the pointwise identity `L+U=1` and its stronger correction
-`L+U=1+[au=bv]`. Keep the domain and parameter scopes attached. Then capture
-candidate variable bindings and assumptions alongside the retained definitions,
-finite cases and residual witnesses. A missing-key case must remain distinct from
-a numerical counterexample. Reuse the `(6,4,5)` ownership failure to test that
-joint gcd one cannot silently substitute for pairwise coprimality. Only then
-translate a supported statement to a proof assistant and distinguish checked,
-failed and unresolved goals. Keep the algebraic explanation visible even when
-translation is unavailable. Automatic generalization and proof are future work.
+The optional Z3 adapter now checks the indicator identity `L+U=1+[au=bv]`, exact
+key-domain obligations and keyed-read coverage. It exposes named Bézout and
+open-rectangle rules for a `gcd(a,b)=1` hypothesis, making the actual pointwise
+coprime construction solver-valid. With coprimality omitted it independently
+replays a tied-cell counterexample; a boundary-inclusive rectangle also exposes
+the common corner. Named-rule recognition and readable steps are now neutral data,
+separate from Z3 translation. Every subgoal now carries an exact versioned theorem
+request and semantic fingerprint, rather than only the construction fingerprint
+and a display name. A first Lean-facing adapter now translates that request into
+an axiom-free closed proposition definition with safe symbol bindings and an exact
+source digest. It does not generate a theorem or run a checker. Next prove one of
+those definitions in an external Lean/mathlib project, return all three identities,
+then check `(6,4,5)` against pairwise
+assumptions. [Candidate backends and experiments](../PROOF_ASSISTANCE.md) compare
+Python-friendly counterexample search, algebra and durable checked proofs.
+Selected literal abstraction, observed group-domain translation and formal
+verification of the lowering rules remain future work. Avoid broadening the
+translator merely to hide an unsupported lesson operation.
 
 The immediate human transfer task remains: build a new relation, derive counts,
 and move a separate arrangement without loading its answer. The smaller 3D
@@ -172,7 +183,9 @@ finite evidence does not prove a general identity or incidence isomorphism.
 The [provenance-to-conjecture design](../PROVENANCE_CONJECTURES.md) preserves the
 goal of selecting two objects, choosing an equality meaning, promoting selected
 constants to variables, declaring assumptions and asking a proof assistant for
-an automatic proof attempt. It is a future contract, not implemented UI.
+an automatic proof attempt. Named global parameter choices, explicit assumptions,
+bounded integer expansion and an optional first solver attempt are now implemented;
+literal selection and kernel-checked proof attempts remain future contracts.
 
 Start with lesson 02's coprime floor sums at `(a,b) = (11,7)`. Keep its domains
 and measurement provenance; explicitly generalize those definitions rather than
@@ -420,6 +433,13 @@ counterexample to a naive universal polynomial claim for rational vertices.
   failures are now available to lessons 04–05. Extend only when a lesson needs a
   separately stated comparison of totals, subsets, occurrences, or a declared
   correspondence. These remain groundwork for later analytical statements and proof aid.
+- **Checked coprime interior rule:** the generic indicator-order proposition now has
+  a separate pinned Lean challenge and proof. Next formalize the open-rectangle
+  nonintersection step used by the quotient lesson, first exposing its Bézout
+  assumptions and strict bounds as readable objects. Include the boundary-inclusive
+  common corner as the assumption-breaking case. Completion evidence is an exact
+  generated challenge, separate proof, strict identity receipt, axiom audit, and
+  independent checker outcomes—not a finite case or animation frame.
 
 ## Further lesson candidates
 

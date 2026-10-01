@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {comparisonRecord,validateComparison,requireComparisonCaptures,finiteStatement} from '../../examples/studio/web/comparison-record.js';
+import {comparisonRecord,validateComparison,validateExpansion,requireComparisonCaptures,finiteStatement} from '../../examples/studio/web/comparison-record.js';
 import {comparisonDocument,readDocument} from '../../examples/studio/web/document.js';
 const report={name:'Counts',left_by:['i','j'],left_value:'weight',right:'Formula',right_by:['x','y'],right_value:'value',expected:'Domain',expected_by:['u','v'],left_capture:'old-left',right_capture:'old-right',expected_capture:'old-domain',passed:true};
 const declaration=comparisonRecord(report,'One finite question');
@@ -16,4 +16,12 @@ assert.match(finiteStatement(report),/dom\(L\) = dom\(R\) = D/);
 assert.match(finiteStatement(report),/"Counts".weight by \(i, j\)/);
 const failed=comparisonRecord({...report,passed:false},'Counterexample');
 assert.deepEqual(failed.captures,declaration.captures); // Failure has the same export contract.
-console.log('Finite comparison declarations: exact capture retention, validation and stale-capture checks passed.');
+const options={vary:['a','b'],assumptions:'a > 1 and b > 1',coprime:[['a','b']]};
+const expanded=comparisonRecord(report,'Conditional statement',options);
+assert.equal(expanded.version,2);assert.equal(expanded.proof,undefined);
+requireComparisonCaptures(expanded,objects);
+const restored=readDocument(comparisonDocument(workspace,scene,expanded));
+assert.equal(restored.workspace,workspace);assert.deepEqual(restored.comparison.expansion,options);
+for(const value of [{...expanded,translator:'future/2'},{...expanded,proof:'checked'},{...expanded,version:1}])assert.throws(()=>validateComparison(value));
+for(const value of [{...options,vary:['a','a']},{...options,coprime:[['a','a']]},{...options,coprime:[['a']]},{...options,assumptions:2},{...options,proved:true}])assert.throws(()=>validateExpansion(value));
+console.log('Comparison declarations v1/v2: exact captures, scoped expansion choices, no trusted verdicts, validation and stale-capture checks passed.');

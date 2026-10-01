@@ -143,9 +143,56 @@ per-object choices. Membership, missing fields and equality keep independent
 meanings. Canvas envelope/view version 2 adds theme and color settings, while
 version 1 remains readable and mathematical exports remain unchanged.
 [Portable comparisons](docs/QUOTIENT_EQUALITY.md) use a separate version-1
-question envelope, retaining the workspace JSON as text. They display a generic
-keyed-field statement; neither that statement nor color mapping expands the
-construction into a theorem or assigns proof status.
+question envelope, retaining the workspace JSON as text. Question version 2 adds
+explicit parameter/assumption choices and a translator version; version 1 remains
+readable. [Algebraic expansion](docs/ALGEBRAIC_STATEMENTS.md) follows supported
+integer constructions into typed terms, bounded sums and domains. Author
+hypotheses remain separate from construction obligations and finite evidence.
+Obligations must be established under the hypotheses, not silently assumed.
+Neither expansion nor color mapping invokes a prover.
+
+`examples/statements/terms.py` owns neutral integer/predicate terms, serialization,
+notation and bounded finite interpretation; `expansion.py` owns supported lowering
+rules, lexical scope and projected domains. `goals.py` owns backend-neutral theorem
+requests, strict wire decoding, decomposition and semantic request identity.
+`examples/studio/statements.py` owns
+the comparison-to-conjecture request and fingerprint. `statement.js` owns controls
+and disclosure. Unsupported operators block expansion without affecting captured
+comparison, inspection or history. Numerical evaluation has no dependency on this
+experimental adapter. Placement-only projection excludes geometry validity and
+host budgets; a geometry read is unsupported. The optional proof adapter consumes
+the regenerated neutral report and never changes the graph evaluator or saved
+question. `examples/statements/rules.py` owns exact named-rule recognition,
+readable steps, witnesses and derived consequences. `solver.py` owns Z3
+translation, budgets, result taxonomy and exact model replay. It checks
+assumptions before implication, separates coverage, value equality and
+construction obligations, and independently replays any model.
+Solver validity is not a checked proof. A future checked-proof backend must
+justify the translation as well as check its mathematical conclusion. The first
+Z3 adapter deliberately stops at floor division, modulus, general gcd terms,
+bounded sums and literal tables until their semantic contracts have dedicated
+encodings. The one narrow gcd exception is a hypothesis exactly shaped as
+`gcd(x,y)=1`: the adapter
+records `bezout-coprime/1`, introduces hidden integer Bézout witnesses, and can
+record `coprime-interior/1` only for the exact open rectangle with extents
+`b-1,a-1`. General gcd terms and boundary-inclusive rectangles remain outside
+that rule. Rule plans are stable neutral data rather than Z3 objects, so a later
+explanation view or Lean adapter can consume them without importing the backend.
+They are still reviewed application code, not proof certificates.
+Each decomposed theorem request has a SHA-256 fingerprint over its schema, parent
+statement, hypotheses, domain and proposition. Display name/source and backend
+result are deliberately excluded. An external result must return both the parent
+statement fingerprint and exact goal fingerprint before it can be associated.
+`examples/statements/lean.py` owns a separate experimental projection of that
+request into a closed Lean proposition definition. It assigns safe generated
+identifiers, retains the exact request plus source digest, and rejects unsettled
+division, modulus, sum, table and absolute-value semantics. It emits no proof or
+axiom. `proofs/lean` owns a separate pinned challenge/proof project: Python tests
+require its first challenge to equal regenerated source exactly, while the proof
+module can only import the challenge. Its workflow owns build, axiom-audit and
+independent-checker policy. Neither module changes the translator, graph evaluator,
+workspace, or canvas. A checked proposition does not by itself verify the
+translation decision that produced it.
 
 
 The studio's [ordered accumulation](docs/ORDERED_PREFIX.md) exposes weighted
@@ -257,9 +304,12 @@ Inspection does not invalidate a preview or enter saved history; draft parking
 still requires a fresh preview. See the [field guide](docs/FIELD_GUIDE.md).
 See [the refactor contracts](docs/CONTINUOUS_CANVAS.md) for command ownership,
 proof-provenance boundaries, compatibility and task-based validation.
-The deferred [conjecture workflow](docs/PROVENANCE_CONJECTURES.md) separates
+The [conjecture workflow](docs/PROVENANCE_CONJECTURES.md) separates
 selected constant abstraction, explicit hypotheses, finite witnesses and checked
-proofs. It adds no current operation or schema.
+proofs. Named global parameter selection, explicit hypotheses and a supported
+integer expansion are delivered; selected literal abstraction and proof
+integration beyond the optional Z3 counterexample/obligation adapter remain
+future work. No core operation or workspace schema changes.
 
 The [canvas walkthrough](docs/CANVAS_TUTORIAL.md) separates teaching from execution.
 `examples/save_canvases.py` owns small mathematical recipes; `studio/catalog.py`

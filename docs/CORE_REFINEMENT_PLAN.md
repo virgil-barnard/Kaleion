@@ -22,6 +22,22 @@ current contract. The [diagnostic script](../examples/core_design_probe.py) and
 
 ## Delivery status
 
+- **Construction-to-statement projection:** [bounded integer expansion](ALGEBRAIC_STATEMENTS.md)
+  follows grid/sequence/literal domains, predicates, native-axis reductions and
+  keyed/scalar reads. Scoped bindings and unchanged literals remain explicit;
+  geometry and proof search stay separate. Quotient and 3D ownership constructions
+  exercise the same translator. No new core operation is justified. The optional
+  Z3 adapter now returns solver validation for the small indicator-order lemma
+  and keyed/domain obligations, and independently replays a non-coprime
+  counterexample. A second increment now lowers only `gcd(x,y)=1` hypotheses
+  through named Bézout witnesses and applies a narrowly matched open-rectangle
+  lemma, so the actual pointwise coprime statement is solver-valid. It keeps
+  solver validity distinct from checked proof; general gcd, division, bounded
+  sums and tables remain unsupported. Next formalize the same named lemma in a
+  checked backend before widening the operation vocabulary; observed grouping
+  and arbitrary reindexing need their own coverage contracts.
+  [Proof-assistance boundary](PROOF_ASSISTANCE.md).
+
 - **Independent quotient equality:** two differently ordered source domains,
   singleton counts and keyed measured lifts meet an independently constructed
   unit field. A portable finite question retains exact definitions/captures,
@@ -140,6 +156,27 @@ presentation modules; the existing comparison and measurement contracts suffice.
 The same construction exposed placement discoverability rather than a missing
 primitive: **Arrange / move** now opens the existing coordinate editor directly
 from a selected collection, without duplicating it in More tools.
+
+The optional proof experiment now applies the same information-hiding criterion.
+`examples/statements/goals.py` owns neutral theorem decomposition, wire validation,
+and exact request identity. `rules.py` owns recognition and explanation of the exact
+Bézout and open-rectangle steps; `solver.py` owns only their Z3 realization,
+resource limits, result taxonomy and model replay. The neutral rule plan can be
+shown by a future UI or translated by a checked backend without importing Z3.
+This extraction adds no core operation or proof claim: the planner remains trusted
+application code until an external checker verifies the corresponding theorem.
+Goal identity includes mathematical content and the parent statement but excludes
+mutable presentation labels, preventing a future checker result from being
+associated by an ambiguous name.
+The first Lean-facing projection now lives in its own `lean.py` adapter. It turns
+the exact request into a closed proposition with generated safe symbols and a
+source digest, while refusing unresolved arithmetic semantics. It deliberately
+does not own proof tactics, process execution, certificates or trust decisions.
+The pinned `proofs/lean` project now owns one proof experiment without broadening
+that adapter: the generated challenge and handwritten proof are different modules,
+and CI owns checker/axiom policy. Exact-source regeneration prevents the proof from
+silently changing its challenge. This remains outside the evaluator and saved
+workspace schema; one checked proposition is not a proof of the translation layer.
 
 The [first implementation results](reviews/2026-09-core-refactor-probes.json) record
 the tested working tree with a core-source digest. For 2,000 one-item groups, the

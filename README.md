@@ -110,8 +110,15 @@ changing the coprime parameters exposes one double-owned cell.
 **Compare exact fields → Save this comparison** preserves the declared question,
 exact case, construction graphs and view. Open checks that saved case again.
 The [investigation](docs/QUOTIENT_EQUALITY.md) includes from-blank instructions and
-the floor-sum explanation. Automatic algebraic expansion and proof assistance
-remain future work.
+the floor-sum explanation. **Expand construction** now derives supported integer
+formulas from those definitions. Choose varying parameters, retain the exact key
+domain, and declare assumptions such as coprimality. The same controls expand
+3D ownership and total sums. [Try the statement workflow](docs/ALGEBRAIC_STATEMENTS.md).
+An optional [proof-assistance adapter](docs/PROOF_ASSISTANCE.md) checks the small
+order lemma, applies named Bézout/coprime-interior rules, and validates the
+pointwise coprime construction and its obligations. Removing coprimality returns
+an independently replayed counterexample. The adapter remains separate from the
+canvas and does not claim a kernel-checked proof.
 
 Follow an input or contributor to its saved source, then return
 without losing the camera. Save retains exact mathematics, evidence and history;
@@ -170,6 +177,40 @@ python3 -m unittest discover -s tests -v
 In each new terminal, run `source .venv/bin/activate` from the repository directory before working. Run `deactivate` when finished. If Ubuntu/WSL reports that virtual-environment creation is unavailable, install its venv support with `sudo apt install python3-venv`, then retry the setup.
 
 The runtime dependency is NumPy; the tests use Python's standard library. No TensorFlow, PyTorch, browser, or network service is needed to execute the installed core.
+
+To try the optional first proof boundary, install Z3Py and run the report:
+
+```sh
+python3 -m pip install -e '.[proof]'
+python3 -m examples.proof_assistance
+```
+
+The report distinguishes solver validation, named rules, exact replayed
+counterexamples, inconsistent assumptions, unsupported terms, and timeouts. Each
+recognized rule carries readable premises, witnesses, consequence, and explanation
+from a backend-neutral plan; Z3 only translates that plan. Every attempt is paired
+with a versioned theorem request and its own semantic fingerprint, rather than
+only the parent statement or a mutable display name. It never labels a solver
+result as a checked proof.
+
+To inspect the exact input intended for a future checked Lean backend, export
+three proposition requests:
+
+```sh
+python3 -m examples.lean_request --out build/lean-requests
+```
+
+Each file is a closed Lean `Prop` definition paired with the full Kaleion goal,
+both fingerprints, a source digest, and safe symbol bindings. It deliberately
+contains no theorem, axiom, `sorry`, or `admit`. Generating this source is not a
+proof; Lean must still elaborate it and a proof term must be checked independently.
+
+The separate [`proofs/lean`](proofs/lean/README.md) project exercises that boundary
+for the small order-indicator goal. Its committed challenge must exactly equal the
+regenerated source; a different module imports and proves it. Lean, Mathlib and the
+goal identity are pinned, while CI builds the proof, audits axioms, and invokes two
+additional checkers. This establishes one exact proposition only—not the correctness
+of the Kaleion-to-Lean translator or any larger quotient theorem.
 
 ## Explore in Jupyter
 

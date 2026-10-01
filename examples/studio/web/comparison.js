@@ -1,10 +1,11 @@
 import {fieldKeys} from './groups.js';
 import {caseLabel} from './cases.js';
 import {finiteStatement} from './comparison-record.js';
+import {statementEditor} from './statement.js';
 
 // Declares a finite equality question. Python owns alignment, arithmetic, and witnesses.
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n};
-export function comparisonInspector({source,objects,initial,remember,run,check,inspect,link,clearLink,chooseLink,save,captured=null,title=''}){
+export function comparisonInspector({source,objects,initial,remember,run,check,inspect,link,clearLink,chooseLink,save,expand,captured=null,title='',expansion=null}){
   const ready=objects.filter(o=>o.status==='ready'&&o.kind!=='incidence');
   const box=el('div',undefined,{id:'comparison-tool'}),choices=el('details'),heading=el('summary','Comparison inputs');choices.open=true;choices.append(heading);
   const labeled=(parent,text,control)=>{const label=el('label',text);label.append(control);parent.append(label);return control};
@@ -51,11 +52,12 @@ export function comparisonInspector({source,objects,initial,remember,run,check,i
   }
   function render(report){
     const statement=el('details',undefined,{class:'finite-statement'});statement.open=true;
-    statement.append(el('summary','Declared finite equality'),el('pre',finiteStatement(report)),el('p','This statement names captured integer fields and their key domain. The saved construction graphs explain L and R. Replacing constants by variables and deriving a general formula are later steps.',{class:'help'}));
+    statement.append(el('summary','Declared finite equality'),el('pre',finiteStatement(report)),el('p','This statement names captured integer fields and their key domain. Expand the construction to expose its algebra and choose which parameters may vary.',{class:'help'}));
+    const algebra=statementEditor({parameters:report.parameters,initial:expansion,run,expand:options=>expand(report,options)});
     const titleInput=el('input',undefined,{type:'text',maxlength:'160','aria-label':'Comparison title'});titleInput.value=(title||`${report.name} = ${report.right}`).slice(0,160);
     const titleLabel=el('label','Record title');titleLabel.append(titleInput);
-    const saveButton=el('button','Save this comparison',{type:'button',id:'save-comparison'});saveButton.onclick=()=>run(()=>save(report,titleInput.value));
-    statement.append(titleLabel,saveButton,el('p','Saves the question, exact case, definitions, evidence, history and view. Open checks the captured values again. A failed comparison is also worth keeping.',{class:'help'}));results.append(statement);
+    const saveButton=el('button','Save this comparison',{type:'button',id:'save-comparison'});saveButton.onclick=()=>run(()=>save(report,titleInput.value,algebra.read()));
+    statement.append(titleLabel,saveButton,el('p','Saves the question, any expanded parameter choices and assumptions, exact case, definitions, evidence, history and view. Open checks the captured values again. A failed comparison is also worth keeping.',{class:'help'}));results.append(statement,algebra.box);
     results.append(el('p',`Captured case · ${caseLabel(report.parameters)}`,{class:'help'}),
       el('p',`Left: ${report.name}.${report.left_value} by (${report.left_by.join(', ')}). Right: ${report.right}.${report.right_value} by (${report.right_by.join(', ')}). Expected: ${report.expected} by (${report.expected_by.join(', ')}).`,{class:'help'}));
     const filter=picker(results,'Show comparison keys',['all','different','missing','outside','equal'],report.passed?'all':'different','comparison-filter');

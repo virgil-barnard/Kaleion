@@ -1,5 +1,191 @@
 # Validation · 0.1.0
 
+## Pinned Lean proof boundary · September 30, 2026
+
+- The committed order-indicator challenge is byte-for-byte identical to the source
+  regenerated from goal
+  `d86610f8ec97af19ec0140991615020802c3e479d17bf5fc5e43d143a238ebb6`
+  (source SHA-256
+  `23aa0bfc6d8615613f671b7a3ef40212811dbf2f35d299a49365a70ce86f1491`).
+  It contains only a reducible proposition abbreviation; a separate imported module
+  supplies the theorem and cannot restate the challenge or contain `sorry`, `admit`,
+  a new axiom, or a replacement challenge definition under the Python regression
+  checks.
+- GitHub Actions [Lean proof checks run 11](https://github.com/virgil-barnard/Kaleion/actions/runs/36724051090)
+  passed with pinned Lean `v4.35.0-rc3`, Mathlib commit
+  `6bd5e549d902323693ddf9128120376848331c85`, and a complete transitive Lake lock.
+  `lake build --wfail` completed all 8,980 jobs. Lean reported that
+  `KaleionProofs.indicatorOrderProof` depends only on `propext` and `Quot.sound`.
+  Bundled LeanChecker passed. Axiom-audit v0.1.2 audited all six declarations under
+  `KaleionProofs` and found only the allowlisted `propext`, `Classical.choice`, and
+  `Quot.sound`.
+- The required Python suite has **303 passing tests**, no skips. The discovery
+  example, all three strict Lean-request exports, exact committed-source comparison,
+  Python compilation, and `git diff --check` pass. The separate Z3 report remains
+  17 `solver_valid` goals and one independently replayed `counterexample`; those
+  results are not promoted to Lean proofs.
+
+Nano-Do 0.3.2 is not a passing checker for this toolchain. A compatibility probe
+correctly found and exported `KaleionProofs`, then rejected the Lean 4.35 stream with
+`invalid digit found in string`, matching the open Lean 4.28+ incompatibility in
+[lean-action issue 169](https://github.com/leanprover/lean-action/issues/169). The
+gate is disabled rather than made permissive and should return only when it supports
+the pinned format with `sorry` forbidden. This increment checks one generated lemma;
+it does not prove the translator, the coprime-interior lemma, or the complete quotient
+construction. No browser UI, notebook, animation/video export, core operation, saved
+proof status, runtime dependency, or workspace schema changed.
+
+## Exact Lean proposition requests · September 29, 2026
+
+- `examples/statements/lean.py` maps an exact backend-neutral goal into one closed
+  Lean `Prop` definition. Generated identifiers isolate user labels from Lean code;
+  the manifest retains the complete goal, both request fingerprints, source digest,
+  and reversible symbol map. Strict decoding regenerates and compares every field.
+- The source contains no theorem, axiom, `sorry`, or `admit`. Unsettled floor
+  division, modulus, bounded sums, literal tables and absolute-value semantics are
+  rejected. `python3 -m examples.lean_request --out build/lean-requests` exports
+  three requests: the order lemma, coprime-interior lemma, and actual quotient
+  comparison. Their manifests and emitted files pass independent digest checks.
+- Focused Lean/proof tests: **23 pass**. The required full suite has **300 passing
+  tests**, no skips. `python3 examples/discovery.py --out
+  build/lean-request-example-output`, the existing 18-attempt Z3 report,
+  compilation, and `git diff --check` pass. The Z3 result remains 17
+  `solver_valid` goals and one independently replayed `counterexample`.
+
+Lean and Lake are not installed on this host. The generated source was therefore
+not elaborated or kernel-checked, and no proof is claimed. This increment adds no
+dependency, browser UI, notebook, animation/video export, core operation, saved
+proof status, or workspace-schema change.
+
+## Exact theorem-request identity · September 28, 2026
+
+- Backend-neutral goal definition, decomposition, strict decoding and fingerprinting
+  now live in `examples/statements/goals.py`, separate from Z3 translation. The
+  version-1 fingerprint covers the parent statement, exact hypotheses, domain and
+  proposition while excluding mutable display labels and backend results.
+- Every CLI attempt is paired with its full theorem request and returns the same
+  goal fingerprint. Strict decoding recomputes the identity; changed mathematical
+  content is rejected, while a renamed explanation remains the same request.
+- Targeted proof-assistance tests: **17 pass**. The required full suite has **294
+  passing tests**, no skips. `python3 examples/discovery.py --out
+  build/goal-request-example-output`, compilation, and `git diff --check` pass.
+- `python3 -m examples.proof_assistance --out
+  build/goal-request-proof-report.json` retains 17 `solver_valid` attempts and one
+  independently replayed `counterexample`. A separate check strictly decodes all
+  18 theorem requests and verifies both fingerprints against their paired attempts.
+
+Lean/lake is not installed on this host, so no kernel check is claimed. This
+increment prepares an unambiguous request boundary; it does not generate a proof,
+store a verdict, alter the browser UI, or add a dependency/core/schema change.
+
+## Backend-neutral named-rule plans · September 27, 2026
+
+- The named Bézout and coprime-interior pattern recognition has moved from the
+  Z3 adapter into `examples/statements/rules.py`. Each recognized step now exports
+  exact neutral premises, semantic bindings, introduced witnesses, consequence,
+  dependencies and readable explanation. Importing the planner does not import Z3.
+- The Z3 adapter consumes this plan and retains it in each attempt while preserving
+  the existing rule identifiers, hidden backend witnesses, independent countermodel
+  replay and status taxonomy. The boundary-inclusive rectangle still receives only
+  the Bézout step and returns its exact common-corner counterexample.
+- Targeted proof-assistance tests: **15 pass**. The required full suite has **292
+  passing tests**, no skips. `python3 examples/discovery.py --out
+  build/rule-plan-example-output`, compilation, and `git diff --check` pass.
+- `python3 -m examples.proof_assistance --out
+  build/rule-plan-proof-report.json` retains the prior mathematical result: 17
+  `solver_valid` attempts and one independently replayed `counterexample`. Sixteen
+  attempts carry neutral rule plans; a separate report check validates their rule
+  identifiers, witnesses, dependencies and status counts.
+
+No dependency, browser UI, notebook, animation/video export, core operation,
+workspace schema or saved proof status changes. A neutral rule plan is still
+trusted application output, not a checked proof certificate.
+
+## Named coprime assistance rules · September 26, 2026
+
+- Required venv gates: **291 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/bezout-example-output` passes. Four
+  focused additions check signed/zero Bézout equivalence against Python's exact
+  gcd, the shared coprime-interior lemma, the actual fingerprinted quotient
+  comparison, and an assumption-breaking boundary-inclusive rectangle.
+- `python3 -m examples.proof_assistance --out build/bezout-proof-report.json`
+  passes with Z3 4.16.0. Seventeen goals are `solver_valid`: the order and
+  coprime-interior lemmas plus all coverage, value and construction-obligation
+  goals for the actual coprime statement. Each attempt records
+  `bezout-coprime/1` and, only for the exact open rectangle,
+  `coprime-interior/1` when used.
+- The stronger statement without coprimality returns one exact `counterexample`,
+  independently replayed by the neutral evaluator. Enlarging the domain to
+  include its far corner also returns a replayed common-corner counterexample;
+  the interior rule is not applied. General gcd claims remain `unsupported`.
+
+No notebook, browser UI, animation/video export, dependency, core operation, or
+saved-format changes. The named rules are reviewed adapter code and remain part
+of the solver trust boundary; these results are not Lean-kernel-checked proofs or
+formal verification of the construction translator.
+
+## Optional proof-assistance boundary · September 25, 2026
+
+- Required venv gates: **287 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/proof-example-output` passes. Ten
+  focused tests exercise the generic indicator-order lemma, decomposed quotient
+  coverage/value/obligation goals, an independently replayed exact countermodel,
+  inconsistent assumptions, timeout/input budgets, rejected term payloads,
+  deliberately unsupported gcd/floor-division semantics, and lazy optional-backend
+  loading, and validated statement sections/fingerprints.
+- `python3 -m examples.proof_assistance --out build/proof-assistance.json` passes
+  with Z3 4.16.0. The indicator identity, both independent key domains, extent
+  requirements, and keyed-read obligations are `solver_valid`. With coprimality
+  deliberately omitted, the pointwise quotient equality returns an exact tied-cell
+  `counterexample` that the neutral Kaleion term evaluator independently reproduces.
+  Adding `gcd(a,b)=1` reports `unsupported`; the assumption is never discarded.
+- `python3 -m pip wheel --no-deps . --wheel-dir dist` builds
+  `kaleion-0.1.0-py3-none-any.whl`. Z3 remains in the optional `proof` extra;
+  importing ordinary statement support does not import it. The core runtime and
+  workspace schemas are unchanged.
+
+No notebooks, browser UI, animation/video exports, core operations, or saved
+formats changed. Existing Plotly contracts run in the complete optional environment.
+No browser or physical-device check was needed for this programmatic adapter. An
+SMT `unsat` result is backend validation in the supported fragment, not a
+kernel-checked proof or formal verification of Kaleion's translator.
+
+## Construction statements and assumptions · September 25, 2026
+
+- Required venv gates: **277 tests pass**, no skips;
+  `python3 examples/discovery.py --out build/example-output` passes. Twelve new
+  tests cover quotient indicators/independent floor sums at seven cases, the same
+  translation in 3D, native zero groups and empty-axis totals, lexical case
+  isolation, fixed literals, exact large integers, signed floor division and
+  positive moduli, scalar versus column divisor checks, keyed coverage, recorded
+  requirements, and unsupported operations. A matching pair of zero fields still
+  fails coverage when the independent domain has a key missing from both.
+  A small shared graph that would expand exponentially stops at a term budget.
+- Read-only adapter checks disable construction evaluation, preserve the exact
+  workspace bytes, distinguish failed coprimality from failed finite equality,
+  reject stale requests/invalid assumptions, and keep fingerprints stable across
+  save/open and parameter storage order. These are finite translation checks,
+  not a formal verification of the translator or a universal theorem.
+- `node docs/studies/check-comparison-record.mjs` passes for question versions
+  1 and 2, exact workspace preservation, saved parameter/assumption choices,
+  unknown translator versions, stale captures and rejected proof-status fields.
+- `check-statements.cjs` and the existing `check-colors-equality.cjs` pass in
+  **Chromium 153.0.8010.0**, with no page errors. Real controls cover expansion of
+  quotient indicators and total sums, transfer to the 3D ownership example,
+  saved choices/re-expansion, invalid-formula recovery, retaining a finite-only
+  question, the non-coprime case, return from contributor inspection, keyboard
+  activation and phone-width layout. Mathematical exports remain unchanged by
+  expansion. Screenshots were inspected separately from numerical tests.
+- The programmatic documentation example executes and changed local document
+  links resolve. Proof-tool recommendations use primary documentation checked
+  September 25. No external prover was installed or executed.
+
+No notebook, Plotly/video export, dependency, core operation, or core workspace
+schema changes. No physical tablet, screen-reader or novice usability study was
+performed. Gather/Tile/Roll, observed grouping and other unsupported definitions
+remain explicit expansion limits; their finite captures are still usable.
+
+
 ## Value colors and portable finite equality · September 25, 2026
 
 - Required venv gates: **265 tests pass**, no skips;

@@ -1,0 +1,290 @@
+# Proof assistance for Kaleion
+
+Research checked September 25, 2026 · First pinned Lean challenge added September 30
+
+Keep the user-facing statement and orchestration Pythonic. Use separate adapters
+for algebraic manipulation, counterexample search, and checked mathematical
+proofs. No single package currently meets all three needs equally well. The new
+[construction expansion](ALGEBRAIC_STATEMENTS.md) supplies typed integer terms,
+bounded sums, domains, assumptions and source identities without committing the
+canvas or evaluator to a solver's expression classes.
+
+## Candidates and their roles
+
+| Candidate | Useful role in Kaleion | Boundary to preserve |
+| --- | --- | --- |
+| [SymPy](https://docs.sympy.org/latest/modules/assumptions/refine.html) | Python-native symbolic expressions, algebraic presentation, assumption-aware rewrites through `refine`; good for suggesting a more recognizable formula | A simplified expression or `True` is not by itself a portable, independently checked theorem certificate. Record a proposed rewrite and its required conditions. Unknown Boolean expressions can remain unresolved. |
+| [Z3 / Z3Py](https://z3prover.github.io/papers/programmingz3.html) | First candidate for bounded counterexample search, implication checks and small arithmetic obligations; direct Python interface, models and solver tactics | `sat`, `unsat`, `unknown` and resource exhaustion need different statuses. Quantifiers and nonlinear integer arithmetic will require guidance or fail to terminate; do not expect one call to prove arbitrary parameterized sums or number theory. |
+| [Lean 4](https://lean-lang.org/faq/) with [mathlib](https://github.com/leanprover-community/mathlib4) | Preferred long-term target for reusable mathematical lemmas and durable checked proofs; broad library across algebra, number theory, combinatorics and geometry | Python can orchestrate translation and proof attempts, but Lean's proof language and toolchain are separate. Its kernel checks proof terms; the translator's fidelity to Kaleion is a further obligation. Record permitted axioms and dependencies. |
+| [Knuckledragger](https://github.com/philzook58/knuckledragger) | Particularly interesting Python-first experiment: proof combinators, definitions and induction built around Z3 terms, with ordinary Python/Jupyter integration | Its documented trust model is larger than Lean/Rocq's, with ATP calls in the trusted reasoning chain. Evaluate it as an optional research adapter; do not present its results as Lean-kernel certificates. |
+
+The implemented first step follows the recommendation: **Z3Py first for finding
+and explaining failures, Lean/mathlib for the durable proof path**, with SymPy as
+an optional algebra assistant.
+Knuckledragger deserves a focused comparison because it fits the desired Python
+authoring style unusually well. Do not add all four as runtime dependencies now.
+This is an architectural judgment based on the documented capabilities, not a
+benchmark of these systems on Kaleion problems.
+
+Primary documentation supports the distinctions: SymPy documents assumption-
+dependent refinement; Programming Z3 describes its Python interface and solver
+procedures; Lean describes proof terms checked by a small kernel; Knuckledragger
+explicitly describes its Z3-based logic and trust boundary. For Lean checking,
+follow the [reference manual's proof-validation guidance](https://lean-lang.org/doc/reference/latest/ValidatingProofs/).
+Do not infer security or proof integrity from an exit code alone.
+
+## What the first adapter does
+
+1. **Check whether the proposed assumptions describe any admissible case.** An
+   inconsistent hypothesis can make an implication vacuous. A timeout on this
+   check is not confirmation of consistency.
+2. **Separate definition obligations from the desired equality.** Nonnegative
+   ranges, nonzero divisors, positive moduli, singleton scalar reads, and complete
+   unique key alignment must follow from the author hypotheses. Never silently
+   assume them to make a solver succeed.
+3. **Search for an exact witness.** A model supplies parameters and a key that the
+   neutral Kaleion term evaluator independently reconstructs. This first adapter
+   handles a quantifier-free integer fragment; a future explicitly bounded case
+   enumerator will preserve failed comparison contributors as visual evidence.
+4. **Expose small, named goals.** Coverage, compared values, and construction
+   obligations remain separate attempts, so the user can see which part of the
+   picture a result concerns. Case splits, substitutions, sum exchange,
+   divisibility lemmas, and bijections remain future proof-step vocabulary.
+5. **Retain statement identity without trusting persistence.** Each attempt carries
+   the exact statement fingerprint and backend version. Attempts are not yet saved
+   with questions. A future checked result must also record translation and
+   arithmetic versions, assumptions/axioms, proof source, and checker result;
+   editing the claim invalidates that association.
+6. **Describe mathematical rules before translating them.** A neutral rule plan
+   records exact premises, semantic bindings, introduced witnesses, consequence,
+   dependencies and explanation. Z3 consumes this plan, but does not own how an
+   open-rectangle pattern is recognized or how that step is explained.
+7. **Identify the exact theorem request.** Every decomposed goal has a versioned
+   wire form and SHA-256 fingerprint over its parent statement, hypotheses, domain,
+   and proposition. Its display name/source and backend result are excluded.
+8. **Generate a proposition before attempting a proof.** The first Lean-facing
+   adapter maps an exact goal to a closed `Prop` definition, safe generated symbol
+   names and a source digest. It emits no theorem, axiom, `sorry` or `admit`, and
+   therefore cannot be mistaken for a checked result.
+
+The first useful goal is smaller than the whole floor-sum theorem. The optional
+adapter now establishes the following identity in its supported integer fragment:
+
+\[
+[X\le Y]+[Y\le X]=1+[X=Y].
+\]
+
+This result is recorded as `solver_valid`, not `checked_proof`. Then use
+`X=b(j+1)` and `Y=a(i+1)`. The named divisibility lemma now records that
+coprime positive `a,b` have no such interior equality: from `a(i+1)=b(j+1)`,
+coprimality forces `b | i+1`, contradicting `0<i+1<b`. The adapter lowers the
+exact hypothesis `gcd(a,b)=1` to Bézout witnesses and applies this lemma only to
+the matching open rectangle. The original quotient comparison is then
+`solver_valid`; removing coprimality returns an independently replayed tie.
+Summing the pointwise identity gives the area claim. That bounded-sum step is
+still unsupported. Without coprimality, enumerate the diagonal by `d=gcd(a,b)`
+to derive the correction `d−1`; this general gcd step also remains a mathematical
+proof plan rather than a machine-checked result.
+
+For the 3D ownership construction, preserve pairwise assumptions separately.
+Having `gcd(a,b,c)=1` does not prevent two normalized coordinates from tying.
+A useful countercase is `(a,b,c)=(6,4,5)`. The same comparison controls and
+statement vocabulary can expose the tie before any proof integration.
+
+## Run the adapter
+
+From an activated repository virtual environment:
+
+```sh
+python3 -m pip install -e '.[proof]'
+python3 -m examples.proof_assistance
+```
+
+The report regenerates both the coprime quotient statement and the stronger claim
+without coprimality. It decomposes coverage, pointwise equality, and every
+construction obligation into separate `Goal` objects, and retains the statement
+fingerprint, applied rule names, and backend-neutral `rule_steps` on each attempt.
+Each step contains its exact premises, bindings, witnesses, consequence, rule
+dependencies and readable explanation. Each attempt is also paired with the exact
+`kaleion-goal/1` request it evaluated; strict decoding recomputes and checks the
+goal fingerprint. The coprime statement is
+solver-valid. The stronger claim yields an exact tied cell that
+`examples.statements.terms.evaluate` independently reconstructs before the
+counterexample is accepted.
+
+Programmatically:
+
+```python
+from examples.statements import Z3Assistant, goals_from_statement
+
+assistant = Z3Assistant()
+attempts = [assistant.check(goal) for goal in goals_from_statement(statement)]
+```
+
+| Status | Meaning |
+| --- | --- |
+| `solver_valid` | The negated goal was unsatisfiable in the adapter's supported Z3 integer fragment after any explicitly listed named rules |
+| `counterexample` | Z3 supplied an exact model and the neutral evaluator independently reproduced the violation |
+| `invalid_counterexample` | A backend model could not be reproduced; never present it as mathematical evidence |
+| `inconsistent_assumptions` | No assignment satisfies the displayed hypotheses and domain; do not use vacuity as success |
+| `unknown` | The solver could not decide within its configured resource budget |
+| `unsupported` | The term needs a semantic rule the adapter does not implement |
+
+## Export exact Lean proposition requests
+
+From the same environment, without installing Lean:
+
+```sh
+python3 -m examples.lean_request --out build/lean-requests
+```
+
+The command exports the order-indicator lemma, the coprime-interior lemma, and the
+actual pointwise quotient-comparison goal. Every `kaleion-lean-request/1` manifest
+contains the complete strict `kaleion-goal/1` request, parent statement fingerprint,
+goal fingerprint, generated source SHA-256, and the mapping from Kaleion parameter
+and coordinate labels to generated Lean identifiers. Strict decoding regenerates
+all derived content; a changed proposition, binding, source, or digest is rejected.
+
+The generated file imports Mathlib and defines one closed proposition. It does not
+assert that proposition. This separation is intentional: source generation is a
+reviewable translation decision, while elaboration, tactic execution, proof-term
+checking, permitted axioms and checker-version reporting belong to a separate
+external process. `floordiv`, modulus, bounded sums, tables and absolute value are
+rejected until their Kaleion-to-Lean semantics are explicitly reconciled. A future
+checker receipt must return the statement fingerprint, goal fingerprint, source
+digest, Lean version, Mathlib revision, permitted axioms and kernel outcome.
+
+## Check one generated challenge without letting the proof redefine it
+
+[`proofs/lean`](../proofs/lean/README.md) is the first deliberately narrow checked
+experiment. The Python regression test regenerates the order-indicator source and
+requires byte equality with `IndicatorOrderChallenge.lean`. The separate
+`IndicatorOrderProof.lean` module imports that definition and proves it; tests reject
+a second challenge definition or obvious proof holes in that file.
+
+The project pins Lean `v4.35.0-rc3` and Mathlib commit
+`6bd5e549d902323693ddf9128120376848331c85`. Its CI policy performs three distinct
+checks:
+
+1. build with warnings treated as failures;
+2. audit declarations under `KaleionProofs`, allowing only Lean's ordinary built-in
+   axioms;
+3. recheck compiled declarations with LeanChecker.
+
+Nano-Do remains deliberately disabled: its current parser rejects exporter streams
+from Lean 4.28 and newer, including this project's pinned Lean 4.35 release candidate
+([lean-action issue 169](https://github.com/leanprover/lean-action/issues/169)). The
+failed compatibility probe reached and exported the correct root module, then failed
+with `invalid digit found in string`; it is not proof evidence. Re-enable it only
+after the upstream checker supports the pinned stream format, without allowing
+`sorry`.
+
+This separation matters more than the tactic used. A proof author may edit the proof
+module, but the challenged proposition remains reproducible from the exact Kaleion
+goal. The checks establish only the committed closed proposition under the pinned
+toolchain. They do not prove the Kaleion translator correct, do not cover the two
+larger exported goals, and do not convert Z3 validation or finite evidence into a
+kernel result. A future service must return a machine-readable receipt before the UI
+can associate a checked status with an object.
+
+## Named rule boundary
+
+`examples/statements/rules.py` owns recognition and explanation. Calling
+`named_rule_plan(goal.hypotheses, goal.domain)` imports no solver and returns only
+neutral terms plus bounded text. `examples/statements/solver.py` owns the separate
+decision of how those steps become Z3 constraints. A future Lean adapter should
+consume the same semantic bindings, then produce and independently check its own
+theorem rather than trust the Z3 lowering.
+
+`examples/statements/goals.py` separately owns goal decomposition and the theorem
+request wire format. A checked result cannot be attached by goal name alone: it
+must identify both the construction statement fingerprint and exact goal
+fingerprint. Renaming an explanation leaves this identity unchanged; editing a
+hypothesis, bound, proposition, or parent statement changes it. Rule steps are an
+attempt strategy and therefore do not redefine the theorem being requested.
+
+The result reports every rule used. `bezout-coprime/1` is allowed only for a
+top-level hypothesis exactly equal to `gcd(x,y)=1`. It introduces fresh hidden
+integers `u,v` satisfying
+
+\[
+xu+yv=1.
+\]
+
+Bézout's identity is equivalent to coprimality over the integers. These solver
+witnesses are not Kaleion parameters and never appear in a returned
+counterexample. The original gcd hypothesis—not the lowering—is evaluated during
+independent replay.
+
+`coprime-interior/1` is allowed only when the same pair owns the exact goal domain
+
+\[
+0\le i<y-1,\qquad 0\le j<x-1.
+\]
+
+It adds the named consequence `x(i+1) != y(j+1)`. The elementary derivation is:
+if equality held, multiply `xu+yv=1` by `i+1` and substitute
+`x(i+1)=y(j+1)`; then `y` divides `i+1`, impossible because
+`0<i+1<y`. A boundary-inclusive domain `i<y, j<x` deliberately does not match;
+the common corner becomes an exact counterexample. General gcd predicates,
+arbitrary domain inference, and sum exchange remain unsupported.
+
+These rules and their recognition are reviewed adapter code, not externally checked theorem
+certificates. Their names make the additional trust visible and give a future
+Lean adapter precise lemmas to replace. A solver result using them remains
+`solver_valid`, never `checked_proof`.
+
+Importing ordinary statement modules does not import Z3. The optional adapter
+owns the dependency and translation; construction evaluation, saved comparisons,
+the browser UI, and workspace schemas do not depend on it. Proof attempts are
+not saved into a question and no proof badge is displayed.
+
+## Translation traps worth settling first
+
+- **Division conventions:** Kaleion's `//` floors, including for negative
+  divisors; `%` requires positive integer moduli. A backend's totalized division
+  at zero or signed remainder convention must not change the statement. Express
+  the needed quotient/remainder law explicitly or add a proved compatibility
+  lemma. Lean documents totalized division in its FAQ; it does not discharge our
+  nonzero-divisor obligations automatically.
+- **Integers versus naturals versus finite fields:** a constructor extent is a
+  nonnegative integer obligation, not license to silently replace all integer
+  subtraction with truncated natural subtraction. Residue representatives are
+  not automatically finite-field elements. Prime/irreducibility assumptions and
+  basis encodings will matter for the code/Fano/Hermitian lessons.
+- **Coverage versus values:** prove the exact domain and key bijection before
+  substituting a driver. Equal totals do not prove pointwise equality; empty or
+  absent rows are not zero-valued occurrences. An isomorphism needs a specified
+  map and preserved operations/relations, a different claim from field equality.
+- **Partial/eager definitions:** retain side conditions before simplifying
+  unused branches or zero summands. A scalar division by zero still fails when
+  the source is empty. The translator already tests this distinction.
+- **Provenance versus formal semantics:** an exact history establishes what was
+  calculated, not that a translation preserves its meaning for every parameter.
+  Initially review and test each lowering rule; later formalize those rules or
+  include a checked correspondence certificate.
+
+## Adapter contract and trust boundary
+
+The delivered API is intentionally smaller than a proof session:
+
+```python
+goal = Goal(name, proposition, hypotheses, domain, statement_fingerprint)
+attempt = Z3Assistant().check(goal, timeout_ms=1000)
+```
+
+An algebra tool returns suggested transformations, not this proof result.
+`solver_valid` identifies the backend's assurance; `checked_proof` identifies
+the checker and permitted axioms. Both refer to the same exact statement. A
+future external kernel must accept the translated theorem under those declared
+assumptions with no untracked holes or added theorem axioms. UI controls should
+offer **Explain**, **Find a failing case**, and eventually **Attempt proof**,
+while solver choice and budgets stay in an advanced pane.
+
+Next experiment: formalize `bezout-coprime/1` and `coprime-interior/1` against the
+second exported goal, then emit a strict checker receipt containing both request
+fingerprints, the source digest, toolchain pins, permitted axioms and checker
+outcomes. Compare the readable steps, assumptions, trust boundary and failure
+reporting with Z3. A separate
+bounded witness service can later reconnect countermodels to captured canvas
+contributors without turning animation frames into mathematical inputs.

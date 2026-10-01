@@ -417,3 +417,13 @@ svg .workspace-welcome {font-size:20px}
 .axis-totals label {display:flex;align-items:center;gap:6px;min-height:44px;border:1px solid var(--line);border-radius:8px;padding:0 12px}
 .axis-totals input {width:20px;min-height:20px;accent-color:var(--green)}
 .lens-formula {overflow-wrap:anywhere;padding:12px;border-left:3px solid var(--green);background:color-mix(in srgb,var(--paper) 94%,var(--green))}
+#construction-statement {margin:16px 0;padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0}
+#construction-statement summary {min-height:44px;padding:10px 0;cursor:pointer;font-weight:650}
+#construction-statement fieldset {display:flex;gap:8px;flex-wrap:wrap;border:0;padding:0;min-width:0}
+#construction-statement fieldset label {display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px}
+#construction-statement input[type=checkbox] {width:20px;min-height:20px;accent-color:var(--green)}
+#construction-statement pre {white-space:pre-wrap;overflow-wrap:anywhere;max-height:400px;overflow:auto;font-size:13px;line-height:1.7}
+#construction-statement textarea {width:100%;min-width:0}
+.statement-pair {display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.statement-pair select {flex:1;min-width:60px}
+.statement-pair button {font-size:12px}
